@@ -974,17 +974,24 @@ blockquote {
   /* 24%–100%: hold at scale(1) while the wave moves on to later letters. */
 }
 
-/* On mobile: keep the caption visible, and centre the auth-button + goat
-   pair on their wrapped row. Smaller font so long phrases still fit. */
+/* On mobile: keep the caption visible and flush the Account + goat
+   pair to the LEFT of their wrapped row so the caption has the entire
+   right side of the viewport to extend into without clipping. */
 @media (max-width: 768px) {
   .goat-bubble {
     font-size: 11px;
   }
+  /* Kill the desktop `margin-left: auto` that normally pushes the
+     Account chip to the right edge; on mobile we want the pair on
+     the left of its row. */
+  .site-nav-inner .auth-button {
+    margin-left: 0;
+  }
   .site-nav-inner .goat-scream {
     /* Desktop sets -18px to sit flush against the Account chip; on
-       mobile we want normal flex-gap plus a margin-right: auto to
-       pair-centre with the Account chip on their own row. */
-    margin-left: 0;
+       mobile restore a small positive gap and absorb the remaining
+       slack on the right so the pair stays left-aligned. */
+    margin-left: 8px;
     margin-right: auto;
   }
 }
