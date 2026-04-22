@@ -134,7 +134,6 @@
 
     // --- Speech bubble ---------------------------------------------------
     const PHRASES = [
-      "Feed Me!",
       "Such powerful Dawha",
       "Screams in Hadith",
       "Much Knowledge",
