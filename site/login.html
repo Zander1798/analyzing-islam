@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sign in to Analyzing Islam — save entries, write private notes, build custom argument collections.">
+<title>Sign in — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html">Read</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="auth-shell">
+  <h1>Sign in</h1>
+  <p class="auth-lede">Save entries, write private notes, and build your own argument collections. Login is only required for these personal features — the catalog and full-text readers stay open to everyone.</p>
+
+  <form id="login-form" class="auth-form" autocomplete="on">
+    <div id="login-message" class="auth-message auth-message--info" style="display:none;"></div>
+
+    <div class="auth-field">
+      <label for="login-email">Email</label>
+      <input id="login-email" name="email" type="email" autocomplete="email" required>
+    </div>
+
+    <div class="auth-field">
+      <label for="login-password">Password</label>
+      <input id="login-password" name="password" type="password" autocomplete="current-password" required minlength="8">
+    </div>
+
+    <button id="login-submit" type="submit" class="auth-submit">Sign in</button>
+
+    <div class="auth-links">
+      <a href="signup.html">Create an account</a>
+      <a href="forgot-password.html">Forgot password?</a>
+    </div>
+  </form>
+</div>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<script>
+  (function () {
+    const form = document.getElementById("login-form");
+    const email = document.getElementById("login-email");
+    const password = document.getElementById("login-password");
+    const submit = document.getElementById("login-submit");
+    const msg = document.getElementById("login-message");
+
+    function showMessage(kind, text) {
+      msg.className = "auth-message auth-message--" + kind;
+      msg.textContent = text;
+      msg.style.display = "block";
+    }
+
+    // If they're already logged in, bounce them to where they came from.
+    window.addEventListener("auth-state", function (e) {
+      if (e.detail && e.detail.session) {
+        const returnTo = new URLSearchParams(location.search).get("return") || "index.html";
+        location.href = returnTo;
+      }
+    });
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      if (!window.AI_AUTH) {
+        showMessage("error", "Auth system is loading. Try again in a second.");
+        return;
+      }
+      submit.disabled = true;
+      submit.textContent = "Signing in…";
+      msg.style.display = "none";
+
+      const { error } = await window.AI_AUTH.signIn(email.value.trim(), password.value);
+
+      if (error) {
+        submit.disabled = false;
+        submit.textContent = "Sign in";
+        if (error.message && /email not confirmed/i.test(error.message)) {
+          showMessage("error", "Email not yet verified. Check your inbox for the verification link (or resend from the signup page).");
+        } else if (error.message && /invalid.*credentials/i.test(error.message)) {
+          showMessage("error", "Incorrect email or password.");
+        } else {
+          showMessage("error", error.message || "Sign-in failed. Try again.");
+        }
+        return;
+      }
+
+      submit.textContent = "Signed in. Redirecting…";
+      // auth-state event fires; redirect handled above.
+    });
+  })();
+</script>
+</body>
+</html>

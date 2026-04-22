@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Your saved entries and notes on Analyzing Islam.">
+<title>My saved entries — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html">Read</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="hero" style="padding: 48px 0 16px;">
+    <h1 style="font-size:clamp(40px, 6vw, 72px);">My saved entries</h1>
+    <p class="hero-tagline" style="font-size:16px; margin-bottom:0;">Entries you've bookmarked, with any notes you've attached. Filter by category, strength, or text.</p>
+  </section>
+
+  <div id="saved-shell">
+    <div class="auth-message auth-message--info" style="max-width:640px;">
+      Loading…
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<script>
+  (function () {
+    const shell = document.getElementById("saved-shell");
+
+    function paint() {
+      const sess = window.__session;
+      if (!sess || !sess.user) {
+        shell.innerHTML =
+          '<div class="auth-message auth-message--info" style="max-width:640px;">' +
+          'You\'re not signed in. ' +
+          '<a href="login.html?return=saved.html">Sign in</a> or <a href="signup.html">create an account</a> to save entries.' +
+          '</div>';
+        return;
+      }
+
+      // Phase 2 will hydrate this with real bookmark data from Supabase.
+      shell.innerHTML =
+        '<div class="auth-message auth-message--info" style="max-width:640px;">' +
+        'No saved entries yet. Phase 2 of this feature (database + bookmark buttons on entries) ships next. ' +
+        'When it does, this page will show your saved entries with category/strength filters and inline notes.' +
+        '</div>';
+    }
+
+    if (window.__authReady) {
+      window.__authReady.then(paint);
+    } else {
+      paint();
+    }
+    window.addEventListener("auth-state", paint);
+  })();
+</script>
+</body>
+</html>

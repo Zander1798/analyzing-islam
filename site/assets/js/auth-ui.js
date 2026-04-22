@@ -1,0 +1,145 @@
+// Auth UI: injects a "Sign in" button into .site-nav-inner on every page,
+// immediately to the left of the goat button. Re-renders when the session
+// changes (via the `auth-state` event fired by auth.js).
+(function () {
+  "use strict";
+
+  function assetPrefix() {
+    const el = document.querySelector('link[href*="assets/"], script[src*="assets/"]');
+    if (el) {
+      const attr = el.getAttribute("href") || el.getAttribute("src");
+      const idx = attr.indexOf("assets/");
+      return attr.slice(0, idx);
+    }
+    const parts = location.pathname.split("/").filter(Boolean);
+    const depth = Math.max(0, parts.length - 1);
+    return depth > 0 ? "../".repeat(depth) : "";
+  }
+
+  function session() {
+    return (typeof window !== "undefined" && window.__session) || null;
+  }
+
+  function buildLoggedOutButton(prefix) {
+    const btn = document.createElement("a");
+    btn.className = "auth-button auth-button--signin";
+    btn.href = prefix + "login.html";
+    btn.textContent = "Sign in";
+    btn.setAttribute("aria-label", "Sign in or create an account");
+    return btn;
+  }
+
+  function buildLoggedInControl(prefix, sess) {
+    const email = (sess.user && sess.user.email) || "";
+    const initial = (email[0] || "?").toUpperCase();
+
+    // A wrapper that holds the trigger pill + the dropdown menu.
+    const wrap = document.createElement("div");
+    wrap.className = "auth-button auth-button--account";
+
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "auth-trigger";
+    trigger.setAttribute("aria-haspopup", "true");
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.setAttribute("aria-label", "Account menu for " + email);
+    trigger.innerHTML =
+      '<span class="auth-avatar" aria-hidden="true">' + initial + "</span>" +
+      '<span class="auth-label">Account</span>';
+    wrap.appendChild(trigger);
+
+    const menu = document.createElement("div");
+    menu.className = "auth-menu";
+    menu.setAttribute("role", "menu");
+    menu.innerHTML =
+      '<div class="auth-menu-email">' + escapeHtml(email) + "</div>" +
+      '<a href="' + prefix + 'saved.html" class="auth-menu-item" role="menuitem">My saved entries</a>' +
+      '<a href="' + prefix + 'profile.html" class="auth-menu-item" role="menuitem">Profile</a>' +
+      '<button type="button" class="auth-menu-item auth-signout" role="menuitem">Sign out</button>';
+    wrap.appendChild(menu);
+
+    trigger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      const open = wrap.classList.toggle("auth-open");
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!wrap.contains(e.target)) {
+        wrap.classList.remove("auth-open");
+        trigger.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    menu.querySelector(".auth-signout").addEventListener("click", async function () {
+      if (!window.AI_AUTH) return;
+      try {
+        trigger.disabled = true;
+        trigger.querySelector(".auth-label").textContent = "Signing out…";
+        await window.AI_AUTH.signOut();
+        // auth-state event fires on change and will re-render the button.
+      } catch (err) {
+        console.error("[auth] sign out failed", err);
+      }
+    });
+
+    return wrap;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function render() {
+    const navInner = document.querySelector(".site-nav-inner");
+    if (!navInner) return;
+
+    // Remove any previously-injected button.
+    const prev = navInner.querySelector(".auth-button");
+    if (prev) prev.remove();
+
+    const prefix = assetPrefix();
+    const sess = session();
+    const node = sess ? buildLoggedInControl(prefix, sess) : buildLoggedOutButton(prefix);
+
+    // Insert before the goat so the auth control sits to the goat's LEFT.
+    const goat = navInner.querySelector(".goat-scream");
+    if (goat) {
+      navInner.insertBefore(node, goat);
+    } else {
+      navInner.appendChild(node);
+    }
+  }
+
+  function init() {
+    // Wait for the first auth check so we render the correct state without flicker.
+    if (window.__authReady && typeof window.__authReady.then === "function") {
+      window.__authReady.then(render);
+    } else {
+      render();
+    }
+
+    // Re-render when auth state changes.
+    window.addEventListener("auth-state", render);
+
+    // If goat.js or some other script mutates .site-nav-inner after us, re-inject.
+    const navInner = document.querySelector(".site-nav-inner");
+    if (navInner) {
+      const observer = new MutationObserver(function () {
+        const navInner2 = document.querySelector(".site-nav-inner");
+        if (navInner2 && !navInner2.querySelector(".auth-button")) {
+          render();
+        }
+      });
+      observer.observe(navInner, { childList: true });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();

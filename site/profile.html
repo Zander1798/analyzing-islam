@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Your Analyzing Islam account.">
+<title>Profile — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html">Read</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="auth-shell">
+  <h1>Your account</h1>
+  <p class="auth-lede">Manage the basics. Saved entries and notes are on the <a href="saved.html">My saved entries</a> page.</p>
+
+  <div id="profile-shell"></div>
+</div>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<script>
+  (function () {
+    const shell = document.getElementById("profile-shell");
+
+    function renderNotSignedIn() {
+      shell.innerHTML =
+        '<div class="auth-message auth-message--info">' +
+        'You\'re not signed in. ' +
+        '<a href="login.html">Sign in</a> or <a href="signup.html">create an account</a> to use saved entries and notes.' +
+        '</div>';
+    }
+
+    function renderSignedIn(user) {
+      shell.innerHTML =
+        '<div class="auth-message auth-message--info">' +
+        '<strong>Signed in as:</strong> ' + escapeHtml(user.email) +
+        '<br><small style="color:var(--text-dim);">Account created ' + new Date(user.created_at).toLocaleDateString() + '</small>' +
+        '</div>' +
+        '<form id="change-password" class="auth-form" style="margin-top:32px;" autocomplete="on">' +
+        '<div id="cp-message" class="auth-message auth-message--info" style="display:none;"></div>' +
+        '<h2 style="font-family:var(--serif);font-size:24px;margin:0 0 8px;">Change password</h2>' +
+        '<div class="auth-field">' +
+        '  <label for="cp-new">New password</label>' +
+        '  <input id="cp-new" type="password" autocomplete="new-password" required minlength="8">' +
+        '</div>' +
+        '<div class="auth-field">' +
+        '  <label for="cp-confirm">Confirm new password</label>' +
+        '  <input id="cp-confirm" type="password" autocomplete="new-password" required minlength="8">' +
+        '</div>' +
+        '<button id="cp-submit" type="submit" class="auth-submit">Update password</button>' +
+        '</form>';
+
+      const form = document.getElementById("change-password");
+      const newIn = document.getElementById("cp-new");
+      const confirmIn = document.getElementById("cp-confirm");
+      const submit = document.getElementById("cp-submit");
+      const msg = document.getElementById("cp-message");
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        msg.style.display = "none";
+        if (newIn.value !== confirmIn.value) {
+          msg.className = "auth-message auth-message--error";
+          msg.textContent = "Passwords don't match.";
+          msg.style.display = "block";
+          return;
+        }
+        submit.disabled = true;
+        submit.textContent = "Updating…";
+        const { error } = await window.AI_AUTH.updatePassword(newIn.value);
+        submit.disabled = false;
+        submit.textContent = "Update password";
+        if (error) {
+          msg.className = "auth-message auth-message--error";
+          msg.textContent = error.message || "Update failed.";
+          msg.style.display = "block";
+          return;
+        }
+        msg.className = "auth-message auth-message--success";
+        msg.textContent = "Password updated.";
+        msg.style.display = "block";
+        newIn.value = "";
+        confirmIn.value = "";
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+
+    function paint() {
+      const sess = window.__session;
+      if (sess && sess.user) {
+        renderSignedIn(sess.user);
+      } else {
+        renderNotSignedIn();
+      }
+    }
+
+    if (window.__authReady) {
+      window.__authReady.then(paint);
+    } else {
+      paint();
+    }
+    window.addEventListener("auth-state", paint);
+  })();
+</script>
+</body>
+</html>
