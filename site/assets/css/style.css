@@ -887,9 +887,9 @@ blockquote {
      right edge, with a small gap between them. The goat's margin-left:
      auto becomes a no-op once this one absorbs the slack. */
   margin-left: auto;
-  /* Negative margin pulls the goat closer than the parent's 24px flex gap
-     would otherwise leave. Effective spacing ≈ 8px. */
-  margin-right: -16px;
+  /* Negative margin cancels most of the parent's 24px flex gap so the
+     goat sits almost flush against the Account chip. Effective ≈ 2px. */
+  margin-right: -22px;
   flex-shrink: 0;
   font-family: var(--sans);
 }
