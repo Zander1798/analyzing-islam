@@ -1048,7 +1048,12 @@ blockquote {
   }
 
   .site-nav-links {
-    gap: 20px;
+    /* Let the links wrap onto a second (or third) line when the seven
+       items — Home, Catalog, Read, Compare, Stats, About, FAQ — no
+       longer fit on one row. row-gap keeps breathing room between the
+       wrapped rows; column-gap stays tight so we get more on each row. */
+    gap: 10px 18px; /* row-gap | column-gap */
+    flex-wrap: wrap;
   }
 
   /* Mobile: push the nav links onto their own row and centre them under
