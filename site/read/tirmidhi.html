@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Read Jami at-Tirmidhi Vol. 6 — Darussalam English edition, embedded as PDF.">
+<title>Read Jami at-Tirmidhi — Islam Analysed</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/reader.css">
+<style>body { overflow: hidden; }</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="../index.html" class="site-brand">Islam Analysed</a>
+    <div class="site-nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../catalog.html">Catalog</a>
+      <a href="../read.html" class="active">Read</a>
+      <a href="../about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<div class="pdf-reader-layout">
+
+  <div class="pdf-reader-header">
+    <div>
+      <div class="pdf-reader-meta">Jami at-Tirmidhi · complete English edition</div>
+      <h1>Jāmi al-Tirmidhī</h1>
+      <p>Compiled by al-Tirmidhī (d. 892 CE). Notable for the compiler's own grading (<em>ṣaḥīḥ, ḥasan, ḍaʿīf</em>) of each hadith. About 3,950 reports in total. This is the complete all-in-one English edition.</p>
+    </div>
+    <div class="pdf-reader-actions">
+      <a href="../read.html" class="btn">← All sources</a>
+      <button type="button" class="btn" id="fullscreen-btn">⛶ Fullscreen</button>
+      <a href="../assets/sources/tirmidhi.pdf" class="btn" download>Download PDF</a>
+    </div>
+  </div>
+
+  <iframe class="pdf-reader-frame" id="pdf-frame" src="../assets/sources/tirmidhi.pdf" title="Jami at-Tirmidhi — complete English translation"></iframe>
+
+</div>
+
+<script>
+  document.getElementById('fullscreen-btn').addEventListener('click', function () {
+    var el = document.getElementById('pdf-frame');
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.msRequestFullscreen) el.msRequestFullscreen();
+  });
+</script>
+
+<script src="../assets/js/goat.js" defer></script>
+</body>
+</html>

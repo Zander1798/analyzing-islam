@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Read Sunan Ibn Mājah — pick a volume.">
+<title>Read Sunan Ibn Mājah — Islam Analysed</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  /* Inherit the editorial index-list look from read.html */
+  .vol-index {
+    border-top: 1px solid var(--border);
+    margin: 48px 0 64px;
+  }
+  .vol-row {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    align-items: center;
+    gap: 32px;
+    padding: 28px 4px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    transition: padding-left 0.3s, color 0.2s;
+  }
+  .vol-row:hover {
+    padding-left: 24px;
+    text-decoration: none;
+  }
+  .vol-row:hover .vol-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+  .vol-num {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    padding-top: 10px;
+    align-self: start;
+  }
+  .vol-title {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3.4vw, 44px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+  }
+  .vol-meta {
+    display: block;
+    font-family: var(--sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-top: 10px;
+  }
+  .vol-arrow {
+    font-family: var(--serif);
+    font-size: 24px;
+    color: var(--text-muted);
+    opacity: 0.4;
+    transition: opacity 0.25s, transform 0.25s;
+    line-height: 1;
+  }
+  @media (max-width: 640px) {
+    .vol-row { grid-template-columns: 48px 1fr auto; gap: 16px; padding: 22px 4px; }
+    .vol-title { font-size: clamp(22px, 8vw, 32px); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="../index.html" class="site-brand">Islam Analysed</a>
+    <div class="site-nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../catalog.html">Catalog</a>
+      <a href="../read.html" class="active">Read</a>
+      <a href="../about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <section class="hero" style="padding: 40px 0 12px; text-align:left;">
+    <h1 style="font-size:clamp(44px, 6vw, 72px); margin-bottom:16px;">Sunan Ibn Mājah</h1>
+    <p class="hero-tagline" style="margin-left:0; max-width:640px;">Compiled by Ibn Mājah (d. 887 CE). The last-added of the six canonical collections; contains some hadiths not found in the others. About 4,340 hadiths across five volumes, Darussalam English+Arabic edition.</p>
+    <div class="hero-cta" style="margin-top:20px;">
+      <a href="../read.html" class="btn">← All sources</a>
+    </div>
+  </section>
+
+  <div class="vol-index">
+    <a href="ibn-majah-v1.html" class="vol-row">
+      <span class="vol-num">01</span>
+      <span>
+        <span class="vol-title">Volume 1</span>
+        <span class="vol-meta">Hadiths 1–802</span>
+      </span>
+      <span class="vol-arrow" aria-hidden="true">→</span>
+    </a>
+    <a href="ibn-majah-v2.html" class="vol-row">
+      <span class="vol-num">02</span>
+      <span>
+        <span class="vol-title">Volume 2</span>
+        <span class="vol-meta">Hadiths 803–1782</span>
+      </span>
+      <span class="vol-arrow" aria-hidden="true">→</span>
+    </a>
+    <a href="ibn-majah-v3.html" class="vol-row">
+      <span class="vol-num">03</span>
+      <span>
+        <span class="vol-title">Volume 3</span>
+        <span class="vol-meta">Hadiths 1783–2718</span>
+      </span>
+      <span class="vol-arrow" aria-hidden="true">→</span>
+    </a>
+    <a href="ibn-majah-v4.html" class="vol-row">
+      <span class="vol-num">04</span>
+      <span>
+        <span class="vol-title">Volume 4</span>
+        <span class="vol-meta">Hadiths 2719–3656</span>
+      </span>
+      <span class="vol-arrow" aria-hidden="true">→</span>
+    </a>
+    <a href="ibn-majah-v5.html" class="vol-row">
+      <span class="vol-num">05</span>
+      <span>
+        <span class="vol-title">Volume 5</span>
+        <span class="vol-meta">Hadiths 3657–4341</span>
+      </span>
+      <span class="vol-arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  Read the text, then read the catalog. Every entry references a specific passage — verify before citing.
+</footer>
+
+<script src="../assets/js/goat.js" defer></script>
+</body>
+</html>

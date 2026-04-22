@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Read Sunan Ibn Mājah — Volume 2 (Hadiths 803–1782).">
+<title>Sunan Ibn Mājah Vol. 2 — Islam Analysed</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/reader.css">
+<style>body { overflow: hidden; }</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="../index.html" class="site-brand">Islam Analysed</a>
+    <div class="site-nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../catalog.html">Catalog</a>
+      <a href="../read.html" class="active">Read</a>
+      <a href="../about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+<div class="pdf-reader-layout">
+
+  <div class="pdf-reader-header">
+    <div>
+      <div class="pdf-reader-meta">Sunan Ibn Mājah · Volume 2 · Darussalam English+Arabic edition</div>
+      <h1>Sunan Ibn Mājah — Vol. 2</h1>
+      <p>Hadiths 803–1782. Scanned PDF; use the Fullscreen button for a full-screen reading view, or download the PDF.</p>
+    </div>
+    <div class="pdf-reader-actions">
+      <a href="ibn-majah.html" class="btn">← All volumes</a>
+      <button type="button" class="btn" id="fullscreen-btn">⛶ Fullscreen</button>
+      <a href="../assets/sources/ibn-majah-vols/v2.pdf" class="btn" download>Download PDF</a>
+    </div>
+  </div>
+
+  <iframe class="pdf-reader-frame" id="pdf-frame" src="../assets/sources/ibn-majah-vols/v2.pdf" title="Sunan Ibn Mājah Volume 2"></iframe>
+
+</div>
+
+<script>
+  document.getElementById('fullscreen-btn').addEventListener('click', function () {
+    var el = document.getElementById('pdf-frame');
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.msRequestFullscreen) el.msRequestFullscreen();
+  });
+</script>
+
+<script src="../assets/js/goat.js" defer></script>
+</body>
+</html>
