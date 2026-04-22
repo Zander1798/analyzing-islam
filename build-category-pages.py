@@ -79,6 +79,10 @@ CATEGORIES = [
      "Dajjal, Gog and Magog, end-times signs, sun rising from the west, Ka'ba destroyed by an Abyssinian."),
     ("strange",       "Strange / Obscure",
      "Talking ants, sleepers for 300 years, worm eats Solomon's staff, apes and pigs, genuinely bizarre passages."),
+    ("incest",        "Incest",
+     "Zaynab bint Jahsh (adopted son's wife), adult breastfeeding as a kinship workaround, the Salim ruling, milk-mother rules weaponized."),
+    ("gross-vile",    "Gross / Vile",
+     "Camel urine as medicine, dip the fly in your drink, dog-saliva seven washes, menstrual-sex rules, paradise-sweat-is-musk, bestiality, masturbation, anal-sex curses."),
 ]
 
 CATALOG_FILES = [
@@ -86,6 +90,9 @@ CATALOG_FILES = [
     ("bukhari.html",   "Sahih al-Bukhari"),
     ("muslim.html",    "Sahih Muslim"),
     ("abu-dawud.html", "Sunan Abi Dawud"),
+    ("tirmidhi.html",  "Jami' at-Tirmidhi"),
+    ("nasai.html",     "Sunan an-Nasa'i"),
+    ("ibn-majah.html", "Sunan Ibn Majah"),
 ]
 
 # Match each <div class="entry" ...>...</div class="entry"> block.
