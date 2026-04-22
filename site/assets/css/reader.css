@@ -20,11 +20,17 @@
   align-self: start;
   height: calc(100vh - 90px);
   overflow-y: auto;
-  padding: 32px 24px 32px 0;
+  /* Left padding is intentionally >= the negative margin that external
+     readers (tanakh, enoch, mishnah, talmud, etc.) apply to their
+     .toc-section labels (currently -12px). Without this, section labels
+     clip on browsers that treat `overflow-y: auto` as implicitly
+     clipping horizontal overflow. */
+  padding: 32px 24px 32px 16px;
   border-right: 1px solid var(--border);
   font-size: 13px;
   scrollbar-width: thin;
   scrollbar-color: var(--border-hover) transparent;
+  box-sizing: border-box;
 }
 
 .reader-toc::-webkit-scrollbar { width: 6px; }
