@@ -1083,8 +1083,9 @@ blockquote {
      right edge, with a small gap between them. The goat's margin-left:
      auto becomes a no-op once this one absorbs the slack. */
   margin-left: auto;
-  /* Shift Account further left of the goat so the gap between the Account
-     chip and the goat's grass tufts is roughly halved. */
+  /* Shift Account further left of the goat — ~10px further than before,
+     which is roughly half the current visible gap to the goat's grass
+     tufts. Moves Account away from the goat (gap grows ~1.5×). */
   margin-right: 22px;
   flex-shrink: 0;
   font-family: var(--sans);
