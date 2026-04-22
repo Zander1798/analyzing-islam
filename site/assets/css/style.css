@@ -1157,3 +1157,210 @@ blockquote {
   color: var(--text-muted);
 }
 
+/* ===== Per-entry Save + Note actions ===== */
+.entry-save-btn,
+.entry-note-toggle {
+  appearance: none;
+  margin-left: 12px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  border-radius: 0;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+
+.entry-save-btn:hover,
+.entry-note-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.entry-save-btn.is-saved {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(122, 162, 247, 0.1);
+}
+
+.entry-save-btn:disabled,
+.entry-note-toggle:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.entry-note-panel {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px dashed var(--border);
+  background: var(--panel);
+}
+
+.entry-note-panel[hidden] {
+  display: none;
+}
+
+.entry-note-panel textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: 10px 12px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.entry-note-panel textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.entry-note-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.entry-note-actions button {
+  appearance: none;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.entry-note-actions .entry-note-save {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.entry-note-actions .entry-note-save:hover {
+  background: rgba(122, 162, 247, 0.1);
+}
+
+.entry-note-actions .entry-note-delete:hover {
+  color: #f4a4a4;
+  border-color: #f4a4a4;
+}
+
+.entry-note-status {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--sans);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ===== Saved-entries page ===== */
+.saved-filters {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.saved-row {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.saved-row-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.saved-row-title {
+  flex: 1 1 auto;
+  min-width: 260px;
+}
+
+.saved-row-title h3 {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.saved-row-title h3 a {
+  color: var(--text);
+}
+
+.saved-row-title h3 a:hover {
+  color: var(--accent);
+}
+
+.saved-row-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.saved-row-meta .strength-basic { color: var(--basic); }
+.saved-row-meta .strength-moderate { color: var(--moderate); }
+.saved-row-meta .strength-strong { color: var(--strong); }
+
+.saved-row-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.saved-note-preview {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--panel);
+  border-left: 2px solid var(--accent);
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.saved-note-editor {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px dashed var(--border);
+  background: var(--panel);
+}
+.saved-note-editor[hidden] { display: none; }
+.saved-note-editor textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 10px 12px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  resize: vertical;
+}
+.saved-note-editor textarea:focus { outline: none; border-color: var(--accent); }
+

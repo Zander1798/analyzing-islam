@@ -23,16 +23,12 @@
 </nav>
 
 <main>
-  <section class="hero" style="padding: 48px 0 16px;">
+  <section class="hero" style="padding: 48px 0 16px; text-align:left;">
     <h1 style="font-size:clamp(40px, 6vw, 72px);">My saved entries</h1>
-    <p class="hero-tagline" style="font-size:16px; margin-bottom:0;">Entries you've bookmarked, with any notes you've attached. Filter by category, strength, or text.</p>
+    <p class="hero-tagline" style="font-size:16px; margin-bottom:0; margin-left:0; text-align:left;">Entries you've bookmarked, with any notes you've attached. Filter by category, strength, source, or free-text search.</p>
   </section>
 
-  <div id="saved-shell">
-    <div class="auth-message auth-message--info" style="max-width:640px;">
-      Loading…
-    </div>
-  </div>
+  <div id="saved-shell"></div>
 </main>
 
 <footer class="site-footer">
@@ -43,37 +39,266 @@
 <script src="assets/js/config.js"></script>
 <script src="assets/js/auth.js" defer></script>
 <script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/bookmarks.js" defer></script>
 <script src="assets/js/goat.js" defer></script>
 <script>
-  (function () {
-    const shell = document.getElementById("saved-shell");
+(function () {
+  "use strict";
 
-    function paint() {
-      const sess = window.__session;
-      if (!sess || !sess.user) {
-        shell.innerHTML =
-          '<div class="auth-message auth-message--info" style="max-width:640px;">' +
-          'You\'re not signed in. ' +
-          '<a href="login.html?return=saved.html">Sign in</a> or <a href="signup.html">create an account</a> to save entries.' +
-          '</div>';
-        return;
-      }
+  const SOURCES = [
+    ["quran", "The Qurʾān"],
+    ["bukhari", "Ṣaḥīḥ al-Bukhārī"],
+    ["muslim", "Ṣaḥīḥ Muslim"],
+    ["abu-dawud", "Sunan Abī Dāwūd"],
+    ["tirmidhi", "Jāmi al-Tirmidhī"],
+    ["nasai", "Sunan an-Nasāʾī"],
+    ["ibn-majah", "Sunan Ibn Mājah"],
+  ];
 
-      // Phase 2 will hydrate this with real bookmark data from Supabase.
+  const CATEGORIES = [
+    ["abrogation", "Abrogation"],
+    ["scripture", "Scripture Integrity"],
+    ["contradiction", "Contradictions"],
+    ["logic", "Logical Inconsistency"],
+    ["morality", "Moral Problems"],
+    ["allah", "Allah's Character"],
+    ["cosmology", "Cosmology"],
+    ["preislamic", "Pre-Islamic Borrowings"],
+    ["magic", "Magic & Occult"],
+    ["ritual", "Ritual Absurdities"],
+    ["prophet", "Prophetic Character"],
+    ["privileges", "Prophetic Privileges"],
+    ["jesus", "Jesus / Christology"],
+    ["women", "Women"],
+    ["sexual", "Sexual Issues"],
+    ["childmarriage", "Child Marriage"],
+    ["lgbtq", "LGBTQ / Gender"],
+    ["slavery", "Slavery & Captives"],
+    ["hudud", "Hudud"],
+    ["warfare", "Warfare & Jihad"],
+    ["apostasy", "Apostasy & Blasphemy"],
+    ["governance", "Governance"],
+    ["disbelievers", "Disbelievers"],
+    ["antisemitism", "Antisemitism"],
+    ["paradise", "Paradise"],
+    ["hell", "Hell"],
+    ["eschatology", "Eschatology"],
+    ["strange", "Strange / Obscure"],
+  ];
+
+  const STRENGTHS = [
+    ["basic", "Basic"],
+    ["moderate", "Moderate"],
+    ["strong", "Strong"],
+  ];
+
+  const state = {
+    search: "",
+    category: null,
+    strength: null,
+    source: null,
+  };
+
+  const shell = document.getElementById("saved-shell");
+
+  function signedInView() {
+    shell.innerHTML = `
+      <div class="saved-filters">
+        <div class="controls-row">
+          <input type="search" id="sv-search" placeholder="Search entry title or reference…" autocomplete="off" />
+          <div class="stats"><span id="sv-visible">0</span> saved</div>
+        </div>
+        <div class="controls-row">
+          <span class="controls-label">Source</span>
+          <div class="filter-group" id="sv-sources">
+            <span class="chip active" data-filter-type="source" data-filter-value="">All</span>
+            ${SOURCES.map(([v, l]) => `<span class="chip" data-filter-type="source" data-filter-value="${v}">${l}</span>`).join("")}
+          </div>
+        </div>
+        <div class="controls-row">
+          <span class="controls-label">Strength</span>
+          <div class="filter-group" id="sv-strengths">
+            <span class="chip active" data-filter-type="strength" data-filter-value="">All</span>
+            ${STRENGTHS.map(([v, l]) => `<span class="chip strength-${v}" data-filter-type="strength" data-filter-value="${v}">${l}</span>`).join("")}
+          </div>
+        </div>
+        <div class="controls-row">
+          <span class="controls-label">Category</span>
+          <div class="filter-group" id="sv-categories">
+            <span class="chip active" data-filter-type="category" data-filter-value="">All</span>
+            ${CATEGORIES.map(([v, l]) => `<span class="chip" data-filter-type="category" data-filter-value="${v}">${l}</span>`).join("")}
+          </div>
+        </div>
+      </div>
+      <div id="sv-results"></div>
+    `;
+
+    const search = shell.querySelector("#sv-search");
+    search.addEventListener("input", function () {
+      state.search = search.value.trim();
+      render();
+    });
+
+    shell.querySelectorAll(".filter-group").forEach((group) => {
+      group.addEventListener("click", (e) => {
+        const chip = e.target.closest(".chip");
+        if (!chip) return;
+        const type = chip.getAttribute("data-filter-type");
+        const value = chip.getAttribute("data-filter-value") || null;
+        state[type] = value;
+        group.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        render();
+      });
+    });
+
+    render();
+  }
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  function renderRow(row) {
+    const strengthLabel = row.strength ? `<span class="strength-${row.strength}">${row.strength[0].toUpperCase() + row.strength.slice(1)}</span>` : "";
+    const categoriesLabels = (row.categories || [])
+      .map((c) => {
+        const found = CATEGORIES.find(([v]) => v === c);
+        return found ? found[1] : c;
+      })
+      .join(" · ");
+
+    const url = row.entry_url || ("catalog/" + (row.source || "") + ".html#" + row.entry_id);
+
+    return `
+      <div class="saved-row" data-entry-id="${escapeHtml(row.entry_id)}">
+        <div class="saved-row-header">
+          <div class="saved-row-title">
+            <h3><a href="${escapeHtml(url)}">${escapeHtml(row.entry_title || "(Untitled entry)")}</a></h3>
+            <div class="saved-row-meta">
+              ${row.entry_ref ? `<span>${escapeHtml(row.entry_ref)}</span>` : ""}
+              ${strengthLabel}
+              ${categoriesLabels ? `<span>${escapeHtml(categoriesLabels)}</span>` : ""}
+              <span>Saved ${new Date(row.created_at).toLocaleDateString()}</span>
+            </div>
+          </div>
+          <div class="saved-row-actions">
+            <button type="button" class="entry-note-toggle" data-action="toggle-note">✎ Note</button>
+            <button type="button" class="entry-save-btn is-saved" data-action="remove">★ Remove</button>
+          </div>
+        </div>
+        <div class="saved-note-editor" hidden>
+          <textarea placeholder="Your private notes — only you can see them."></textarea>
+          <div class="entry-note-actions">
+            <button type="button" class="entry-note-save" data-action="save-note">Save note</button>
+            <button type="button" class="entry-note-delete" data-action="delete-note">Delete note</button>
+            <span class="entry-note-status"></span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async function render() {
+    const results = document.getElementById("sv-results");
+    results.innerHTML = '<div class="auth-message auth-message--info" style="max-width:640px;">Loading…</div>';
+
+    const rows = await window.AI_BOOKMARKS.list({
+      source: state.source,
+      strength: state.strength,
+      category: state.category,
+      search: state.search,
+    });
+
+    document.getElementById("sv-visible").textContent = rows.length;
+
+    if (!rows.length) {
+      results.innerHTML = '<div class="auth-message auth-message--info" style="max-width:640px;">No saved entries match these filters.</div>';
+      return;
+    }
+
+    results.innerHTML = rows.map(renderRow).join("");
+
+    // Wire up each row's action buttons.
+    results.querySelectorAll(".saved-row").forEach((rowEl) => {
+      const entryId = rowEl.getAttribute("data-entry-id");
+      const row = rows.find((r) => r.entry_id === entryId);
+
+      rowEl.querySelector('[data-action="remove"]').addEventListener("click", async () => {
+        if (!confirm("Remove this bookmark?")) return;
+        await window.AI_BOOKMARKS.toggle({ entry_id: entryId });
+        render();
+      });
+
+      const noteToggle = rowEl.querySelector('[data-action="toggle-note"]');
+      const noteEditor = rowEl.querySelector(".saved-note-editor");
+      const textarea = noteEditor.querySelector("textarea");
+      const saveBtn = noteEditor.querySelector('[data-action="save-note"]');
+      const deleteBtn = noteEditor.querySelector('[data-action="delete-note"]');
+      const status = noteEditor.querySelector(".entry-note-status");
+
+      let loaded = false;
+      noteToggle.addEventListener("click", async () => {
+        const opening = noteEditor.hidden;
+        noteEditor.hidden = !opening;
+        if (opening && !loaded) {
+          loaded = true;
+          status.textContent = "Loading…";
+          const note = await window.AI_BOOKMARKS.getNote(entryId);
+          if (note && note.content) {
+            textarea.value = note.content;
+            status.textContent = "Last saved " + new Date(note.updated_at).toLocaleString();
+          } else {
+            status.textContent = "";
+          }
+        }
+      });
+
+      saveBtn.addEventListener("click", async () => {
+        saveBtn.disabled = true;
+        status.textContent = "Saving…";
+        const saved = await window.AI_BOOKMARKS.saveNote(entryId, textarea.value);
+        saveBtn.disabled = false;
+        if (saved) status.textContent = "Saved " + new Date(saved.updated_at).toLocaleString();
+        else status.textContent = "Save failed.";
+      });
+
+      deleteBtn.addEventListener("click", async () => {
+        if (!confirm("Delete this note?")) return;
+        await window.AI_BOOKMARKS.deleteNote(entryId);
+        textarea.value = "";
+        status.textContent = "Deleted.";
+      });
+    });
+  }
+
+  function paint() {
+    const sess = window.__session;
+    if (!sess || !sess.user) {
       shell.innerHTML =
         '<div class="auth-message auth-message--info" style="max-width:640px;">' +
-        'No saved entries yet. Phase 2 of this feature (database + bookmark buttons on entries) ships next. ' +
-        'When it does, this page will show your saved entries with category/strength filters and inline notes.' +
+        'You\'re not signed in. ' +
+        '<a href="login.html?return=saved.html">Sign in</a> or <a href="signup.html">create an account</a> to save entries.' +
         '</div>';
+      return;
     }
+    signedInView();
+  }
 
-    if (window.__authReady) {
-      window.__authReady.then(paint);
-    } else {
-      paint();
-    }
-    window.addEventListener("auth-state", paint);
-  })();
+  if (window.__authReady) {
+    window.__authReady.then(paint);
+  } else {
+    paint();
+  }
+  window.addEventListener("auth-state", paint);
+  window.addEventListener("bookmarks-changed", () => {
+    // Re-render if the user toggled a bookmark from another page.
+    const results = document.getElementById("sv-results");
+    if (results) render();
+  });
+})();
 </script>
 </body>
 </html>
