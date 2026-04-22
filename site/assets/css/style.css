@@ -765,39 +765,78 @@ blockquote {
   transform-origin: 50% 60%;
 }
 
-/* Idle: chew — dip the body forward toward the grass, twice. */
+/* Let the goat rotate / scale beyond the viewBox without getting clipped. */
+.goat-scream .goat-svg { overflow: visible; }
+
+/* Idle: chew — full sequence: stoop to grass, grab a blade, stand up, chew. */
 .goat-scream.is-chewing .goat-body {
-  animation: goat-chew 1.5s ease-in-out 1;
+  animation: goat-chew 3s ease-in-out 1;
   transform-origin: 85% 100%;
 }
 
-/* Idle: stretch — elongate up, tilt slightly back, then settle. */
+/* Idle: stretch — crouch, arch back, reach forward with the legs, release. */
 .goat-scream.is-stretching .goat-body {
-  animation: goat-stretch 2s ease-in-out 1;
+  animation: goat-stretch 3s ease-in-out 1;
   transform-origin: 85% 100%;
 }
 
+/*  CHEW keyframes
+    Phase A  0–8%   anticipatory dip
+    Phase B  8–25%  full stoop down to the grass (~-35°)
+    Phase C  25–40% grab twitch at the bottom
+    Phase D  40–58% rise back up to upright
+    Phase E  58–100% chew bobs: jaw-work rocking the head up/down */
 @keyframes goat-chew {
-  0%   { transform: rotate(0deg); }
-  20%  { transform: rotate(-9deg); }
-  35%  { transform: rotate(-6deg); }
-  55%  { transform: rotate(-10deg); }
-  75%  { transform: rotate(-5deg); }
-  100% { transform: rotate(0deg); }
+  0%   { transform: rotate(0deg)   translateY(0); }
+  8%   { transform: rotate(-6deg)  translateY(0); }
+  22%  { transform: rotate(-34deg) translateY(1px); }
+  30%  { transform: rotate(-32deg) translateY(2px); }
+  38%  { transform: rotate(-36deg) translateY(1px); }
+  50%  { transform: rotate(-10deg) translateY(0); }
+  58%  { transform: rotate(0deg)   translateY(0); }
+  66%  { transform: rotate(-3deg)  translateY(0); }
+  72%  { transform: rotate(2deg)   translateY(0); }
+  78%  { transform: rotate(-2deg)  translateY(0); }
+  84%  { transform: rotate(1deg)   translateY(0); }
+  90%  { transform: rotate(-1deg)  translateY(0); }
+  100% { transform: rotate(0deg)   translateY(0); }
 }
 
+/*  STRETCH keyframes
+    Phase A  0–12%   brief crouch (squish Y)
+    Phase B  12–28%  lift up, arch back
+    Phase C  28–58%  PEAK — scale up Y, scale X, rotate back, reach forward
+    Phase D  58–72%  release with slight lean
+    Phase E  72–100% under-bounce and settle back to neutral */
 @keyframes goat-stretch {
-  0%   { transform: rotate(0deg)  scale(1, 1); }
-  20%  { transform: rotate(-2deg) scale(1, 0.95); }   /* crouch a touch */
-  45%  { transform: rotate(4deg)  scale(1.04, 1.12); } /* big stretch up/back */
-  60%  { transform: rotate(5deg)  scale(1.05, 1.14); }
-  80%  { transform: rotate(1deg)  scale(1.02, 1.06); } /* settle */
-  100% { transform: rotate(0deg)  scale(1, 1); }
+  0%   { transform: rotate(0deg)  scale(1, 1)       translateX(0); }
+  12%  { transform: rotate(-3deg) scale(1, 0.92)    translateX(0); }
+  28%  { transform: rotate(4deg)  scale(0.98, 1.08) translateX(-1px); }
+  45%  { transform: rotate(9deg)  scale(1.06, 1.2)  translateX(-3px); }
+  58%  { transform: rotate(9deg)  scale(1.07, 1.22) translateX(-3px); }
+  72%  { transform: rotate(3deg)  scale(1.02, 1.08) translateX(-1px); }
+  85%  { transform: rotate(-1deg) scale(0.99, 0.98) translateX(0); }
+  100% { transform: rotate(0deg)  scale(1, 1)       translateX(0); }
 }
 
-/* Grass is just decorative pixel art — no animation, no hover behavior. */
+/* Grass — decorative, no pointer events, but each blade sways like wind. */
 .goat-grass {
   pointer-events: none;
+}
+
+.goat-grass .grass-blade {
+  transform-box: fill-box;
+  transform-origin: 50% 100%; /* pivot at the blade's root */
+  animation: grass-sway 3.2s ease-in-out infinite;
+  animation-delay: var(--sway-delay, 0s);
+}
+
+@keyframes grass-sway {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(11deg); }
+  50%  { transform: rotate(-5deg); }
+  75%  { transform: rotate(7deg); }
+  100% { transform: rotate(0deg); }
 }
 
 @keyframes goat-shake {

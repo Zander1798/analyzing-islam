@@ -26,12 +26,21 @@
   const GOAT_SVG = `
 <svg class="goat-svg" viewBox="0 0 24 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true">
 
-  <!-- Grass tufts — static, never animated, never removed. -->
+  <!-- Grass tufts — taller blades, each in its own group so it can sway
+       independently. Never removed by any animation. -->
   <g class="goat-grass">
-    <rect x="1"  y="17" width="1" height="1" fill="#7ebf7e"/>
-    <rect x="3"  y="17" width="1" height="1" fill="#7ebf7e"/>
-    <rect x="4"  y="16" width="1" height="2" fill="#4a8a4a"/>
-    <rect x="5"  y="17" width="1" height="1" fill="#7ebf7e"/>
+    <g class="grass-blade" style="--sway-delay: 0s;">
+      <rect x="1" y="15" width="1" height="3" fill="#7ebf7e"/>
+    </g>
+    <g class="grass-blade" style="--sway-delay: 0.55s;">
+      <rect x="3" y="14" width="1" height="4" fill="#7ebf7e"/>
+    </g>
+    <g class="grass-blade" style="--sway-delay: 0.22s;">
+      <rect x="4" y="13" width="1" height="5" fill="#4a8a4a"/>
+    </g>
+    <g class="grass-blade" style="--sway-delay: 0.82s;">
+      <rect x="5" y="15" width="1" height="3" fill="#7ebf7e"/>
+    </g>
   </g>
 
   <!-- Goat body — all animations target this group. -->
@@ -53,8 +62,11 @@
 
     <rect x="14" y="5"  width="1"  height="1" fill="#1a1a1a"/>
 
-    <rect x="7"  y="9"  width="1"  height="2" fill="#f2f2f2"/>
-    <rect x="7"  y="9"  width="1"  height="2" fill="#f2f2f2"/>
+    <!-- Scruffy pixel chin-beard hanging from the jaw. -->
+    <rect x="7"  y="10" width="1"  height="1" fill="#d0d0d0"/>
+    <rect x="8"  y="10" width="1"  height="2" fill="#d0d0d0"/>
+    <rect x="9"  y="10" width="1"  height="1" fill="#d0d0d0"/>
+    <rect x="8"  y="12" width="1"  height="1" fill="#a0a0a0"/>
 
     <g class="goat-mouth-closed">
       <rect x="8"  y="7"  width="2"  height="1" fill="#6a6a6a"/>
@@ -192,8 +204,8 @@
     // plays cleanly and the idle resumes on the next tick.
     const IDLE_INTERVAL_MS = 5000;
     const STRETCH_EVERY_N = 6; // 6 × 5s = 30s
-    const CHEW_DURATION_MS = 1500;
-    const STRETCH_DURATION_MS = 2000;
+    const CHEW_DURATION_MS = 3000;    // full stoop + grab + rise + chew bobs
+    const STRETCH_DURATION_MS = 3000; // crouch + arch + reach + release
 
     let idleCount = 0;
     function playIdle() {
