@@ -851,51 +851,66 @@ blockquote {
   /* No background, border, padding — the text stands alone. */
 }
 
-/* Tiny spinning "generating" indicator sitting to the left of the phrase.
-   Conic-gradient ring in the Claude Code pink so it reads as active. */
+/* Starburst "generating" indicator: 8 short lines radiating from a single
+   centre point, all bursting outward together like a tiny firework, then
+   fading at their tips before the next burst. No rotation — each spoke
+   only grows/fades along its own fixed axis. */
 .goat-bubble .goat-bubble-spinner {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background:
-    conic-gradient(
-      from 0deg,
-      transparent 0deg,
-      #d94f8a 60deg,
-      #ff6ea8 280deg,
-      transparent 360deg
-    );
-  mask: radial-gradient(circle at center, transparent 2.2px, #000 2.7px);
-  -webkit-mask: radial-gradient(circle at center, transparent 2.2px, #000 2.7px);
-  animation: goat-bubble-spin 1.1s linear infinite;
+  position: relative;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
 }
 
-@keyframes goat-bubble-spin {
-  to { transform: rotate(360deg); }
+.goat-bubble .goat-bubble-spinner > i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.2px;
+  height: 5px;
+  background: #cc785c;
+  border-radius: 1px;
+  /* Base transform: place the spoke's bottom-centre at the container's
+     centre, then rotate to its assigned angle. scaleY is animated below
+     so the spoke appears to shoot outward from the centre. */
+  transform-origin: 50% 100%;
+  transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(0);
+  animation: goat-spoke-burst 1.4s ease-out infinite;
+}
+
+.goat-bubble .goat-bubble-spinner > i:nth-child(1) { --a:   0deg; }
+.goat-bubble .goat-bubble-spinner > i:nth-child(2) { --a:  45deg; }
+.goat-bubble .goat-bubble-spinner > i:nth-child(3) { --a:  90deg; }
+.goat-bubble .goat-bubble-spinner > i:nth-child(4) { --a: 135deg; }
+.goat-bubble .goat-bubble-spinner > i:nth-child(5) { --a: 180deg; }
+.goat-bubble .goat-bubble-spinner > i:nth-child(6) { --a: 225deg; }
+.goat-bubble .goat-bubble-spinner > i:nth-child(7) { --a: 270deg; }
+.goat-bubble .goat-bubble-spinner > i:nth-child(8) { --a: 315deg; }
+
+@keyframes goat-spoke-burst {
+  0%   { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(0);   opacity: 0; }
+  15%  { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(0.3); opacity: 1; }
+  60%  { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(1);   opacity: 0.85; }
+  80%  { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(1.4); opacity: 0; }
+  100% { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(0);   opacity: 0; }
 }
 
 .goat-bubble.is-pop {
   animation: goat-bubble-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
 }
 
-/* Orange shimmer matching Claude Code's "thinking" status text. The base
-   orange is the warm terracotta tone; a lighter band sweeps across it. */
+/* Solid terracotta text — no background-clip gloss. Each character is
+   wrapped in a <span class="ch"> by goat.js and scales up briefly on a
+   staggered delay to produce a wave rolling across the phrase. */
 .goat-bubble .goat-bubble-text {
-  background: linear-gradient(
-    100deg,
-    #cc785c 0%,
-    #cc785c 35%,
-    #f4d5b8 50%,
-    #cc785c 65%,
-    #cc785c 100%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-          background-clip: text;
-  -webkit-text-fill-color: transparent;
-          color: transparent;
-  animation: goat-bubble-shimmer 2.4s linear infinite;
+  color: #cc785c;
+}
+
+.goat-bubble .goat-bubble-text .ch {
+  display: inline-block;
+  transform-origin: 50% 100%; /* grow from the baseline so letters bob up */
+  animation: goat-letter-wave 1.4s ease-in-out infinite;
+  will-change: transform;
 }
 
 @keyframes goat-bubble-pop {
@@ -903,9 +918,11 @@ blockquote {
   100% { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
-@keyframes goat-bubble-shimmer {
-  0%   { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
+@keyframes goat-letter-wave {
+  0%, 100% { transform: scale(1); }
+  12%      { transform: scale(1.18); }
+  24%      { transform: scale(1); }
+  /* 24%–100%: hold at scale(1) while the wave moves on to later letters. */
 }
 
 /* Hide the bubble on narrow viewports so it doesn't break the nav row. */

@@ -136,11 +136,35 @@
     const bubble = document.createElement("span");
     bubble.className = "goat-bubble";
     bubble.setAttribute("aria-live", "polite");
+    // Spinner: 8 radiating spokes (a firework burst), not a rotating ring.
     bubble.innerHTML =
-      '<span class="goat-bubble-spinner" aria-hidden="true"></span>' +
+      '<span class="goat-bubble-spinner" aria-hidden="true">' +
+        '<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>' +
+      '</span>' +
       '<span class="goat-bubble-text"></span>';
     const bubbleText = bubble.querySelector(".goat-bubble-text");
-    bubbleText.textContent = pickPhrase();
+
+    // Split the phrase into per-character <span>s so each letter can run
+    // its own size-pulse on a staggered delay, producing a wave that rolls
+    // across the word. Spaces stay as plain text nodes so word spacing
+    // doesn't collapse under inline-block children.
+    function setPhrase(text) {
+      bubbleText.textContent = "";
+      let visibleIndex = 0;
+      for (const ch of text) {
+        if (ch === " ") {
+          bubbleText.appendChild(document.createTextNode(" "));
+          continue;
+        }
+        const span = document.createElement("span");
+        span.className = "ch";
+        span.style.animationDelay = (visibleIndex * 0.07) + "s";
+        span.textContent = ch;
+        bubbleText.appendChild(span);
+        visibleIndex++;
+      }
+    }
+    setPhrase(pickPhrase());
     // Bubble lives inside the button so we can absolute-position it to the
     // right of the goat without affecting the nav bar's flex layout.
     btn.appendChild(bubble);
@@ -156,7 +180,7 @@
     let currentPhrase = bubbleText.textContent;
     setInterval(function () {
       currentPhrase = pickPhrase(currentPhrase);
-      bubbleText.textContent = currentPhrase;
+      setPhrase(currentPhrase);
       replayPop();
     }, 15 * 60 * 1000); // rotate every 15 minutes
 
