@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Read the primary Islamic sources — the full Saheeh International Quran and the six canonical Sunni hadith collections.">
+<title>Islamic Sources — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ==========================================================
+     Islamic Sources index — editorial list.
+     ========================================================== */
+
+  .read-index {
+    border-top: 1px solid var(--border);
+    margin: 48px 0 64px;
+  }
+
+  .read-group-label {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--text-dim);
+    font-weight: 600;
+    padding: 28px 4px 12px;
+    display: block;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .source-row {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    align-items: center;
+    gap: 32px;
+    padding: 32px 4px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    transition: padding-left 0.3s, color 0.2s;
+  }
+
+  .source-row:hover {
+    padding-left: 24px;
+    background: transparent;
+    text-decoration: none;
+  }
+
+  .source-row:hover .source-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+
+  .source-num {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    padding-top: 14px;
+    align-self: start;
+  }
+
+  .source-title {
+    font-family: var(--serif);
+    font-size: clamp(40px, 5.5vw, 72px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+  }
+
+  .source-partial {
+    display: block;
+    font-family: var(--sans);
+    font-style: normal;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-top: 14px;
+  }
+
+  .source-arrow {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--text-muted);
+    opacity: 0.4;
+    transition: opacity 0.25s, transform 0.25s;
+    line-height: 1;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  @media (max-width: 640px) {
+    .source-row {
+      grid-template-columns: 48px 1fr auto;
+      gap: 16px;
+      padding: 24px 4px;
+    }
+    .source-row:hover { padding-left: 12px; }
+    .source-title { font-size: clamp(32px, 10vw, 48px); }
+    .source-num { font-size: 11px; padding-top: 10px; }
+    .source-arrow { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html" class="active">Read</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <section class="hero" style="padding: 40px 0 8px; text-align:left;">
+    <a href="read.html" class="back-link">← Read</a>
+    <h1 style="font-size:clamp(48px, 7vw, 88px); margin-bottom:20px;">Islamic Sources</h1>
+    <p class="hero-tagline" style="margin-left:0; max-width:640px;">The full primary texts this project analyses. Every argument in the catalog is grounded in one of these seven books — open any of them to read the complete document.</p>
+  </section>
+
+  <div class="read-index">
+
+    <span class="read-group-label">The Qurʾān</span>
+
+    <a href="read/quran.html" class="source-row">
+      <span class="source-num">01</span>
+      <span>
+        <span class="source-title">The Quran</span>
+      </span>
+      <span class="source-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <span class="read-group-label">Kutub al-Sittah · the six canonical Sunnī hadith collections</span>
+
+    <a href="read/bukhari.html" class="source-row">
+      <span class="source-num">02</span>
+      <span>
+        <span class="source-title">Ṣaḥīḥ al-Bukhārī</span>
+      </span>
+      <span class="source-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <a href="read/muslim.html" class="source-row">
+      <span class="source-num">03</span>
+      <span>
+        <span class="source-title">Ṣaḥīḥ Muslim</span>
+      </span>
+      <span class="source-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <a href="read/abu-dawud.html" class="source-row">
+      <span class="source-num">04</span>
+      <span>
+        <span class="source-title">Sunan Abī Dāwūd</span>
+      </span>
+      <span class="source-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <a href="read/tirmidhi.html" class="source-row">
+      <span class="source-num">05</span>
+      <span>
+        <span class="source-title">Jāmi al-Tirmidhī</span>
+      </span>
+      <span class="source-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <a href="read/nasai.html" class="source-row">
+      <span class="source-num">06</span>
+      <span>
+        <span class="source-title">Sunan an-Nasāʾī</span>
+      </span>
+      <span class="source-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <a href="read/ibn-majah.html" class="source-row">
+      <span class="source-num">07</span>
+      <span>
+        <span class="source-title">Sunan Ibn Mājah</span>
+      </span>
+      <span class="source-arrow" aria-hidden="true">→</span>
+    </a>
+
+  </div>
+
+  <section style="padding:24px; background:var(--panel); border:1px solid var(--border);">
+    <h3 style="margin-top:0;">Translations used</h3>
+    <p><strong>Quran:</strong> Saheeh International (1997, 2004 — Abul-Qasim Publishing House / Al-Muntada Al-Islami), the Saudi-sanctioned mainstream Sunni translation. Using a Muslim-authored, Muslim-sanctioned edition removes the easy dismissal of "hostile translation."</p>
+    <p><strong>Hadith collections:</strong> widely published English translations distributed by mainstream Islamic publishers. The underlying Arabic texts are the same as those Sunnī jurisprudence itself treats as canonical.</p>
+    <p style="color:var(--text-muted); font-size:13px; margin-bottom:0;">All source PDFs are hosted on this site under fair use / fair dealing for the purpose of criticism, review, and commentary.</p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  Read the text, then read the catalog. Every entry references a specific passage — verify before citing.
+</footer>
+
+<script src="assets/js/goat.js" defer></script>
+</body>
+</html>

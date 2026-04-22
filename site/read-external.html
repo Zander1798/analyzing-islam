@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="External sources referenced throughout the analysis — classical tafsir, sira, history, hadith commentary, jurisprudence, comparative scripture, and modern scholarship.">
+<title>External Sources — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* External Sources index. Grouped card grid, denser than the
+     Islamic index because there are ~40 works, not 7. */
+
+  .ext-group {
+    margin: 48px 0 8px;
+  }
+
+  .ext-group-label {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--text-dim);
+    font-weight: 600;
+    padding: 0 0 12px;
+    display: block;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .ext-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .ext-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 22px 22px 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    min-height: 150px;
+    transition: border-color 0.2s, transform 0.2s, background 0.2s;
+  }
+
+  .ext-card:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  .ext-card h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: var(--text);
+  }
+
+  .ext-card .ext-subtitle {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0 0 10px;
+    font-style: italic;
+  }
+
+  .ext-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+    line-height: 1.5;
+  }
+
+  .ext-card .ext-meta {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-top: auto;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  @media (max-width: 640px) {
+    .ext-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html" class="active">Read</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <section class="hero" style="padding: 40px 0 8px; text-align:left;">
+    <a href="read.html" class="back-link">← Read</a>
+    <h1 style="font-size:clamp(48px, 7vw, 88px); margin-bottom:20px;">External Sources</h1>
+    <p class="hero-tagline" style="margin-left:0; max-width:720px;">Works outside the primary corpus that are cited by name across the entries — classical Quranic commentary, early Islamic biography and history, extended hadith, fiqh, comparative scripture, and modern Western scholarship.</p>
+  </section>
+
+  <!-- ==================== CLASSICAL TAFSIR ==================== -->
+  <section class="ext-group">
+    <span class="ext-group-label">Classical Quranic commentary · Tafsīr</span>
+    <div class="ext-grid">
+
+      <a href="read-external/tabari-tafsir.html" class="ext-card">
+        <div>
+          <h3>al-Ṭabarī</h3>
+          <p class="ext-subtitle">Jāmiʿ al-Bayān fī Taʾwīl al-Qurʾān (d. 923)</p>
+          <p>The foundational Sunni tafsir — a vast compilation of early exegetical reports isnad by isnad. The earliest comprehensive commentary and the starting point for virtually every later one.</p>
+        </div>
+        <div class="ext-meta">Tafsir · 10th c.</div>
+      </a>
+
+      <a href="read-external/ibn-kathir.html" class="ext-card">
+        <div>
+          <h3>Ibn Kathīr</h3>
+          <p class="ext-subtitle">Tafsīr al-Qurʾān al-ʿAẓīm (d. 1373)</p>
+          <p>The dominant mainstream tafsir in the modern Sunni world. Tradition-based, consistently cross-referenced with hadith, widely translated and distributed by contemporary Islamic publishers.</p>
+        </div>
+        <div class="ext-meta">Tafsir · 14th c.</div>
+      </a>
+
+      <a href="read-external/qurtubi.html" class="ext-card">
+        <div>
+          <h3>al-Qurṭubī</h3>
+          <p class="ext-subtitle">al-Jāmiʿ li-Aḥkām al-Qurʾān (d. 1273)</p>
+          <p>A legally-oriented tafsir focused on deriving the rulings (aḥkām) from each verse. Authoritative within the Maliki school and widely cited on fiqh-inflected questions.</p>
+        </div>
+        <div class="ext-meta">Tafsir · 13th c.</div>
+      </a>
+
+      <a href="read-external/razi.html" class="ext-card">
+        <div>
+          <h3>Fakhr al-Dīn al-Rāzī</h3>
+          <p class="ext-subtitle">Mafātīḥ al-Ghayb / al-Tafsīr al-Kabīr (d. 1210)</p>
+          <p>A philosophically and theologically engaged tafsir — the classical encyclopedia of kalām-style arguments on each verse. Unmatched for working through rational objections.</p>
+        </div>
+        <div class="ext-meta">Tafsir · 13th c.</div>
+      </a>
+
+      <a href="read-external/zamakhshari.html" class="ext-card">
+        <div>
+          <h3>al-Zamakhsharī</h3>
+          <p class="ext-subtitle">al-Kashshāf (d. 1144)</p>
+          <p>The great Muʿtazilite tafsir — celebrated for its linguistic and rhetorical analysis even by Sunnis who reject its theology. The standard reference on Quranic rhetoric (balāgha).</p>
+        </div>
+        <div class="ext-meta">Tafsir · 12th c.</div>
+      </a>
+
+      <a href="read-external/suyuti.html" class="ext-card">
+        <div>
+          <h3>al-Suyūṭī</h3>
+          <p class="ext-subtitle">Tafsīr al-Jalālayn + al-Itqān fī ʿUlūm al-Qurʾān (d. 1505)</p>
+          <p>Author of the concise Jalālayn tafsir and of al-Itqān, the encyclopedic manual of Quranic sciences — abrogation, variant readings, circumstances of revelation, the lost/abrogated surahs.</p>
+        </div>
+        <div class="ext-meta">Tafsir · 15th c.</div>
+      </a>
+
+      <a href="read-external/baydawi.html" class="ext-card">
+        <div>
+          <h3>al-Bayḍāwī</h3>
+          <p class="ext-subtitle">Anwār al-Tanzīl wa Asrār al-Taʾwīl (d. 1286)</p>
+          <p>A condensed, linguistically careful Sunni tafsir — an Ashʿarite reworking of al-Zamakhsharī's Kashshāf, long used as a teaching text in madrasas.</p>
+        </div>
+        <div class="ext-meta">Tafsir · 13th c.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ==================== SIRA & EARLY HISTORY ==================== -->
+  <section class="ext-group">
+    <span class="ext-group-label">Prophetic biography &amp; early Islamic history · Sīra &amp; Tārīkh</span>
+    <div class="ext-grid">
+
+      <a href="read-external/ibn-ishaq.html" class="ext-card">
+        <div>
+          <h3>Ibn Isḥāq / Ibn Hishām</h3>
+          <p class="ext-subtitle">Sīrat Rasūl Allāh (d. 767 / 833)</p>
+          <p>The oldest surviving biography of Muhammad. Ibn Isḥāq's original is preserved through Ibn Hishām's recension. The basis of virtually every later Sīra — and the source of the Zaynab, Banū Qurayẓa, Kaʿb, and Ṣafiyya accounts.</p>
+        </div>
+        <div class="ext-meta">Sira · 8th–9th c.</div>
+      </a>
+
+      <a href="read-external/waqidi.html" class="ext-card">
+        <div>
+          <h3>al-Wāqidī</h3>
+          <p class="ext-subtitle">Kitāb al-Maghāzī (d. 823)</p>
+          <p>The earliest detailed account of Muhammad's military campaigns. More dated chronology than Ibn Isḥāq. Indispensable on Badr, Uḥud, Khaybar, and the raids.</p>
+        </div>
+        <div class="ext-meta">Maghazi · 9th c.</div>
+      </a>
+
+      <a href="read-external/ibn-sad.html" class="ext-card">
+        <div>
+          <h3>Ibn Saʿd</h3>
+          <p class="ext-subtitle">Kitāb al-Ṭabaqāt al-Kabīr (d. 845)</p>
+          <p>The great biographical dictionary of Muhammad, his Companions, and the early generations. Primary source for the ages, marriages, and personal details of the earliest Muslim community.</p>
+        </div>
+        <div class="ext-meta">Tabaqat · 9th c.</div>
+      </a>
+
+      <a href="read-external/baladhuri.html" class="ext-card">
+        <div>
+          <h3>al-Balādhurī</h3>
+          <p class="ext-subtitle">Futūḥ al-Buldān + Ansāb al-Ashrāf (d. 892)</p>
+          <p>History of the Arab conquests and the genealogical-biographical history of the early community. Essential for the expansion of Islam outside Arabia and the fate of dhimmi populations.</p>
+        </div>
+        <div class="ext-meta">History · 9th c.</div>
+      </a>
+
+      <a href="read-external/tabari-tarikh.html" class="ext-card">
+        <div>
+          <h3>al-Ṭabarī</h3>
+          <p class="ext-subtitle">Tārīkh al-Rusul wa al-Mulūk (d. 923)</p>
+          <p>The monumental universal history from creation through the early caliphate. Preserves the "satanic verses" incident and countless other reports the later tradition became embarrassed by.</p>
+        </div>
+        <div class="ext-meta">History · 10th c.</div>
+      </a>
+
+      <a href="read-external/ibn-al-athir.html" class="ext-card">
+        <div>
+          <h3>Ibn al-Athīr</h3>
+          <p class="ext-subtitle">al-Kāmil fī al-Tārīkh (d. 1233)</p>
+          <p>A synthesizing universal history building on al-Ṭabarī, continued down to the author's own time. Standard reference for the Crusades-era Islamic world.</p>
+        </div>
+        <div class="ext-meta">History · 13th c.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ==================== EXTENDED HADITH ==================== -->
+  <section class="ext-group">
+    <span class="ext-group-label">Extended hadith corpus · outside the six</span>
+    <div class="ext-grid">
+
+      <a href="read-external/musnad-ahmad.html" class="ext-card">
+        <div>
+          <h3>Musnad Aḥmad</h3>
+          <p class="ext-subtitle">Aḥmad ibn Ḥanbal (d. 855)</p>
+          <p>The largest of the classical musnads — ~27,000 reports arranged by Companion. Indispensable next to the six books, and the foundation of the Ḥanbalī school.</p>
+        </div>
+        <div class="ext-meta">Hadith · 9th c.</div>
+      </a>
+
+      <a href="read-external/muwatta-malik.html" class="ext-card">
+        <div>
+          <h3>al-Muwaṭṭaʾ</h3>
+          <p class="ext-subtitle">Mālik ibn Anas (d. 795)</p>
+          <p>The earliest surviving hadith-and-fiqh collection. The foundation of the Mālikī school and an essential witness to the Medinan legal tradition in the 2nd Islamic century.</p>
+        </div>
+        <div class="ext-meta">Hadith · 8th c.</div>
+      </a>
+
+      <a href="read-external/darimi.html" class="ext-card">
+        <div>
+          <h3>Sunan al-Dārimī</h3>
+          <p class="ext-subtitle">al-Dārimī (d. 869)</p>
+          <p>Sometimes grouped with the six canonical Sunan. A teacher of Bukhari, Muslim, and Abu Dawud. His Sunan preserves many early reports in a topical arrangement.</p>
+        </div>
+        <div class="ext-meta">Hadith · 9th c.</div>
+      </a>
+
+      <a href="read-external/hakim-mustadrak.html" class="ext-card">
+        <div>
+          <h3>al-Ḥākim al-Naysābūrī</h3>
+          <p class="ext-subtitle">al-Mustadrak ʿalā al-Ṣaḥīḥayn (d. 1014)</p>
+          <p>A collection of reports al-Ḥākim argued met Bukhari's or Muslim's standards but were not included. Criticised as over-permissive, yet constantly cited in later fiqh.</p>
+        </div>
+        <div class="ext-meta">Hadith · 11th c.</div>
+      </a>
+
+      <a href="read-external/tabarani.html" class="ext-card">
+        <div>
+          <h3>al-Ṭabarānī</h3>
+          <p class="ext-subtitle">al-Muʿjam al-Kabīr, al-Awsaṭ, al-Ṣaghīr (d. 971)</p>
+          <p>Three enormous hadith lexicons arranged by Companion. A primary source for material not preserved in the six books — especially marginal and weak reports that the tradition still cites.</p>
+        </div>
+        <div class="ext-meta">Hadith · 10th c.</div>
+      </a>
+
+      <a href="read-external/bayhaqi.html" class="ext-card">
+        <div>
+          <h3>al-Bayhaqī</h3>
+          <p class="ext-subtitle">al-Sunan al-Kubrā (d. 1066)</p>
+          <p>A systematic legal-hadith collection in the Shāfiʿī tradition — vast, topically arranged, and a workhorse reference for classical jurisprudence.</p>
+        </div>
+        <div class="ext-meta">Hadith · 11th c.</div>
+      </a>
+
+      <a href="read-external/riyad-al-salihin.html" class="ext-card">
+        <div>
+          <h3>Riyāḍ al-Ṣāliḥīn</h3>
+          <p class="ext-subtitle">al-Nawawī (d. 1277)</p>
+          <p>A thematically organised anthology of ~1,900 hadiths on belief and ethical conduct, drawn almost entirely from Bukhari and Muslim. The most widely read popular hadith compendium in modern Sunni Islam.</p>
+        </div>
+        <div class="ext-meta">Hadith · 13th c.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ==================== HADITH COMMENTARY & BIOGRAPHY ==================== -->
+  <section class="ext-group">
+    <span class="ext-group-label">Hadith commentary &amp; biographical dictionaries</span>
+    <div class="ext-grid">
+
+      <a href="read-external/fath-al-bari.html" class="ext-card">
+        <div>
+          <h3>Ibn Ḥajar al-ʿAsqalānī</h3>
+          <p class="ext-subtitle">Fatḥ al-Bārī — Sharḥ Ṣaḥīḥ al-Bukhārī (d. 1449)</p>
+          <p>The definitive classical commentary on Ṣaḥīḥ al-Bukhārī. Resolves isnad puzzles, harmonises parallels, and is itself a near-complete encyclopedia of hadith scholarship.</p>
+        </div>
+        <div class="ext-meta">Sharh · 15th c.</div>
+      </a>
+
+      <a href="read-external/nawawi-sharh.html" class="ext-card">
+        <div>
+          <h3>al-Nawawī</h3>
+          <p class="ext-subtitle">al-Minhāj — Sharḥ Ṣaḥīḥ Muslim (d. 1277)</p>
+          <p>The standard classical commentary on Ṣaḥīḥ Muslim. Legal clarifications, theological framing, and reconciliation of apparently conflicting reports.</p>
+        </div>
+        <div class="ext-meta">Sharh · 13th c.</div>
+      </a>
+
+      <a href="read-external/dhahabi-siyar.html" class="ext-card">
+        <div>
+          <h3>al-Dhahabī</h3>
+          <p class="ext-subtitle">Siyar Aʿlām al-Nubalāʾ (d. 1348)</p>
+          <p>The great biographical dictionary of notable Muslims — ~28 volumes spanning the Companions through the 7th Islamic century. Primary source for hadith-narrator (rijāl) criticism.</p>
+        </div>
+        <div class="ext-meta">Rijal · 14th c.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ==================== FIQH & THEOLOGY ==================== -->
+  <section class="ext-group">
+    <span class="ext-group-label">Jurisprudence &amp; theology · Fiqh &amp; Kalām</span>
+    <div class="ext-grid">
+
+      <a href="read-external/ibn-taymiyya.html" class="ext-card">
+        <div>
+          <h3>Ibn Taymiyya</h3>
+          <p class="ext-subtitle">Majmūʿ al-Fatāwā (d. 1328)</p>
+          <p>The Ḥanbalī jurist whose rulings underwrite modern Salafism. Literal divine attributes, jihad doctrine, dhimmi regulations, and the rejection of theological kalām.</p>
+        </div>
+        <div class="ext-meta">Fiqh · 14th c.</div>
+      </a>
+
+      <a href="read-external/ghazali.html" class="ext-card">
+        <div>
+          <h3>al-Ghazālī</h3>
+          <p class="ext-subtitle">Iḥyāʾ ʿUlūm al-Dīn (d. 1111)</p>
+          <p>The classical synthesis of Sunni orthopraxy and Sufi ethics. The standard reference for what mainstream Islam has historically taught about prayer, wealth, women, and the heart.</p>
+        </div>
+        <div class="ext-meta">Theology · 12th c.</div>
+      </a>
+
+      <a href="read-external/shafii.html" class="ext-card">
+        <div>
+          <h3>al-Shāfiʿī</h3>
+          <p class="ext-subtitle">al-Risāla + al-Umm (d. 820)</p>
+          <p>The founder of the discipline of uṣūl al-fiqh — the theory of Islamic legal reasoning. His Risāla established the four sources (Quran, Sunna, ijmāʿ, qiyās) and the authority of the hadith.</p>
+        </div>
+        <div class="ext-meta">Fiqh · 9th c.</div>
+      </a>
+
+      <a href="read-external/ibn-al-jawzi.html" class="ext-card">
+        <div>
+          <h3>Ibn al-Jawzī</h3>
+          <p class="ext-subtitle">al-Mawḍūʿāt + Ṣifat al-Ṣafwa (d. 1201)</p>
+          <p>Historian, preacher, and Ḥanbalī polemicist. His al-Mawḍūʿāt catalogues hadiths he judged fabricated — a rare classical work openly cataloguing forgeries within the tradition.</p>
+        </div>
+        <div class="ext-meta">Hadith criticism · 12th c.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ==================== BIBLIOGRAPHICAL ==================== -->
+  <section class="ext-group">
+    <span class="ext-group-label">Bibliographical &amp; historical catalogues</span>
+    <div class="ext-grid">
+
+      <a href="read-external/al-fihrist.html" class="ext-card">
+        <div>
+          <h3>Ibn al-Nadīm</h3>
+          <p class="ext-subtitle">al-Fihrist (d. 995 or 998)</p>
+          <p>A 10th-century Baghdadi booksellers' catalogue of Arabic writing. Records works since lost, and preserves the early Muslim awareness of the surat al-Khalʿ and al-Ḥafd (not in the canonical muṣḥaf).</p>
+        </div>
+        <div class="ext-meta">Bibliography · 10th c.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ==================== COMPARATIVE SCRIPTURE ==================== -->
+  <section class="ext-group">
+    <span class="ext-group-label">Comparative scripture · Jewish &amp; Christian texts</span>
+    <div class="ext-grid">
+
+      <a href="read-external/torah.html" class="ext-card">
+        <div>
+          <h3>The Torah &amp; Hebrew Bible</h3>
+          <p class="ext-subtitle">Tanakh · Masoretic Text</p>
+          <p>The Jewish scriptures the Quran affirms (5:43–46) and repeatedly contradicts. Baseline for questions of scriptural continuity, tahrīf, and the biographies of the pre-Islamic prophets.</p>
+        </div>
+        <div class="ext-meta">Scripture · pre-Islamic</div>
+      </a>
+
+      <a href="read-external/new-testament.html" class="ext-card">
+        <div>
+          <h3>The New Testament</h3>
+          <p class="ext-subtitle">Canonical Gospels · Pauline Epistles</p>
+          <p>The Christian scriptures the Quran affirms (5:46–47, 5:68) and contradicts on the crucifixion (4:157), the Trinity, and the Sonship. Every critique of the Islamic Dilemma routes through this text.</p>
+        </div>
+        <div class="ext-meta">Scripture · 1st c.</div>
+      </a>
+
+      <a href="read-external/apocryphal-gospels.html" class="ext-card">
+        <div>
+          <h3>Apocryphal Gospels</h3>
+          <p class="ext-subtitle">Infancy Gospel of Thomas · Protoevangelium of James · Arabic Infancy Gospel</p>
+          <p>Late antique Christian apocrypha that supply several of the Quran's Jesus-stories (clay birds animated, speaking from the cradle, palm tree in childbirth) — evidence of the Quran's borrowing from 2nd–6th c. non-canonical Christian material.</p>
+        </div>
+        <div class="ext-meta">Scripture · 2nd–6th c.</div>
+      </a>
+
+      <a href="read-external/book-of-enoch.html" class="ext-card">
+        <div>
+          <h3>The Book of Enoch</h3>
+          <p class="ext-subtitle">1 Enoch · Ethiopic</p>
+          <p>Second Temple apocalyptic literature describing the fall of watchers, Hārūt &amp; Mārūt analogues, and angelic hierarchies — parallels Islamic angelology at specific points.</p>
+        </div>
+        <div class="ext-meta">Scripture · 2nd c. BCE</div>
+      </a>
+
+      <a href="read-external/talmud.html" class="ext-card">
+        <div>
+          <h3>The Talmud</h3>
+          <p class="ext-subtitle">Babylonian Talmud · Aggadic material</p>
+          <p>Rabbinic literature containing several of the narrative elements the Quran uses — Cain and Abel with the raven, Solomon and the demons, Moses's mountain, "whoever kills a soul" (Mishnah Sanhedrin 4:5 vs Q 5:32).</p>
+        </div>
+        <div class="ext-meta">Scripture · 3rd–6th c.</div>
+      </a>
+
+      <a href="read-external/mishnah.html" class="ext-card">
+        <div>
+          <h3>The Mishnah</h3>
+          <p class="ext-subtitle">Tannaitic codification · ca. 200</p>
+          <p>The foundational rabbinic legal text. Mishnah Sanhedrin 4:5 is the precise source of the "whoever kills a soul" formulation Q 5:32 credits to "the Children of Israel."</p>
+        </div>
+        <div class="ext-meta">Scripture · 2nd–3rd c.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ==================== MODERN ACADEMIC ==================== -->
+  <section class="ext-group">
+    <span class="ext-group-label">Modern Western scholarship</span>
+    <div class="ext-grid">
+
+      <a href="read-external/crone.html" class="ext-card">
+        <div>
+          <h3>Patricia Crone</h3>
+          <p class="ext-subtitle">Meccan Trade and the Rise of Islam · Hagarism (1987 / 1977)</p>
+          <p>Revisionist historian who challenged the traditional account of Islam's origins. Central in any discussion of the 7th-century historical context the early sources describe.</p>
+        </div>
+        <div class="ext-meta">Historian · 20th–21st c.</div>
+      </a>
+
+      <a href="read-external/cook.html" class="ext-card">
+        <div>
+          <h3>Michael Cook</h3>
+          <p class="ext-subtitle">Muhammad (1983) · Commanding Right &amp; Forbidding Wrong (2000)</p>
+          <p>Princeton historian. Co-author of Hagarism with Crone. His work on the development of Islamic law, hisba, and early hadith is indispensable.</p>
+        </div>
+        <div class="ext-meta">Historian · 20th–21st c.</div>
+      </a>
+
+      <a href="read-external/hoyland.html" class="ext-card">
+        <div>
+          <h3>Robert G. Hoyland</h3>
+          <p class="ext-subtitle">Seeing Islam as Others Saw It (1997) · In God's Path (2015)</p>
+          <p>Collected the non-Muslim (Christian, Jewish, Zoroastrian) sources from the first Islamic century — a primary dataset for what outsiders observed about early Islam, independent of the Muslim tradition.</p>
+        </div>
+        <div class="ext-meta">Historian · 20th–21st c.</div>
+      </a>
+
+      <a href="read-external/schacht.html" class="ext-card">
+        <div>
+          <h3>Joseph Schacht</h3>
+          <p class="ext-subtitle">The Origins of Muhammadan Jurisprudence (1950)</p>
+          <p>Demonstrated that much hadith-derived law is 2nd–3rd century Islamic, not 1st-century prophetic — the foundational critical study of how legal hadiths developed. The "Schacht problem" still shapes hadith scholarship.</p>
+        </div>
+        <div class="ext-meta">Historian · 20th c.</div>
+      </a>
+
+      <a href="read-external/goldziher.html" class="ext-card">
+        <div>
+          <h3>Ignaz Goldziher</h3>
+          <p class="ext-subtitle">Muhammedanische Studien (1889–1890)</p>
+          <p>The founder of critical hadith studies. Argued that a large portion of hadith literature reflects 2nd–3rd century doctrinal disputes projected back onto the Prophet.</p>
+        </div>
+        <div class="ext-meta">Historian · 19th c.</div>
+      </a>
+
+      <a href="read-external/josephus.html" class="ext-card">
+        <div>
+          <h3>Flavius Josephus</h3>
+          <p class="ext-subtitle">Antiquities of the Jews · The Jewish War (1st c.)</p>
+          <p>1st-century Jewish historian. Independent external witness to the existence and crucifixion of Jesus (Antiquities 18.3.3, 20.9.1) — directly relevant to Q 4:157's denial.</p>
+        </div>
+        <div class="ext-meta">Historian · 1st c.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <section style="padding:24px; background:var(--panel); border:1px solid var(--border); margin-top: 32px;">
+    <h3 style="margin-top:0;">About this list</h3>
+    <p>These ~40 works are the external sources cited by name across the ~1,500 entries. They fall outside the project's primary corpus (the Saheeh International Quran and the six canonical Sunni hadith collections), but they supply the classical commentary, historical context, jurisprudence, comparative scripture, and modern critical scholarship that the entries draw on.</p>
+    <p style="color:var(--text-muted); font-size:13px; margin-bottom:0;">Individual source pages are being added over time. Click any card for what is currently available.</p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  Read the text, then read the catalog. Every entry references a specific passage — verify before citing.
+</footer>
+
+<script src="assets/js/goat.js" defer></script>
+</body>
+</html>
