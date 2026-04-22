@@ -109,11 +109,14 @@
     let currentSource = null;
     let fallbackAudio = null;
 
-    // Fallback <audio> element (used if Web Audio isn't available).
+    // Fallback <audio> element (used if Web Audio isn't available, or while
+    // the Web Audio decode is still in flight on the very first click).
     function getFallback() {
       if (!fallbackAudio) {
         fallbackAudio = new Audio(audioUrl);
         fallbackAudio.preload = "auto";
+        // Nudge the browser to actually start loading now.
+        try { fallbackAudio.load(); } catch (_) {}
       }
       return fallbackAudio;
     }
@@ -143,14 +146,27 @@
     }
 
     // Warm the decode in the background after page load — best-effort.
+    // Always prime the <audio> fallback so the *first* click has something
+    // ready-to-play even before the Web Audio decode finishes.
+    getFallback();
     if (AudioCtxClass && window.fetch) {
       // Don't auto-create the AudioContext on load (needs user gesture on mobile).
       // Just fetch & arrayBuffer the MP3 so it's in the HTTP cache.
       fetch(audioUrl, { cache: "force-cache" }).catch(function () {});
-    } else {
-      // Warm the <audio> element instead.
-      getFallback();
     }
+
+    // Kick off the AudioContext + decode on the first user gesture that
+    // *precedes* a click (hover, focus, touchstart). By the time the user
+    // actually presses, audioBuffer is usually ready and playback is instant.
+    let decodeArmed = false;
+    function armDecode() {
+      if (decodeArmed) return;
+      decodeArmed = true;
+      ensureDecoded().catch(function () {});
+    }
+    btn.addEventListener("pointerenter", armDecode);
+    btn.addEventListener("focus", armDecode);
+    btn.addEventListener("touchstart", armDecode, { passive: true });
 
     function playWebAudio() {
       if (!audioBuffer) return false;
