@@ -320,7 +320,7 @@ main > section + section {
 }
 
 .card-solo {
-  max-width: 480px;
+  max-width: 380px;
   border: 1px solid var(--border);
 }
 .card-solo .card {
