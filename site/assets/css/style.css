@@ -319,9 +319,12 @@ main > section + section {
   border: 1px solid var(--border);
 }
 
-.card-grid--single {
-  grid-template-columns: minmax(0, 480px);
-  background: transparent;
+.card-solo {
+  max-width: 480px;
+  border: 1px solid var(--border);
+}
+.card-solo .card {
+  display: block;
 }
 
 .card {
