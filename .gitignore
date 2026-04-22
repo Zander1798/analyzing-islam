@@ -26,3 +26,4 @@ Thumbs.db
 # Extract subdirs (intermediate build output)
 ibnmajah-extract/
 nasai-extract/
+.tmp/
