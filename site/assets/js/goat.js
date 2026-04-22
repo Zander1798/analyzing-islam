@@ -136,7 +136,7 @@
       if (animTimer) clearTimeout(animTimer);
       animTimer = setTimeout(function () {
         btn.classList.remove("is-screaming");
-      }, 1500);
+      }, 1600);
     });
   }
 
