@@ -29,6 +29,7 @@
     // --- Comparative scripture ---
     { slug: "tanakh",             title: "The Tanakh (JPS 1917)",         path: "read-external/tanakh.html",             group: "Comparative scripture" },
     { slug: "new-testament",      title: "The New Testament (WEB)",       path: "read-external/new-testament.html",      group: "Comparative scripture" },
+    { slug: "bible-interlinear",  title: "Interlinear Bible (Hebrew · Greek · Strong's)", path: "read-external/bible.html",   group: "Comparative scripture" },
     { slug: "apocryphal-gospels", title: "Apocryphal Infancy Gospels",    path: "read-external/apocryphal-gospels.html", group: "Comparative scripture" },
     { slug: "book-of-enoch",      title: "The Book of Enoch (1 Enoch)",   path: "read-external/book-of-enoch.html",      group: "Comparative scripture" },
     { slug: "mishnah",            title: "The Mishnah (Kulp)",            path: "read-external/mishnah.html",            group: "Comparative scripture" },
