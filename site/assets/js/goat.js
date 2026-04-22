@@ -420,4 +420,23 @@
   } else {
     initNavAutoHide();
   }
+
+  // --- Embed mode (for iframes on the Compare page) ---------------------
+  // When a reader page is opened with ?embed=1, strip the nav and footer
+  // chrome so it reads cleanly inside a split-pane comparison iframe.
+  function applyEmbedMode() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("embed") === "1") {
+        document.documentElement.classList.add("embed-mode");
+        document.body && document.body.classList.add("embed-mode");
+      }
+    } catch (_) {}
+  }
+  // Run as early as possible (not inside DOMContentLoaded) so the nav
+  // doesn't flash before the class lands.
+  applyEmbedMode();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyEmbedMode);
+  }
 })();

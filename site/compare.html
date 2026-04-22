@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Side-by-side comparison of any two readable sources on Analyzing Islam — Qur'an, hadith, Tanakh, New Testament, Mishnah, Josephus, and more. Each pane has its own search for verses, keywords, or phrases.">
+<title>Compare — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html">Read</a>
+      <a href="compare.html" class="active">Compare</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main class="compare-main">
+
+  <header class="compare-hero">
+    <h1>Compare sources</h1>
+    <p>Pick any two readable sources and read them side-by-side. Each pane has its own search for verses, keywords, or phrases — type <code>s9v5</code> (for Qur'an 9:5), <code>genesis-15-6</code>, <code>sanhedrin-4-5</code>, or any word like <em>crucifixion</em> or <em>jihad</em>.</p>
+  </header>
+
+  <div class="compare-panes">
+
+    <section class="compare-pane" data-side="left" aria-label="Left pane">
+      <div class="compare-toolbar">
+        <select class="compare-source" aria-label="Left source"></select>
+        <div class="compare-search-wrap">
+          <input type="search" class="compare-search" placeholder="Search verse, keyword, phrase…" autocomplete="off" />
+          <div class="compare-search-results" hidden></div>
+        </div>
+      </div>
+      <iframe class="compare-frame" title="Left pane source" loading="lazy"></iframe>
+    </section>
+
+    <section class="compare-pane" data-side="right" aria-label="Right pane">
+      <div class="compare-toolbar">
+        <select class="compare-source" aria-label="Right source"></select>
+        <div class="compare-search-wrap">
+          <input type="search" class="compare-search" placeholder="Search verse, keyword, phrase…" autocomplete="off" />
+          <div class="compare-search-results" hidden></div>
+        </div>
+      </div>
+      <iframe class="compare-frame" title="Right pane source" loading="lazy"></iframe>
+    </section>
+
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  Every reader page opens inside the compare iframes in embed mode, so only the actual text shows — nav and footer are hidden.
+</footer>
+
+<script src="assets/js/goat.js" defer></script>
+<script src="assets/js/compare.js" defer></script>
+</body>
+</html>

@@ -54,6 +54,23 @@ a:hover {
   color: var(--accent-hover);
 }
 
+/* ===== Embed mode =====
+   Applied when a reader page is loaded inside an iframe on the Compare
+   page (via ?embed=1). Strips away the nav + footer so the pane shows
+   only the actual reading content. */
+html.embed-mode .site-nav,
+body.embed-mode .site-nav,
+html.embed-mode .site-footer,
+body.embed-mode .site-footer {
+  display: none !important;
+}
+html.embed-mode main,
+body.embed-mode main,
+html.embed-mode .reader-layout,
+body.embed-mode .reader-layout {
+  padding-top: 8px;
+}
+
 /* ===== Navigation ===== */
 .site-nav {
   border-bottom: 1px solid var(--border);
@@ -1630,4 +1647,156 @@ blockquote {
   resize: vertical;
 }
 .saved-note-editor textarea:focus { outline: none; border-color: var(--accent); }
+
+/* ===== Compare page ===== */
+.compare-main {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.compare-hero {
+  margin-bottom: 28px;
+}
+
+.compare-hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(40px, 6vw, 72px);
+  letter-spacing: -0.025em;
+  margin: 0 0 10px;
+}
+
+.compare-hero p {
+  color: var(--text-muted);
+  max-width: 720px;
+  margin: 0;
+}
+
+.compare-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.compare-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  min-height: 70vh;
+}
+
+.compare-toolbar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-2);
+}
+
+.compare-source,
+.compare-search {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  border-radius: 0;
+}
+.compare-source { font-weight: 600; letter-spacing: 0.02em; }
+.compare-source:focus,
+.compare-search:focus { outline: none; border-color: var(--accent); }
+
+.compare-search-wrap {
+  position: relative;
+}
+
+.compare-search-results {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  z-index: 20;
+  font-size: 13px;
+}
+
+.compare-search-results[hidden] { display: none; }
+
+.compare-search-result {
+  display: block;
+  padding: 10px 14px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  line-height: 1.45;
+  text-align: left;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  width: 100%;
+  font-family: inherit;
+}
+.compare-search-result:last-child { border-bottom: none; }
+.compare-search-result:hover {
+  background: var(--panel-2);
+  color: var(--accent);
+}
+.compare-search-result .ref {
+  display: block;
+  font-family: ui-monospace, "SF Mono", Consolas, monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.compare-search-result .snippet {
+  color: var(--text-muted);
+  display: block;
+}
+.compare-search-result mark {
+  background: rgba(122, 162, 247, 0.25);
+  color: var(--text);
+  padding: 0 2px;
+}
+.compare-search-status {
+  padding: 10px 14px;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.compare-frame {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 60vh;
+  border: none;
+  background: var(--bg);
+}
+
+/* Stack panes vertically on narrow viewports. */
+@media (max-width: 900px) {
+  .compare-panes {
+    grid-template-columns: 1fr;
+  }
+  .compare-pane {
+    min-height: 55vh;
+  }
+}
+
+/* Brief pulse applied inside the iframe when a search result is jumped to. */
+@keyframes compare-jump-flash {
+  0%   { background: rgba(122, 162, 247, 0.38); }
+  100% { background: transparent; }
+}
 
