@@ -138,9 +138,6 @@
       "Such powerful Dawha",
       "Screams in Hadith",
       "Much Knowledge",
-      "Why are You Running!",
-      "You're Hiding, Boy!",
-      "You See!",
       "Alhamdulillah!",
     ];
 
