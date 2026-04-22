@@ -70,9 +70,18 @@ a:hover {
   padding: 20px 32px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 24px;
   flex-wrap: wrap;
+}
+
+.site-nav-inner .site-nav-links {
+  /* Place the nav links about 1/4 of the way between the brand and the goat. */
+  margin-left: 80px;
+}
+
+.site-nav-inner .goat-scream {
+  margin-left: auto;
 }
 
 .site-brand {
