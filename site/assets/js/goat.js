@@ -133,6 +133,9 @@
       "Screems in Hadith",
       "Much Knowledge",
       "Why are You Running!",
+      "You're Hiding, Boy!",
+      "You See!",
+      "Alhamdulillah!",
     ];
 
     function pickPhrase(exclude) {
