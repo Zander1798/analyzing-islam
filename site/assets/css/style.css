@@ -750,10 +750,8 @@ blockquote {
   100% { transform: translate(0, 0)    rotate(0deg); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .goat-scream.is-screaming .goat-svg { animation: none; }
-  .goat-scream:hover { transform: none; }
-}
+/* The scream animation is user-initiated (click) and short, so it runs
+   regardless of reduced-motion preferences. */
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
