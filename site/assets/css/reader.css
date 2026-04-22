@@ -192,8 +192,10 @@
 }
 
 .verses li {
-  display: flex;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  column-gap: 20px;
+  row-gap: 10px;
   padding: 10px 0;
   margin: 0;
   line-height: 1.8;
@@ -210,7 +212,8 @@
 }
 
 .verse-number {
-  flex: 0 0 36px;
+  grid-column: 1;
+  grid-row: 1 / span 2;
   font-family: ui-monospace, "SF Mono", Consolas, monospace;
   font-size: 11px;
   color: var(--text-dim);
@@ -222,11 +225,23 @@
 }
 
 .verse-text {
-  flex: 1;
+  grid-column: 2;
+  grid-row: 1;
   color: var(--text);
   font-size: 16px;
   font-family: var(--sans);
   line-height: 1.8;
+}
+
+.verse-arabic {
+  grid-column: 2;
+  grid-row: 2;
+  direction: rtl;
+  text-align: right;
+  font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+  font-size: 21px;
+  line-height: 2.1;
+  color: var(--text-dim);
 }
 
 .reader-footer {

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Filterable catalog of critical-analysis entries on Musnad al-Shafi'i. Filter by category or strength, search any text, share pre-filtered views.">
+<title>Catalog — Analyzing Islam</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="../index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../catalog.html" class="active">Catalog</a>
+      <a href="../read.html">Read</a>
+      <a href="../about.html">About</a>
+      <a href="../faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <section class="hero" style="padding: 32px 0 16px;">
+    <h1 style="font-size:32px;">Musnad al-Shāfiʿī</h1>
+    <p class="hero-tagline" style="font-size:16px;">Compiled from the narrations of Imam Muḥammad ibn Idrīs al-Shāfiʿī (d. 820 CE), founder of the Shāfiʿī school. Approximately 1,800 hadiths, primarily of legal-jurisprudential interest.</p>
+    <div class="hero-cta">
+      <a href="../catalog.html" class="btn">← Back to all sources</a>
+    </div>
+  </section>
+
+  <div class="catalog-header">
+    <div class="controls-row">
+      <input type="search" id="search" placeholder="Search text, hadith number, keyword..." autocomplete="off" />
+      <div class="stats">
+        <span id="visible-count">0</span> / <span id="total-count">0</span> entries
+      </div>
+    </div>
+    <div class="controls-row">
+      <span class="controls-label">Category</span>
+      <div class="filter-group">
+        <span class="chip active" data-filter-type="category" data-filter-value="all">All</span>
+        <span class="chip" data-filter-type="category" data-filter-value="abrogation">Abrogation</span>
+        <span class="chip" data-filter-type="category" data-filter-value="scripture">Scripture Integrity</span>
+        <span class="chip" data-filter-type="category" data-filter-value="contradiction">Contradictions</span>
+        <span class="chip" data-filter-type="category" data-filter-value="logic">Logical Inconsistency</span>
+        <span class="chip" data-filter-type="category" data-filter-value="morality">Moral Problems</span>
+        <span class="chip" data-filter-type="category" data-filter-value="allah">Allah's Character</span>
+        <span class="chip" data-filter-type="category" data-filter-value="cosmology">Cosmology</span>
+        <span class="chip" data-filter-type="category" data-filter-value="preislamic">Pre-Islamic Borrowings</span>
+        <span class="chip" data-filter-type="category" data-filter-value="magic">Magic &amp; Occult</span>
+        <span class="chip" data-filter-type="category" data-filter-value="ritual">Ritual Absurdities</span>
+        <span class="chip" data-filter-type="category" data-filter-value="prophet">Prophetic Character</span>
+        <span class="chip" data-filter-type="category" data-filter-value="privileges">Prophetic Privileges</span>
+        <span class="chip" data-filter-type="category" data-filter-value="jesus">Jesus / Christology</span>
+        <span class="chip" data-filter-type="category" data-filter-value="women">Women</span>
+        <span class="chip" data-filter-type="category" data-filter-value="sexual">Sexual Issues</span>
+        <span class="chip" data-filter-type="category" data-filter-value="childmarriage">Child Marriage</span>
+        <span class="chip" data-filter-type="category" data-filter-value="lgbtq">LGBTQ / Gender</span>
+        <span class="chip" data-filter-type="category" data-filter-value="slavery">Slavery &amp; Captives</span>
+        <span class="chip" data-filter-type="category" data-filter-value="hudud">Hudud</span>
+        <span class="chip" data-filter-type="category" data-filter-value="warfare">Warfare &amp; Jihad</span>
+        <span class="chip" data-filter-type="category" data-filter-value="apostasy">Apostasy &amp; Blasphemy</span>
+        <span class="chip" data-filter-type="category" data-filter-value="governance">Governance</span>
+        <span class="chip" data-filter-type="category" data-filter-value="disbelievers">Disbelievers</span>
+        <span class="chip" data-filter-type="category" data-filter-value="antisemitism">Antisemitism</span>
+        <span class="chip" data-filter-type="category" data-filter-value="paradise">Paradise</span>
+        <span class="chip" data-filter-type="category" data-filter-value="hell">Hell</span>
+        <span class="chip" data-filter-type="category" data-filter-value="eschatology">Eschatology</span>
+        <span class="chip" data-filter-type="category" data-filter-value="strange">Strange / Obscure</span>
+      </div>
+    </div>
+    <div class="controls-row">
+      <span class="controls-label">Strength</span>
+      <div class="filter-group">
+        <span class="chip active" data-filter-type="strength" data-filter-value="all">All</span>
+        <span class="chip strength-basic" data-filter-type="strength" data-filter-value="basic">Basic</span>
+        <span class="chip strength-moderate" data-filter-type="strength" data-filter-value="moderate">Moderate</span>
+        <span class="chip strength-strong" data-filter-type="strength" data-filter-value="strong">Strong</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="entries-container">
+
+    <!-- Entries are being added progressively via the 7-fold category sweep.
+         Each sweep pass covers 4 categories across the entire source text. -->
+
+    <div class="empty-state" style="padding:80px 40px; text-align:center; color:var(--text-muted);">
+      <p style="font-size:16px;">This catalog is being populated via a systematic 7-fold sweep of the source text.</p>
+      <p style="font-size:14px; margin-top:16px;">Entries are published as they are verified. Check back, or read the source directly via the <a href="../read/shafii.html">Read</a> page.</p>
+    </div>
+
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  Musnad al-Shafi'i cited under fair use / fair dealing for the purposes of criticism, review, and commentary.
+</footer>
+
+<script src="../assets/js/app.js" defer></script>
+<script src="../assets/js/goat.js" defer></script>
+</body>
+</html>
