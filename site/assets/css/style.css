@@ -418,7 +418,8 @@ main > section + section {
   font-weight: 600;
 }
 
-#search {
+#search,
+#sv-search {
   flex: 1;
   min-width: 220px;
   background: var(--bg);
@@ -431,12 +432,14 @@ main > section + section {
   border-radius: 0;
 }
 
-#search:focus {
+#search:focus,
+#sv-search:focus {
   outline: none;
   border-color: var(--accent);
 }
 
-#search::placeholder {
+#search::placeholder,
+#sv-search::placeholder {
   color: var(--text-dim);
 }
 
