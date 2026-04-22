@@ -376,4 +376,48 @@
   } else {
     init();
   }
+
+  // --- Hide nav on scroll-down, reveal on scroll-up ---------------------
+  // The nav bar is position: sticky; we toggle .is-hidden which applies
+  // transform: translateY(-100%). Works on desktop + mobile identically.
+  function initNavAutoHide() {
+    const nav = document.querySelector(".site-nav");
+    if (!nav) return;
+
+    const DELTA = 8;   // px of movement before we flip state
+    const REVEAL_NEAR_TOP = 80; // px from top at which we always show
+
+    let lastY = window.scrollY || 0;
+    let ticking = false;
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        const y = window.scrollY || 0;
+        const delta = y - lastY;
+
+        if (y < REVEAL_NEAR_TOP) {
+          nav.classList.remove("is-hidden");
+        } else if (delta > DELTA) {
+          nav.classList.add("is-hidden");
+        } else if (delta < -DELTA) {
+          nav.classList.remove("is-hidden");
+        }
+
+        if (Math.abs(delta) > DELTA || y < REVEAL_NEAR_TOP) {
+          lastY = y;
+        }
+        ticking = false;
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initNavAutoHide);
+  } else {
+    initNavAutoHide();
+  }
 })();

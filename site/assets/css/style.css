@@ -62,6 +62,14 @@ a:hover {
   z-index: 100;
   backdrop-filter: blur(12px);
   background: rgba(10, 10, 10, 0.85);
+  /* Slide the whole bar out of view when the user scrolls down, back
+     into view when they scroll up. Toggled by goat.js. */
+  transition: transform 0.25s ease;
+  will-change: transform;
+}
+
+.site-nav.is-hidden {
+  transform: translateY(-100%);
 }
 
 .site-nav-inner {
