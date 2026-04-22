@@ -337,6 +337,11 @@
         btn.classList.remove("is-screaming");
       }, 1600);
 
+      // Swap the caption to a fresh random phrase on every scream.
+      currentPhrase = pickPhrase(currentPhrase);
+      setPhrase(currentPhrase);
+      replayPop();
+
       // Try Web Audio first (instant if already decoded).
       if (AudioCtxClass) {
         if (audioBuffer) {
