@@ -210,8 +210,22 @@
     window.addEventListener("auth-state", refreshCTA);
   }
 
-  if (window.__authReady) window.__authReady.then(render);
-  else render();
+  // The deferred scripts above (auth.js, bookmarks.js) haven't executed yet
+  // at this point in parsing, so window.AI_BOOKMARKS and window.__authReady
+  // are still undefined. Wait for DOMContentLoaded — it fires after all
+  // defer scripts have run.
+  function start() {
+    if (window.__authReady && typeof window.__authReady.then === "function") {
+      window.__authReady.then(render);
+    } else {
+      render();
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
 })();
 </script>
 </body>
