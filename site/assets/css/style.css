@@ -809,6 +809,15 @@ blockquote {
     gap: 20px;
   }
 
+  /* Mobile: push the nav links onto their own row and centre them under
+     the brand, instead of letting the desktop 80px offset shove FAQ
+     past the edge of the viewport. */
+  .site-nav-inner .site-nav-links {
+    margin-left: 0;
+    flex-basis: 100%;
+    justify-content: center;
+  }
+
   main {
     padding: 40px 20px 80px;
   }
