@@ -362,7 +362,10 @@ def parse_grk_morph(code: str) -> list[str]:
 # ============================================================
 
 WORD_LINE_RE = re.compile(
-    r"^(?P<ref>[A-Za-z0-9]+)\.(?P<ch>\d+)\.(?P<vs>\d+)#(?P<w>\d+)(?:=\w+)?\s+(?P<rest>.+)$"
+    r"^(?P<ref>[A-Za-z0-9]+)\.(?P<ch>\d+)\.(?P<vs>\d+)"
+    r"(?:\(\d+\.\d+\))?"           # optional alt versification like "(32.2)"
+    r"(?:\[\w+\])?"                # optional bracketed edition tag
+    r"#(?P<w>\d+)(?:=\w+)?\s+(?P<rest>.+)$"
 )
 
 
