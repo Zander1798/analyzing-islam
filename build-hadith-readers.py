@@ -43,6 +43,24 @@ OUT_DIR = ROOT / "site" / "read"
 # - ref_prefix: display prefix used in each hadith's little "ref" strip, e.g. "Hadith"
 SOURCES = [
     {
+        "json_name": "bukhari.json",
+        "slug": "bukhari",
+        "pdf": "../assets/sources/bukhari.pdf",
+        "title": "Ṣaḥīḥ al-Bukhārī",
+        "meta": "Sahih al-Bukhari · English translation from sunnah.com (Muhsin Khan)",
+        "intro": "Compiled by Muḥammad al-Bukhārī (d. 870 CE). Regarded by most Sunni Muslims as the most authentic hadith collection after the Qurʾān. 7,277 hadiths across 97 books.",
+        "ref_prefix": "Hadith",
+    },
+    {
+        "json_name": "muslim.json",
+        "slug": "muslim",
+        "pdf": "../assets/sources/muslim.pdf",
+        "title": "Ṣaḥīḥ Muslim",
+        "meta": "Sahih Muslim · English translation from sunnah.com",
+        "intro": "Compiled by Muslim ibn al-Ḥajjāj (d. 875 CE). The second most authoritative Sunni hadith collection — 7,459 hadiths across 57 books.",
+        "ref_prefix": "Hadith",
+    },
+    {
         "json_name": "abudawud.json",
         "slug": "abu-dawud",
         "pdf": "../assets/sources/abu-dawud.pdf",

@@ -69,38 +69,29 @@ BARE_VERSE_RE = re.compile(
     rf'(?<![\w#:-])(?P<full>(?P<surah>\d{{1,3}}):(?P<verse>\d{{1,3}})(?:{DASH}\d{{1,3}})?)(?![\w:#-])'
 )
 
-# 2) Bukhari Vol X, Book Y, #Z[–Z2]  (with explicit "Bukhari" prefix)
-BUKHARI_FULL_RE = re.compile(
-    rf'(?P<full>Bukhari\s+Vol\s+(?P<vol>\d+),\s+Book\s+(?P<book>\d+),\s+#(?P<num>\d+)(?:{DASH}\d+)?)'
-)
+# All six hadith collections use the sunnah.com idInBook scheme now, so they
+# share one pattern shape: <SourceName> [#]<num>[–num]. The legacy Muhsin Khan
+# Vol/Book/# and Abd al-Baqi Book/# citation forms have been migrated to the
+# bare-number form by migrate-citations.py.
 
-# 3) Standalone "Vol X, Book Y, #Z[–Z2]" (no Bukhari prefix; this format is
-#    distinctly Bukhari/Muhsin Khan — Muslim uses Book+Number, never Volume.)
-BUKHARI_VOL_ONLY_RE = re.compile(
-    rf'(?<![A-Za-z])(?P<full>Vol\s+(?P<vol>\d+),\s+Book\s+(?P<book>\d+),\s+#(?P<num>\d+)(?:{DASH}\d+)?)'
-)
-
-# 4) Muslim Book N, #M[–M2]  (with explicit "Muslim" prefix)
-MUSLIM_FULL_RE = re.compile(
-    rf'(?P<full>Muslim\s+Book\s+(?P<book>\d+),\s+#(?P<num>\d+)(?:{DASH}\d+)?)'
-)
-
-# 5) "Book N, #M[–M2]" inside the Muslim catalog only (Muslim implicit)
-MUSLIM_IMPLICIT_RE = re.compile(
-    rf'(?<![A-Za-z])(?P<full>Book\s+(?P<book>\d+),\s+#(?P<num>\d+)(?:{DASH}\d+)?)'
-)
-
-# 6–9) The four Sunan collections sourced from hadith-json (idInBook anchors).
-#     All of them use the same form: <SourceName> [#]<num>. The `#` is optional
-#     because body text sometimes drops it ("Tirmidhi 2562" vs. "Tirmidhi #2562").
+# 2–3) The six canonical collections sourced from hadith-json (idInBook anchors).
+#     The `#` before the number is optional — body text varies.
 #     Ranges (e.g. "#1042-#1046") are linked by the FIRST number only.
 
 # Source-name alternations — tolerant of common variants.
+_BUKHARI_NAME    = r'(?:Sahih\s+al-Bukh[aā]r[iī]|Bukh[aā]r[iī])'
+_MUSLIM_NAME     = r'(?:Sahih\s+Muslim|Muslim)'
 _ABU_DAWUD_NAME  = r'(?:Sunan\s+Ab[iu]\s+D[aā]wud|Ab[uū]\s+D[aā]wud)'
 _TIRMIDHI_NAME   = r'(?:Jami[\'’`]?\s+at-Tirmidh[iī]|(?:at-)?Tirmidh[iī])'
 _NASAI_NAME      = r'(?:Sunan\s+(?:an-|al-)?Nasa[\'’`]?[iI]|(?:an-|al-)?Nasa[\'’`]?[iI])'
 _IBN_MAJAH_NAME  = r'(?:Sunan\s+Ibn\s+M[aā]jah|Ibn\s+M[aā]jah)'
 
+BUKHARI_RE = re.compile(
+    rf'(?P<full>{_BUKHARI_NAME}\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?)'
+)
+MUSLIM_RE = re.compile(
+    rf'(?P<full>{_MUSLIM_NAME}\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?)'
+)
 ABU_DAWUD_RE = re.compile(
     rf'(?P<full>{_ABU_DAWUD_NAME}\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?)'
 )
@@ -128,26 +119,9 @@ def make_link_quran(cls: str = ""):
     return fn
 
 
-def make_link_bukhari(cls: str = ""):
-    def fn(m: re.Match) -> str:
-        vol = m.group("vol")
-        book = m.group("book")
-        num = m.group("num")
-        return _anchor(f'../read/bukhari.html#v{vol}b{book}n{num}', m.group("full"), cls)
-    return fn
-
-
-def make_link_muslim(cls: str = ""):
-    def fn(m: re.Match) -> str:
-        book = int(m.group("book"))  # strip leading zeros (catalog sometimes has "Book 004")
-        num = int(m.group("num"))
-        return _anchor(f'../read/muslim.html#b{book}n{num:04d}', m.group("full"), cls)
-    return fn
-
-
 def _make_single_num_linker(slug: str):
-    """Factory for sources whose anchor is `#h{idInBook}` (Abu Dawud, Tirmidhi,
-    Nasai, Ibn Majah)."""
+    """Factory for sources whose anchor is `#h{idInBook}` — applies to all six
+    canonical hadith collections now that they share the sunnah.com scheme."""
     def factory(cls: str = ""):
         def fn(m: re.Match) -> str:
             num = m.group("num")
@@ -156,6 +130,8 @@ def _make_single_num_linker(slug: str):
     return factory
 
 
+make_link_bukhari   = _make_single_num_linker("bukhari")
+make_link_muslim    = _make_single_num_linker("muslim")
 make_link_abu_dawud = _make_single_num_linker("abu-dawud")
 make_link_tirmidhi  = _make_single_num_linker("tirmidhi")
 make_link_nasai     = _make_single_num_linker("nasai")
@@ -248,24 +224,12 @@ def rewrite_inner(inner: str, source_tag: str, linkers: dict) -> tuple[str, dict
     inner, n = apply_with_protection(inner, QURAN_RE, q_link)
     counts["quran"] += n
 
-    # 2) Bukhari Vol X, Book Y, #Z (explicit).
-    inner, n = apply_with_protection(inner, BUKHARI_FULL_RE, b_link)
+    # 2-7) All six canonical hadith collections use the sunnah.com idInBook
+    # scheme now — same single-number pattern per source.
+    inner, n = apply_with_protection(inner, BUKHARI_RE, b_link)
     counts["bukhari"] += n
-
-    # 3) Standalone Vol X, Book Y, #Z (no Bukhari prefix).
-    inner, n = apply_with_protection(inner, BUKHARI_VOL_ONLY_RE, b_link)
-    counts["bukhari"] += n
-
-    # 4) Muslim Book N, #M (explicit).
-    inner, n = apply_with_protection(inner, MUSLIM_FULL_RE, m_link)
+    inner, n = apply_with_protection(inner, MUSLIM_RE, m_link)
     counts["muslim"] += n
-
-    # 5) Only inside the muslim catalog: treat "Book N, #M" as implicit Muslim.
-    if source_tag == "muslim":
-        inner, n = apply_with_protection(inner, MUSLIM_IMPLICIT_RE, m_link)
-        counts["muslim"] += n
-
-    # 6-9) The four single-number Sunan collections (idInBook anchors).
     inner, n = apply_with_protection(inner, ABU_DAWUD_RE, ad_link)
     counts["abu_dawud"] += n
     inner, n = apply_with_protection(inner, TIRMIDHI_RE, t_link)
