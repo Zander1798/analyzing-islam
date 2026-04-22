@@ -1265,6 +1265,22 @@ blockquote {
        isn't obvious enough. */
     display: inline;
   }
+
+  /* The account dropdown defaults to right: 0 (aligned to the button's
+     right edge), which makes it overflow the viewport on the left when
+     the button itself sits on the left side of the mobile nav. Re-anchor
+     it to viewport-centre so it opens as a floating popover roughly in
+     the middle of the screen on phones. */
+  .auth-button .auth-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    z-index: 200;
+    min-width: 260px;
+    max-width: calc(100vw - 40px);
+  }
 }
 
 /* ===== Auth forms (login / signup / profile) ===== */
