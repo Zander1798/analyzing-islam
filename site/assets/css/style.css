@@ -874,7 +874,7 @@ blockquote {
   display: inline-flex;
   align-items: center;
   order: 98; /* just before the goat (order: 99) */
-  margin-right: 14px;
+  margin-right: 4px;
   flex-shrink: 0;
   font-family: var(--sans);
 }
@@ -882,7 +882,7 @@ blockquote {
 .auth-button--signin {
   padding: 8px 16px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 2px;
   background: transparent;
   color: var(--text-muted);
   font-size: 12px;
@@ -907,7 +907,7 @@ blockquote {
   gap: 8px;
   padding: 6px 12px 6px 6px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 2px;
   background: var(--panel);
   color: var(--text);
   cursor: pointer;
