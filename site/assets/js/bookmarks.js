@@ -95,9 +95,12 @@
     if (!uid()) return [];
     filters = filters || {};
 
+    // Bookmarks and notes are independent tables joined only through
+    // (user_id, entry_id) — no FK between them, so we fetch bookmarks
+    // on their own and pull notes lazily per row via getNote().
     let q = sb()
       .from("bookmarks")
-      .select("*, note:notes!notes_user_id_fkey(content, updated_at)")
+      .select("*")
       .eq("user_id", uid())
       .order("created_at", { ascending: false });
 
