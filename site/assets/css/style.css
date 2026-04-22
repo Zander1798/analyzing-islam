@@ -878,7 +878,7 @@ blockquote {
   position: absolute;
   left: 100%;
   top: -4px;
-  margin-left: 10px;
+  margin-left: 2px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
