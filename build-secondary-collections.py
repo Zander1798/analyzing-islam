@@ -67,74 +67,9 @@ COLLECTIONS = [
             "resource). Several Arabic editions are also available on archive.org."
         ),
     },
-    {
-        "slug": "shafii",
-        "title": "Musnad al-Shāfiʿī",
-        "title_plain": "Musnad al-Shafi'i",
-        "title_short": "Musnad al-Shāfiʿī",
-        "description": (
-            "Compiled from the narrations of Imam Muḥammad ibn Idrīs al-Shāfiʿī (d. 820 CE), "
-            "founder of the Shāfiʿī school. Approximately 1,800 hadiths, primarily of "
-            "legal-jurisprudential interest."
-        ),
-        "description_plain": (
-            "Compiled from narrations of Imam Muhammad ibn Idris al-Shafi'i (d. 820 CE), "
-            "founder of the Shafi'i school. Approximately 1,800 hadiths, primarily legal."
-        ),
-        "source_url": "https://archive.org/details/musnad-imam-shafi-published-by-idara-islamiat",
-        "source_label": "archive.org · Arabic",
-        "n_hadiths": "~1,800 hadiths",
-        "translation_note": (
-            "No complete English translation is available for free distribution. The Arabic "
-            "text is readily available on archive.org; partial translations exist in "
-            "academic works."
-        ),
-    },
-    {
-        "slug": "tayalisi",
-        "title": "Musnad Abū Dāwūd al-Ṭayālisī",
-        "title_plain": "Musnad Abu Dawud al-Tayalisi",
-        "title_short": "Musnad al-Ṭayālisī",
-        "description": (
-            "Compiled by Sulaymān ibn Dāwūd al-Ṭayālisī (d. 819 CE). One of the oldest "
-            "<em>musnad</em>-style hadith compilations, preceding the canonical six. "
-            "Approximately 2,900 hadiths organised by companion."
-        ),
-        "description_plain": (
-            "Compiled by Sulayman ibn Dawud al-Tayalisi (d. 819 CE). One of the oldest "
-            "musnad-style compilations, predating the canonical six. Approximately 2,900 "
-            "hadiths."
-        ),
-        "source_url": "https://archive.org/details/musnad-abu-dawud",
-        "source_label": "archive.org · Arabic",
-        "n_hadiths": "~2,900 hadiths",
-        "translation_note": (
-            "No complete English translation available. Arabic text on archive.org, with "
-            "Urdu translation published by traditional Indian subcontinent publishers."
-        ),
-    },
-    {
-        "slug": "humaydi",
-        "title": "Musnad al-Ḥumaydī",
-        "title_plain": "Musnad al-Humaydi",
-        "title_short": "Musnad al-Ḥumaydī",
-        "description": (
-            "Compiled by Abū Bakr al-Ḥumaydī (d. 834 CE), a senior student of al-Shāfiʿī "
-            "and a teacher of al-Bukhārī. Approximately 1,500 hadiths organised by companion, "
-            "beginning with the Ten Promised Paradise."
-        ),
-        "description_plain": (
-            "Compiled by Abu Bakr al-Humaydi (d. 834 CE), a student of al-Shafi'i and "
-            "teacher of al-Bukhari. Approximately 1,500 hadiths, beginning with the "
-            "Ten Promised Paradise."
-        ),
-        "source_url": "https://archive.org/details/musnad-humaidi_202108",
-        "source_label": "archive.org · Arabic",
-        "n_hadiths": "~1,500 hadiths",
-        "translation_note": (
-            "No complete English translation available. Arabic text on archive.org."
-        ),
-    },
+    # Shafi'i, Tayalisi, Humaydi removed — no complete English translations
+    # exist for systematic sweep. Only Ahmad and Darimi (both on sunnah.com
+    # with English) are retained.
 ]
 
 
