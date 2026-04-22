@@ -883,7 +883,11 @@ blockquote {
   display: inline-flex;
   align-items: center;
   order: 98; /* just before the goat (order: 99) */
-  margin-right: 4px;
+  /* Take the auto-margin so the auth button + goat sit together on the
+     right edge, with a small gap between them. The goat's margin-left:
+     auto becomes a no-op once this one absorbs the slack. */
+  margin-left: auto;
+  margin-right: 12px;
   flex-shrink: 0;
   font-family: var(--sans);
 }
