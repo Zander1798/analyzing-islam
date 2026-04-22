@@ -51,6 +51,8 @@ CATEGORIES = [
     ("hell", "Hell"),
     ("eschatology", "Eschatology"),
     ("strange", "Strange / Obscure"),
+    ("gross-vile", "Gross / Vile"),
+    ("incest", "Incest"),
 ]
 
 NAME_TO_SLUG = {name: slug for slug, name in CATEGORIES}
@@ -116,6 +118,11 @@ TAG_VARIANTS = {
     "scripture": "scripture",
     "childmarriage": "childmarriage",
     "lgbtq": "lgbtq",
+    "gross-vile": "gross-vile",
+    "gross / vile": "gross-vile",
+    "gross": "gross-vile",
+    "vile": "gross-vile",
+    "incest": "incest",
 }
 
 ENTRY_RE = re.compile(
