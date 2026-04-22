@@ -1179,9 +1179,10 @@ blockquote {
   color: var(--text-muted);
 }
 
-/* ===== Per-entry Save + Note actions ===== */
+/* ===== Per-entry Save + Note + Share actions ===== */
 .entry-save-btn,
-.entry-note-toggle {
+.entry-note-toggle,
+.entry-share-btn {
   appearance: none;
   margin-left: 12px;
   padding: 6px 10px;
@@ -1200,7 +1201,8 @@ blockquote {
 }
 
 .entry-save-btn:hover,
-.entry-note-toggle:hover {
+.entry-note-toggle:hover,
+.entry-share-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -1211,8 +1213,14 @@ blockquote {
   background: rgba(122, 162, 247, 0.1);
 }
 
+.entry-share-btn.just-copied {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 .entry-save-btn:disabled,
-.entry-note-toggle:disabled {
+.entry-note-toggle:disabled,
+.entry-share-btn:disabled {
   opacity: 0.5;
   cursor: default;
 }

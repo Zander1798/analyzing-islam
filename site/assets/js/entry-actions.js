@@ -148,13 +148,66 @@
     });
   }
 
+  function renderShareButton(entryEl) {
+    if (!entryEl.id) return;
+    if (entryEl.querySelector(".entry-share-btn")) return;
+
+    const header = entryEl.querySelector(".entry-header");
+    if (!header) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "entry-share-btn";
+    btn.textContent = "⇪ Share";
+    btn.title = "Copy a direct link to this entry";
+    header.appendChild(btn);
+
+    btn.addEventListener("click", async function () {
+      // The direct URL to this entry is the current page + its anchor.
+      const shareUrl = location.origin + location.pathname + "#" + entryEl.id;
+
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        ok = true;
+      } catch {
+        // Fallback for browsers/contexts without clipboard API.
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = shareUrl;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+        } catch {
+          ok = false;
+        }
+      }
+
+      const originalLabel = "⇪ Share";
+      btn.textContent = ok ? "Link copied ✓" : "Copy failed";
+      btn.classList.add("just-copied");
+      setTimeout(function () {
+        btn.textContent = originalLabel;
+        btn.classList.remove("just-copied");
+      }, 1500);
+    });
+  }
+
   async function hydrate() {
     const entries = document.querySelectorAll("div.entry");
     if (!entries.length) return;
 
+    // The Share button is visible for everyone — no auth required.
+    entries.forEach(function (entryEl) {
+      renderShareButton(entryEl);
+    });
+
     const signedIn = !!(window.__session && window.__session.user);
     if (!signedIn) {
-      // Remove any stale buttons if user signed out mid-session.
+      // Remove stale signed-in-only widgets if the user signed out mid-session.
       entries.forEach((e) => {
         e.querySelectorAll(".entry-save-btn, .entry-note-toggle, .entry-note-panel")
           .forEach((el) => el.remove());
