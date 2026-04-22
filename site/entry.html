@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A saved entry on Analyzing Islam — your private notes and a shareable public link.">
+<title>Saved entry — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .entry-detail-wrap {
+    max-width: 820px;
+    margin: 48px auto 120px;
+    padding: 0 24px;
+  }
+  .entry-detail-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .entry-detail-actions .btn {
+    padding: 10px 18px;
+    font-size: 10px;
+  }
+  .entry-detail-body {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 0;
+  }
+  .entry-detail-body .entry {
+    margin: 0;
+  }
+  /* Hide any Save / Note buttons inside the injected entry — those
+     are the catalog-page inline buttons; we've got the bigger editor below. */
+  .entry-detail-body .entry-save-btn,
+  .entry-detail-body .entry-note-toggle,
+  .entry-detail-body .entry-note-panel { display: none !important; }
+
+  .entry-notes {
+    margin-top: 48px;
+  }
+  .entry-notes h2 {
+    margin: 0 0 8px;
+    font-family: var(--serif);
+    font-size: 28px;
+  }
+  .entry-notes textarea {
+    width: 100%;
+    min-height: 220px;
+    padding: 14px 16px;
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.65;
+    resize: vertical;
+  }
+  .entry-notes textarea:focus { outline: none; border-color: var(--accent); }
+  .entry-notes-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .entry-notes-status { font-size: 12px; color: var(--text-dim); }
+
+  .entry-share-box {
+    margin-top: 40px;
+    padding: 20px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+  }
+  .entry-share-box h3 { margin: 0 0 6px; font-size: 15px; color: var(--text); }
+  .entry-share-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 14px; }
+  .entry-share-url {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .entry-share-url input {
+    flex: 1 1 320px;
+    min-width: 0;
+    padding: 10px 12px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 13px;
+  }
+  .entry-detail-loading, .entry-detail-error {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html">Read</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="entry-detail-wrap">
+  <div id="detail-shell" class="entry-detail-loading">Loading…</div>
+</div>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/bookmarks.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<script>
+(function () {
+  "use strict";
+
+  const shell = document.getElementById("detail-shell");
+  const params = new URLSearchParams(location.search);
+  const entryId = params.get("id");
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  function catalogUrlFor(source) {
+    // returns the absolute URL of the catalog HTML that contains this entry
+    if (!source) return null;
+    return new URL("catalog/" + source + ".html", location.href).toString();
+  }
+
+  async function fetchEntryHtml(source, entryId) {
+    const url = catalogUrlFor(source);
+    if (!url) return null;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const html = await res.text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const el = doc.getElementById(entryId);
+      return el ? el.outerHTML : null;
+    } catch (e) {
+      console.error("fetchEntryHtml failed", e);
+      return null;
+    }
+  }
+
+  async function findBookmarkRow(entryId) {
+    const { data } = await window.__supabase
+      .from("bookmarks")
+      .select("*")
+      .eq("user_id", window.__session.user.id)
+      .eq("entry_id", entryId)
+      .maybeSingle();
+    return data || null;
+  }
+
+  function renderNotSignedIn() {
+    shell.className = "";
+    shell.innerHTML =
+      '<div class="auth-message auth-message--info" style="max-width:520px; margin:80px auto;">' +
+      'Sign in to view your saved entries. ' +
+      '<a href="login.html?return=entry.html%3Fid%3D' + encodeURIComponent(entryId || "") + '">Sign in</a>' +
+      '</div>';
+  }
+
+  async function renderSignedIn() {
+    if (!entryId) {
+      shell.className = "entry-detail-error";
+      shell.innerHTML = 'No entry specified. <a href="saved.html">Back to saved entries</a>.';
+      return;
+    }
+
+    shell.className = "entry-detail-loading";
+    shell.textContent = "Loading entry…";
+
+    const bookmark = await findBookmarkRow(entryId);
+    if (!bookmark) {
+      shell.className = "entry-detail-error";
+      shell.innerHTML =
+        'This entry isn\'t in your saved collection. ' +
+        '<a href="saved.html">Back to saved entries</a>.';
+      return;
+    }
+
+    const [entryHtml, note, share] = await Promise.all([
+      fetchEntryHtml(bookmark.source, entryId),
+      window.AI_BOOKMARKS.getNote(entryId),
+      window.AI_BOOKMARKS.getActiveShare(entryId),
+    ]);
+
+    const fallbackUrl = bookmark.entry_url || (bookmark.source ? `catalog/${bookmark.source}.html#${entryId}` : null);
+
+    shell.className = "";
+    shell.innerHTML = `
+      <div class="entry-detail-actions">
+        <a href="saved.html" class="btn">← Back to saved entries</a>
+        <button type="button" class="btn" id="share-btn">Share</button>
+        ${fallbackUrl ? `<a class="btn" href="${escapeHtml(fallbackUrl)}" target="_blank" rel="noopener">View in catalog ↗</a>` : ""}
+      </div>
+
+      <div class="entry-detail-body">
+        ${entryHtml || `
+          <div class="entry-detail-error" style="padding:40px 0;">
+            Could not load the entry content. The original catalog page may have moved.
+            <a href="${escapeHtml(fallbackUrl || "saved.html")}">Open original</a>.
+          </div>
+        `}
+      </div>
+
+      <div class="entry-notes">
+        <h2>Your notes</h2>
+        <p style="color:var(--text-muted); font-size:14px;">Private to your account. Only visible to you unless you share.</p>
+        <textarea id="note-textarea" placeholder="Write your notes — what angle you'd take in a debate, the cross-references you want to remember, your follow-up questions.">${escapeHtml(note ? note.content : "")}</textarea>
+        <div class="entry-notes-actions">
+          <button type="button" class="btn btn-primary" id="save-note">Save note</button>
+          <button type="button" class="btn" id="delete-note">Delete note</button>
+          <span class="entry-notes-status" id="note-status">${note ? "Last saved " + new Date(note.updated_at).toLocaleString() : ""}</span>
+        </div>
+      </div>
+
+      <div class="entry-share-box" id="share-box" hidden>
+        <h3>Public share link</h3>
+        <p>Anyone with this link can read the entry and the notes you'd saved when you created the link. They cannot edit. You can revoke the link anytime.</p>
+        <div class="entry-share-url">
+          <input type="text" id="share-url" readonly>
+          <button type="button" class="btn" id="copy-share">Copy</button>
+          <button type="button" class="btn" id="revoke-share" style="color:#f4a4a4; border-color:#553333;">Revoke</button>
+        </div>
+        <p style="margin-top:10px; font-size:12px; color:var(--text-dim);" id="share-created"></p>
+      </div>
+    `;
+
+    // Wire up note editor
+    const textarea = document.getElementById("note-textarea");
+    const saveBtn = document.getElementById("save-note");
+    const delBtn = document.getElementById("delete-note");
+    const status = document.getElementById("note-status");
+
+    saveBtn.addEventListener("click", async () => {
+      saveBtn.disabled = true;
+      status.textContent = "Saving…";
+      const saved = await window.AI_BOOKMARKS.saveNote(entryId, textarea.value);
+      saveBtn.disabled = false;
+      if (saved) status.textContent = "Saved " + new Date(saved.updated_at).toLocaleString();
+      else status.textContent = "Save failed.";
+    });
+
+    delBtn.addEventListener("click", async () => {
+      if (!confirm("Delete this note?")) return;
+      await window.AI_BOOKMARKS.deleteNote(entryId);
+      textarea.value = "";
+      status.textContent = "Deleted.";
+    });
+
+    // Share wiring
+    const shareBtn = document.getElementById("share-btn");
+    const shareBox = document.getElementById("share-box");
+    const shareUrl = document.getElementById("share-url");
+    const copyBtn = document.getElementById("copy-share");
+    const revokeBtn = document.getElementById("revoke-share");
+    const shareCreated = document.getElementById("share-created");
+
+    function showShare(shareData) {
+      const url = new URL("shared.html", location.href);
+      url.searchParams.set("id", shareData.id);
+      shareUrl.value = url.toString();
+      shareBox.hidden = false;
+      shareCreated.textContent = "Created " + new Date(shareData.created_at).toLocaleString();
+      shareBtn.textContent = "Reshare with current notes";
+    }
+
+    if (share) showShare(share);
+
+    shareBtn.addEventListener("click", async () => {
+      shareBtn.disabled = true;
+      shareBtn.textContent = "Creating link…";
+      const created = await window.AI_BOOKMARKS.createShare({
+        entry_id: entryId,
+        entry_title: bookmark.entry_title,
+        entry_ref: bookmark.entry_ref,
+        source: bookmark.source,
+        notes_snapshot: textarea.value,  // snapshot current notes at time of share
+      });
+      shareBtn.disabled = false;
+      if (!created) {
+        shareBtn.textContent = "Share";
+        alert("Share failed — try again.");
+        return;
+      }
+      showShare(created);
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(shareUrl.value);
+        copyBtn.textContent = "Copied ✓";
+        setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
+      } catch {
+        shareUrl.select();
+        document.execCommand("copy");
+      }
+    });
+
+    revokeBtn.addEventListener("click", async () => {
+      const currentUrl = new URL(shareUrl.value);
+      const id = currentUrl.searchParams.get("id");
+      if (!id) return;
+      if (!confirm("Revoke this share link? The URL will stop working immediately.")) return;
+      const ok = await window.AI_BOOKMARKS.revokeShare(id);
+      if (ok) {
+        shareBox.hidden = true;
+        shareBtn.textContent = "Share";
+      }
+    });
+  }
+
+  function paint() {
+    const sess = window.__session;
+    if (!sess || !sess.user) renderNotSignedIn();
+    else renderSignedIn();
+  }
+
+  if (window.__authReady) window.__authReady.then(paint);
+  else paint();
+  window.addEventListener("auth-state", paint);
+})();
+</script>
+</body>
+</html>

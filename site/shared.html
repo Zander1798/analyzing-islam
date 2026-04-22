@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A shared entry from Analyzing Islam — catalog content plus the sharer's notes.">
+<title>Shared entry — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .shared-wrap { max-width: 820px; margin: 48px auto 120px; padding: 0 24px; }
+  .shared-actions { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+  .shared-body {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 0;
+  }
+  .shared-body .entry-save-btn,
+  .shared-body .entry-note-toggle,
+  .shared-body .entry-note-panel { display: none !important; }
+
+  .shared-notes {
+    margin-top: 48px;
+    padding: 28px;
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+  }
+  .shared-notes h2 {
+    margin: 0 0 4px;
+    font-family: var(--serif);
+    font-size: 22px;
+  }
+  .shared-notes-meta {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+  .shared-notes-content {
+    white-space: pre-wrap;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .shared-cta {
+    margin-top: 48px;
+    padding: 24px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .shared-cta p { color: var(--text-muted); margin: 0 0 14px; }
+  .shared-loading, .shared-error {
+    padding: 80px 20px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html">Read</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="shared-wrap">
+  <div id="shared-shell" class="shared-loading">Loading shared entry…</div>
+</div>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/bookmarks.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<script>
+(function () {
+  "use strict";
+  const shell = document.getElementById("shared-shell");
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  async function fetchEntryHtml(source, entryId) {
+    if (!source || !entryId) return null;
+    try {
+      const res = await fetch(new URL("catalog/" + source + ".html", location.href).toString());
+      if (!res.ok) return null;
+      const html = await res.text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const el = doc.getElementById(entryId);
+      return el ? el.outerHTML : null;
+    } catch { return null; }
+  }
+
+  async function saveToMyCollection(meta) {
+    if (!window.__session || !window.__session.user) {
+      location.href = "login.html?return=" + encodeURIComponent(location.pathname + location.search);
+      return;
+    }
+    const result = await window.AI_BOOKMARKS.toggle({
+      entry_id: meta.entry_id,
+      entry_title: meta.entry_title,
+      entry_ref: meta.entry_ref,
+      entry_url: meta.entry_url,
+      source: meta.source,
+      strength: null,
+      categories: [],
+    });
+    return result;
+  }
+
+  async function render() {
+    const params = new URLSearchParams(location.search);
+    const shareId = params.get("id");
+    if (!shareId) {
+      shell.className = "shared-error";
+      shell.innerHTML = 'No share link specified. <a href="index.html">Home</a>';
+      return;
+    }
+
+    const share = await window.AI_BOOKMARKS.getSharedPublic(shareId);
+    if (!share) {
+      shell.className = "shared-error";
+      shell.innerHTML = 'This share link is invalid or has been revoked. <a href="index.html">Home</a>';
+      return;
+    }
+
+    const entryHtml = await fetchEntryHtml(share.source, share.entry_id);
+    const catalogUrl = share.source ? `catalog/${share.source}.html#${share.entry_id}` : null;
+
+    shell.className = "";
+    shell.innerHTML = `
+      <div class="shared-actions">
+        <a href="index.html" class="btn">Analyzing Islam home</a>
+        ${catalogUrl ? `<a href="${escapeHtml(catalogUrl)}" class="btn" target="_blank" rel="noopener">Open in catalog ↗</a>` : ""}
+      </div>
+
+      <div class="shared-body">
+        ${entryHtml || `<div class="shared-error">Entry content unavailable. Try the catalog link above.</div>`}
+      </div>
+
+      <div class="shared-notes">
+        <h2>Notes by the sharer</h2>
+        <div class="shared-notes-meta">Shared ${new Date(share.created_at).toLocaleDateString()} · Read-only</div>
+        <div class="shared-notes-content">${share.notes_snapshot ? escapeHtml(share.notes_snapshot) : '<em style="color:var(--text-dim);">(no notes attached)</em>'}</div>
+      </div>
+
+      <div class="shared-cta">
+        <p id="cta-msg">Want to bookmark this entry and write your own notes?</p>
+        <button type="button" class="btn btn-primary" id="cta-btn">Sign in / sign up</button>
+      </div>
+    `;
+
+    const ctaBtn = document.getElementById("cta-btn");
+    const ctaMsg = document.getElementById("cta-msg");
+
+    function refreshCTA() {
+      const sess = window.__session;
+      if (sess && sess.user) {
+        ctaMsg.textContent = "Save a copy to your own collection and write your own independent notes.";
+        ctaBtn.textContent = "Save to my collection";
+        ctaBtn.onclick = async () => {
+          ctaBtn.disabled = true;
+          ctaBtn.textContent = "Saving…";
+          const r = await saveToMyCollection({
+            entry_id: share.entry_id,
+            entry_title: share.entry_title,
+            entry_ref: share.entry_ref,
+            entry_url: catalogUrl,
+            source: share.source,
+          });
+          if (r === "added") {
+            ctaBtn.textContent = "Saved — open in your collection";
+            ctaBtn.onclick = () => { location.href = "entry.html?id=" + encodeURIComponent(share.entry_id); };
+          } else if (r === "removed") {
+            ctaBtn.textContent = "Removed from your collection";
+            ctaBtn.disabled = true;
+          } else {
+            ctaBtn.textContent = "Save failed";
+          }
+          setTimeout(() => { ctaBtn.disabled = false; }, 1500);
+        };
+      } else {
+        ctaMsg.textContent = "Want to bookmark this entry and write your own notes?";
+        ctaBtn.textContent = "Sign in / sign up";
+        ctaBtn.onclick = () => {
+          location.href = "login.html?return=" + encodeURIComponent(location.pathname + location.search);
+        };
+      }
+    }
+
+    refreshCTA();
+    window.addEventListener("auth-state", refreshCTA);
+  }
+
+  if (window.__authReady) window.__authReady.then(render);
+  else render();
+})();
+</script>
+</body>
+</html>

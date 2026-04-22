@@ -37,6 +37,7 @@
 <script src="assets/js/config.js"></script>
 <script src="assets/js/auth.js" defer></script>
 <script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/bookmarks.js" defer></script>
 <script src="assets/js/goat.js" defer></script>
 <script>
   (function () {
@@ -56,7 +57,12 @@
         '<strong>Signed in as:</strong> ' + escapeHtml(user.email) +
         '<br><small style="color:var(--text-dim);">Account created ' + new Date(user.created_at).toLocaleDateString() + '</small>' +
         '</div>' +
-        '<form id="change-password" class="auth-form" style="margin-top:32px;" autocomplete="on">' +
+        '<section style="margin-top:32px;">' +
+        '  <h2 style="font-family:var(--serif);font-size:24px;margin:0 0 8px;">Active share links</h2>' +
+        '  <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Every share link is a public URL that shows one of your saved entries plus your notes at the moment you created the link. Revoke to stop the link working.</p>' +
+        '  <div id="shares-list">Loading…</div>' +
+        '</section>' +
+        '<form id="change-password" class="auth-form" style="margin-top:48px;" autocomplete="on">' +
         '<div id="cp-message" class="auth-message auth-message--info" style="display:none;"></div>' +
         '<h2 style="font-family:var(--serif);font-size:24px;margin:0 0 8px;">Change password</h2>' +
         '<div class="auth-field">' +
@@ -69,6 +75,8 @@
         '</div>' +
         '<button id="cp-submit" type="submit" class="auth-submit">Update password</button>' +
         '</form>';
+
+      renderShares();
 
       const form = document.getElementById("change-password");
       const newIn = document.getElementById("cp-new");
@@ -107,6 +115,53 @@
     function escapeHtml(s) {
       return String(s).replace(/[&<>"']/g, function (c) {
         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+
+    async function renderShares() {
+      const list = document.getElementById("shares-list");
+      if (!list || !window.AI_BOOKMARKS) return;
+      list.textContent = "Loading…";
+      const shares = await window.AI_BOOKMARKS.listShares();
+      if (!shares.length) {
+        list.innerHTML = '<p style="color:var(--text-dim); font-size:14px;">No active share links. Create one from any saved entry\'s detail page.</p>';
+        return;
+      }
+      list.innerHTML = shares.map(function (s) {
+        const sharedUrl = new URL("shared.html", location.href);
+        sharedUrl.searchParams.set("id", s.id);
+        return '<div style="padding:16px 0; border-bottom:1px solid var(--border);">' +
+          '<div style="font-family:var(--serif); font-size:16px; font-weight:700; margin-bottom:4px;">' +
+          '<a href="entry.html?id=' + encodeURIComponent(s.entry_id) + '">' + escapeHtml(s.entry_title || "(Untitled)") + "</a></div>" +
+          '<div style="font-size:11px; color:var(--text-dim); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:8px;">' +
+          (s.entry_ref ? escapeHtml(s.entry_ref) + " · " : "") +
+          "Created " + new Date(s.created_at).toLocaleDateString() + "</div>" +
+          '<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">' +
+          '  <input type="text" value="' + escapeHtml(sharedUrl.toString()) + '" readonly style="flex:1 1 320px; min-width:0; padding:8px 10px; background:var(--bg); color:var(--text); border:1px solid var(--border); font-family:ui-monospace, Consolas, monospace; font-size:12px;">' +
+          '  <button type="button" class="btn" data-action="copy" data-url="' + escapeHtml(sharedUrl.toString()) + '">Copy</button>' +
+          '  <button type="button" class="btn" data-action="revoke" data-id="' + escapeHtml(s.id) + '" style="color:#f4a4a4; border-color:#553333;">Revoke</button>' +
+          "</div></div>";
+      }).join("");
+
+      list.querySelectorAll('[data-action="copy"]').forEach(function (btn) {
+        btn.addEventListener("click", async function () {
+          try {
+            await navigator.clipboard.writeText(btn.getAttribute("data-url"));
+            btn.textContent = "Copied ✓";
+            setTimeout(function () { btn.textContent = "Copy"; }, 1500);
+          } catch (e) {
+            console.error(e);
+          }
+        });
+      });
+      list.querySelectorAll('[data-action="revoke"]').forEach(function (btn) {
+        btn.addEventListener("click", async function () {
+          if (!confirm("Revoke this share link? The URL will stop working immediately.")) return;
+          btn.disabled = true;
+          btn.textContent = "Revoking…";
+          await window.AI_BOOKMARKS.revokeShare(btn.getAttribute("data-id"));
+          renderShares();
+        });
       });
     }
 

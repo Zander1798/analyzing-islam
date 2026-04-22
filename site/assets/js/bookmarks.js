@@ -172,6 +172,107 @@
     window.dispatchEvent(new CustomEvent("bookmarks-changed", { detail: { entry_id, action: "note-deleted" } }));
   }
 
+  // ---------- Shares ----------
+
+  function randomToken() {
+    // Short URL-safe token. 16 bytes = 22 chars base64url, plenty of entropy.
+    if (window.crypto && window.crypto.randomUUID) {
+      return window.crypto.randomUUID().replace(/-/g, "");
+    }
+    const bytes = new Uint8Array(16);
+    (window.crypto || {}).getRandomValues(bytes);
+    let s = "";
+    for (let i = 0; i < bytes.length; i++) s += bytes[i].toString(16).padStart(2, "0");
+    return s;
+  }
+
+  async function getActiveShare(entry_id) {
+    if (!uid()) return null;
+    const { data, error } = await sb()
+      .from("shared_entries")
+      .select("id, notes_snapshot, created_at")
+      .eq("user_id", uid())
+      .eq("entry_id", entry_id)
+      .maybeSingle();
+    if (error) {
+      console.error("[bookmarks] getActiveShare failed", error);
+      return null;
+    }
+    return data || null;
+  }
+
+  async function createShare(meta) {
+    // meta: { entry_id, entry_title, entry_ref, source, notes_snapshot }
+    if (!uid()) return null;
+    // Enforce one active share per entry; revoke any existing first.
+    const existing = await getActiveShare(meta.entry_id);
+    if (existing) await revokeShare(existing.id);
+
+    const token = randomToken();
+    const { data, error } = await sb()
+      .from("shared_entries")
+      .insert({
+        id: token,
+        user_id: uid(),
+        entry_id: meta.entry_id,
+        entry_title: meta.entry_title || null,
+        entry_ref: meta.entry_ref || null,
+        source: meta.source || null,
+        notes_snapshot: meta.notes_snapshot || "",
+      })
+      .select("id, notes_snapshot, created_at")
+      .single();
+    if (error) {
+      console.error("[bookmarks] createShare failed", error);
+      return null;
+    }
+    window.dispatchEvent(new CustomEvent("shares-changed"));
+    return data;
+  }
+
+  async function revokeShare(shareId) {
+    if (!uid()) return false;
+    const { error } = await sb()
+      .from("shared_entries")
+      .delete()
+      .eq("user_id", uid())
+      .eq("id", shareId);
+    if (error) {
+      console.error("[bookmarks] revokeShare failed", error);
+      return false;
+    }
+    window.dispatchEvent(new CustomEvent("shares-changed"));
+    return true;
+  }
+
+  async function listShares() {
+    if (!uid()) return [];
+    const { data, error } = await sb()
+      .from("shared_entries")
+      .select("id, entry_id, entry_title, entry_ref, source, created_at")
+      .eq("user_id", uid())
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("[bookmarks] listShares failed", error);
+      return [];
+    }
+    return data || [];
+  }
+
+  // Public read — used by shared.html for anonymous visitors.
+  async function getSharedPublic(shareId) {
+    const { data, error } = await sb()
+      .from("shared_entries")
+      .select("id, entry_id, entry_title, entry_ref, source, notes_snapshot, created_at")
+      .eq("id", shareId)
+      .maybeSingle();
+    if (error) {
+      console.error("[bookmarks] getSharedPublic failed", error);
+      return null;
+    }
+    return data || null;
+  }
+
   window.AI_BOOKMARKS = {
     loadSet,
     toggle,
@@ -179,5 +280,10 @@
     getNote,
     saveNote,
     deleteNote,
+    getActiveShare,
+    createShare,
+    revokeShare,
+    listShares,
+    getSharedPublic,
   };
 })();

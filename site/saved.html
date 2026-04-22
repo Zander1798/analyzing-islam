@@ -170,31 +170,25 @@
       })
       .join(" · ");
 
-    const url = row.entry_url || ("catalog/" + (row.source || "") + ".html#" + row.entry_id);
+    const detailUrl = "entry.html?id=" + encodeURIComponent(row.entry_id);
+    const catalogUrl = row.entry_url || (row.source ? "catalog/" + row.source + ".html#" + row.entry_id : null);
 
     return `
       <div class="saved-row" data-entry-id="${escapeHtml(row.entry_id)}">
         <div class="saved-row-header">
           <div class="saved-row-title">
-            <h3><a href="${escapeHtml(url)}">${escapeHtml(row.entry_title || "(Untitled entry)")}</a></h3>
+            <h3><a href="${escapeHtml(detailUrl)}">${escapeHtml(row.entry_title || "(Untitled entry)")}</a></h3>
             <div class="saved-row-meta">
               ${row.entry_ref ? `<span>${escapeHtml(row.entry_ref)}</span>` : ""}
               ${strengthLabel}
               ${categoriesLabels ? `<span>${escapeHtml(categoriesLabels)}</span>` : ""}
               <span>Saved ${new Date(row.created_at).toLocaleDateString()}</span>
+              ${catalogUrl ? `<a href="${escapeHtml(catalogUrl)}" style="color:var(--text-dim); text-decoration:underline;">catalog ↗</a>` : ""}
             </div>
           </div>
           <div class="saved-row-actions">
-            <button type="button" class="entry-note-toggle" data-action="toggle-note">✎ Note</button>
+            <a href="${escapeHtml(detailUrl)}" class="entry-note-toggle" style="text-decoration:none;">Open ✎</a>
             <button type="button" class="entry-save-btn is-saved" data-action="remove">★ Remove</button>
-          </div>
-        </div>
-        <div class="saved-note-editor" hidden>
-          <textarea placeholder="Your private notes — only you can see them."></textarea>
-          <div class="entry-note-actions">
-            <button type="button" class="entry-note-save" data-action="save-note">Save note</button>
-            <button type="button" class="entry-note-delete" data-action="delete-note">Delete note</button>
-            <span class="entry-note-status"></span>
           </div>
         </div>
       </div>
@@ -221,55 +215,15 @@
 
     results.innerHTML = rows.map(renderRow).join("");
 
-    // Wire up each row's action buttons.
+    // Wire up remove buttons. Notes have moved to the entry detail page.
     results.querySelectorAll(".saved-row").forEach((rowEl) => {
       const entryId = rowEl.getAttribute("data-entry-id");
-      const row = rows.find((r) => r.entry_id === entryId);
-
-      rowEl.querySelector('[data-action="remove"]').addEventListener("click", async () => {
+      rowEl.querySelector('[data-action="remove"]').addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         if (!confirm("Remove this bookmark?")) return;
         await window.AI_BOOKMARKS.toggle({ entry_id: entryId });
         render();
-      });
-
-      const noteToggle = rowEl.querySelector('[data-action="toggle-note"]');
-      const noteEditor = rowEl.querySelector(".saved-note-editor");
-      const textarea = noteEditor.querySelector("textarea");
-      const saveBtn = noteEditor.querySelector('[data-action="save-note"]');
-      const deleteBtn = noteEditor.querySelector('[data-action="delete-note"]');
-      const status = noteEditor.querySelector(".entry-note-status");
-
-      let loaded = false;
-      noteToggle.addEventListener("click", async () => {
-        const opening = noteEditor.hidden;
-        noteEditor.hidden = !opening;
-        if (opening && !loaded) {
-          loaded = true;
-          status.textContent = "Loading…";
-          const note = await window.AI_BOOKMARKS.getNote(entryId);
-          if (note && note.content) {
-            textarea.value = note.content;
-            status.textContent = "Last saved " + new Date(note.updated_at).toLocaleString();
-          } else {
-            status.textContent = "";
-          }
-        }
-      });
-
-      saveBtn.addEventListener("click", async () => {
-        saveBtn.disabled = true;
-        status.textContent = "Saving…";
-        const saved = await window.AI_BOOKMARKS.saveNote(entryId, textarea.value);
-        saveBtn.disabled = false;
-        if (saved) status.textContent = "Saved " + new Date(saved.updated_at).toLocaleString();
-        else status.textContent = "Save failed.";
-      });
-
-      deleteBtn.addEventListener("click", async () => {
-        if (!confirm("Delete this note?")) return;
-        await window.AI_BOOKMARKS.deleteNote(entryId);
-        textarea.value = "";
-        status.textContent = "Deleted.";
       });
     });
   }
