@@ -17,7 +17,6 @@
   const SOURCES = [
     // --- Qur'an ---
     { slug: "quran",       title: "The Qurʾān (Saheeh International)", path: "read/quran.html",       group: "Qurʾān" },
-    { slug: "quran-qarai", title: "The Qurʾān (Qarai, phrase-by-phrase)", path: "read/quran-qarai.html", group: "Qurʾān" },
 
     // --- Six canonical Sunni hadith collections ---
     { slug: "bukhari",   title: "Ṣaḥīḥ al-Bukhārī",   path: "read/bukhari.html",   group: "Hadith · the Six" },
