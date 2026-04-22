@@ -165,6 +165,7 @@ PICKER_TEMPLATE = """<!DOCTYPE html>
   Read the text, then read the catalog. Every entry references a specific passage — verify before citing.
 </footer>
 
+<script src="../assets/js/pdf-mobile.js" defer></script>
 <script src="../assets/js/goat.js" defer></script>
 </body>
 </html>
@@ -234,6 +235,7 @@ VOL_READER_TEMPLATE = """<!DOCTYPE html>
   }});
 </script>
 
+<script src="../assets/js/pdf-mobile.js" defer></script>
 <script src="../assets/js/goat.js" defer></script>
 </body>
 </html>

@@ -407,6 +407,7 @@ TEMPLATE = """<!DOCTYPE html>
 
 </div>
 
+<script src="../assets/js/pdf-mobile.js" defer></script>
 <script src="../assets/js/goat.js" defer></script>
 </body>
 </html>
