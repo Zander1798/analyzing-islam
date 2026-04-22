@@ -36,7 +36,6 @@
     { slug: "josephus",           title: "Flavius Josephus",              path: "read-external/josephus.html",           group: "Comparative scripture" },
 
     // --- Classical Islamic scholarship ---
-    { slug: "baladhuri",   title: "al-Balādhurī · Futūḥ al-Buldān", path: "read-external/baladhuri.html",   group: "Classical Islamic scholarship" },
     { slug: "ibn-kathir",  title: "Tafsīr Ibn Kathīr",               path: "read-external/ibn-kathir.html",  group: "Classical Islamic scholarship" },
     { slug: "talmud",      title: "The Talmud",                      path: "read-external/talmud.html",      group: "Comparative scripture" },
   ];
@@ -150,7 +149,6 @@
     ".chapter",
     ".surah > p",
     "article.surah section",
-    ".baladhuri-para",
   ].join(",");
 
   function iframeDoc(frame) {
