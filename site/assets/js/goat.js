@@ -136,7 +136,7 @@
     const PHRASES = [
       "Feed Me!",
       "Such powerful Dawha",
-      "Screems in Hadith",
+      "Screams in Hadith",
       "Much Knowledge",
       "Why are You Running!",
       "You're Hiding, Boy!",
