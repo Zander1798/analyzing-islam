@@ -894,7 +894,9 @@ blockquote {
      right edge, with a small gap between them. The goat's margin-left:
      auto becomes a no-op once this one absorbs the slack. */
   margin-left: auto;
-  margin-right: 0;
+  /* Shift Account ~12px further left of the goat — roughly half of the
+     visible gap between them — for a bit more breathing room. */
+  margin-right: 12px;
   flex-shrink: 0;
   font-family: var(--sans);
 }
