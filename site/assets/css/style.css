@@ -966,10 +966,18 @@ blockquote {
   /* 24%–100%: hold at scale(1) while the wave moves on to later letters. */
 }
 
-/* Hide the bubble on narrow viewports so it doesn't break the nav row. */
+/* On mobile: keep the caption visible, and centre the auth-button + goat
+   pair on their wrapped row. Smaller font so long phrases still fit. */
 @media (max-width: 768px) {
   .goat-bubble {
-    display: none;
+    font-size: 11px;
+  }
+  .site-nav-inner .goat-scream {
+    /* Desktop sets -18px to sit flush against the Account chip; on
+       mobile we want normal flex-gap plus a margin-right: auto to
+       pair-centre with the Account chip on their own row. */
+    margin-left: 0;
+    margin-right: auto;
   }
 }
 
@@ -1234,7 +1242,9 @@ blockquote {
     font-size: 12px;
   }
   .auth-label {
-    display: none; /* just avatar + dropdown on tight screens */
+    /* Keep the word "Account" visible on mobile too — the avatar alone
+       isn't obvious enough. */
+    display: inline;
   }
 }
 
