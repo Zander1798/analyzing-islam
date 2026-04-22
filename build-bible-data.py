@@ -313,47 +313,76 @@ def parse_heb_morph(code: str) -> list[str]:
 
 
 def parse_grk_morph(code: str) -> list[str]:
-    """Parse TAGNT Greek morph codes. Format example: V-PAI-3P = verb
-    present active indicative 3rd person plural.
-    A- ----NSM- = adjective — nominative singular masculine.
+    """Parse TAGNT Greek morph codes.
+
+    Format — hyphen-separated sections:
+      V-PAI-3P       = Verb, Present Active Indicative, 3rd Plural
+      V-2AAI-3S      = Verb, 2nd Aorist Active Indicative, 3rd Singular
+      V-AAP-NSM      = Verb, Aorist Active Participle, Nominative Singular Masculine
+      N-NSF          = Noun, Nominative Singular Feminine
+      N-GSM-P        = Noun, Genitive Singular Masculine, Proper
+      A-NSM          = Adjective, Nominative Singular Masculine
+      P-NSF          = Pronoun (or Personal, context-dependent), Nom Sg Fem
+      T-NSM          = arTicle, Nom Sg Masc
+      PREP           = preposition (no further features)
+      CONJ           = conjunction
     """
     if not code:
         return []
-    parts = re.split(r"[- ]", code)
-    parts = [p for p in parts if p]
-    out = []
+    # Normalise special 1-word POS codes
+    simple_pos_map = {
+        "PREP": "Preposition", "CONJ": "Conjunction", "ADV": "Adverb",
+        "ADJ": "Adjective", "INJ": "Interjection", "PRT": "Particle",
+        "ARAM": "Aramaic", "HEB": "Hebrew",
+    }
+    if code in simple_pos_map:
+        return [simple_pos_map[code]]
+
+    parts = code.split("-")
     if not parts:
-        return out
-    # First token is 2-char POS code
+        return []
     pos = parts[0]
-    out.append(GRK_POS.get(pos, pos))
-    # Remaining token may be a morphology string e.g. "PAI" + "3P"
-    morph = "".join(parts[1:])
-    # For verbs: first 3 chars = tense/voice/mood
-    if pos == "V" and len(morph) >= 3:
-        t, v, m = morph[0], morph[1], morph[2]
-        if t in GRK_TENSE: out.append(GRK_TENSE[t])
-        if v in GRK_VOICE: out.append(GRK_VOICE[v])
-        if m in GRK_MOOD: out.append(GRK_MOOD[m])
-        rest = morph[3:]
-        # Indicative/Subj/Opt/Imp: person + number (e.g. "3P")
-        if m in ("I", "S", "O", "M") and len(rest) >= 2:
-            if rest[0] in GRK_PERSON: out.append(GRK_PERSON[rest[0]] + " person")
-            if rest[1] in GRK_NUMBER: out.append(GRK_NUMBER[rest[1]])
-        # Infinitive has no person/num. Participle: case/num/gender (3 chars)
-        elif m == "P" and len(rest) >= 3:
-            if rest[0] in GRK_CASE: out.append(GRK_CASE[rest[0]])
-            if rest[1] in GRK_NUMBER: out.append(GRK_NUMBER[rest[1]])
-            if rest[2] in GRK_GENDER: out.append(GRK_GENDER[rest[2]])
-    # Nouns/adjectives/articles/pronouns: 3 chars case/num/gender
-    elif pos in ("N", "A", "RA", "RR", "RD", "RI", "RP", "RX", "RF") and len(morph) >= 3:
-        # Some tokens like "----DSF-" start with dashes — filter further.
-        toks = [c for c in morph if c not in "-"]
-        if len(toks) >= 3:
-            c, n, g = toks[0], toks[1], toks[2]
-            if c in GRK_CASE: out.append(GRK_CASE[c])
-            if n in GRK_NUMBER: out.append(GRK_NUMBER[n])
-            if g in GRK_GENDER: out.append(GRK_GENDER[g])
+    out = []
+    # POS table with TAGNT-specific codes
+    grk_pos_ext = dict(GRK_POS)
+    grk_pos_ext.update({
+        "T": "Article", "P": "Preposition or Personal Pronoun",
+        "ADJ": "Adjective", "PREP": "Preposition", "CONJ": "Conjunction",
+    })
+    out.append(grk_pos_ext.get(pos, pos))
+
+    if pos == "V" and len(parts) >= 2:
+        tvm = parts[1]
+        # Strip leading digit (2nd aorist etc.)
+        prefix_digit = ""
+        if tvm[0].isdigit():
+            prefix_digit = tvm[0]
+            tvm = tvm[1:]
+        if len(tvm) >= 3:
+            t, v, m = tvm[0], tvm[1], tvm[2]
+            tense_desc = GRK_TENSE.get(t, t)
+            if prefix_digit == "2":
+                tense_desc = "2nd " + tense_desc
+            out.append(tense_desc)
+            if v in GRK_VOICE: out.append(GRK_VOICE[v])
+            if m in GRK_MOOD:  out.append(GRK_MOOD[m])
+            # Person/number or case/num/gender follows
+            if len(parts) >= 3:
+                suffix = parts[2]
+                if m in ("I", "S", "O", "M") and len(suffix) >= 2:
+                    if suffix[0] in GRK_PERSON: out.append(GRK_PERSON[suffix[0]] + " person")
+                    if suffix[1] in GRK_NUMBER: out.append(GRK_NUMBER[suffix[1]])
+                elif m == "P" and len(suffix) >= 3:
+                    if suffix[0] in GRK_CASE:   out.append(GRK_CASE[suffix[0]])
+                    if suffix[1] in GRK_NUMBER: out.append(GRK_NUMBER[suffix[1]])
+                    if suffix[2] in GRK_GENDER: out.append(GRK_GENDER[suffix[2]])
+    elif pos in ("N", "A", "T", "R", "P") and len(parts) >= 2:
+        suffix = parts[1]
+        if len(suffix) >= 3:
+            c_, n_, g_ = suffix[0], suffix[1], suffix[2]
+            if c_ in GRK_CASE:   out.append(GRK_CASE[c_])
+            if n_ in GRK_NUMBER: out.append(GRK_NUMBER[n_])
+            if g_ in GRK_GENDER: out.append(GRK_GENDER[g_])
     return out
 
 
@@ -406,8 +435,26 @@ def normalize_strongs_key(s: str) -> str:
     return f"{prefix}{int(num):04d}{suffix}"
 
 
+GREEK_TRANSLIT_RE = re.compile(r"^(.*?)\s*\(([^)]+)\)\s*$")
+
+
 def parse_tahot_line(line: str, lang: str):
-    """Parse one word line. Returns dict or None."""
+    """Parse one word line. Returns dict or None.
+
+    TAHOT (Hebrew) columns:
+      0: Hebrew word
+      1: Transliteration
+      2: English gloss
+      3: dStrongs (with / and \\ separators, braces, etc.)
+      4: Grammar code (HC/Td/Ncfsa)
+
+    TAGNT (Greek) columns:
+      0: Greek word + translit in parens, e.g. "Βίβλος (Biblos)"
+      1: English gloss
+      2: Strong's=Morph, e.g. "G0976=N-NSF"
+      3: Lemma=gloss, e.g. "βίβλος=book"
+      4: Edition tags
+    """
     line = line.rstrip("\n").rstrip("\r")
     if not line or line.startswith("#") or line.startswith("Eng "):
         return None
@@ -415,25 +462,32 @@ def parse_tahot_line(line: str, lang: str):
     if not m:
         return None
     cols = m.group("rest").split("\t")
-    # Col layout (TAHOT / TAGNT roughly aligned):
-    #  0: Hebrew/Greek
-    #  1: Transliteration
-    #  2: English translation
-    #  3: dStrongs
-    #  4: Grammar
-    #  5: Meaning Variants
-    #  6: Spelling Variants
-    #  7: Root dStrong+Instance
-    #  8: Alternative Strongs+Instance
-    #  9: Conjoin word
-    # 10: Expanded Strong tags
+
     def c(i): return cols[i] if i < len(cols) else ""
 
-    orig = c(0).strip()
-    trans = c(1).strip()
-    gloss = c(2).strip()
-    strongs_raw = c(3).strip()
-    morph = c(4).strip()
+    if lang == "heb":
+        orig = c(0).strip()
+        trans = c(1).strip()
+        gloss = c(2).strip()
+        strongs_raw = c(3).strip()
+        morph = c(4).strip()
+    else:  # grk
+        orig_field = c(0).strip()
+        gloss = c(1).strip()
+        strongs_field = c(2).strip()
+        # Split word + translit
+        t = GREEK_TRANSLIT_RE.match(orig_field)
+        if t:
+            orig = t.group(1).strip()
+            trans = t.group(2).strip()
+        else:
+            orig = orig_field
+            trans = ""
+        # Split "G0976=N-NSF" → strongs="G0976", morph="N-NSF"
+        if "=" in strongs_field:
+            strongs_raw, morph = strongs_field.split("=", 1)
+        else:
+            strongs_raw, morph = strongs_field, ""
 
     strongs = [normalize_strongs_key(s) for s in clean_strongs_list(strongs_raw, lang)]
     # Only real (non-H9xxx, non-G9xxx) Strong's get concordance entries.
