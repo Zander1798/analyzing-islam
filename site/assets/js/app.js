@@ -1,5 +1,5 @@
 /* ============================================
-   Islam Analyzed
+   Analyzing Islam
    Catalog filters + search + URL query params
    ============================================ */
 

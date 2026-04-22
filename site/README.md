@@ -1,4 +1,4 @@
-# Islam Analyzed
+# Analyzing Islam
 
 A filterable, systematic catalog of philosophical issues in the Quran. 88 entries across 9 categories, rated by argument strength.
 

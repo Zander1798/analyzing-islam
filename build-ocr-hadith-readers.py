@@ -357,7 +357,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Read {title} — {total} hadiths rendered from the Darussalam English edition.">
-<title>Read {title} — Islam Analyzed</title>
+<title>Read {title} — Analyzing Islam</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/reader.css">
 </head>
@@ -365,7 +365,7 @@ TEMPLATE = """<!DOCTYPE html>
 
 <nav class="site-nav">
   <div class="site-nav-inner">
-    <a href="../index.html" class="site-brand">Islam Analyzed</a>
+    <a href="../index.html" class="site-brand">Analyzing Islam</a>
     <div class="site-nav-links">
       <a href="../index.html">Home</a>
       <a href="../catalog.html">Catalog</a>
