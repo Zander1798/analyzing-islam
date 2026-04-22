@@ -284,12 +284,30 @@
       shareUrl.value = url.toString();
       shareBox.hidden = false;
       shareCreated.textContent = "Created " + new Date(shareData.created_at).toLocaleString();
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        try {
+          shareUrl.value = text;
+          shareUrl.select();
+          return document.execCommand("copy");
+        } catch {
+          return false;
+        }
+      }
+    }
+
+    if (share) {
+      showShare(share);
       shareBtn.textContent = "Reshare with current notes";
     }
 
-    if (share) showShare(share);
-
     shareBtn.addEventListener("click", async () => {
+      const originalLabel = shareBtn.textContent;
       shareBtn.disabled = true;
       shareBtn.textContent = "Creating link…";
       const created = await window.AI_BOOKMARKS.createShare({
@@ -299,24 +317,26 @@
         source: bookmark.source,
         notes_snapshot: textarea.value,  // snapshot current notes at time of share
       });
-      shareBtn.disabled = false;
       if (!created) {
-        shareBtn.textContent = "Share";
+        shareBtn.disabled = false;
+        shareBtn.textContent = originalLabel;
         alert("Share failed — try again.");
         return;
       }
       showShare(created);
+      // Auto-copy the share URL to the clipboard so the user can paste it immediately.
+      const ok = await copyToClipboard(shareUrl.value);
+      shareBtn.disabled = false;
+      shareBtn.textContent = ok ? "Link copied ✓" : "Link created — copy manually";
+      setTimeout(() => {
+        shareBtn.textContent = "Reshare with current notes";
+      }, 1800);
     });
 
     copyBtn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(shareUrl.value);
-        copyBtn.textContent = "Copied ✓";
-        setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
-      } catch {
-        shareUrl.select();
-        document.execCommand("copy");
-      }
+      const ok = await copyToClipboard(shareUrl.value);
+      copyBtn.textContent = ok ? "Copied ✓" : "Press Ctrl+C";
+      setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
     });
 
     revokeBtn.addEventListener("click", async () => {
