@@ -141,7 +141,9 @@
       '<span class="goat-bubble-text"></span>';
     const bubbleText = bubble.querySelector(".goat-bubble-text");
     bubbleText.textContent = pickPhrase();
-    navInner.insertBefore(bubble, btn);
+    // Bubble lives inside the button so we can absolute-position it to the
+    // right of the goat without affecting the nav bar's flex layout.
+    btn.appendChild(bubble);
 
     function replayPop() {
       bubble.classList.remove("is-pop");
