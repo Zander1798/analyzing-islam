@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 
-CATALOG_DIR = Path(r"c:/Users/zande/Documents/AI Workspace/Islam Analysed/site/catalog")
+CATALOG_DIR = Path(r"c:/Users/zande/Documents/AI Workspace/Islam Analyzed/site/catalog")
 
 # Canonical 28-category display labels (in chip order)
 CATEGORIES = [

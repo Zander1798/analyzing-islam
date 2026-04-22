@@ -62,7 +62,7 @@ PICKER_TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Read {title} — pick a volume.">
-<title>Read {title} — Islam Analysed</title>
+<title>Read {title} — Islam Analyzed</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <style>
   /* Inherit the editorial index-list look from read.html */
@@ -135,7 +135,7 @@ PICKER_TEMPLATE = """<!DOCTYPE html>
 
 <nav class="site-nav">
   <div class="site-nav-inner">
-    <a href="../index.html" class="site-brand">Islam Analysed</a>
+    <a href="../index.html" class="site-brand">Islam Analyzed</a>
     <div class="site-nav-links">
       <a href="../index.html">Home</a>
       <a href="../catalog.html">Catalog</a>
@@ -188,7 +188,7 @@ VOL_READER_TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Read {title} — Volume {num} ({meta}).">
-<title>{title} Vol. {num} — Islam Analysed</title>
+<title>{title} Vol. {num} — Islam Analyzed</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/reader.css">
 <style>body {{ overflow: hidden; }}</style>
@@ -197,7 +197,7 @@ VOL_READER_TEMPLATE = """<!DOCTYPE html>
 
 <nav class="site-nav">
   <div class="site-nav-inner">
-    <a href="../index.html" class="site-brand">Islam Analysed</a>
+    <a href="../index.html" class="site-brand">Islam Analyzed</a>
     <div class="site-nav-links">
       <a href="../index.html">Home</a>
       <a href="../catalog.html">Catalog</a>

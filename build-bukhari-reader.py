@@ -180,7 +180,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Read the complete Sahih al-Bukhari — all {total} hadiths across {books_count} books. Translation by M. Muhsin Khan.">
-<title>Read Sahih al-Bukhari — Islam Analysed</title>
+<title>Read Sahih al-Bukhari — Islam Analyzed</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/reader.css">
 </head>
@@ -188,7 +188,7 @@ TEMPLATE = """<!DOCTYPE html>
 
 <nav class="site-nav">
   <div class="site-nav-inner">
-    <a href="../index.html" class="site-brand">Islam Analysed</a>
+    <a href="../index.html" class="site-brand">Islam Analyzed</a>
     <div class="site-nav-links">
       <a href="../index.html">Home</a>
       <a href="../catalog.html">Catalog</a>
