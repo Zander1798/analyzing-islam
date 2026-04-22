@@ -81,7 +81,11 @@ a:hover {
 }
 
 .site-nav-inner .goat-scream {
-  margin-left: auto;
+  /* Auth button already takes margin-left: auto to push itself to the
+     right edge; goat follows right after. A negative margin-left cancels
+     the parent's 24px flex-gap so the goat sits almost flush against
+     the Account chip. */
+  margin-left: -18px;
 }
 
 .site-brand {
@@ -890,9 +894,7 @@ blockquote {
      right edge, with a small gap between them. The goat's margin-left:
      auto becomes a no-op once this one absorbs the slack. */
   margin-left: auto;
-  /* Negative margin cancels most of the parent's 24px flex gap so the
-     goat sits almost flush against the Account chip. Effective ≈ 2px. */
-  margin-right: -22px;
+  margin-right: 0;
   flex-shrink: 0;
   font-family: var(--sans);
 }
