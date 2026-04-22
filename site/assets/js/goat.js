@@ -45,10 +45,16 @@
 
   <!-- Goat body — all animations target this group. -->
   <g class="goat-body">
-    <rect x="9"  y="0" width="1" height="3" fill="#8a8a8a"/>
-    <rect x="10" y="2" width="1" height="1" fill="#8a8a8a"/>
-    <rect x="13" y="0" width="1" height="3" fill="#8a8a8a"/>
-    <rect x="14" y="2" width="1" height="1" fill="#8a8a8a"/>
+    <!-- Horns: dark tip, mid-gray shaft, darker base flare for depth.
+         Back horn's flare is at x=12 so it doesn't share a column with
+         the eye (x=14). -->
+    <rect x="9"  y="0" width="1" height="1" fill="#5a5a5a"/>
+    <rect x="9"  y="1" width="1" height="2" fill="#8a8a8a"/>
+    <rect x="10" y="2" width="1" height="1" fill="#6a6a6a"/>
+
+    <rect x="13" y="0" width="1" height="1" fill="#5a5a5a"/>
+    <rect x="13" y="1" width="1" height="2" fill="#8a8a8a"/>
+    <rect x="12" y="2" width="1" height="1" fill="#6a6a6a"/>
 
     <rect x="7"  y="3"  width="10" height="1" fill="#6a6a6a"/>
     <rect x="6"  y="4"  width="1"  height="5" fill="#6a6a6a"/>
