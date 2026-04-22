@@ -870,12 +870,14 @@ blockquote {
    sweeps left-to-right across the glyphs. Floats above the goat (top-right
    corner of the nav). */
 .goat-bubble {
-  /* Float just to the RIGHT of the goat, vertically centred. No box —
-     the italic text stands alone like a VS Code / Claude Code status line. */
+  /* Float just to the RIGHT of the goat, up near the top of the nav bar
+     so the bottom of the text sits right above the goat's back.
+     Goat button is 50px tall; the back (top of body) sits ~15–17px down
+     from the button's top, so we pin the bubble's top slightly above the
+     button and let the text drop to about that line. */
   position: absolute;
   left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
+  top: -4px;
   margin-left: 10px;
   display: inline-flex;
   align-items: center;
@@ -953,8 +955,8 @@ blockquote {
 }
 
 @keyframes goat-bubble-pop {
-  0%   { opacity: 0; transform: translateY(-50%) translateX(-6px); }
-  100% { opacity: 1; transform: translateY(-50%) translateX(0); }
+  0%   { opacity: 0; transform: translateX(-6px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes goat-letter-wave {
