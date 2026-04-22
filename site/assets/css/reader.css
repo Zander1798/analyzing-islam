@@ -518,7 +518,12 @@
     max-height: 280px;
     border-right: none;
     border-bottom: 1px solid var(--border);
-    padding: 20px 0;
+    /* Horizontal padding here absorbs the negative margin-left used by
+       .toc-section labels on external-source readers; without it, "INFANCY
+       GOSPEL OF JAMES" and similar section labels would clip off the
+       left edge on phones. */
+    padding: 20px 16px;
+    overflow-x: hidden;
   }
   .reader-main {
     padding: 24px 0 60px;
