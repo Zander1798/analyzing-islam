@@ -338,6 +338,7 @@ TEMPLATE = """<!DOCTYPE html>
       <a href="../catalog.html">Catalog</a>
       <a href="../read.html" class="active">Read</a>
       <a href="../about.html">About</a>
+      <a href="../faq.html">FAQ</a>
     </div>
   </div>
 </nav>
@@ -360,6 +361,7 @@ TEMPLATE = """<!DOCTYPE html>
       <div class="reader-cta">
         <a href="../read.html" class="btn">← All sources</a>
         <a href="../assets/sources/quran.pdf" class="btn" download>Download PDF</a>
+        <a href="quran-qarai.html" class="btn">Phrase By Phrase English Translation</a>
       </div>
     </header>
 

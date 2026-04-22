@@ -184,6 +184,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
       <a href="../catalog.html">Catalog</a>
       <a href="../read.html">Read</a>
       <a href="../about.html">About</a>
+      <a href="../faq.html">FAQ</a>
     </div>
   </div>
 </nav>
