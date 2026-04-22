@@ -109,6 +109,7 @@
       "Such powerful Dawha",
       "Screems in Hadith",
       "Much Knowledge",
+      "Why are You Running!",
     ];
 
     function pickPhrase(exclude) {
