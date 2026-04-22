@@ -707,7 +707,7 @@ blockquote {
 .goat-scream.is-screaming .goat-mouth-closed { display: none; }
 
 .goat-scream.is-screaming .goat-svg {
-  animation: goat-shake 2s steps(48) 0s 1;
+  animation: goat-shake 1.8s steps(48) 0s 1;
   transform-origin: 50% 60%;
 }
 
