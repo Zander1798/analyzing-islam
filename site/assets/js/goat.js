@@ -102,6 +102,49 @@
     btn.innerHTML = GOAT_SVG;
     navInner.appendChild(btn);
 
+    // --- Speech bubble ---------------------------------------------------
+    const PHRASES = [
+      "Feed Me!",
+      "hmmm Yummy Quran",
+      "Such powerful Dawha",
+      "Screems in Hadith",
+      "Much Knowledge",
+    ];
+
+    function pickPhrase(exclude) {
+      if (PHRASES.length < 2) return PHRASES[0];
+      let next;
+      do {
+        next = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+      } while (next === exclude);
+      return next;
+    }
+
+    const bubble = document.createElement("span");
+    bubble.className = "goat-bubble";
+    bubble.setAttribute("aria-live", "polite");
+    bubble.innerHTML =
+      '<span class="goat-bubble-spinner" aria-hidden="true"></span>' +
+      '<span class="goat-bubble-text"></span>';
+    const bubbleText = bubble.querySelector(".goat-bubble-text");
+    bubbleText.textContent = pickPhrase();
+    navInner.insertBefore(bubble, btn);
+
+    function replayPop() {
+      bubble.classList.remove("is-pop");
+      // Force reflow so the animation restarts.
+      void bubble.offsetWidth;
+      bubble.classList.add("is-pop");
+    }
+    replayPop();
+
+    let currentPhrase = bubbleText.textContent;
+    setInterval(function () {
+      currentPhrase = pickPhrase(currentPhrase);
+      bubbleText.textContent = currentPhrase;
+      replayPop();
+    }, 15 * 60 * 1000); // rotate every 15 minutes
+
     // --- Web Audio path: decode once, play instantly on each click. ---
     const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
