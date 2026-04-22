@@ -158,7 +158,7 @@
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "entry-share-btn";
-    btn.textContent = "⇪ Share";
+    btn.textContent = "Share";
     btn.title = "Copy a direct link to this entry";
     header.appendChild(btn);
 
@@ -186,8 +186,8 @@
         }
       }
 
-      const originalLabel = "⇪ Share";
-      btn.textContent = ok ? "Link copied ✓" : "Copy failed";
+      const originalLabel = "Share";
+      btn.textContent = ok ? "Copied" : "Copy failed";
       btn.classList.add("just-copied");
       setTimeout(function () {
         btn.textContent = originalLabel;
