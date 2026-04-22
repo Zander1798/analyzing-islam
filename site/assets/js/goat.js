@@ -25,64 +25,76 @@
 
   const GOAT_SVG = `
 <svg class="goat-svg" viewBox="0 0 24 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true">
-  <rect x="9"  y="0" width="1" height="3" fill="#8a8a8a"/>
-  <rect x="10" y="2" width="1" height="1" fill="#8a8a8a"/>
-  <rect x="13" y="0" width="1" height="3" fill="#8a8a8a"/>
-  <rect x="14" y="2" width="1" height="1" fill="#8a8a8a"/>
 
-  <rect x="7"  y="3"  width="10" height="1" fill="#6a6a6a"/>
-  <rect x="6"  y="4"  width="1"  height="5" fill="#6a6a6a"/>
-  <rect x="17" y="4"  width="1"  height="5" fill="#6a6a6a"/>
-  <rect x="7"  y="9"  width="10" height="1" fill="#6a6a6a"/>
-
-  <rect x="7"  y="4"  width="10" height="5" fill="#f2f2f2"/>
-
-  <rect x="15" y="3"  width="2"  height="1" fill="#6a6a6a"/>
-  <rect x="16" y="4"  width="1"  height="1" fill="#bfbfbf"/>
-
-  <rect x="14" y="5"  width="1"  height="1" fill="#1a1a1a"/>
-
-  <rect x="7"  y="9"  width="1"  height="2" fill="#f2f2f2"/>
-  <rect x="7"  y="9"  width="1"  height="2" fill="#f2f2f2"/>
-
-  <g class="goat-mouth-closed">
-    <rect x="8"  y="7"  width="2"  height="1" fill="#6a6a6a"/>
+  <!-- Grass tufts — static, never animated, never removed. -->
+  <g class="goat-grass">
+    <rect x="1"  y="17" width="1" height="1" fill="#7ebf7e"/>
+    <rect x="3"  y="17" width="1" height="1" fill="#7ebf7e"/>
+    <rect x="4"  y="16" width="1" height="2" fill="#4a8a4a"/>
+    <rect x="5"  y="17" width="1" height="1" fill="#7ebf7e"/>
   </g>
 
-  <g class="goat-mouth-open">
-    <rect x="7"  y="6"  width="4"  height="3" fill="#2a0a0a"/>
-    <rect x="8"  y="7"  width="2"  height="1" fill="#c04040"/>
-    <rect x="6"  y="7"  width="1"  height="1" fill="#6a6a6a"/>
+  <!-- Goat body — all animations target this group. -->
+  <g class="goat-body">
+    <rect x="9"  y="0" width="1" height="3" fill="#8a8a8a"/>
+    <rect x="10" y="2" width="1" height="1" fill="#8a8a8a"/>
+    <rect x="13" y="0" width="1" height="3" fill="#8a8a8a"/>
+    <rect x="14" y="2" width="1" height="1" fill="#8a8a8a"/>
+
+    <rect x="7"  y="3"  width="10" height="1" fill="#6a6a6a"/>
+    <rect x="6"  y="4"  width="1"  height="5" fill="#6a6a6a"/>
+    <rect x="17" y="4"  width="1"  height="5" fill="#6a6a6a"/>
+    <rect x="7"  y="9"  width="10" height="1" fill="#6a6a6a"/>
+
+    <rect x="7"  y="4"  width="10" height="5" fill="#f2f2f2"/>
+
+    <rect x="15" y="3"  width="2"  height="1" fill="#6a6a6a"/>
+    <rect x="16" y="4"  width="1"  height="1" fill="#bfbfbf"/>
+
+    <rect x="14" y="5"  width="1"  height="1" fill="#1a1a1a"/>
+
+    <rect x="7"  y="9"  width="1"  height="2" fill="#f2f2f2"/>
+    <rect x="7"  y="9"  width="1"  height="2" fill="#f2f2f2"/>
+
+    <g class="goat-mouth-closed">
+      <rect x="8"  y="7"  width="2"  height="1" fill="#6a6a6a"/>
+    </g>
+
+    <g class="goat-mouth-open">
+      <rect x="7"  y="6"  width="4"  height="3" fill="#2a0a0a"/>
+      <rect x="8"  y="7"  width="2"  height="1" fill="#c04040"/>
+      <rect x="6"  y="7"  width="1"  height="1" fill="#6a6a6a"/>
+    </g>
+
+    <rect x="15" y="6"  width="1"  height="1" fill="#6a6a6a"/>
+    <rect x="16" y="7"  width="6"  height="1" fill="#6a6a6a"/>
+    <rect x="22" y="8"  width="1"  height="5" fill="#6a6a6a"/>
+    <rect x="17" y="13" width="5"  height="1" fill="#6a6a6a"/>
+
+    <rect x="16" y="8"  width="6"  height="5" fill="#f2f2f2"/>
+    <rect x="15" y="8"  width="1"  height="4" fill="#f2f2f2"/>
+
+    <rect x="17" y="12" width="5"  height="1" fill="#d8d8d8"/>
+    <rect x="16" y="11" width="1"  height="1" fill="#d8d8d8"/>
+
+    <rect x="15" y="13" width="1"  height="5" fill="#6a6a6a"/>
+    <rect x="16" y="13" width="1"  height="5" fill="#f2f2f2"/>
+    <rect x="15" y="17" width="2"  height="1" fill="#1a1a1a"/>
+
+    <rect x="17" y="14" width="1"  height="4" fill="#f2f2f2"/>
+    <rect x="18" y="14" width="1"  height="4" fill="#6a6a6a"/>
+    <rect x="17" y="17" width="2"  height="1" fill="#1a1a1a"/>
+
+    <rect x="19" y="14" width="1"  height="4" fill="#f2f2f2"/>
+    <rect x="20" y="14" width="1"  height="4" fill="#6a6a6a"/>
+    <rect x="19" y="17" width="2"  height="1" fill="#1a1a1a"/>
+
+    <rect x="21" y="13" width="1"  height="5" fill="#f2f2f2"/>
+    <rect x="22" y="13" width="1"  height="5" fill="#6a6a6a"/>
+    <rect x="21" y="17" width="2"  height="1" fill="#1a1a1a"/>
+
+    <rect x="22" y="7"  width="1"  height="1" fill="#6a6a6a"/>
   </g>
-
-  <rect x="15" y="6"  width="1"  height="1" fill="#6a6a6a"/>
-  <rect x="16" y="7"  width="6"  height="1" fill="#6a6a6a"/>
-  <rect x="22" y="8"  width="1"  height="5" fill="#6a6a6a"/>
-  <rect x="17" y="13" width="5"  height="1" fill="#6a6a6a"/>
-
-  <rect x="16" y="8"  width="6"  height="5" fill="#f2f2f2"/>
-  <rect x="15" y="8"  width="1"  height="4" fill="#f2f2f2"/>
-
-  <rect x="17" y="12" width="5"  height="1" fill="#d8d8d8"/>
-  <rect x="16" y="11" width="1"  height="1" fill="#d8d8d8"/>
-
-  <rect x="15" y="13" width="1"  height="5" fill="#6a6a6a"/>
-  <rect x="16" y="13" width="1"  height="5" fill="#f2f2f2"/>
-  <rect x="15" y="17" width="2"  height="1" fill="#1a1a1a"/>
-
-  <rect x="17" y="14" width="1"  height="4" fill="#f2f2f2"/>
-  <rect x="18" y="14" width="1"  height="4" fill="#6a6a6a"/>
-  <rect x="17" y="17" width="2"  height="1" fill="#1a1a1a"/>
-
-  <rect x="19" y="14" width="1"  height="4" fill="#f2f2f2"/>
-  <rect x="20" y="14" width="1"  height="4" fill="#6a6a6a"/>
-  <rect x="19" y="17" width="2"  height="1" fill="#1a1a1a"/>
-
-  <rect x="21" y="13" width="1"  height="5" fill="#f2f2f2"/>
-  <rect x="22" y="13" width="1"  height="5" fill="#6a6a6a"/>
-  <rect x="21" y="17" width="2"  height="1" fill="#1a1a1a"/>
-
-  <rect x="22" y="7"  width="1"  height="1" fill="#6a6a6a"/>
 </svg>
 `.trim();
 
@@ -145,6 +157,38 @@
       bubbleText.textContent = currentPhrase;
       replayPop();
     }, 15 * 60 * 1000); // rotate every 15 minutes
+
+    // --- Idle animation loop ---------------------------------------------
+    // Every 5 seconds the goat plays a little "chew" animation (bending
+    // down toward the grass). Every 6th idle tick (~30 seconds) the chew
+    // is replaced with a bigger "stretch" animation. If the goat is
+    // currently screaming (clicked), idle ticks are skipped — the scream
+    // plays cleanly and the idle resumes on the next tick.
+    const IDLE_INTERVAL_MS = 5000;
+    const STRETCH_EVERY_N = 6; // 6 × 5s = 30s
+    const CHEW_DURATION_MS = 1500;
+    const STRETCH_DURATION_MS = 2000;
+
+    let idleCount = 0;
+    function playIdle() {
+      if (btn.classList.contains("is-screaming")) return; // yield to scream
+      if (btn.classList.contains("is-chewing")) return;   // don't stack
+      if (btn.classList.contains("is-stretching")) return;
+      idleCount++;
+      const doStretch = idleCount % STRETCH_EVERY_N === 0;
+      if (doStretch) {
+        btn.classList.add("is-stretching");
+        setTimeout(function () { btn.classList.remove("is-stretching"); }, STRETCH_DURATION_MS);
+      } else {
+        btn.classList.add("is-chewing");
+        setTimeout(function () { btn.classList.remove("is-chewing"); }, CHEW_DURATION_MS);
+      }
+    }
+
+    // Start the loop 2 seconds after page load so the goat isn't chewing
+    // the moment the page paints.
+    setTimeout(playIdle, 2000);
+    setInterval(playIdle, IDLE_INTERVAL_MS);
 
     // --- Web Audio path: decode once, play instantly on each click. ---
     const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
