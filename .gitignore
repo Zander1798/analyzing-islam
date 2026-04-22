@@ -21,6 +21,7 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+.claude/
 
 # Extract subdirs (intermediate build output)
 ibnmajah-extract/

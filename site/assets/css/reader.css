@@ -346,6 +346,19 @@
   margin-bottom: 0;
 }
 
+/* Arabic text rendered under the English translation — muted, RTL, spacious. */
+.hadith-body p.hadith-arabic {
+  direction: rtl;
+  text-align: right;
+  font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+  font-size: 19px;
+  line-height: 2.1;
+  color: var(--text-dim);
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
 .hadith:target {
   background: rgba(122, 162, 247, 0.05);
   margin-left: -16px;
