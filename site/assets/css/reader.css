@@ -360,12 +360,12 @@
    ========================================================== */
 
 .pdf-reader-layout {
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 32px 32px 0;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 72px);
+  min-height: calc(100vh - 72px);
 }
 
 .pdf-reader-header {
@@ -414,7 +414,7 @@
   border: 1px solid var(--border);
   background: #2b2b2b;
   width: 100%;
-  min-height: 500px;
+  min-height: 1100px;
   margin-bottom: 32px;
 }
 

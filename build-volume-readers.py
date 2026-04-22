@@ -192,7 +192,6 @@ VOL_READER_TEMPLATE = """<!DOCTYPE html>
 <title>{title} Vol. {num} — Islam Analyzed</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/reader.css">
-<style>body {{ overflow: hidden; }}</style>
 </head>
 <body>
 
@@ -236,6 +235,10 @@ VOL_READER_TEMPLATE = """<!DOCTYPE html>
     else if (el.msRequestFullscreen) el.msRequestFullscreen();
   }});
 </script>
+
+<footer class="site-footer">
+  Built from the Darussalam English edition of {title}, Volume {num}. Every entry references a specific hadith — verify before citing.
+</footer>
 
 <script src="../assets/js/pdf-mobile.js" defer></script>
 <script src="../assets/js/goat.js" defer></script>
