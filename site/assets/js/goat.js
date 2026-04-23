@@ -139,14 +139,14 @@
       "Much Knowledge",
       "Alhamdulillah!",
       "Nibbling Quran bits...",
+      "What's the Injeel?",
     ];
 
-    function pickPhrase(exclude) {
-      if (PHRASES.length < 2) return PHRASES[0];
-      let next;
-      do {
-        next = PHRASES[Math.floor(Math.random() * PHRASES.length)];
-      } while (next === exclude);
+    // Step through PHRASES in declaration order, wrapping at the end.
+    let phraseIndex = 0;
+    function pickPhrase() {
+      const next = PHRASES[phraseIndex];
+      phraseIndex = (phraseIndex + 1) % PHRASES.length;
       return next;
     }
 
@@ -196,7 +196,7 @@
 
     let currentPhrase = bubbleText.textContent;
     setInterval(function () {
-      currentPhrase = pickPhrase(currentPhrase);
+      currentPhrase = pickPhrase();
       setPhrase(currentPhrase);
       replayPop();
     }, 45 * 1000); // rotate every 45 seconds
@@ -334,8 +334,8 @@
         btn.classList.remove("is-screaming");
       }, 1600);
 
-      // Swap the caption to a fresh random phrase on every scream.
-      currentPhrase = pickPhrase(currentPhrase);
+      // Advance the caption to the next phrase in order on every scream.
+      currentPhrase = pickPhrase();
       setPhrase(currentPhrase);
       replayPop();
 
