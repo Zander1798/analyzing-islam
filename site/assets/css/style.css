@@ -2148,23 +2148,85 @@ blockquote {
   padding: 2px 2px 0;
 }
 
-/* Floating translate popover anchored to the Quill selection. */
-.build-translate-popover {
+/* Right-click translation menu (appears only on contextmenu over a
+   non-Latin selection) and the result tooltip it spawns. */
+.build-translate-menu {
+  position: absolute;
+  z-index: 30;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 4px;
+  min-width: 180px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.build-translate-menu[hidden] { display: none; }
+
+.build-translate-item {
+  appearance: none;
+  background: transparent;
+  color: var(--text);
+  border: 0;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--sans);
+  width: 100%;
+  text-align: left;
+  display: block;
+}
+.build-translate-item:hover,
+.build-translate-item:focus {
+  background: var(--panel-2);
+  color: var(--accent);
+  outline: none;
+}
+
+.build-translate-result {
   position: absolute;
   z-index: 30;
   background: var(--panel);
   border: 1px solid var(--accent);
-  padding: 6px 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 320px;
+  /* Extra right padding reserves room for the close X so it never
+     overlaps the translation text. */
+  padding: 10px 30px 10px 12px;
+  max-width: 340px;
+  min-width: 200px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+  max-height: 220px;
+  overflow: auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-  flex-wrap: wrap;
+}
+.build-translate-result[hidden] { display: none; }
+
+.build-translate-close {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-family: var(--sans);
+}
+.build-translate-close:hover {
+  color: var(--text);
 }
 
-.build-translate-btn {
+.build-translate-text {
+  margin: 0 0 10px;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.build-translate-copy {
   appearance: none;
+  display: inline-block;
   background: var(--accent);
   color: var(--bg);
   border: 0;
@@ -2176,19 +2238,8 @@ blockquote {
   cursor: pointer;
   font-family: var(--sans);
 }
-
-.build-translate-btn:hover { background: var(--accent-hover); }
-
-.build-translate-result {
-  flex: 1 1 180px;
-  min-width: 140px;
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.4;
-  max-height: 120px;
-  overflow: auto;
-  padding: 4px 2px;
-}
+.build-translate-copy:hover { background: var(--accent-hover); }
+.build-translate-copy[hidden] { display: none; }
 
 @media (max-width: 900px) {
   .build-panes {

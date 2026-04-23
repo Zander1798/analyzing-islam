@@ -5,9 +5,10 @@
 // - Drag text from the iframe into Quill — relies on native DnD; the
 //   iframe is same-origin, so selection drag yields a text/html payload
 //   that Quill's clipboard matchers convert into a formatted insert.
-// - Selection popover on the editor: formatting lives in Quill's own
-//   toolbar; we add a "Translate" action that only appears when the
-//   selection contains non-Latin script (Arabic, Hebrew, Greek).
+// - Right-click menu in the editor: when the user selects non-Latin
+//   text (Arabic, Hebrew, Greek) and right-clicks it, we intercept the
+//   context menu and offer a one-click "Translate" action that calls
+//   a free translation API.
 // - Save writes to Supabase via window.AI_BUILDS. New builds prompt for
 //   a name; existing builds keep their name (editable inline up top).
 // - Share creates a shared_builds snapshot and copies a shareable URL.
@@ -201,9 +202,13 @@
         '<section class="build-pane build-pane-editor" aria-label="Editor">' +
           '<div id="editor-toolbar"></div>' +
           '<div id="editor"></div>' +
-          '<div class="build-translate-popover" id="translate-popover" hidden>' +
-            '<button type="button" class="build-translate-btn" id="translate-btn">Translate</button>' +
-            '<div class="build-translate-result" id="translate-result" hidden></div>' +
+          '<div class="build-translate-menu" id="translate-menu" hidden role="menu">' +
+            '<button type="button" class="build-translate-item" id="translate-btn" role="menuitem">Translate selection</button>' +
+          '</div>' +
+          '<div class="build-translate-result" id="translate-result" hidden>' +
+            '<button type="button" class="build-translate-close" id="translate-close" aria-label="Close translation" title="Close">×</button>' +
+            '<div class="build-translate-text" id="translate-text"></div>' +
+            '<button type="button" class="build-translate-copy" id="translate-copy" hidden>Copy translation</button>' +
           '</div>' +
         '</section>' +
         '<section class="build-pane build-pane-source" aria-label="Source browser">' +
@@ -474,87 +479,149 @@
     return best || "";
   }
 
-  // Position the translate popover anchored to the current Quill
-  // selection. Only call after a non-empty selection has been confirmed.
-  function positionTranslatePopover(quill, range) {
-    const pop = document.getElementById("translate-popover");
-    const editor = document.querySelector(".build-pane-editor");
-    if (!pop || !editor || !range) return;
-    // Quill gives bounds relative to the editor root; translate to our
-    // build-pane-editor coordinate system so the absolute popover lines
-    // up with the highlighted text. getBounds can return null if the
-    // index is out of range during a layout transition — bail quietly.
-    const bounds = quill.getBounds(range.index, range.length);
-    if (!bounds) { hideTranslatePopover(); return; }
-    const editorRoot = quill.root;
-    const editorOffset = editorRoot.getBoundingClientRect();
-    const paneOffset  = editor.getBoundingClientRect();
-    const top  = (editorOffset.top - paneOffset.top) + bounds.top - 44;
-    const left = (editorOffset.left - paneOffset.left) + bounds.left + Math.min(bounds.width, 160);
-    pop.style.top  = Math.max(4, top) + "px";
-    pop.style.left = Math.max(4, left) + "px";
-    pop.hidden = false;
-    const result = document.getElementById("translate-result");
-    if (result) {
-      result.hidden = true;
-      result.textContent = "";
-    }
+  // Position an absolutely-positioned element at a viewport point, but
+  // expressed in the coordinate space of its offset parent (the editor
+  // pane). Clamps to keep the element on-screen inside the pane.
+  function placeAtViewport(el, clientX, clientY) {
+    const pane = el.offsetParent || document.querySelector(".build-pane-editor");
+    if (!pane) return;
+    const paneRect = pane.getBoundingClientRect();
+    const top  = clientY - paneRect.top;
+    const left = clientX - paneRect.left;
+    el.style.top  = Math.max(4, top) + "px";
+    el.style.left = Math.max(4, left) + "px";
   }
 
-  function hideTranslatePopover() {
-    const pop = document.getElementById("translate-popover");
-    if (pop) pop.hidden = true;
+  function hideTranslateMenu() {
+    const menu = document.getElementById("translate-menu");
+    if (menu) menu.hidden = true;
+  }
+
+  function hideTranslateResult() {
+    const result = document.getElementById("translate-result");
+    const text   = document.getElementById("translate-text");
+    const copy   = document.getElementById("translate-copy");
+    if (result) result.hidden = true;
+    if (text)   text.textContent = "";
+    if (copy)   copy.hidden = true;
   }
 
   function attachTranslator(quill) {
-    const btn = document.getElementById("translate-btn");
-    const result = document.getElementById("translate-result");
-    let currentSelectionText = "";
-    let currentSelectionLang = null;
+    const menu      = document.getElementById("translate-menu");
+    const btn       = document.getElementById("translate-btn");
+    const result    = document.getElementById("translate-result");
+    const resultTxt = document.getElementById("translate-text");
+    const closeBtn  = document.getElementById("translate-close");
+    const copyBtn   = document.getElementById("translate-copy");
 
-    quill.on("selection-change", function (range) {
-      if (!range || range.length === 0) {
-        hideTranslatePopover();
-        return;
-      }
+    // Selection captured at the moment the context menu was opened, so a
+    // later click on "Translate" still translates the right thing even
+    // if the browser cleared the selection while the menu was visible.
+    let pending = null;
+
+    // Intercept right-click inside the editor. If the user has selected
+    // text that contains non-Latin script, show our menu — otherwise
+    // fall through so the browser's native context menu appears (so the
+    // user doesn't lose spellcheck / copy / paste / inspect).
+    quill.root.addEventListener("contextmenu", function (e) {
+      const range = quill.getSelection();
+      if (!range || range.length === 0) return;
       const text = quill.getText(range.index, range.length).trim();
       const lang = detectLang(text);
-      if (!lang) {
-        hideTranslatePopover();
-        return;
-      }
-      currentSelectionText = text;
-      currentSelectionLang = lang;
-      positionTranslatePopover(quill, range);
+      if (!lang) return;
+
+      e.preventDefault();
+      pending = { text: text, lang: lang };
+      hideTranslateResult();
+      menu.hidden = false;
+      placeAtViewport(menu, e.clientX, e.clientY);
     });
 
     btn.addEventListener("click", async function () {
-      if (!currentSelectionText) return;
-      btn.disabled = true;
-      const prev = btn.textContent;
-      btn.textContent = "Translating…";
+      if (!pending) return;
+      const { text, lang } = pending;
+
+      // Position the result roughly where the menu was so the user's
+      // eye doesn't have to jump.
+      const menuRect = menu.getBoundingClientRect();
+      hideTranslateMenu();
+      placeAtViewport(result, menuRect.left, menuRect.top);
+
+      result.hidden = false;
+      resultTxt.textContent = "Translating…";
+      copyBtn.hidden = true;
       try {
-        const out = await translate(currentSelectionText, currentSelectionLang);
-        result.textContent = out || "(no translation returned)";
-        result.hidden = false;
-      } catch (err) {
-        result.textContent = "Translation failed. Try again later.";
-        result.hidden = false;
-      } finally {
-        btn.disabled = false;
-        btn.textContent = prev;
+        const out = await translate(text, lang);
+        resultTxt.textContent = out || "(no translation returned)";
+        // Only offer Copy if there's something to copy.
+        copyBtn.hidden = !out;
+      } catch (_) {
+        resultTxt.textContent = "Translation failed. Try again later.";
+        copyBtn.hidden = true;
       }
     });
 
-    // Clicking outside the editor closes the popover.
-    document.addEventListener("mousedown", function (e) {
-      const pop = document.getElementById("translate-popover");
-      if (!pop) return;
-      if (pop.contains(e.target)) return;
-      // If the click is inside the editor, the selection-change handler
-      // will redraw the popover — so we don't need to hide proactively.
-      if (quill.root.contains(e.target)) return;
-      hideTranslatePopover();
+    // Close X dismisses the bubble immediately.
+    closeBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      hideTranslateResult();
+    });
+
+    // Copy grabs the translated text and also closes the bubble on success.
+    copyBtn.addEventListener("click", async function (e) {
+      e.stopPropagation();
+      const txt = (resultTxt.textContent || "").trim();
+      if (!txt) { hideTranslateResult(); return; }
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(txt);
+        ok = true;
+      } catch (_) {
+        // Fallback: select + execCommand for older browsers.
+        try {
+          const temp = document.createElement("textarea");
+          temp.value = txt;
+          temp.style.position = "fixed";
+          temp.style.opacity = "0";
+          document.body.appendChild(temp);
+          temp.select();
+          ok = document.execCommand && document.execCommand("copy");
+          document.body.removeChild(temp);
+        } catch (_) {}
+      }
+      if (ok) {
+        // Brief visual confirmation before closing.
+        copyBtn.textContent = "Copied ✓";
+        setTimeout(function () {
+          hideTranslateResult();
+          copyBtn.textContent = "Copy translation";
+        }, 450);
+      } else {
+        copyBtn.textContent = "Copy failed";
+        setTimeout(function () {
+          copyBtn.textContent = "Copy translation";
+        }, 1000);
+      }
+    });
+
+    // Dismiss the menu / result on any outside interaction or Escape.
+    function maybeDismiss(e) {
+      if (menu.contains(e.target) || result.contains(e.target)) return;
+      hideTranslateMenu();
+      if (e.type !== "mousedown" || !result.hidden) hideTranslateResult();
+    }
+    document.addEventListener("mousedown", maybeDismiss);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        hideTranslateMenu();
+        hideTranslateResult();
+      }
+    });
+    // Scrolling the editor moves the selection under the anchor — just
+    // close to avoid a stale position.
+    quill.root.addEventListener("scroll", function () {
+      hideTranslateMenu();
+      hideTranslateResult();
     });
   }
 
