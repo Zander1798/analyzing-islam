@@ -201,6 +201,7 @@
           '<button type="button" class="btn btn-primary" id="build-save">Save</button>' +
         '</div>' +
       '</div>' +
+      '<div class="build-tip">Tip: for Arabic or Hebrew, highlight text <strong>right → left</strong> so the selection tracks the script direction.</div>' +
       '<div class="build-panes">' +
         '<section class="build-pane build-pane-editor" aria-label="Editor">' +
           '<div id="editor-toolbar"></div>' +

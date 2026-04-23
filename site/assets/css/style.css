@@ -2134,6 +2134,25 @@ blockquote {
   flex-wrap: wrap;
 }
 
+/* Small reminder under the build bar. Arabic / Hebrew selections track
+   script direction — dragging left-to-right across RTL text gives a
+   jumpy, partial highlight; dragging right-to-left just works. */
+.build-tip {
+  font-size: 11px;
+  color: var(--text-dim);
+  padding: 8px 14px;
+  margin-bottom: 10px;
+  border-left: 2px solid var(--accent);
+  background: var(--panel);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+
+.build-tip strong {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
 .build-panes {
   display: grid;
   grid-template-columns: var(--build-left-w, 1fr) 14px minmax(0, 1fr);
