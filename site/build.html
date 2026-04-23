@@ -114,6 +114,37 @@
       "</div>";
   }
 
+  function renderError(err) {
+    // Common failure modes worth calling out so the user isn't left
+    // staring at "no builds" when the real issue is schema / auth.
+    const msg = (err && err.message) || "Unknown error";
+    const code = (err && err.code) || "";
+    let hint = "";
+    if (/relation .*builds.* does not exist/i.test(msg) || code === "42P01") {
+      hint =
+        "The <code>builds</code> table doesn't exist in this Supabase project. " +
+        "Open the Supabase SQL editor and run <code>supabase/schema.sql</code> — " +
+        "it creates the builds + shared_builds tables and their row-level " +
+        "security policies.";
+    } else if (/row-level security|permission denied/i.test(msg) || code === "42501") {
+      hint =
+        "Row-Level Security is blocking this read. The policy set in " +
+        "<code>supabase/schema.sql</code> should allow <code>auth.uid() = user_id</code>. " +
+        "Re-run that file to reinstall the policies.";
+    } else if (/jwt|not authenticated|invalid token/i.test(msg)) {
+      hint =
+        "Your session looks stale. <a href=\"login.html?return=build.html\">Sign in again</a> and retry.";
+    }
+    shell.innerHTML =
+      '<div class="auth-message auth-message--error" style="max-width:720px;">' +
+      "<strong>Couldn't load your builds.</strong><br>" +
+      '<span style="font-family: ui-monospace, monospace; font-size: 12px;">' +
+      escapeHtml(msg) + (code ? " (" + escapeHtml(String(code)) + ")" : "") +
+      "</span>" +
+      (hint ? "<p style=\"margin-top: 10px;\">" + hint + "</p>" : "") +
+      "</div>";
+  }
+
   function renderCard(row) {
     const preview = stripHtml(row.content_html);
     const updated = new Date(row.updated_at || row.created_at).toLocaleDateString();
@@ -131,7 +162,7 @@
         '<div class="build-card-meta">Last saved ' + escapeHtml(updated) + "</div>" +
         (preview
           ? '<p class="build-card-preview">' + escapeHtml(preview) + "</p>"
-          : '<p class="build-card-preview build-card-preview--empty"><em>(Empty build — nothing written yet.)</em></p>") +
+          : '<p class="build-card-preview build-card-preview--empty"><em>(Empty build — nothing written yet.)</em></p>') +
         '<div class="build-card-share-url" hidden></div>' +
       "</article>"
     );
@@ -193,7 +224,13 @@
 
   async function render() {
     shell.innerHTML = '<div class="auth-message auth-message--info" style="max-width:640px;">Loading…</div>';
-    const rows = await window.AI_BUILDS.list();
+    let rows;
+    try {
+      rows = await window.AI_BUILDS.list();
+    } catch (err) {
+      renderError(err);
+      return;
+    }
     if (!rows.length) {
       renderEmpty();
       return;

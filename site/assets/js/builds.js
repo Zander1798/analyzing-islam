@@ -42,7 +42,14 @@
       .order("updated_at", { ascending: false });
     if (error) {
       console.error("[builds] list failed", error);
-      return [];
+      // Re-throw so the UI can surface the real cause (missing table,
+      // RLS misconfig, network failure, …) instead of silently
+      // pretending the user has no builds.
+      const wrapped = new Error(error.message || "List failed");
+      wrapped.cause = error;
+      wrapped.code = error.code;
+      wrapped.hint = error.hint;
+      throw wrapped;
     }
     return data || [];
   }
