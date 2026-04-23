@@ -6,11 +6,30 @@
 
 .reader-layout {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: var(--reader-toc-w, 260px) 8px minmax(0, 1fr);
   gap: 0;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 32px;
+}
+
+/* Draggable handle between the sticky TOC and the reading column. */
+.reader-layout > .splitter {
+  position: sticky;
+  top: 72px;
+  align-self: start;
+  height: calc(100vh - 90px);
+  cursor: col-resize;
+  background: transparent;
+  user-select: none;
+  touch-action: none;
+  transition: background 0.15s;
+}
+.reader-layout > .splitter:hover,
+.reader-layout > .splitter:focus-visible,
+.reader-layout > .splitter.is-dragging {
+  background: var(--accent);
+  outline: none;
 }
 
 /* ===== Table of Contents (sticky sidebar) ===== */
@@ -517,6 +536,9 @@
   .reader-layout {
     grid-template-columns: 1fr;
     padding: 0 20px;
+  }
+  .reader-layout > .splitter {
+    display: none;
   }
   .reader-toc {
     position: static;
