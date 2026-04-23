@@ -27,36 +27,45 @@
 
 <main class="compare-main">
 
-  <header class="compare-hero">
-    <h1>Compare sources</h1>
-    <p>Pick any two readable sources and read them side-by-side. Each pane has its own search for verses, keywords, or phrases — type a verse like <code>9:5</code> or <code>Quran 9:5</code>, a hadith like <code>3731</code> or <code>Bukhari 3731</code>, a Bible ref like <code>Genesis 15:6</code>, or any word like <em>crucifixion</em> or <em>jihad</em>.</p>
-  </header>
+  <!-- Auth gate. While auth.js is still resolving the session we show
+       a loading state; once resolved, we reveal either the compare UI
+       (signed-in) or a sign-in prompt (signed-out). -->
+  <div id="compare-auth-gate" class="compare-auth-gate">
+    <div class="auth-message auth-message--info" style="max-width:640px; margin: 60px auto;">Loading…</div>
+  </div>
 
-  <div class="compare-panes">
+  <div id="compare-app" hidden>
+    <header class="compare-hero">
+      <h1>Compare sources</h1>
+      <p>Pick any two readable sources and read them side-by-side. Each pane has its own search for verses, keywords, or phrases — type a verse like <code>9:5</code> or <code>Quran 9:5</code>, a hadith like <code>3731</code> or <code>Bukhari 3731</code>, a Bible ref like <code>Genesis 15:6</code>, or any word like <em>crucifixion</em> or <em>jihad</em>.</p>
+    </header>
 
-    <section class="compare-pane" data-side="left" aria-label="Left pane">
-      <div class="compare-toolbar">
-        <select class="compare-source" aria-label="Left source"></select>
-        <div class="compare-search-wrap">
-          <input type="search" class="compare-search" placeholder="Search verse, keyword, phrase…" autocomplete="off" />
-          <div class="compare-search-results" hidden></div>
+    <div class="compare-panes">
+
+      <section class="compare-pane" data-side="left" aria-label="Left pane">
+        <div class="compare-toolbar">
+          <select class="compare-source" aria-label="Left source"></select>
+          <div class="compare-search-wrap">
+            <input type="search" class="compare-search" placeholder="Search verse, keyword, phrase…" autocomplete="off" />
+            <div class="compare-search-results" hidden></div>
+          </div>
         </div>
-      </div>
-      <iframe class="compare-frame" title="Left pane source" loading="lazy"></iframe>
-    </section>
+        <iframe class="compare-frame" title="Left pane source" loading="lazy"></iframe>
+      </section>
 
-    <div class="splitter" data-splitter-var="--compare-left-w" data-splitter-min="260" data-splitter-max="1400" data-splitter-key="compare-left" aria-label="Resize left pane"></div>
-    <section class="compare-pane" data-side="right" aria-label="Right pane">
-      <div class="compare-toolbar">
-        <select class="compare-source" aria-label="Right source"></select>
-        <div class="compare-search-wrap">
-          <input type="search" class="compare-search" placeholder="Search verse, keyword, phrase…" autocomplete="off" />
-          <div class="compare-search-results" hidden></div>
+      <div class="splitter" data-splitter-var="--compare-left-w" data-splitter-min="260" data-splitter-max="1400" data-splitter-key="compare-left" aria-label="Resize left pane"></div>
+      <section class="compare-pane" data-side="right" aria-label="Right pane">
+        <div class="compare-toolbar">
+          <select class="compare-source" aria-label="Right source"></select>
+          <div class="compare-search-wrap">
+            <input type="search" class="compare-search" placeholder="Search verse, keyword, phrase…" autocomplete="off" />
+            <div class="compare-search-results" hidden></div>
+          </div>
         </div>
-      </div>
-      <iframe class="compare-frame" title="Right pane source" loading="lazy"></iframe>
-    </section>
+        <iframe class="compare-frame" title="Right pane source" loading="lazy"></iframe>
+      </section>
 
+    </div>
   </div>
 
 </main>
@@ -65,8 +74,60 @@
   Every reader page opens inside the compare iframes in embed mode, so only the actual text shows — nav and footer are hidden.
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
 <script src="assets/js/splitter.js" defer></script>
 <script src="assets/js/goat.js" defer></script>
 <script src="assets/js/compare.js" defer></script>
+
+<script>
+// Compare is gated to signed-in users. While auth.js resolves, the
+// #compare-auth-gate shell shows a "Loading…" message; once the session
+// state is known we either reveal #compare-app or replace the gate
+// with a sign-in prompt. compare.js initialises unconditionally but
+// has no effect when its DOM targets are hidden from the user.
+(function () {
+  "use strict";
+  const gate = document.getElementById("compare-auth-gate");
+  const app  = document.getElementById("compare-app");
+  if (!gate || !app) return;
+
+  function paint() {
+    const sess = window.__session;
+    if (sess && sess.user) {
+      gate.hidden = true;
+      app.hidden = false;
+    } else {
+      app.hidden = true;
+      gate.hidden = false;
+      gate.innerHTML =
+        '<div class="auth-message auth-message--info" style="max-width:640px; margin: 80px auto; text-align:center;">' +
+          '<h2 style="margin:0 0 12px; font-family: var(--serif);">Sign in to compare sources</h2>' +
+          '<p style="margin:0 0 18px;">Compare lets you read any two sources side-by-side with a search in each pane. It\'s free — ' +
+          '<a href="signup.html?return=compare.html">create an account</a> or ' +
+          '<a href="login.html?return=compare.html">sign in</a> to use it.</p>' +
+        '</div>';
+    }
+  }
+
+  function start() {
+    if (window.__authReady && typeof window.__authReady.then === "function") {
+      window.__authReady.then(paint);
+    } else {
+      paint();
+    }
+    window.addEventListener("auth-state", paint);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
+})();
+</script>
+
 </body>
 </html>
