@@ -44,6 +44,21 @@ body {
   font-feature-settings: "kern" 1, "liga" 1;
 }
 
+/* While a splitter is being dragged, suppress text selection and force the
+   col-resize cursor across the whole page so the drag feels natural. */
+body.splitter-dragging {
+  cursor: col-resize !important;
+  user-select: none;
+}
+body.splitter-dragging * {
+  user-select: none;
+}
+/* Block iframe pointer events during drag so the cursor stays on the
+   splitter when it passes over a compare/build iframe. */
+body.splitter-dragging iframe {
+  pointer-events: none;
+}
+
 a {
   color: var(--accent);
   text-decoration: none;
@@ -1690,10 +1705,38 @@ blockquote {
 
 .compare-panes {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: var(--compare-left-w, 1fr) 20px minmax(0, 1fr);
+  gap: 0;
   align-items: stretch;
 }
+
+/* The 20px middle column is the drag-to-resize splitter. Transparent by
+   default (matches the old 20px gap visually), highlights on hover/drag. */
+.compare-panes > .splitter {
+  cursor: col-resize;
+  background: transparent;
+  user-select: none;
+  touch-action: none;
+  position: relative;
+  transition: background 0.15s;
+}
+.compare-panes > .splitter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: transparent;
+  transition: background 0.15s;
+}
+.compare-panes > .splitter:hover::before,
+.compare-panes > .splitter:focus-visible::before,
+.compare-panes > .splitter.is-dragging::before {
+  background: var(--accent);
+}
+.compare-panes > .splitter:focus-visible { outline: none; }
 
 .compare-pane {
   display: flex;
@@ -1804,6 +1847,10 @@ blockquote {
 @media (max-width: 900px) {
   .compare-panes {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .compare-panes > .splitter {
+    display: none;
   }
   .compare-pane {
     min-height: 55vh;
@@ -2067,11 +2114,37 @@ blockquote {
 
 .build-panes {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: var(--build-left-w, 1fr) 14px minmax(0, 1fr);
+  gap: 0;
   align-items: stretch;
   min-height: 78vh;
 }
+
+.build-panes > .splitter {
+  cursor: col-resize;
+  background: transparent;
+  user-select: none;
+  touch-action: none;
+  position: relative;
+  transition: background 0.15s;
+}
+.build-panes > .splitter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: transparent;
+  transition: background 0.15s;
+}
+.build-panes > .splitter:hover::before,
+.build-panes > .splitter:focus-visible::before,
+.build-panes > .splitter.is-dragging::before {
+  background: var(--accent);
+}
+.build-panes > .splitter:focus-visible { outline: none; }
 
 .build-pane {
   display: flex;
@@ -2148,38 +2221,148 @@ blockquote {
   padding: 2px 2px 0;
 }
 
-/* Right-click translation menu (appears only on contextmenu over a
-   non-Latin selection) and the result tooltip it spawns. */
-.build-translate-menu {
+/* Right-click formatting toolbar (appears on contextmenu over any
+   non-collapsed selection, and on mobile tap over a non-Latin word).
+   Mirrors the capabilities of the top Quill toolbar in a compact
+   floating popover anchored at the click/tap location. */
+.build-format-menu {
   position: absolute;
-  z-index: 30;
+  z-index: 40;
   background: var(--panel);
   border: 1px solid var(--border);
-  padding: 4px;
-  min-width: 180px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  padding: 8px;
+  min-width: 280px;
+  max-width: 420px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.build-translate-menu[hidden] { display: none; }
+.build-format-menu[hidden] { display: none; }
 
-.build-translate-item {
+.bfm-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.bfm-row[hidden] { display: none; }
+
+.bfm-sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border);
+  margin: 2px 4px;
+}
+
+.bfm-btn {
   appearance: none;
   background: transparent;
   color: var(--text);
-  border: 0;
-  padding: 8px 12px;
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  min-width: 30px;
+  height: 28px;
   font-size: 13px;
-  cursor: pointer;
   font-family: var(--sans);
-  width: 100%;
-  text-align: left;
-  display: block;
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
-.build-translate-item:hover,
-.build-translate-item:focus {
+.bfm-btn:hover {
   background: var(--panel-2);
+  border-color: var(--border);
   color: var(--accent);
+}
+.bfm-btn:active {
+  background: var(--bg);
+}
+
+.bfm-sel {
+  appearance: none;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: var(--sans);
+  height: 28px;
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  min-width: 90px;
+}
+.bfm-sel:hover,
+.bfm-sel:focus {
+  border-color: var(--accent);
   outline: none;
 }
+
+/* Native colour picker — we hide the swatch control itself and show a
+   small letter (A / H) as the affordance, while the invisible input
+   covers the whole label so clicking it opens the browser's picker. */
+.bfm-color-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+}
+.bfm-color-picker:hover {
+  background: var(--panel-2);
+  border-color: var(--border);
+}
+.bfm-color-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  pointer-events: none;
+}
+.bfm-highlight-picker .bfm-color-label {
+  text-decoration: underline;
+  text-decoration-color: #ffd24d;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 2px;
+}
+.bfm-color-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+}
+
+.bfm-translate-row {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.bfm-translate-btn {
+  appearance: none;
+  background: var(--accent);
+  color: var(--bg);
+  border: 0;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  font-family: var(--sans);
+  border-radius: var(--radius-lg);
+  width: 100%;
+}
+.bfm-translate-btn:hover { background: var(--accent-hover); }
 
 .build-translate-result {
   position: absolute;
@@ -2244,6 +2427,10 @@ blockquote {
 @media (max-width: 900px) {
   .build-panes {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .build-panes > .splitter {
+    display: none;
   }
   .build-pane {
     min-height: 60vh;

@@ -202,8 +202,65 @@
         '<section class="build-pane build-pane-editor" aria-label="Editor">' +
           '<div id="editor-toolbar"></div>' +
           '<div id="editor"></div>' +
-          '<div class="build-translate-menu" id="translate-menu" hidden role="menu">' +
-            '<button type="button" class="build-translate-item" id="translate-btn" role="menuitem">Translate selection</button>' +
+          '<div class="build-format-menu" id="format-menu" hidden role="menu">' +
+            '<div class="bfm-row">' +
+              '<select class="bfm-sel" data-op="header" title="Heading">' +
+                '<option value="">Paragraph</option>' +
+                '<option value="1">Heading 1</option>' +
+                '<option value="2">Heading 2</option>' +
+                '<option value="3">Heading 3</option>' +
+                '<option value="4">Heading 4</option>' +
+                '<option value="5">Heading 5</option>' +
+                '<option value="6">Heading 6</option>' +
+              '</select>' +
+              '<select class="bfm-sel" data-op="size" title="Size">' +
+                '<option value="small">Small</option>' +
+                '<option value="">Normal</option>' +
+                '<option value="large">Large</option>' +
+                '<option value="huge">Huge</option>' +
+              '</select>' +
+              '<select class="bfm-sel bfm-sel-font" data-op="font" title="Font">' +
+                '<option value="">Sans</option>' +
+                '<option value="serif">Serif</option>' +
+                '<option value="monospace">Mono</option>' +
+              '</select>' +
+            '</div>' +
+            '<div class="bfm-row">' +
+              '<button type="button" class="bfm-btn" data-op="bold" title="Bold"><strong>B</strong></button>' +
+              '<button type="button" class="bfm-btn" data-op="italic" title="Italic"><em>I</em></button>' +
+              '<button type="button" class="bfm-btn" data-op="underline" title="Underline"><u>U</u></button>' +
+              '<button type="button" class="bfm-btn" data-op="strike" title="Strikethrough"><s>S</s></button>' +
+              '<span class="bfm-sep"></span>' +
+              '<label class="bfm-color-picker" title="Text colour">' +
+                '<span class="bfm-color-label">A</span>' +
+                '<input type="color" class="bfm-color-input" data-op="color" value="#ffffff">' +
+              '</label>' +
+              '<label class="bfm-color-picker bfm-highlight-picker" title="Highlight">' +
+                '<span class="bfm-color-label">H</span>' +
+                '<input type="color" class="bfm-color-input" data-op="background" value="#ffff00">' +
+              '</label>' +
+              '<span class="bfm-sep"></span>' +
+              '<button type="button" class="bfm-btn" data-op="link" title="Link">🔗</button>' +
+              '<button type="button" class="bfm-btn" data-op="clean" title="Clear formatting">⌫</button>' +
+            '</div>' +
+            '<div class="bfm-row">' +
+              '<button type="button" class="bfm-btn" data-op="align" data-value="" title="Align left">⯇</button>' +
+              '<button type="button" class="bfm-btn" data-op="align" data-value="center" title="Align centre">≡</button>' +
+              '<button type="button" class="bfm-btn" data-op="align" data-value="right" title="Align right">⯈</button>' +
+              '<button type="button" class="bfm-btn" data-op="align" data-value="justify" title="Justify">☰</button>' +
+              '<span class="bfm-sep"></span>' +
+              '<button type="button" class="bfm-btn" data-op="list" data-value="bullet" title="Bulleted list">•</button>' +
+              '<button type="button" class="bfm-btn" data-op="list" data-value="ordered" title="Numbered list">1.</button>' +
+              '<span class="bfm-sep"></span>' +
+              '<button type="button" class="bfm-btn" data-op="indent" data-value="-1" title="Decrease indent">⇤</button>' +
+              '<button type="button" class="bfm-btn" data-op="indent" data-value="+1" title="Increase indent">⇥</button>' +
+              '<span class="bfm-sep"></span>' +
+              '<button type="button" class="bfm-btn" data-op="blockquote" title="Blockquote">❝</button>' +
+              '<button type="button" class="bfm-btn" data-op="direction" data-value="rtl" title="Right-to-left">⇄</button>' +
+            '</div>' +
+            '<div class="bfm-row bfm-translate-row" hidden>' +
+              '<button type="button" class="bfm-translate-btn" id="translate-btn">Translate selection</button>' +
+            '</div>' +
           '</div>' +
           '<div class="build-translate-result" id="translate-result" hidden>' +
             '<button type="button" class="build-translate-close" id="translate-close" aria-label="Close translation" title="Close">×</button>' +
@@ -211,6 +268,7 @@
             '<button type="button" class="build-translate-copy" id="translate-copy" hidden>Copy translation</button>' +
           '</div>' +
         '</section>' +
+        '<div class="splitter" data-splitter-var="--build-left-w" data-splitter-min="280" data-splitter-max="1400" data-splitter-key="build-left" aria-label="Resize editor pane"></div>' +
         '<section class="build-pane build-pane-source" aria-label="Source browser">' +
           '<div class="compare-toolbar">' +
             '<select class="compare-source" id="source-select" aria-label="Source">' + optionsHtml + '</select>' +
@@ -492,10 +550,12 @@
     el.style.left = Math.max(4, left) + "px";
   }
 
-  function hideTranslateMenu() {
-    const menu = document.getElementById("translate-menu");
+  function hideFormatMenu() {
+    const menu = document.getElementById("format-menu");
     if (menu) menu.hidden = true;
   }
+  // Back-compat alias — older call sites still use the translate name.
+  const hideTranslateMenu = hideFormatMenu;
 
   function hideTranslateResult() {
     const result = document.getElementById("translate-result");
@@ -506,41 +566,162 @@
     if (copy)   copy.hidden = true;
   }
 
-  function attachTranslator(quill) {
-    const menu      = document.getElementById("translate-menu");
-    const btn       = document.getElementById("translate-btn");
-    const result    = document.getElementById("translate-result");
-    const resultTxt = document.getElementById("translate-text");
-    const closeBtn  = document.getElementById("translate-close");
-    const copyBtn   = document.getElementById("translate-copy");
+  // Apply a Quill format op against the editor's current selection.
+  // Mirrors what the top toolbar does, but invoked from the floating
+  // right-click menu. Toggles where it makes sense (bold/italic/etc.)
+  // and handles value-bearing ops (header, size, align, list, …) by
+  // setting the value or clearing it when the same value is reapplied.
+  function applyFormat(quill, op, value) {
+    if (!op) return;
+    const range = quill.getSelection();
+    if (!range) return;
+    const current = quill.getFormat(range);
 
-    // Force-hide on mount. The translator must never appear in the
-    // toolbar or anywhere else by default — only after the user
-    // right-clicks a non-Latin selection inside the editor.
-    hideTranslateMenu();
+    if (op === "clean") {
+      if (range.length > 0) quill.removeFormat(range.index, range.length, "user");
+      return;
+    }
+    if (op === "link") {
+      const existing = current.link || "";
+      const url = prompt("Enter URL (leave empty to remove)", existing || "https://");
+      if (url === null) return;
+      quill.format("link", url ? url : false, "user");
+      return;
+    }
+    if (op === "indent") {
+      const cur  = current.indent || 0;
+      const step = value === "+1" ? 1 : -1;
+      const next = Math.max(0, Math.min(8, cur + step));
+      quill.format("indent", next === 0 ? false : next, "user");
+      return;
+    }
+    if (
+      op === "bold" || op === "italic" || op === "underline" ||
+      op === "strike" || op === "blockquote"
+    ) {
+      quill.format(op, !current[op], "user");
+      return;
+    }
+    // Value-bearing ops: align, list, header, size, font, direction, color, background.
+    const next = current[op] === value ? false : value;
+    quill.format(op, next || false, "user");
+  }
+
+  function attachTranslator(quill) {
+    const menu       = document.getElementById("format-menu");
+    const btn        = document.getElementById("translate-btn");
+    const translateRow = menu ? menu.querySelector(".bfm-translate-row") : null;
+    const result     = document.getElementById("translate-result");
+    const resultTxt  = document.getElementById("translate-text");
+    const closeBtn   = document.getElementById("translate-close");
+    const copyBtn    = document.getElementById("translate-copy");
+
+    // Force-hide on mount. The format/translate menu must never appear
+    // by default — only after the user right-clicks (or taps on mobile)
+    // a selection inside the editor.
+    hideFormatMenu();
     hideTranslateResult();
+
+    // ------ Wire up the formatting buttons in the floating toolbar ------
+    // We use mousedown + preventDefault so the editor keeps selection
+    // (a click would move focus to the button and Quill would lose its
+    // range). The saved range is restored right before applying format
+    // so dropdowns/color pickers that do steal focus still work.
+    let savedRange = null;
+
+    function runOp(op, value) {
+      if (savedRange) {
+        try { quill.setSelection(savedRange.index, savedRange.length, "silent"); } catch (_) {}
+      }
+      applyFormat(quill, op, value);
+      // Re-capture the (possibly extended/shifted) range so chained
+      // ops stay aligned with what the user sees selected.
+      const newRange = quill.getSelection();
+      if (newRange) savedRange = { index: newRange.index, length: newRange.length };
+    }
+
+    if (menu) {
+      // Toggle-style buttons and value-bearing buttons.
+      menu.querySelectorAll(".bfm-btn").forEach(function (b) {
+        b.addEventListener("mousedown", function (e) {
+          e.preventDefault(); // keep Quill's selection
+          const op = b.getAttribute("data-op");
+          const val = b.hasAttribute("data-value") ? b.getAttribute("data-value") : undefined;
+          runOp(op, val);
+        });
+      });
+
+      // Dropdowns (header, size, font).
+      menu.querySelectorAll(".bfm-sel").forEach(function (s) {
+        s.addEventListener("change", function () {
+          const op = s.getAttribute("data-op");
+          const val = s.value || "";
+          runOp(op, val);
+        });
+        // Prevent the dropdown click itself from dismissing the menu
+        // via our document-level mousedown listener.
+        s.addEventListener("mousedown", function (e) { e.stopPropagation(); });
+      });
+
+      // Native color pickers for colour + background.
+      menu.querySelectorAll(".bfm-color-input").forEach(function (inp) {
+        inp.addEventListener("input", function () {
+          const op = inp.getAttribute("data-op");
+          runOp(op, inp.value);
+        });
+        inp.addEventListener("mousedown", function (e) { e.stopPropagation(); });
+      });
+    }
 
     // Selection captured at the moment the context menu was opened, so a
     // later click on "Translate" still translates the right thing even
     // if the browser cleared the selection while the menu was visible.
     let pending = null;
 
-    // Intercept right-click inside the editor. If the user has selected
-    // text that contains non-Latin script, show our menu — otherwise
-    // fall through so the browser's native context menu appears (so the
-    // user doesn't lose spellcheck / copy / paste / inspect).
+    // Show the floating format toolbar at a given viewport point. If the
+    // selection contains non-Latin script, the Translate row is exposed
+    // too; otherwise it's hidden.
+    function showFormatMenuAt(clientX, clientY, rangeOverride) {
+      const range = rangeOverride || quill.getSelection();
+      if (!range || range.length === 0) return false;
+      const text = quill.getText(range.index, range.length).trim();
+      const lang = detectLang(text);
+
+      savedRange = { index: range.index, length: range.length };
+      pending = lang ? { text: text, lang: lang } : null;
+      if (translateRow) translateRow.hidden = !lang;
+
+      // Reflect the selection's current formats back into the menu
+      // controls so the user sees "where we're at" before they pick.
+      const fmt = quill.getFormat(range);
+      menu.querySelectorAll(".bfm-sel").forEach(function (s) {
+        const op = s.getAttribute("data-op");
+        const current = fmt[op];
+        s.value = (current == null || current === false) ? "" : String(current);
+      });
+      menu.querySelectorAll(".bfm-color-input").forEach(function (inp) {
+        const op = inp.getAttribute("data-op");
+        if (typeof fmt[op] === "string" && /^#[0-9a-fA-F]{6}$/.test(fmt[op])) {
+          inp.value = fmt[op];
+        }
+      });
+
+      hideTranslateResult();
+      menu.hidden = false;
+      placeAtViewport(menu, clientX, clientY);
+      return true;
+    }
+
+    // Intercept right-click on the editor for any non-collapsed selection.
+    // This gives the user the same formatting controls as the top toolbar
+    // without having to reach for it, plus the Translate action when
+    // applicable. Collapsed (cursor-only) right-clicks fall through to
+    // the browser's native menu so paste / spellcheck / inspect still work.
     quill.root.addEventListener("contextmenu", function (e) {
       const range = quill.getSelection();
       if (!range || range.length === 0) return;
-      const text = quill.getText(range.index, range.length).trim();
-      const lang = detectLang(text);
-      if (!lang) return;
-
       e.preventDefault();
-      pending = { text: text, lang: lang };
-      hideTranslateResult();
-      menu.hidden = false;
-      placeAtViewport(menu, e.clientX, e.clientY);
+      showFormatMenuAt(e.clientX, e.clientY, range);
     });
 
     // ----- Mobile trigger: tap on non-Latin text -----
@@ -583,11 +764,9 @@
       } catch (_) {}
       if (quillIndex == null) return false;
       quill.setSelection(quillIndex, end - start, "user");
-      pending = { text: word, lang: lang };
-      hideTranslateResult();
-      menu.hidden = false;
-      placeAtViewport(menu, clientX, clientY);
-      return true;
+      // Show the same format toolbar we use on desktop right-click — the
+      // translate row will be visible since this path is non-Latin-only.
+      return showFormatMenuAt(clientX, clientY, { index: quillIndex, length: end - start });
     }
 
     let touchStart = null;
@@ -679,15 +858,18 @@
       }
     });
 
-    // Dismiss the menu / result on any outside interaction or Escape.
+    // Dismiss the menu / result on any interaction outside the editor
+    // text box, the floating menu itself, or the result bubble. This
+    // matches the user's mental model: clicking anywhere that isn't the
+    // editor or the menu means "done with the menu".
     function maybeDismiss(e) {
       if (menu.contains(e.target) || result.contains(e.target)) return;
-      hideTranslateMenu();
-      if (e.type === "mousedown" || e.type === "touchstart") {
-        if (!result.hidden) hideTranslateResult();
-      } else {
-        hideTranslateResult();
-      }
+      // Clicking inside the editor keeps the menu open only if it's
+      // still meaningful — but to avoid stale positioning, always close
+      // on clicks outside the menu, whether they're in the editor or
+      // elsewhere on the page.
+      hideFormatMenu();
+      hideTranslateResult();
     }
     document.addEventListener("mousedown", maybeDismiss);
     document.addEventListener("touchstart", maybeDismiss, { passive: true });
@@ -853,6 +1035,11 @@
   // ============ Mount ==================================================
   async function mountEditor() {
     shell.innerHTML = buildEditorShellHtml();
+
+    // Activate the newly-inserted splitter between editor and source panes.
+    if (window.AI_SPLITTER && typeof window.AI_SPLITTER.init === "function") {
+      window.AI_SPLITTER.init(shell);
+    }
 
     const quill = initQuill();
     state.quill = quill;
