@@ -514,6 +514,12 @@
     const closeBtn  = document.getElementById("translate-close");
     const copyBtn   = document.getElementById("translate-copy");
 
+    // Force-hide on mount. The translator must never appear in the
+    // toolbar or anywhere else by default — only after the user
+    // right-clicks a non-Latin selection inside the editor.
+    hideTranslateMenu();
+    hideTranslateResult();
+
     // Selection captured at the moment the context menu was opened, so a
     // later click on "Translate" still translates the right thing even
     // if the browser cleared the selection while the menu was visible.
