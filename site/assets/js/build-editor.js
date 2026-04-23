@@ -578,6 +578,21 @@
     if (el) el.textContent = text || "";
   }
 
+  // Share is only available once the build has been saved AND has no
+  // unsaved changes — otherwise there'd be nothing to share (or the
+  // shared snapshot would silently lag behind what the user sees).
+  function updateShareButton() {
+    const btn = document.getElementById("build-share");
+    if (!btn) return;
+    const canShare = state.buildId != null && !state.dirty;
+    btn.disabled = !canShare;
+    btn.title = canShare
+      ? "Create a public share link"
+      : state.buildId == null
+        ? "Save this build first, then you can share it."
+        : "You have unsaved changes. Save to update the share snapshot.";
+  }
+
   function currentName() {
     const input = document.getElementById("build-name");
     return (input && input.value.trim()) || "";
@@ -635,18 +650,36 @@
     state.name = row.name;
     state.dirty = false;
     setStatus("Saved · " + new Date(row.updated_at || row.created_at).toLocaleTimeString());
+    updateShareButton();
     return row;
   }
 
   async function shareBuild() {
-    // Ensure we have a saved build to share — snapshot the latest.
-    const saved = await saveBuild();
-    if (!saved) return;
+    // Precondition: the Share button is only enabled when the build has
+    // been saved and has no unsaved changes. If something slipped past
+    // that guard (e.g. keyboard shortcut), bail with a clear message.
+    if (state.buildId == null) {
+      await openModal(
+        "Save first",
+        "<p>Save this build before sharing it. Click <strong>Save</strong> — once it's named and stored, you can create a share link.</p>",
+        { confirmLabel: "OK", cancelLabel: "" }
+      );
+      return;
+    }
+    if (state.dirty) {
+      await openModal(
+        "Unsaved changes",
+        "<p>You have unsaved changes. Save them first so your share link reflects the latest version.</p>",
+        { confirmLabel: "OK", cancelLabel: "" }
+      );
+      return;
+    }
 
-    const share = await window.AI_BUILDS.createShare(saved.id, {
-      name: saved.name,
-      content_delta: saved.content_delta,
-      content_html: saved.content_html,
+    const quill = state.quill;
+    const share = await window.AI_BUILDS.createShare(state.buildId, {
+      name: state.name || currentName(),
+      content_delta: quill.getContents(),
+      content_html: quill.root.innerHTML,
     });
     if (!share) {
       await openModal("Share link", '<p>Could not create share link. Try again later.</p>', { confirmLabel: "OK", cancelLabel: "" });
@@ -702,11 +735,13 @@
     quill.on("text-change", function () {
       state.dirty = true;
       setStatus("Unsaved changes");
+      updateShareButton();
     });
     const nameInput = document.getElementById("build-name");
     nameInput.addEventListener("input", function () {
       state.dirty = true;
       setStatus("Unsaved changes");
+      updateShareButton();
     });
 
     // Save / Share buttons.
@@ -757,6 +792,10 @@
     if (!document.getElementById("source-frame").getAttribute("src")) {
       setSource(DEFAULT_SOURCE, "");
     }
+
+    // Set initial Share-button state. Disabled for fresh builds (no id yet)
+    // and for loaded-but-dirty builds; enabled for cleanly-loaded existing.
+    updateShareButton();
   }
 
   // ============ Entry point ============================================

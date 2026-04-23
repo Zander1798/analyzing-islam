@@ -296,6 +296,13 @@ code {
   border-color: var(--text);
 }
 
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* ===== Stats grid — editorial rule-separated ===== */
 .stats-grid {
   display: grid;
