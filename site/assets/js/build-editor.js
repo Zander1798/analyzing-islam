@@ -287,13 +287,153 @@
       '</div>';
   }
 
+  // ============ Font catalogue ========================================
+  // Fifty fonts across sans / serif / mono / display / handwriting.
+  // First group are system stacks (no network needed); the rest are
+  // loaded from Google Fonts at editor mount. Each entry becomes a
+  // picker option labelled in its own typeface so users can skim the
+  // dropdown and pick by look.
+  //
+  //   slug   — kebab-case id used as the Quill Font whitelist value
+  //            (Parchment requires word characters only).
+  //   label  — display name rendered as the picker text.
+  //   stack  — CSS font-family stack applied to .ql-font-<slug>.
+  //   google — query-string fragment; fonts without a `google` key
+  //            resolve to the user's installed system font.
+  const FONTS = [
+    // System stacks — available without any network request.
+    { slug: "sans",        label: "Sans Serif",          stack: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' },
+    { slug: "serif",       label: "Serif",               stack: 'Georgia, "Times New Roman", serif' },
+    { slug: "monospace",   label: "Monospace",           stack: 'ui-monospace, "SF Mono", Consolas, monospace' },
+    { slug: "arial",       label: "Arial",               stack: 'Arial, sans-serif' },
+    { slug: "helvetica",   label: "Helvetica",           stack: '"Helvetica Neue", Helvetica, Arial, sans-serif' },
+    { slug: "verdana",     label: "Verdana",             stack: 'Verdana, sans-serif' },
+    { slug: "tahoma",      label: "Tahoma",              stack: 'Tahoma, sans-serif' },
+    { slug: "trebuchet",   label: "Trebuchet MS",        stack: '"Trebuchet MS", sans-serif' },
+    { slug: "georgia",     label: "Georgia",             stack: 'Georgia, serif' },
+    { slug: "times",       label: "Times New Roman",     stack: '"Times New Roman", Times, serif' },
+    { slug: "garamond",    label: "Garamond",            stack: 'Garamond, "Apple Garamond", serif' },
+    { slug: "palatino",    label: "Palatino",            stack: '"Palatino Linotype", "Book Antiqua", Palatino, serif' },
+    { slug: "bookantiqua", label: "Book Antiqua",        stack: '"Book Antiqua", Palatino, serif' },
+    { slug: "courier",     label: "Courier New",         stack: '"Courier New", Courier, monospace' },
+    { slug: "consolas",    label: "Consolas",            stack: 'Consolas, monospace' },
+
+    // Google sans.
+    { slug: "inter",       label: "Inter",               stack: '"Inter", sans-serif',                     google: "Inter:wght@400;700" },
+    { slug: "roboto",      label: "Roboto",              stack: '"Roboto", sans-serif',                    google: "Roboto:wght@400;700" },
+    { slug: "opensans",    label: "Open Sans",           stack: '"Open Sans", sans-serif',                 google: "Open+Sans:wght@400;700" },
+    { slug: "lato",        label: "Lato",                stack: '"Lato", sans-serif',                      google: "Lato:wght@400;700" },
+    { slug: "montserrat",  label: "Montserrat",          stack: '"Montserrat", sans-serif',                google: "Montserrat:wght@400;700" },
+    { slug: "poppins",     label: "Poppins",             stack: '"Poppins", sans-serif',                   google: "Poppins:wght@400;700" },
+    { slug: "raleway",     label: "Raleway",             stack: '"Raleway", sans-serif',                   google: "Raleway:wght@400;700" },
+    { slug: "nunito",      label: "Nunito",              stack: '"Nunito", sans-serif',                    google: "Nunito:wght@400;700" },
+    { slug: "oswald",      label: "Oswald",              stack: '"Oswald", sans-serif',                    google: "Oswald:wght@400;700" },
+    { slug: "sourcesans",  label: "Source Sans 3",       stack: '"Source Sans 3", sans-serif',             google: "Source+Sans+3:wght@400;700" },
+    { slug: "worksans",    label: "Work Sans",           stack: '"Work Sans", sans-serif',                 google: "Work+Sans:wght@400;700" },
+    { slug: "karla",       label: "Karla",               stack: '"Karla", sans-serif',                     google: "Karla:wght@400;700" },
+
+    // Google serif.
+    { slug: "playfair",    label: "Playfair Display",    stack: '"Playfair Display", serif',               google: "Playfair+Display:wght@400;700" },
+    { slug: "lora",        label: "Lora",                stack: '"Lora", serif',                           google: "Lora:wght@400;700" },
+    { slug: "merriweather",label: "Merriweather",        stack: '"Merriweather", serif',                   google: "Merriweather:wght@400;700" },
+    { slug: "ebgaramond",  label: "EB Garamond",         stack: '"EB Garamond", serif',                    google: "EB+Garamond:wght@400;700" },
+    { slug: "crimson",     label: "Crimson Text",        stack: '"Crimson Text", serif',                   google: "Crimson+Text:wght@400;700" },
+    { slug: "cormorant",   label: "Cormorant Garamond",  stack: '"Cormorant Garamond", serif',             google: "Cormorant+Garamond:wght@400;700" },
+    { slug: "bodoni",      label: "Bodoni Moda",         stack: '"Bodoni Moda", serif',                    google: "Bodoni+Moda:wght@400;700" },
+    { slug: "librecaslon", label: "Libre Caslon Text",   stack: '"Libre Caslon Text", serif',              google: "Libre+Caslon+Text:wght@400;700" },
+    { slug: "ptserif",     label: "PT Serif",            stack: '"PT Serif", serif',                       google: "PT+Serif:wght@400;700" },
+    { slug: "spectral",    label: "Spectral",            stack: '"Spectral", serif',                       google: "Spectral:wght@400;700" },
+
+    // Google mono.
+    { slug: "jetbrains",   label: "JetBrains Mono",      stack: '"JetBrains Mono", monospace',             google: "JetBrains+Mono:wght@400;700" },
+    { slug: "firacode",    label: "Fira Code",           stack: '"Fira Code", monospace',                  google: "Fira+Code:wght@400;700" },
+    { slug: "sourcecode",  label: "Source Code Pro",     stack: '"Source Code Pro", monospace',            google: "Source+Code+Pro:wght@400;700" },
+    { slug: "ibmplex",     label: "IBM Plex Mono",       stack: '"IBM Plex Mono", monospace',              google: "IBM+Plex+Mono:wght@400;700" },
+    { slug: "spacemono",   label: "Space Mono",          stack: '"Space Mono", monospace',                 google: "Space+Mono:wght@400;700" },
+
+    // Google display / decorative.
+    { slug: "bebas",       label: "Bebas Neue",          stack: '"Bebas Neue", sans-serif',                google: "Bebas+Neue" },
+    { slug: "abril",       label: "Abril Fatface",       stack: '"Abril Fatface", serif',                  google: "Abril+Fatface" },
+    { slug: "lobster",     label: "Lobster",             stack: '"Lobster", cursive',                      google: "Lobster" },
+    { slug: "pacifico",    label: "Pacifico",            stack: '"Pacifico", cursive',                     google: "Pacifico" },
+    { slug: "anton",       label: "Anton",               stack: '"Anton", sans-serif',                     google: "Anton" },
+
+    // Google handwriting.
+    { slug: "caveat",      label: "Caveat",              stack: '"Caveat", cursive',                       google: "Caveat:wght@400;700" },
+    { slug: "dancing",     label: "Dancing Script",      stack: '"Dancing Script", cursive',               google: "Dancing+Script:wght@400;700" },
+    { slug: "indieflower", label: "Indie Flower",        stack: '"Indie Flower", cursive',                 google: "Indie+Flower" },
+    { slug: "shadows",     label: "Shadows Into Light",  stack: '"Shadows Into Light", cursive',           google: "Shadows+Into+Light" },
+  ];
+  const FONT_SLUGS = FONTS.map(function (f) { return f.slug; });
+
+  // Inject a single Google Fonts stylesheet (preconnect + combined
+  // family query) and a generated block of .ql-font-* CSS that applies
+  // each font-family to its Quill blot AND renders the picker row for
+  // that font in its own typeface (so the dropdown is a visual sampler,
+  // not just a list of names). Idempotent — safe if init() re-runs.
+  function injectFonts() {
+    if (document.getElementById("build-fonts-css")) return;
+
+    const googleFamilies = FONTS
+      .filter(function (f) { return !!f.google; })
+      .map(function (f) { return "family=" + f.google; })
+      .join("&");
+    if (googleFamilies) {
+      const pre1 = document.createElement("link");
+      pre1.rel = "preconnect"; pre1.href = "https://fonts.googleapis.com";
+      document.head.appendChild(pre1);
+      const pre2 = document.createElement("link");
+      pre2.rel = "preconnect"; pre2.href = "https://fonts.gstatic.com"; pre2.crossOrigin = "";
+      document.head.appendChild(pre2);
+      const gf = document.createElement("link");
+      gf.rel = "stylesheet";
+      gf.href = "https://fonts.googleapis.com/css2?" + googleFamilies + "&display=swap";
+      document.head.appendChild(gf);
+    }
+
+    let css = "";
+    FONTS.forEach(function (f) {
+      // .ql-font-<slug>: the class Quill applies to formatted spans.
+      css += ".ql-font-" + f.slug + " { font-family: " + f.stack + "; }\n";
+      // Picker label + item: content + font-family so the dropdown is
+      // readable at a glance.
+      const safeLabel = f.label.replace(/"/g, "\\\"");
+      css += '.ql-toolbar .ql-picker.ql-font .ql-picker-label[data-value="' + f.slug + '"]::before,' +
+             '.ql-toolbar .ql-picker.ql-font .ql-picker-item[data-value="' + f.slug + '"]::before {' +
+             ' content: "' + safeLabel + '"; font-family: ' + f.stack + ";" +
+             " }\n";
+    });
+    // The picker gets taller with 50 options — scroll instead of
+    // overflowing off-screen. Also widen so long names like
+    // "Cormorant Garamond" don't truncate.
+    css +=
+      ".ql-toolbar .ql-picker.ql-font { width: 160px; }\n" +
+      ".ql-toolbar .ql-picker.ql-font .ql-picker-options {" +
+      " max-height: 420px; overflow-y: auto; min-width: 200px;" +
+      " }\n";
+
+    const s = document.createElement("style");
+    s.id = "build-fonts-css";
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
   // ============ Quill init =============================================
   function initQuill() {
+    // Registering the font whitelist and injecting the Google Fonts +
+    // CSS MUST happen before `new Quill(...)` — otherwise Quill's picker
+    // renders with an empty options list and first-selected values get
+    // dropped because their class isn't in the Parchment registry.
+    injectFonts();
+    const Font = Quill.import("formats/font");
+    Font.whitelist = FONT_SLUGS;
+    Quill.register(Font, true);
+
     // Build a toolbar matching the MS-Office-style set the user asked
     // for: fonts, sizes, headings, bold/italic/underline/strike,
     // text/highlight colour, alignment, lists, blockquote, link, clean.
     const toolbarOptions = [
-      [{ font: [] }],
+      [{ font: FONT_SLUGS }],
       [{ size: ["small", false, "large", "huge"] }],
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
       ["bold", "italic", "underline", "strike"],

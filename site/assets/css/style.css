@@ -2248,6 +2248,56 @@ blockquote {
   background: var(--panel);
   border-color: var(--border);
   color: var(--text);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+}
+.build-pane-editor .ql-snow .ql-picker-item {
+  color: var(--text-muted);
+}
+.build-pane-editor .ql-snow .ql-picker-item:hover,
+.build-pane-editor .ql-snow .ql-picker-item.ql-selected {
+  color: var(--accent);
+  background: rgba(122, 162, 247, 0.08);
+}
+.build-pane-editor .ql-snow .ql-picker.ql-expanded .ql-picker-label {
+  border-color: var(--accent);
+}
+/* The colour / background pickers draw tiny coloured squares; their
+   wrapper needs the dark tile treatment too. */
+.build-pane-editor .ql-snow.ql-toolbar .ql-color-picker .ql-picker-options,
+.build-pane-editor .ql-snow.ql-toolbar .ql-background .ql-picker-options {
+  padding: 6px;
+  min-width: 180px;
+}
+
+/* Link + video tooltip — Quill's default is white-on-white-ish, which
+   disappears on our dark editor. Rewire for the dark theme. */
+.build-pane-editor .ql-snow .ql-tooltip {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  border-radius: var(--radius-lg);
+  z-index: 50;
+}
+.build-pane-editor .ql-snow .ql-tooltip::before {
+  color: var(--text-muted);
+}
+.build-pane-editor .ql-snow .ql-tooltip input[type="text"] {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+}
+.build-pane-editor .ql-snow .ql-tooltip input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.build-pane-editor .ql-snow .ql-tooltip a.ql-action,
+.build-pane-editor .ql-snow .ql-tooltip a.ql-remove {
+  color: var(--accent);
+}
+.build-pane-editor .ql-snow .ql-tooltip a.ql-action::after {
+  border-right-color: var(--border);
 }
 
 /* Source pane reuses .compare-toolbar / .compare-frame from above. */
