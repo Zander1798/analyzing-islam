@@ -54,6 +54,10 @@
 
   const HADITH_PREFIX_RE = /^(hadith|h|bukhari|muslim|dawud|abu\s*dawud|tirmidhi|nasa|nasai|ibn\s*majah)$/i;
   const QURAN_PREFIX_RE  = /^(quran|qur'?an|surah?|s)$/i;
+  const ENOCH_PREFIX_RE  = /^(enoch|1\s*enoch|1enoch|book\s+of\s+enoch)$/i;
+  // Josephus has two major works; anchor prefix is "ant" or "wars".
+  const JOSEPHUS_ANT_RE  = /^(ant|antiquities|antiquities\s+of\s+the\s+jews|antiq)$/i;
+  const JOSEPHUS_WARS_RE = /^(war|wars|wars\s+of\s+the\s+jews|jewish\s+war)$/i;
 
   function candidateIds(query, sourceSlug) {
     const q = String(query || "").trim();
@@ -92,6 +96,23 @@
       return ids;
     }
 
+    // Book of Enoch — single-book source. Treat bare numbers/chapter
+    // refs as implicitly Enoch so "6:2" jumps to #enoch-6-2 without
+    // the user having to type the book name.
+    if (sourceSlug === "book-of-enoch") {
+      if (two)     ids.push("enoch-" + two[1] + "-" + two[2]);
+      if (onlyNum) ids.push("enoch-" + q);
+      if (prefixed) {
+        if (ENOCH_PREFIX_RE.test(prefixed[1])) {
+          if (prefixed[3]) ids.push("enoch-" + prefixed[2] + "-" + prefixed[3]);
+          else             ids.push("enoch-" + prefixed[2]);
+        } else {
+          addBibleId(ids, prefixed[1], prefixed[2], prefixed[3]);
+        }
+      }
+      return ids;
+    }
+
     // Bible / comparative scripture ----------------------------------
     if (BIBLE_SOURCES.has(sourceSlug)) {
       if (prefixed) addBibleId(ids, prefixed[1], prefixed[2], prefixed[3]);
@@ -115,8 +136,45 @@
       return ids;
     }
 
-    // Talmud / Josephus / Enoch etc. — pattern is tractate/book + nums;
-    // fall through to bible-style slug resolution as a reasonable guess.
+    // Josephus — two works ("Antiquities", "Wars") with the 3-level
+    // anchor scheme <work>-b<book>-c<chap>-s<section>. A bare number
+    // defaults to Antiquities Book N; a prefixed query routes to the
+    // matching work and fills in whichever levels were supplied.
+    if (sourceSlug === "josephus") {
+      function addJos(work, b, c, s) {
+        if (!b) return;
+        if (s)      ids.push(work + "-b" + b + "-c" + c + "-s" + s);
+        else if (c) ids.push(work + "-b" + b + "-c" + c);
+        else        ids.push(work + "-b" + b);
+      }
+      if (prefixed) {
+        if (JOSEPHUS_ANT_RE.test(prefixed[1])) {
+          addJos("ant", prefixed[2], prefixed[3], prefixed[4]);
+        } else if (JOSEPHUS_WARS_RE.test(prefixed[1])) {
+          addJos("wars", prefixed[2], prefixed[3], prefixed[4]);
+        } else {
+          addBibleId(ids, prefixed[1], prefixed[2], prefixed[3]);
+        }
+      }
+      if (three) {
+        addJos("ant", three[1], three[2], three[3]);
+        addJos("wars", three[1], three[2], three[3]);
+      } else if (two) {
+        addJos("ant", two[1], two[2]);
+        addJos("wars", two[1], two[2]);
+      } else if (onlyNum) {
+        addJos("ant", q);
+        addJos("wars", q);
+      }
+      return ids;
+    }
+
+    // Talmud — Rodkinson chapter anchors are opaque ("t0109"); verse-ref
+    // style IDs don't apply. Users should rely on the text search on the
+    // landing page (fed by the compare-index JSON).
+    if (sourceSlug === "talmud") return ids;
+
+    // Fallback: bible-style slug resolution is a reasonable guess.
     if (prefixed) addBibleId(ids, prefixed[1], prefixed[2], prefixed[3]);
 
     return ids;

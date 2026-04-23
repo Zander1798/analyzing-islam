@@ -46,7 +46,9 @@
     // trick as the Interlinear Bible above.
     { slug: "ibn-kathir",  title: "Tafsīr Ibn Kathīr",               path: "read-external/ibn-kathir.html",  group: "Classical Islamic scholarship",
       indexUrl: "assets/compare-index/ibn-kathir.json", indexBase: "read-external/" },
-    { slug: "talmud",      title: "The Talmud",                      path: "read-external/talmud.html",      group: "Comparative scripture" },
+    // Talmud is also a multi-page library (10 Rodkinson books).
+    { slug: "talmud",      title: "The Talmud",                      path: "read-external/talmud.html",      group: "Comparative scripture",
+      indexUrl: "assets/compare-index/talmud.json", indexBase: "read-external/" },
   ];
 
   const DEFAULT_LEFT = "quran";
@@ -290,20 +292,50 @@
     return p;
   }
 
+  // Normalise for substring matching: collapse punctuation + "·" so
+  // "Sanhedrin Chapter IV" matches "Sanhedrin · Chapter IV" in refs.
+  function normaliseForMatch(s) {
+    return String(s || "")
+      .toLowerCase()
+      .replace(/[^\p{Letter}\p{Number}]+/gu, " ")
+      .trim();
+  }
+
   function searchIndexEntries(entries, query, limit) {
     const qLower = query.toLowerCase();
-    const matches = [];
+    const qNorm  = normaliseForMatch(query);
+    // Clean-tail regex: "John 3:16" as a query should not match
+    // "John 3:160"; only land when the digits end the ref.
+    const tailMatch = qLower.match(/\d+:\d+$/);
+    const tailExact = tailMatch ? tailMatch[0] : null;
+    const tailRe = tailExact
+      ? new RegExp("(?:^|\\s|·|\\W)" + tailExact.replace(/[:]/g, "\\$&") + "\\s*$")
+      : null;
+    const refExact = [];
+    const refFuzzy = [];
+    const textOnly = [];
     let total = 0;
+    const seen = Object.create(null);
     for (let i = 0; i < entries.length; i++) {
       const e = entries[i];
-      const t = e.text || "";
-      if (t.toLowerCase().indexOf(qLower) >= 0 ||
-          (e.ref && e.ref.toLowerCase().indexOf(qLower) >= 0)) {
+      const refLow = (e.ref || "").toLowerCase();
+      const refNorm = normaliseForMatch(e.ref);
+      const txtNorm = normaliseForMatch(e.text);
+      if (refLow.indexOf(qLower) >= 0 || refNorm.indexOf(qNorm) >= 0) {
+        if (seen[e.href]) continue;
+        if (tailRe && tailRe.test(refLow)) refExact.push(e);
+        else refFuzzy.push(e);
+        seen[e.href] = true;
         total++;
-        if (matches.length < limit) matches.push(e);
+      } else if (txtNorm.indexOf(qNorm) >= 0) {
+        if (seen[e.href]) continue;
+        textOnly.push(e);
+        seen[e.href] = true;
+        total++;
       }
     }
-    return { matches: matches, total: total };
+    const matches = refExact.concat(refFuzzy).concat(textOnly).slice(0, limit);
+    return { matches: matches, total: total, refExact: refExact };
   }
 
   function jumpIndexed(side, source, href) {
@@ -504,6 +536,20 @@
       if (els.select.value !== source.slug) return;
 
       const res = searchIndexEntries(idx.entries || [], atSubmit, 50);
+
+      // Single clean ref-tail hit (e.g. "John 3:16") → auto-jump so the
+      // iframe lands directly on the verse. Multi-hit and keyword
+      // queries fall through to the picker.
+      if (res.refExact.length === 1) {
+        jumpIndexed(side, source, res.refExact[0].href);
+        els.results.innerHTML =
+          '<div class="compare-search-status">Jumped to ' +
+          (res.refExact[0].ref || res.refExact[0].href || "").replace(/[<>&]/g, "") +
+          "</div>";
+        setTimeout(function () { els.results.hidden = true; }, 1800);
+        return;
+      }
+
       const rendered = res.matches.map(function (e) {
         return {
           ref:     e.ref || e.href || "",

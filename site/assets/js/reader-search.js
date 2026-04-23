@@ -38,6 +38,10 @@
       indexPath: "assets/compare-index/ibn-kathir.json",
       contentBase: "read-external/",
     },
+    "talmud": {
+      indexPath: "assets/compare-index/talmud.json",
+      contentBase: "read-external/",
+    },
   };
 
   // Compute the site's root prefix from the current reader page's
@@ -92,9 +96,12 @@
   function isIndexLandingPage(slug) {
     if (!INDEXED_SOURCES[slug]) return false;
     const path = location.pathname || "";
-    // /read-external/bible.html and /read-external/ibn-kathir.html.
+    // /read-external/bible.html, /read-external/ibn-kathir.html,
+    // /read-external/talmud.html — the LANDING pages have no per-verse
+    // anchors, so we always route through the JSON index there.
     if (slug === "bible-interlinear") return /\/bible\.html$/.test(path);
     if (slug === "ibn-kathir")        return /\/ibn-kathir\.html$/.test(path);
+    if (slug === "talmud")            return /\/talmud\.html$/.test(path);
     return false;
   }
 
@@ -116,37 +123,48 @@
     return p;
   }
 
+  // Normalise a string for substring matching: lowercase, then collapse
+  // non-alphanumeric runs (dots, dashes, "·", colons, punctuation) to a
+  // single space. Lets "Sanhedrin Chapter IV" match "Sanhedrin · Chapter IV"
+  // and "John 3:16" still match the canonical "John 3:16" ref.
+  function normaliseForMatch(s) {
+    return String(s || "")
+      .toLowerCase()
+      .replace(/[^\p{Letter}\p{Number}]+/gu, " ")
+      .trim();
+  }
+
   function searchIndexEntries(entries, query, limit) {
     const qLower = query.toLowerCase();
+    const qNorm  = normaliseForMatch(query);
     const refMatches = [];       // ref-match (verse ref / section name)
-    const refExact   = [];       // ref that ends exactly with the query
+    const refExact   = [];       // ref whose trailing numbers match exactly
     const textMatches = [];      // text-match (keyword)
     const seen = Object.create(null);
 
     // When the query ends with a verse-like number pair ("John 3:16",
     // "Ayah 9:5") we want entries whose ref ENDS with those numbers —
     // otherwise "9:5" also matches "9:50", "9:55", etc. via substring.
-    const tailMatch = qLower.match(/(?:^|\s|·)\d+:\d+$|\d+:\d+$/);
-    const tailExact = tailMatch ? tailMatch[0].trim() : null;
+    const tailMatch = qLower.match(/\d+:\d+$/);
+    const tailExact = tailMatch ? tailMatch[0] : null;
+    const tailRe = tailExact
+      ? new RegExp("(?:^|\\s|·|\\W)" + tailExact.replace(/[:]/g, "\\$&") + "\\s*$")
+      : null;
 
     for (let i = 0; i < entries.length; i++) {
       const e = entries[i];
       const ref = (e.ref || "").toLowerCase();
-      const txt = (e.text || "").toLowerCase();
-      const hit = ref.indexOf(qLower) >= 0;
-      if (hit) {
+      const refNorm = normaliseForMatch(e.ref);
+      const txtNorm = normaliseForMatch(e.text);
+      const hitRef = ref.indexOf(qLower) >= 0 || refNorm.indexOf(qNorm) >= 0;
+      if (hitRef) {
         if (!seen[e.href]) {
-          // A "clean tail" match is one where the digits in the query
-          // land at the end of the ref with nothing after them — so
-          // "9:5" doesn't match "9:50" or "9:55".
-          const cleanTail = tailExact
-            ? new RegExp("(?:^|\\s|·\\s*)" + tailExact.replace(/[:]/g, "\\$&") + "$").test(ref)
-            : false;
+          const cleanTail = tailRe ? tailRe.test(ref) : false;
           if (cleanTail) refExact.push(e);
           else refMatches.push(e);
           seen[e.href] = true;
         }
-      } else if (txt.indexOf(qLower) >= 0) {
+      } else if (txtNorm.indexOf(qNorm) >= 0) {
         if (!seen[e.href]) { textMatches.push(e); seen[e.href] = true; }
       }
       if (refExact.length + refMatches.length + textMatches.length >= limit) break;

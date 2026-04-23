@@ -195,6 +195,119 @@ def build_ibn_kathir_index() -> dict:
     }
 
 
+# ------------------------------------------------------------------ Talmud
+
+# Rodkinson's Talmud ships in 10 books. Each book file bundles one or more
+# *tractates* (Sabbath, Sanhedrin, etc.) with chapters numbered in Roman
+# numerals. Chapter anchors are opaque IDs like `t0109`.
+TALMUD_BOOK_TITLES = {
+    1:  "Tract Sabbath",
+    2:  "Tracts Erubin, Shekalim, Rosh Hashana",
+    3:  "Tract Pesachim (Vol. I)",
+    4:  "Tracts Pesachim (Vol. II), Yomah, Hagiga",
+    5:  "Tracts Aboth, Derech Eretz, Betzah, Succah, Moed Katan, Taanith, Megilla",
+    6:  "Tract Baba Kama",
+    7:  "Tract Baba Bathra",
+    8:  "Tract Sanhedrin",
+    9:  "Tracts Maccoth, Ebel Rabbathi, Shebuoth, Eduyoth, Abuda Zara, Horioth",
+    10: "History of the Talmud",
+}
+
+TRACT_PREFIX_RE = re.compile(r"^TRACT\s+([A-Z][A-Z0-9' .,()\-&;/:]*?)\.?$", re.IGNORECASE)
+
+
+def _tract_name_from_h3(h3_text: str) -> str | None:
+    """Return the tractate name from an h3 like 'TRACT SANHEDRIN (SUPREME
+    COUNCIL).' — keeps only the first capitalised noun so the ref stays
+    short ("Sanhedrin" rather than "Sanhedrin (Supreme Council)")."""
+    if not h3_text:
+        return None
+    m = TRACT_PREFIX_RE.match(h3_text.strip())
+    if not m:
+        return None
+    raw = m.group(1).strip()
+    # Drop trailing subtitles in parens ("SANHEDRIN (SUPREME COUNCIL)"
+    # → "SANHEDRIN"; "DERECH ERETZ--RABBA. (WORLDLY AFFAIRS.)" → "DERECH ERETZ")
+    for sep in ["(", "--", " - "]:
+        if sep in raw:
+            raw = raw.split(sep, 1)[0]
+    raw = raw.strip(" ,.").strip()
+    # Title-case: SANHEDRIN → Sanhedrin. Preserve multi-word tracts.
+    return " ".join(w.capitalize() for w in raw.split())
+
+
+def build_talmud_index() -> dict:
+    root = SITE / "read-external"
+    files = sorted(
+        root.glob("talmud-*.html"),
+        key=lambda p: int(re.search(r"talmud-(\d+)\.html$", p.name).group(1)),
+    )
+
+    entries: list[dict] = []
+    for path in files:
+        m = re.search(r"talmud-(\d+)\.html$", path.name)
+        if not m:
+            continue
+        book_num = int(m.group(1))
+        book_title = TALMUD_BOOK_TITLES.get(book_num, f"Book {book_num}")
+
+        html = path.read_text(encoding="utf-8")
+        soup = BeautifulSoup(html, "lxml")
+
+        sections = soup.select("article.surah")
+        current_tract: str | None = None
+
+        for sec in sections:
+            sid = sec.get("id") or ""
+            h2 = sec.select_one("h2.surah-title")
+            h2_txt = h2.get_text(" ", strip=True) if h2 else ""
+
+            # Update the current tractate if this section opens a new one.
+            for h3 in sec.select(".prose h3"):
+                t = _tract_name_from_h3(h3.get_text(" ", strip=True))
+                if t:
+                    current_tract = t
+                    break
+
+            # Skip prefaces / erratas / advertisement shells — they aren't
+            # useful search targets and have noisy titles.
+            title = h2_txt.strip().rstrip(".")
+            if not title:
+                continue
+            lower_title = title.lower()
+            if any(skip in lower_title for skip in (
+                "explanatory remarks", "copyright", "advertisement",
+                "errata", "a word to the reader",
+            )):
+                continue
+
+            # Ref: "Sanhedrin · Chapter IV" (falls back to "Book 8 · Chapter IV"
+            # when we haven't spotted a TRACT heading yet).
+            tract_part = current_tract or f"Book {book_num}"
+            ref = f"{tract_part} · {title}"
+
+            body = sec.select_one(".prose") or sec
+            text = body.get_text(" ", strip=True) if body else sec.get_text(" ", strip=True)
+            text = re.sub(r"\s+", " ", text).strip()
+            if not text:
+                continue
+
+            entries.append({
+                "ref":  ref,
+                "href": f"{path.name}#{sid}",
+                "text": text,
+            })
+
+        print(f"  {path.name} ({book_title}) -> {len(sections)} sections")
+
+    return {
+        "source":  "talmud",
+        "title":   "The Talmud",
+        "base":    "read-external/",
+        "entries": entries,
+    }
+
+
 # --------------------------------------------------------------------- main
 
 def write_index(name: str, data: dict) -> None:
@@ -209,8 +322,9 @@ def write_index(name: str, data: dict) -> None:
 
 def main() -> None:
     args = set(sys.argv[1:])
-    do_bible = not args or "bible" in args
-    do_ibnk  = not args or "ibn-kathir" in args or "ibnk" in args
+    do_bible  = not args or "bible" in args
+    do_ibnk   = not args or "ibn-kathir" in args or "ibnk" in args
+    do_talmud = not args or "talmud" in args
 
     if do_bible:
         print("Building Interlinear Bible search index...")
@@ -219,6 +333,10 @@ def main() -> None:
     if do_ibnk:
         print("\nBuilding Tafsir Ibn Kathir search index...")
         write_index("ibn-kathir", build_ibn_kathir_index())
+
+    if do_talmud:
+        print("\nBuilding Talmud search index...")
+        write_index("talmud", build_talmud_index())
 
 
 if __name__ == "__main__":

@@ -39,7 +39,8 @@
     { slug: "book-of-enoch",      title: "The Book of Enoch (1 Enoch)",                   path: "read-external/book-of-enoch.html",      group: "Comparative scripture" },
     { slug: "mishnah",            title: "The Mishnah (Kulp)",                            path: "read-external/mishnah.html",            group: "Comparative scripture" },
     { slug: "josephus",           title: "Flavius Josephus",                              path: "read-external/josephus.html",           group: "Comparative scripture" },
-    { slug: "talmud",             title: "The Talmud",                                    path: "read-external/talmud.html",             group: "Comparative scripture" },
+    { slug: "talmud",             title: "The Talmud",                                    path: "read-external/talmud.html",             group: "Comparative scripture",
+      indexUrl: "assets/compare-index/talmud.json", indexBase: "read-external/" },
 
     // Classical Islamic scholarship
     { slug: "ibn-kathir", title: "Tafsīr Ibn Kathīr", path: "read-external/ibn-kathir.html", group: "Classical Islamic scholarship",
@@ -401,29 +402,40 @@
     return p;
   }
 
+  // Normalise for substring matching: collapse punctuation + "·" so
+  // "Sanhedrin Chapter IV" matches "Sanhedrin · Chapter IV" in refs.
+  function normaliseForMatch(s) {
+    return String(s || "")
+      .toLowerCase()
+      .replace(/[^\p{Letter}\p{Number}]+/gu, " ")
+      .trim();
+  }
+
   function searchIndexEntries(entries, query, limit) {
     const qLower = query.toLowerCase();
+    const qNorm  = normaliseForMatch(query);
     const refExact = [];
     const refFuzzy = [];
     const textOnly = [];
-    // Clean-tail regex: refs ending in "John 3:16" should NOT match
-    // a "3:16" query unless the match lands at the end of the ref.
-    const tailMatch = qLower.match(/(?:^|\s|·)\d+:\d+$|\d+:\d+$/);
-    const tailExact = tailMatch ? tailMatch[0].trim() : null;
+    // Clean-tail regex: "John 3:16" as a query should not match
+    // "John 3:160" via substring — only match refs ending in 3:16.
+    const tailMatch = qLower.match(/\d+:\d+$/);
+    const tailExact = tailMatch ? tailMatch[0] : null;
     const tailRe = tailExact
-      ? new RegExp("(?:^|\\s|·\\s*)" + tailExact.replace(/[:]/g, "\\$&") + "$")
+      ? new RegExp("(?:^|\\s|·|\\W)" + tailExact.replace(/[:]/g, "\\$&") + "\\s*$")
       : null;
     const seen = Object.create(null);
     for (let i = 0; i < entries.length; i++) {
       const e = entries[i];
-      const ref = (e.ref || "").toLowerCase();
-      const txt = (e.text || "").toLowerCase();
-      if (ref.indexOf(qLower) >= 0) {
+      const refLow = (e.ref || "").toLowerCase();
+      const refNorm = normaliseForMatch(e.ref);
+      const txtNorm = normaliseForMatch(e.text);
+      if (refLow.indexOf(qLower) >= 0 || refNorm.indexOf(qNorm) >= 0) {
         if (seen[e.href]) continue;
-        if (tailRe && tailRe.test(ref)) refExact.push(e);
+        if (tailRe && tailRe.test(refLow)) refExact.push(e);
         else refFuzzy.push(e);
         seen[e.href] = true;
-      } else if (txt.indexOf(qLower) >= 0) {
+      } else if (txtNorm.indexOf(qNorm) >= 0) {
         if (seen[e.href]) continue;
         textOnly.push(e);
         seen[e.href] = true;
