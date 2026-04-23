@@ -33,7 +33,8 @@
     // Comparative scripture
     { slug: "tanakh",             title: "The Tanakh (JPS 1917)",                         path: "read-external/tanakh.html",             group: "Comparative scripture" },
     { slug: "new-testament",      title: "The New Testament (WEB)",                       path: "read-external/new-testament.html",      group: "Comparative scripture" },
-    { slug: "bible-interlinear",  title: "Interlinear Bible (Hebrew · Greek · Strong's)", path: "read-external/bible.html",              group: "Comparative scripture" },
+    { slug: "bible-interlinear",  title: "Interlinear Bible (Hebrew · Greek · Strong's)", path: "read-external/bible.html",              group: "Comparative scripture",
+      indexUrl: "assets/compare-index/bible.json", indexBase: "read-external/bible/" },
     { slug: "apocryphal-gospels", title: "Apocryphal Infancy Gospels",                    path: "read-external/apocryphal-gospels.html", group: "Comparative scripture" },
     { slug: "book-of-enoch",      title: "The Book of Enoch (1 Enoch)",                   path: "read-external/book-of-enoch.html",      group: "Comparative scripture" },
     { slug: "mishnah",            title: "The Mishnah (Kulp)",                            path: "read-external/mishnah.html",            group: "Comparative scripture" },
@@ -41,7 +42,8 @@
     { slug: "talmud",             title: "The Talmud",                                    path: "read-external/talmud.html",             group: "Comparative scripture" },
 
     // Classical Islamic scholarship
-    { slug: "ibn-kathir", title: "Tafsīr Ibn Kathīr", path: "read-external/ibn-kathir.html", group: "Classical Islamic scholarship" },
+    { slug: "ibn-kathir", title: "Tafsīr Ibn Kathīr", path: "read-external/ibn-kathir.html", group: "Classical Islamic scholarship",
+      indexUrl: "assets/compare-index/ibn-kathir.json", indexBase: "read-external/" },
 
     // Catalog — by source
     { slug: "cat-quran",     title: "Catalog — Qur'ān entries",       path: "catalog/quran.html",     group: "Catalog · by source" },
@@ -339,6 +341,12 @@
     search.value = "";
     results.hidden = true;
     results.innerHTML = "";
+
+    // Warm the cache for multi-page indexed sources so the first search
+    // doesn't wait on a multi-MB download.
+    if (source.indexUrl) {
+      loadSourceIndex(source).catch(function () {});
+    }
   }
 
   function iframeDoc(frame) {
@@ -373,6 +381,69 @@
     } catch (_) {}
   }
 
+  // --- Multi-page index support (Bible / Ibn Kathir) -------------------
+  // Sources with an indexUrl live across many sub-pages, so a DOM scan
+  // of the iframe only sees the landing page. We fetch the pre-built
+  // JSON once, search every entry, and on click navigate the iframe to
+  // the exact sub-page + anchor. Same approach as compare.js.
+  const INDEX_CACHE = Object.create(null);
+
+  function loadSourceIndex(source) {
+    if (!source || !source.indexUrl) return Promise.resolve(null);
+    if (INDEX_CACHE[source.slug] !== undefined) return Promise.resolve(INDEX_CACHE[source.slug]);
+    const p = fetch(source.indexUrl)
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status + " fetching " + source.indexUrl);
+        return r.json();
+      })
+      .catch(function (err) { delete INDEX_CACHE[source.slug]; throw err; });
+    INDEX_CACHE[source.slug] = p;
+    return p;
+  }
+
+  function searchIndexEntries(entries, query, limit) {
+    const qLower = query.toLowerCase();
+    const refExact = [];
+    const refFuzzy = [];
+    const textOnly = [];
+    // Clean-tail regex: refs ending in "John 3:16" should NOT match
+    // a "3:16" query unless the match lands at the end of the ref.
+    const tailMatch = qLower.match(/(?:^|\s|·)\d+:\d+$|\d+:\d+$/);
+    const tailExact = tailMatch ? tailMatch[0].trim() : null;
+    const tailRe = tailExact
+      ? new RegExp("(?:^|\\s|·\\s*)" + tailExact.replace(/[:]/g, "\\$&") + "$")
+      : null;
+    const seen = Object.create(null);
+    for (let i = 0; i < entries.length; i++) {
+      const e = entries[i];
+      const ref = (e.ref || "").toLowerCase();
+      const txt = (e.text || "").toLowerCase();
+      if (ref.indexOf(qLower) >= 0) {
+        if (seen[e.href]) continue;
+        if (tailRe && tailRe.test(ref)) refExact.push(e);
+        else refFuzzy.push(e);
+        seen[e.href] = true;
+      } else if (txt.indexOf(qLower) >= 0) {
+        if (seen[e.href]) continue;
+        textOnly.push(e);
+        seen[e.href] = true;
+      }
+      if (refExact.length + refFuzzy.length + textOnly.length >= limit) break;
+    }
+    return { refExact: refExact, refFuzzy: refFuzzy, textOnly: textOnly };
+  }
+
+  function jumpIndexed(source, href) {
+    // href is "<sub-page>.html#<anchor>" relative to source.indexBase.
+    const frame = document.getElementById("source-frame");
+    const base = source.indexBase || "";
+    const hashAt = href.indexOf("#");
+    const pagePart = hashAt >= 0 ? href.slice(0, hashAt) : href;
+    const anchor   = hashAt >= 0 ? href.slice(hashAt + 1) : "";
+    const joiner = (base + pagePart).indexOf("?") >= 0 ? "&" : "?";
+    frame.src = base + pagePart + joiner + "embed=1" + (anchor ? "#" + anchor : "");
+  }
+
   function performSearch() {
     const search  = document.getElementById("source-search");
     const results = document.getElementById("source-results");
@@ -383,6 +454,22 @@
       results.innerHTML = "";
       return;
     }
+
+    const sourceSlug = document.getElementById("source-select").value || "";
+    const source = SOURCE_BY_SLUG[sourceSlug];
+
+    // Multi-page sources: route through the JSON index (covers Bible
+    // Interlinear across 66 books and Tafsīr Ibn Kathīr across 114
+    // surahs). Everything else still uses the iframe-DOM scan below.
+    if (source && source.indexUrl) {
+      performIndexedSearch(source, query, results, frame);
+      return;
+    }
+
+    performIframeSearch(source, sourceSlug, query, results, frame);
+  }
+
+  function performIframeSearch(source, sourceSlug, query, results, frame) {
     const doc = iframeDoc(frame);
     if (!doc) {
       results.innerHTML = '<div class="compare-search-status">Iframe still loading — try again in a moment.</div>';
@@ -394,7 +481,6 @@
     //    We strip the "cat-" / "ct-" prefix from catalog source slugs
     //    when asking the parser, since the underlying anchors mirror
     //    the reader scheme (catalog/quran.html uses "s2v23" etc.).
-    const sourceSlug = document.getElementById("source-select").value || "";
     const parserSlug = sourceSlug.replace(/^cat-/, "").replace(/^ct-/, "");
     const derivedIds = (window.VERSE_PARSER
       ? window.VERSE_PARSER.candidateIds(query, parserSlug)
@@ -458,6 +544,71 @@
       results.appendChild(btn);
     });
     results.hidden = false;
+  }
+
+  function performIndexedSearch(source, query, results, frame) {
+    results.innerHTML =
+      '<div class="compare-search-status">Searching all of ' +
+      escapeHtml(source.title) + "…</div>";
+    results.hidden = false;
+
+    const search = document.getElementById("source-search");
+    const atSubmit = query;
+
+    loadSourceIndex(source).then(function (idx) {
+      if ((search.value || "").trim() !== atSubmit) return;
+      if (document.getElementById("source-select").value !== source.slug) return;
+
+      const res = searchIndexEntries((idx && idx.entries) || [], atSubmit, 50);
+      const ordered = res.refExact.concat(res.refFuzzy).concat(res.textOnly);
+      const total = ordered.length;
+
+      // Single clean ref-tail hit or single match of any kind →
+      // auto-jump so the iframe lands straight on the verse.
+      if (res.refExact.length === 1) {
+        jumpIndexed(source, res.refExact[0].href);
+        results.innerHTML =
+          '<div class="compare-search-status">Jumped to ' +
+          escapeHtml(res.refExact[0].ref) + ".</div>";
+        setTimeout(function () { results.hidden = true; }, 1800);
+        return;
+      }
+      if (total === 1) {
+        jumpIndexed(source, ordered[0].href);
+        results.innerHTML =
+          '<div class="compare-search-status">Jumped to ' +
+          escapeHtml(ordered[0].ref) + ".</div>";
+        setTimeout(function () { results.hidden = true; }, 1800);
+        return;
+      }
+
+      results.innerHTML = "";
+      if (!total) {
+        results.innerHTML = '<div class="compare-search-status">No matches for "' + escapeHtml(atSubmit) + '".</div>';
+        return;
+      }
+      const hdr = document.createElement("div");
+      hdr.className = "compare-search-status";
+      hdr.textContent = total + " match" + (total === 1 ? "" : "es") + (total >= 50 ? " (showing first 50)" : "");
+      results.appendChild(hdr);
+      ordered.slice(0, 50).forEach(function (entry) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "compare-search-result";
+        btn.innerHTML =
+          '<span class="ref">' + escapeHtml(entry.ref || "") + "</span>" +
+          '<span class="snippet">' + buildSnippet(entry.text || "", atSubmit) + "</span>";
+        btn.addEventListener("click", function () {
+          jumpIndexed(source, entry.href);
+          results.hidden = true;
+        });
+        results.appendChild(btn);
+      });
+    }).catch(function (err) {
+      results.innerHTML =
+        '<div class="compare-search-status">Could not load index: ' +
+        escapeHtml(String(err.message || err)) + "</div>";
+    });
   }
 
   // ============ Drag-drop bridge (iframe → Quill) ======================
