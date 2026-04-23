@@ -119,9 +119,24 @@
     let dragging = false;
     // Cached at drag start so we don't call getBoundingClientRect() per move.
     let refLeft = 0;
-    // Most recent pointer X; committed to the CSS var once per animation frame.
+    // Drag intent (where the left pane's right edge will land on release).
+    // Updated via translateX on the ghost element — compositor-only, no reflow.
     let pendingX = null;
     let rafId = 0;
+
+    // Ghost line: a fixed-position 2-pixel accent line that tracks the cursor
+    // while dragging. We only update `transform: translateX()` on the ghost,
+    // which the browser handles on the compositor without any text reflow.
+    // The actual grid column resize (which DOES reflow every visible verse)
+    // happens exactly once, on pointerup.
+    let ghostEl = null;
+    function ensureGhost() {
+      if (ghostEl) return ghostEl;
+      ghostEl = document.createElement("div");
+      ghostEl.className = "splitter-ghost";
+      document.body.appendChild(ghostEl);
+      return ghostEl;
+    }
 
     function isHidden() {
       return getComputedStyle(el).display === "none";
@@ -133,36 +148,52 @@
       return null;
     }
 
-    function commitWidth() {
+    // Given a raw pointer X, return the clamped final (refLeft + width) X
+    // where the divider will actually land — so the ghost lines up exactly
+    // with the post-release position.
+    function resolveX(x) {
+      let w = Math.round(x - refLeft);
+      if (collapsible && w < collapseThreshold) return refLeft;
+      return refLeft + clamp(w, min, max);
+    }
+
+    function positionGhost() {
       rafId = 0;
-      if (pendingX == null) return;
-      let w = Math.round(pendingX - refLeft);
-      pendingX = null;
-      if (collapsible && w < collapseThreshold) {
-        document.documentElement.style.setProperty(cssVar, "0px");
-        if (!el.classList.contains("is-collapsed")) setCollapsed(true);
-        return;
-      }
-      if (collapsible && el.classList.contains("is-collapsed")) {
-        setCollapsed(false);
-      }
-      w = clamp(w, min, max);
-      document.documentElement.style.setProperty(cssVar, w + "px");
+      if (pendingX == null || !ghostEl) return;
+      const x = resolveX(pendingX);
+      ghostEl.style.transform = "translateX(" + x + "px)";
     }
 
     function schedule() {
       if (rafId) return;
-      rafId = requestAnimationFrame(commitWidth);
+      rafId = requestAnimationFrame(positionGhost);
+    }
+
+    function commitFinal() {
+      if (pendingX == null) return;
+      let w = Math.round(pendingX - refLeft);
+      if (collapsible && w < collapseThreshold) {
+        document.documentElement.style.setProperty(cssVar, "0px");
+        setCollapsed(true);
+        return;
+      }
+      if (collapsible) setCollapsed(false);
+      w = clamp(w, min, max);
+      document.documentElement.style.setProperty(cssVar, w + "px");
     }
 
     function onDown(e) {
       if (isHidden()) return;
-      // Clicks on the expand-button or any other child shouldn't start a drag.
       if (e.target !== el) return;
       dragging = true;
       refLeft = refEl.getBoundingClientRect().left;
+      pendingX = currentX(e);
       el.classList.add("is-dragging");
       document.body.classList.add("splitter-dragging");
+      // Spawn the ghost at the current splitter position so there's no jump.
+      const ghost = ensureGhost();
+      ghost.classList.add("is-visible");
+      positionGhost();
       if (e.pointerId !== undefined && el.setPointerCapture) {
         try { el.setPointerCapture(e.pointerId); } catch (_) {}
       }
@@ -180,15 +211,14 @@
     function onUp() {
       if (!dragging) return;
       dragging = false;
-      // Flush any pending frame so final width lands before we persist.
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-        rafId = 0;
-        commitWidth();
-      }
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
       el.classList.remove("is-dragging");
       document.body.classList.remove("splitter-dragging");
-      // Persist final state: "0" if collapsed, else the numeric width.
+      // Remove the ghost, then commit the real resize in a single reflow.
+      if (ghostEl) ghostEl.classList.remove("is-visible");
+      commitFinal();
+      pendingX = null;
+      // Persist.
       if (collapsible && el.classList.contains("is-collapsed")) {
         try { localStorage.setItem(key, "0"); } catch (_) {}
         return;

@@ -59,6 +59,25 @@ body.splitter-dragging iframe {
   pointer-events: none;
 }
 
+/* Ghost line that tracks the cursor while dragging a splitter. The real
+   layout is unchanged during drag — only on release does the column
+   actually resize. Moving this element is compositor-only (transform),
+   so it stays buttery-smooth even on pages with thousands of verses. */
+.splitter-ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100vh;
+  background: var(--accent);
+  transform: translateX(-9999px);
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+  will-change: transform;
+}
+.splitter-ghost.is-visible { display: block; }
+
 a {
   color: var(--accent);
   text-decoration: none;
