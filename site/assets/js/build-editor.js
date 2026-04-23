@@ -922,8 +922,45 @@
   }
 
   // ============ Translator =============================================
-  async function translate(text, source) {
-    // MyMemory public endpoint. Free for ~5k chars/day without an email.
+  // MyMemory's free tier caps each request at 500 characters, which
+  // makes the raw API unusable for full Arabic hadith or long Quranic
+  // passages (the selection in the screenshot that triggered this was
+  // ~900 chars). Split the request into ~450-char chunks on sentence
+  // boundaries, translate each, stitch the results, and surface
+  // progress so the user knows big selections take a second or two.
+  const TRANSLATE_CHUNK_MAX = 450; // leave headroom under MyMemory's 500
+  const TRANSLATE_TOTAL_MAX = 10000; // guard against runaway selections
+
+  // Split `text` into ≤TRANSLATE_CHUNK_MAX chunks. Prefer breaks at
+  // sentence terminators (. ! ? ؟ 。), then clause terminators
+  // (, ; ، 、), then the last whitespace, finally a hard cut.
+  function chunkForTranslate(text) {
+    const t = String(text || "").trim();
+    if (!t) return [];
+    if (t.length <= TRANSLATE_CHUNK_MAX) return [t];
+    const chunks = [];
+    let rest = t;
+    while (rest.length > TRANSLATE_CHUNK_MAX) {
+      const window = rest.slice(0, TRANSLATE_CHUNK_MAX);
+      let cut = -1;
+      // Sentence boundary — last occurrence within window.
+      const sentence = /[.!?؟。]\s/g;
+      let m;
+      while ((m = sentence.exec(window)) !== null) cut = m.index + 1;
+      if (cut < 0) {
+        const clause = /[,;،、]\s/g;
+        while ((m = clause.exec(window)) !== null) cut = m.index + 1;
+      }
+      if (cut < 0) cut = window.lastIndexOf(" ");
+      if (cut < 0) cut = TRANSLATE_CHUNK_MAX; // no whitespace at all
+      chunks.push(rest.slice(0, cut).trim());
+      rest = rest.slice(cut).trim();
+    }
+    if (rest) chunks.push(rest);
+    return chunks;
+  }
+
+  async function translateOne(text, source) {
     const url =
       "https://api.mymemory.translated.net/get?q=" +
       encodeURIComponent(text) +
@@ -931,8 +968,44 @@
     const res = await fetch(url);
     if (!res.ok) throw new Error("translate http " + res.status);
     const json = await res.json();
-    const best = json && json.responseData && json.responseData.translatedText;
-    return best || "";
+    // MyMemory returns an error payload with responseStatus != 200 when
+    // it's unhappy (rate limit, bad pair, length). Surface it as a
+    // thrown Error so the caller can show the user something useful.
+    if (json && json.responseStatus && json.responseStatus !== 200
+        && json.responseStatus !== "200") {
+      const details = (json.responseDetails || "translate failed").toString();
+      throw new Error(details);
+    }
+    return (json && json.responseData && json.responseData.translatedText) || "";
+  }
+
+  // Public API. `onProgress(done, total)` gets called after each chunk
+  // so the UI can say "Translating 3/5…". Enforces a hard ceiling on
+  // total selection length so accidental select-all doesn't burn
+  // through the daily MyMemory quota.
+  async function translate(text, source, onProgress) {
+    const chunks = chunkForTranslate(text);
+    if (!chunks.length) return "";
+    const total = chunks.reduce(function (n, c) { return n + c.length; }, 0);
+    if (total > TRANSLATE_TOTAL_MAX) {
+      throw new Error("Selection too long (" + total + " chars). Highlight less than " + TRANSLATE_TOTAL_MAX + " chars at a time.");
+    }
+    if (chunks.length === 1) {
+      if (typeof onProgress === "function") onProgress(0, 1);
+      const out = await translateOne(chunks[0], source);
+      if (typeof onProgress === "function") onProgress(1, 1);
+      return out;
+    }
+    // Serial requests: MyMemory rate-limits; concurrent hits get 429s.
+    const parts = [];
+    for (let i = 0; i < chunks.length; i++) {
+      if (typeof onProgress === "function") onProgress(i, chunks.length);
+      parts.push(await translateOne(chunks[i], source));
+    }
+    if (typeof onProgress === "function") onProgress(chunks.length, chunks.length);
+    // Join with a space — sentence-boundary cuts already preserve the
+    // trailing punctuation, so this reads naturally.
+    return parts.filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
   }
 
   // Position an absolutely-positioned element at a viewport point, but
@@ -1203,12 +1276,22 @@
       resultTxt.textContent = "Translating…";
       copyBtn.hidden = true;
       try {
-        const out = await translate(text, lang);
+        // MyMemory caps each request at 500 chars. translate() splits
+        // long selections into sentence-boundary chunks and makes one
+        // request per chunk; surface progress so the user knows a big
+        // passage is actively translating, not stuck.
+        const out = await translate(text, lang, function (done, total) {
+          if (total > 1) {
+            resultTxt.textContent = "Translating " + done + " / " + total + "…";
+          }
+        });
         resultTxt.textContent = out || "(no translation returned)";
-        // Only offer Copy if there's something to copy.
         copyBtn.hidden = !out;
-      } catch (_) {
-        resultTxt.textContent = "Translation failed. Try again later.";
+      } catch (err) {
+        // Prefer the API's own error message when we have one — the
+        // most common case is "selection too long" from our own guard.
+        const msg = (err && err.message) ? err.message : "Translation failed. Try again later.";
+        resultTxt.textContent = msg;
         copyBtn.hidden = true;
       }
     });
