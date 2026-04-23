@@ -199,7 +199,7 @@
       currentPhrase = pickPhrase(currentPhrase);
       setPhrase(currentPhrase);
       replayPop();
-    }, 15 * 60 * 1000); // rotate every 15 minutes
+    }, 45 * 1000); // rotate every 45 seconds
 
     // --- Idle animation loop ---------------------------------------------
     // Every 5 seconds the goat plays a little "chew" animation (bending
