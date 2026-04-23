@@ -396,8 +396,10 @@
     if (!pop || !editor || !range) return;
     // Quill gives bounds relative to the editor root; translate to our
     // build-pane-editor coordinate system so the absolute popover lines
-    // up with the highlighted text.
+    // up with the highlighted text. getBounds can return null if the
+    // index is out of range during a layout transition — bail quietly.
     const bounds = quill.getBounds(range.index, range.length);
+    if (!bounds) { hideTranslatePopover(); return; }
     const editorRoot = quill.root;
     const editorOffset = editorRoot.getBoundingClientRect();
     const paneOffset  = editor.getBoundingClientRect();
@@ -407,8 +409,10 @@
     pop.style.left = Math.max(4, left) + "px";
     pop.hidden = false;
     const result = document.getElementById("translate-result");
-    result.hidden = true;
-    result.textContent = "";
+    if (result) {
+      result.hidden = true;
+      result.textContent = "";
+    }
   }
 
   function hideTranslatePopover() {
@@ -474,6 +478,13 @@
     name: "",
     quill: null,
     dirty: false,
+    // Idempotency guard. Keyed by the signed-in user's id so a sign-out
+    // properly resets us back to the sign-in gate, and a fresh sign-in
+    // re-mounts the editor once. Without this, Supabase's auth-state
+    // refresh events (fired on token refresh, INITIAL_SESSION, or focus
+    // regains) would wipe innerHTML and rebuild Quill every cycle —
+    // which steals the user's cursor and aborts in-flight clicks.
+    mountedForUserId: null,
   };
 
   function setStatus(text) {
@@ -662,10 +673,25 @@
   // ============ Entry point ============================================
   function paint() {
     const sess = window.__session;
-    if (!sess || !sess.user) {
-      renderSignedOut();
+    const userId = sess && sess.user ? sess.user.id : null;
+
+    if (!userId) {
+      // Signed out (or never signed in). Reset the mount guard so a
+      // subsequent sign-in remounts cleanly. Only re-render the gate
+      // if we're not already showing it to avoid useless reflows.
+      if (state.mountedForUserId !== null) {
+        state.mountedForUserId = null;
+      }
+      if (!shell.querySelector(".auth-message")) renderSignedOut();
       return;
     }
+
+    // Already mounted for this user — do nothing. Prevents auth-state
+    // refresh events from tearing down and rebuilding the editor (which
+    // would cancel clicks and kill the cursor mid-keystroke).
+    if (state.mountedForUserId === userId) return;
+
+    state.mountedForUserId = userId;
     mountEditor();
   }
 
