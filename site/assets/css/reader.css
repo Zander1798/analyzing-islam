@@ -139,6 +139,45 @@
   padding: 0 8px;
 }
 
+/* Floating verse-search box injected by reader-search.js. Lives at the
+   top of .reader-toc (or at the top of the reading column when no TOC
+   is present). Accepts casual refs — "John 3:16", "Bukhari 2749", … */
+.reader-search-wrap {
+  padding: 0 8px 14px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.reader-search-input {
+  width: 100%;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-family: var(--sans);
+  border-radius: var(--radius-lg);
+}
+.reader-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg);
+}
+.reader-search-input::placeholder {
+  color: var(--text-dim);
+}
+
+.reader-search-hint {
+  margin-top: 6px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+.reader-search-hint--ok   { color: var(--accent); }
+.reader-search-hint--miss { color: var(--moderate); }
+
 .reader-toc ol {
   list-style: none;
   padding: 0;

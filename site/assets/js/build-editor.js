@@ -389,7 +389,30 @@
       results.hidden = false;
       return;
     }
-    // Exact anchor match first (supports "s9v5", "genesis-15-6", "h2749").
+    // 1) Try candidate IDs derived from a friendly verse reference
+    //    ("John 3:16", "Bukhari 2749", "Sanhedrin 4:5", "2:23", …).
+    //    We strip the "cat-" / "ct-" prefix from catalog source slugs
+    //    when asking the parser, since the underlying anchors mirror
+    //    the reader scheme (catalog/quran.html uses "s2v23" etc.).
+    const sourceSlug = document.getElementById("source-select").value || "";
+    const parserSlug = sourceSlug.replace(/^cat-/, "").replace(/^ct-/, "");
+    const derivedIds = (window.VERSE_PARSER
+      ? window.VERSE_PARSER.candidateIds(query, parserSlug)
+      : []);
+    for (let j = 0; j < derivedIds.length; j++) {
+      const el = doc.getElementById(derivedIds[j]);
+      if (el) {
+        scrollFrameTo(frame, el);
+        results.innerHTML =
+          '<div class="compare-search-status">Jumped to #' + escapeHtml(derivedIds[j]) + ".</div>";
+        results.hidden = false;
+        setTimeout(function () { results.hidden = true; }, 1800);
+        return;
+      }
+    }
+
+    // 2) Exact anchor match (user typed the raw id, e.g. "s9v5",
+    //    "genesis-15-6", "h2749").
     const asId = query.replace(/^#/, "").toLowerCase();
     if (/^[a-z0-9][a-z0-9\-]*$/.test(asId) && asId.length <= 40) {
       const byId = doc.getElementById(asId);
