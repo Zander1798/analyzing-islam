@@ -255,7 +255,12 @@
       paint();
     }
     window.addEventListener("auth-state", paint);
-    window.addEventListener("builds-changed", function () {
+    window.addEventListener("builds-changed", function (e) {
+      // Sharing a build inserts into shared_builds (not builds) and
+      // doesn't change this list's rows. Skipping the re-render here
+      // keeps the just-populated "Share link" UI from being wiped out
+      // between createShare resolving and the DOM being rebuilt.
+      if (e && e.detail && e.detail.action === "shared") return;
       if (window.__session && window.__session.user) render();
     });
   }
