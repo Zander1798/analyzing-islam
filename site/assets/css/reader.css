@@ -90,6 +90,20 @@
   background: transparent;
 }
 
+/* When the splitter is collapsed, fully hide the TOC — without this the
+   grid column is 0 px but the sidebar's horizontal padding still paints
+   a ~40 px ghost strip where the chapter list used to be. :has() lets
+   the TOC react to its sibling splitter's state without any JS. */
+.reader-layout:has(> .splitter.is-collapsed) > .reader-toc {
+  padding-left: 0;
+  padding-right: 0;
+  visibility: hidden;
+  /* Width was already 0 via the CSS var, but border/outline wouldn't be,
+     so force it home for browsers that relax grid clamping under padding. */
+  width: 0;
+  min-width: 0;
+}
+
 /* ===== Table of Contents (sticky sidebar) ===== */
 .reader-toc {
   position: sticky;
