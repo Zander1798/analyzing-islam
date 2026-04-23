@@ -374,6 +374,92 @@
     results.hidden = false;
   }
 
+  // ============ Drag-drop bridge (iframe → Quill) ======================
+  // Same-origin iframes technically support native text drag, but browsers
+  // are inconsistent about populating DataTransfer.text/html when the drag
+  // crosses frame boundaries — and Quill's default drop handler bails when
+  // both text and html are empty. We stamp the selection into DataTransfer
+  // from inside the iframe on dragstart, then handle drop on the Quill root
+  // ourselves (converting html → Delta and inserting at the cursor).
+  function wireDragDropBridge(quill) {
+    const frame = document.getElementById("source-frame");
+    if (!frame) return;
+    const Delta = Quill.import("delta");
+
+    function attachFrameHandlers() {
+      let doc = null, win = null;
+      try { doc = frame.contentDocument; win = frame.contentWindow; } catch (_) { return; }
+      if (!doc || !win) return;
+      // Each iframe navigation replaces the document, so we re-bind on
+      // every load. The flag prevents double-binding within one doc.
+      if (doc.__buildDragBound) return;
+      doc.__buildDragBound = true;
+      doc.addEventListener("dragstart", function (e) {
+        const sel = win.getSelection();
+        if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+        const range = sel.getRangeAt(0);
+        const container = doc.createElement("div");
+        container.appendChild(range.cloneContents());
+        try {
+          e.dataTransfer.setData("text/html", container.innerHTML);
+          e.dataTransfer.setData("text/plain", sel.toString());
+          e.dataTransfer.effectAllowed = "copy";
+        } catch (_) {}
+      });
+    }
+    frame.addEventListener("load", attachFrameHandlers);
+    attachFrameHandlers(); // in case it already loaded
+
+    const root = quill.root;
+    root.addEventListener("dragover", function (e) {
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+    });
+    root.addEventListener("drop", function (e) {
+      const dt = e.dataTransfer;
+      if (!dt) return;
+      const html = dt.getData("text/html");
+      const text = dt.getData("text/plain");
+      if (!html && !text) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Resolve drop point → Quill index.
+      let insertIndex = null;
+      const ownerDoc = root.ownerDocument;
+      try {
+        let targetRange = null;
+        if (ownerDoc.caretRangeFromPoint) {
+          targetRange = ownerDoc.caretRangeFromPoint(e.clientX, e.clientY);
+        } else if (ownerDoc.caretPositionFromPoint) {
+          const pos = ownerDoc.caretPositionFromPoint(e.clientX, e.clientY);
+          if (pos) {
+            targetRange = ownerDoc.createRange();
+            targetRange.setStart(pos.offsetNode, pos.offset);
+          }
+        }
+        if (targetRange) {
+          const blot = Quill.find(targetRange.startContainer, true);
+          if (blot) insertIndex = quill.getIndex(blot) + (targetRange.startOffset || 0);
+        }
+      } catch (_) {}
+      if (insertIndex == null) {
+        const cur = quill.getSelection();
+        insertIndex = cur ? cur.index : quill.getLength();
+      }
+
+      let delta;
+      if (html) {
+        delta = quill.clipboard.convert({ html: html });
+      } else {
+        delta = new Delta().insert(text);
+      }
+      quill.updateContents(new Delta().retain(insertIndex).concat(delta), "user");
+      quill.setSelection(insertIndex + delta.length(), 0);
+      quill.focus();
+    });
+  }
+
   // ============ Translator =============================================
   async function translate(text, source) {
     // MyMemory public endpoint. Free for ~5k chars/day without an email.
@@ -605,6 +691,9 @@
       const pane = document.querySelector(".build-pane-source");
       if (results && pane && !pane.contains(e.target)) results.hidden = true;
     });
+
+    // Drag-drop bridge: iframe selection → Quill (with formatting).
+    wireDragDropBridge(quill);
 
     // Translate popover on selection of non-Latin script.
     attachTranslator(quill);
