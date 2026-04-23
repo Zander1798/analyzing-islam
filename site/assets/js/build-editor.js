@@ -543,6 +543,75 @@
       placeAtViewport(menu, e.clientX, e.clientY);
     });
 
+    // ----- Mobile trigger: tap on non-Latin text -----
+    // Right-click doesn't exist on touch devices, so a short, stationary
+    // tap plays the same role: we find the word under the tap and, if
+    // it's Arabic / Hebrew / Greek, select it and open the menu. Long
+    // presses (dt > 500ms) or swipes skip this path so the browser's
+    // native text-selection and scrolling still work.
+    function showMenuForWordAt(clientX, clientY) {
+      const doc = quill.root.ownerDocument;
+      let domRange = null;
+      if (doc.caretRangeFromPoint) {
+        domRange = doc.caretRangeFromPoint(clientX, clientY);
+      } else if (doc.caretPositionFromPoint) {
+        const pos = doc.caretPositionFromPoint(clientX, clientY);
+        if (pos) {
+          domRange = doc.createRange();
+          domRange.setStart(pos.offsetNode, pos.offset);
+        }
+      }
+      if (!domRange) return false;
+      const node = domRange.startContainer;
+      if (!node || node.nodeType !== 3) return false;
+      const nodeText = node.textContent || "";
+      let start = domRange.startOffset;
+      let end = start;
+      // Expand to word boundaries (non-whitespace run).
+      while (start > 0 && /\S/.test(nodeText.charAt(start - 1))) start--;
+      while (end < nodeText.length && /\S/.test(nodeText.charAt(end))) end++;
+      if (start === end) return false;
+      const word = nodeText.slice(start, end).trim();
+      if (!word) return false;
+      const lang = detectLang(word);
+      if (!lang) return false;
+      // DOM offset → Quill index.
+      let quillIndex = null;
+      try {
+        const blot = Quill.find(node, true);
+        if (blot) quillIndex = quill.getIndex(blot) + start;
+      } catch (_) {}
+      if (quillIndex == null) return false;
+      quill.setSelection(quillIndex, end - start, "user");
+      pending = { text: word, lang: lang };
+      hideTranslateResult();
+      menu.hidden = false;
+      placeAtViewport(menu, clientX, clientY);
+      return true;
+    }
+
+    let touchStart = null;
+    quill.root.addEventListener("touchstart", function (e) {
+      if (e.touches.length !== 1) { touchStart = null; return; }
+      const t = e.touches[0];
+      touchStart = { time: Date.now(), x: t.clientX, y: t.clientY };
+    }, { passive: true });
+    quill.root.addEventListener("touchend", function (e) {
+      const started = touchStart;
+      touchStart = null;
+      if (!started || e.changedTouches.length !== 1) return;
+      const t = e.changedTouches[0];
+      const dt = Date.now() - started.time;
+      const dx = Math.abs(t.clientX - started.x);
+      const dy = Math.abs(t.clientY - started.y);
+      // Treat as "tap to translate" only if it was short and stationary.
+      if (dt > 500 || dx > 10 || dy > 10) return;
+      // Defer one tick so Quill finalises any caret move first.
+      setTimeout(function () {
+        showMenuForWordAt(t.clientX, t.clientY);
+      }, 20);
+    });
+
     btn.addEventListener("click", async function () {
       if (!pending) return;
       const { text, lang } = pending;
@@ -614,9 +683,14 @@
     function maybeDismiss(e) {
       if (menu.contains(e.target) || result.contains(e.target)) return;
       hideTranslateMenu();
-      if (e.type !== "mousedown" || !result.hidden) hideTranslateResult();
+      if (e.type === "mousedown" || e.type === "touchstart") {
+        if (!result.hidden) hideTranslateResult();
+      } else {
+        hideTranslateResult();
+      }
     }
     document.addEventListener("mousedown", maybeDismiss);
+    document.addEventListener("touchstart", maybeDismiss, { passive: true });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
         hideTranslateMenu();
