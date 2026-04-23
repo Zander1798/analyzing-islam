@@ -130,6 +130,9 @@
     // /read/quran.html → quran ; /read/bukhari.html → bukhari ; etc.
     const readerMatch = path.match(/\/read\/([^\/]+?)(?:-v\d+)?\.html$/);
     if (readerMatch) return readerMatch[1];
+    // Interlinear Bible sub-pages live one level deeper:
+    // /read-external/bible/<book>.html
+    if (/\/read-external\/bible\//.test(path)) return "bible-interlinear";
     // /read-external/tanakh.html etc.
     const extMatch = path.match(/\/read-external\/([^\/]+?)(?:-\d+)?\.html$/);
     if (extMatch) {
