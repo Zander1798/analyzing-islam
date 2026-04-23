@@ -484,6 +484,30 @@
         const sel = win.getSelection();
         if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
         const range = sel.getRangeAt(0);
+
+        // --- Interlinear Bible: smart-layer drag --------------------------
+        // The Hebrew/Greek, transliteration, and English gloss of each word
+        // are stacked inside a single `.w` flex container. A naive selection
+        // picks up all three layers in DOM order, producing mixed gibberish
+        // on drop. Detect the element the drag originated from — if it's a
+        // `.w-orig` (original), `.w-trans` (transliteration), or `.w-gloss`
+        // (English), extract only that layer's text across every word the
+        // selection touches. This gives the user clean, single-script output
+        // for whichever line they clicked to drag, matching the request that
+        // both non-Latin text and English be independently draggable.
+        const layerClass = interlinearLayerOf(e.target);
+        if (layerClass) {
+          const payload = extractInterlinearLayer(doc, range, layerClass);
+          if (payload) {
+            try {
+              e.dataTransfer.setData("text/html", payload.html);
+              e.dataTransfer.setData("text/plain", payload.text);
+              e.dataTransfer.effectAllowed = "copy";
+            } catch (_) {}
+            return;
+          }
+        }
+
         const container = doc.createElement("div");
         container.appendChild(range.cloneContents());
         try {
@@ -492,6 +516,53 @@
           e.dataTransfer.effectAllowed = "copy";
         } catch (_) {}
       });
+    }
+
+    function interlinearLayerOf(el) {
+      if (!el || !el.closest) return null;
+      const hit = el.closest(".w-orig, .w-trans, .w-gloss");
+      if (!hit) return null;
+      if (hit.classList.contains("w-orig"))  return "w-orig";
+      if (hit.classList.contains("w-trans")) return "w-trans";
+      return "w-gloss";
+    }
+
+    function extractInterlinearLayer(doc, range, layerClass) {
+      // Collect every span of the requested layer that the selection
+      // intersects, join their text in document order. For the Hebrew/
+      // Greek original we also emit an HTML payload with lang + dir so
+      // Quill renders the script right-to-left where appropriate.
+      const scope = range.commonAncestorContainer.nodeType === 1
+        ? range.commonAncestorContainer
+        : range.commonAncestorContainer.parentElement;
+      if (!scope) return null;
+      const candidates = scope.querySelectorAll("." + layerClass);
+      const parts = [];
+      for (let i = 0; i < candidates.length; i++) {
+        const el = candidates[i];
+        if (range.intersectsNode(el)) {
+          const t = (el.textContent || "").trim();
+          if (t) parts.push(t);
+        }
+      }
+      if (!parts.length) return null;
+      const text = parts.join(" ");
+
+      function esc(s) {
+        return s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+      }
+
+      if (layerClass === "w-orig") {
+        const body = doc.body;
+        const isHeb = body && body.classList.contains("bible-lang-heb");
+        const isGrk = body && body.classList.contains("bible-lang-grk");
+        const lang = isHeb ? "he" : isGrk ? "grc" : "";
+        const dir  = isHeb ? "rtl" : "ltr";
+        const attrs = (lang ? ' lang="' + lang + '"' : "") +
+                      ' dir="' + dir + '"';
+        return { text: text, html: "<span" + attrs + ">" + esc(text) + "</span>" };
+      }
+      return { text: text, html: esc(text) };
     }
     frame.addEventListener("load", attachFrameHandlers);
     attachFrameHandlers(); // in case it already loaded
