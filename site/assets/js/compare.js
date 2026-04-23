@@ -29,14 +29,23 @@
     // --- Comparative scripture ---
     { slug: "tanakh",             title: "The Tanakh (JPS 1917)",         path: "read-external/tanakh.html",             group: "Comparative scripture" },
     { slug: "new-testament",      title: "The New Testament (WEB)",       path: "read-external/new-testament.html",      group: "Comparative scripture" },
-    { slug: "bible-interlinear",  title: "Interlinear Bible (Hebrew · Greek · Strong's)", path: "read-external/bible.html",   group: "Comparative scripture" },
+    // Interlinear Bible is a multi-page library (66 books). Real verse
+    // text lives in read-external/bible/<abbr>.html, so iframe-only DOM
+    // search would only see the index. The ``indexUrl`` entry lets the
+    // compare page fetch a pre-built JSON of every verse and search it
+    // in one go; clicking a result loads that specific book page.
+    { slug: "bible-interlinear",  title: "Interlinear Bible (Hebrew · Greek · Strong's)", path: "read-external/bible.html",   group: "Comparative scripture",
+      indexUrl: "assets/compare-index/bible.json", indexBase: "read-external/bible/" },
     { slug: "apocryphal-gospels", title: "Apocryphal Infancy Gospels",    path: "read-external/apocryphal-gospels.html", group: "Comparative scripture" },
     { slug: "book-of-enoch",      title: "The Book of Enoch (1 Enoch)",   path: "read-external/book-of-enoch.html",      group: "Comparative scripture" },
     { slug: "mishnah",            title: "The Mishnah (Kulp)",            path: "read-external/mishnah.html",            group: "Comparative scripture" },
     { slug: "josephus",           title: "Flavius Josephus",              path: "read-external/josephus.html",           group: "Comparative scripture" },
 
     // --- Classical Islamic scholarship ---
-    { slug: "ibn-kathir",  title: "Tafsīr Ibn Kathīr",               path: "read-external/ibn-kathir.html",  group: "Classical Islamic scholarship" },
+    // Ibn Kathir is also split across 114 surah pages; same indexing
+    // trick as the Interlinear Bible above.
+    { slug: "ibn-kathir",  title: "Tafsīr Ibn Kathīr",               path: "read-external/ibn-kathir.html",  group: "Classical Islamic scholarship",
+      indexUrl: "assets/compare-index/ibn-kathir.json", indexBase: "read-external/" },
     { slug: "talmud",      title: "The Talmud",                      path: "read-external/talmud.html",      group: "Comparative scripture" },
   ];
 
@@ -107,14 +116,40 @@
     history.replaceState(null, "", url);
   }
 
+  function prefetchIndex(source) {
+    // Kick off the JSON fetch early so search feels instant. Swallow
+    // errors; performIndexedSearch will surface them when it tries to
+    // use the index.
+    if (source && source.indexUrl) {
+      try { Promise.resolve(loadIndex(source)).catch(function () {}); }
+      catch (_) {}
+    }
+  }
+
   // -- Pane behaviour ----------------------------------------------------
   function setSource(side, slug, hash) {
     const els = getPaneEls(side);
     const source = SOURCE_BY_SLUG[slug] || SOURCE_BY_SLUG[DEFAULT_LEFT];
     if (!source) return;
 
-    let src = source.path + (source.path.indexOf("?") >= 0 ? "&" : "?") + "embed=1";
-    if (hash) src += "#" + hash.replace(/^#/, "");
+    // For indexed sources the URL-state ``hash`` can be either a bare
+    // anchor ("gen-1-1"), which means the index landing page, or a
+    // composite ``<subpage>.html#<anchor>`` which means a specific
+    // sub-page. Detect the composite form by the literal "#" we wrote
+    // out in jumpIndexed.
+    let src;
+    if (source.indexUrl && hash && hash.indexOf("#") >= 0) {
+      const base = source.indexBase || "";
+      const hashAt = hash.indexOf("#");
+      const pagePart = hash.slice(0, hashAt);
+      const anchor   = hash.slice(hashAt + 1);
+      const joiner = (base + pagePart).indexOf("?") >= 0 ? "&" : "?";
+      src = base + pagePart + joiner + "embed=1" + (anchor ? "#" + anchor : "");
+    } else {
+      src = source.path + (source.path.indexOf("?") >= 0 ? "&" : "?") + "embed=1";
+      if (hash) src += "#" + hash.replace(/^#/, "");
+    }
+
     if (els.frame.src !== location.origin + "/" + src && els.frame.getAttribute("src") !== src) {
       els.frame.src = src;
     }
@@ -123,6 +158,10 @@
     els.search.value = "";
     els.results.hidden = true;
     els.results.innerHTML = "";
+
+    // Warm the cache for multi-page indexed sources so the first search
+    // doesn't wait on a multi-MB download.
+    prefetchIndex(source);
   }
 
   function onSelectChange(side) {
@@ -186,7 +225,13 @@
     } catch (_) {}
   }
 
-  function renderResults(els, matches, query, frame) {
+  function renderResults(els, matches, query, onClick, totalHint) {
+    // ``onClick(match)`` performs the jump — the caller decides whether
+    // that's an in-frame scroll (iframe search) or a full iframe.src
+    // replacement (pre-built index search).
+    // ``totalHint`` lets the caller override the match count shown in
+    // the header (index searches cap scanning so the "real" total isn't
+    // always matches.length).
     els.results.innerHTML = "";
     if (!matches.length) {
       const empty = document.createElement("div");
@@ -196,11 +241,15 @@
       els.results.hidden = false;
       return;
     }
+    const shown = Math.min(matches.length, 50);
+    const total = typeof totalHint === "number" ? totalHint : matches.length;
     const hdr = document.createElement("div");
     hdr.className = "compare-search-status";
-    hdr.textContent = matches.length + " match" + (matches.length === 1 ? "" : "es") + (matches.length >= 50 ? " (showing first 50)" : "");
+    hdr.textContent =
+      total + " match" + (total === 1 ? "" : "es") +
+      (shown < total ? " (showing first " + shown + ")" : "");
     els.results.appendChild(hdr);
-    matches.slice(0, 50).forEach(function (m) {
+    matches.slice(0, shown).forEach(function (m) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "compare-search-result";
@@ -208,12 +257,153 @@
         '<span class="ref">' + (m.ref || "").replace(/[<>&]/g, "") + "</span>" +
         '<span class="snippet">' + m.snippet + "</span>";
       btn.addEventListener("click", function () {
-        scrollFrameTo(frame, m.el);
+        onClick(m);
         els.results.hidden = true;
       });
       els.results.appendChild(btn);
     });
     els.results.hidden = false;
+  }
+
+  // -- Pre-built search indexes (multi-page sources) ---------------------
+  // Sources like the Interlinear Bible and Ibn Kathīr are split across
+  // dozens of sub-pages, so a DOM scan of the iframe only sees the index
+  // landing page. For those, we fetch a JSON list of every verse /
+  // section once, then search it in-memory and replace the iframe's src
+  // when a result is clicked.
+  const INDEX_CACHE = Object.create(null);
+
+  function loadIndex(source) {
+    if (!source || !source.indexUrl) return null;
+    if (INDEX_CACHE[source.slug] !== undefined) return INDEX_CACHE[source.slug];
+    const p = fetch(source.indexUrl)
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status + " fetching " + source.indexUrl);
+        return r.json();
+      })
+      .catch(function (err) {
+        // Drop the cached promise so a later search can retry.
+        delete INDEX_CACHE[source.slug];
+        throw err;
+      });
+    INDEX_CACHE[source.slug] = p;
+    return p;
+  }
+
+  function searchIndexEntries(entries, query, limit) {
+    const qLower = query.toLowerCase();
+    const matches = [];
+    let total = 0;
+    for (let i = 0; i < entries.length; i++) {
+      const e = entries[i];
+      const t = e.text || "";
+      if (t.toLowerCase().indexOf(qLower) >= 0 ||
+          (e.ref && e.ref.toLowerCase().indexOf(qLower) >= 0)) {
+        total++;
+        if (matches.length < limit) matches.push(e);
+      }
+    }
+    return { matches: matches, total: total };
+  }
+
+  function jumpIndexed(side, source, href) {
+    // href is "<sub-page>.html#<anchor>" relative to source.indexBase.
+    // Rewrite the iframe src so it navigates to that sub-page.
+    const els = getPaneEls(side);
+    const base = source.indexBase || "";
+    const hashAt = href.indexOf("#");
+    const pagePart = hashAt >= 0 ? href.slice(0, hashAt) : href;
+    const anchor   = hashAt >= 0 ? href.slice(hashAt + 1) : "";
+    const joiner = (base + pagePart).indexOf("?") >= 0 ? "&" : "?";
+    const newSrc = base + pagePart + joiner + "embed=1" + (anchor ? "#" + anchor : "");
+    els.frame.src = newSrc;
+
+    // Mirror the full sub-page+anchor to the URL so reload and sharing
+    // land back on the exact verse / section. setSource recognises the
+    // composite form (contains "#") and routes to the sub-page.
+    const state = readParams();
+    if (side === "left")  state.lh = href;
+    if (side === "right") state.rh = href;
+    writeParams(state);
+  }
+
+  // Turn a user-friendly reference ("2:23", "Quran 2:23", "Bukhari 3731",
+  // "Genesis 1:1", "hadith 2953", …) into candidate anchor IDs for the
+  // given source. Returns a (possibly empty) list — we'll try each in
+  // order before falling back to a text scan.
+  function candidateIds(query, sourceSlug) {
+    const q = query.trim();
+    if (!q) return [];
+    const ids = [];
+
+    // "2:23", "2.23", "2-23"  (two-part numeric ref)
+    const two = q.match(/^(\d{1,3})\s*[:.\- ]\s*(\d{1,3})$/);
+    // plain number (hadith number / ayah ordinal)
+    const onlyNum = q.match(/^\d{1,5}$/);
+    // "<book or prefix> <chapter>[:verse][:sub]"  OR  "<prefix> <hadith-number>"
+    // Allows a leading ordinal ("1 Samuel", "2 Kings") before the book name.
+    // First number is up to 5 digits so hadith numbers ("Bukhari 3731") fit.
+    const prefixed = q.match(/^((?:[123]\s+)?[a-zA-Z][a-zA-Z'’. -]*?)\s+(\d{1,5})(?:\s*[:.\- ]\s*(\d{1,3}))?(?:\s*[:.\- ]\s*(\d{1,3}))?$/);
+
+    function addQuranId(s, v) {
+      if (s && v) ids.push("s" + s + "v" + v);
+    }
+    function addHadithId(n) {
+      if (n) ids.push("h" + String(n).replace(/^0+/, ""));
+    }
+    function addBibleId(book, c, v) {
+      let slug = String(book || "")
+        .toLowerCase()
+        .replace(/[.'’]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      if (!slug) return;
+      // Numbered books collapse the digit prefix into the book name:
+      // "1 Samuel" → "1samuel", "2 Kings" → "2kings", "1 Corinthians" → "1corinthians".
+      slug = slug.replace(/^([123])-([a-z])/, "$1$2");
+      if (v) ids.push(slug + "-" + c + "-" + v);
+      else if (c) ids.push(slug + "-" + c);
+      else ids.push(slug);
+    }
+    function addTractateId(book, c, v) {
+      // Mishnah: `{tractate}-{chapter}-{mishnah}`
+      addBibleId(book, c, v);
+    }
+
+    const isHadithSource = (
+      sourceSlug === "bukhari" || sourceSlug === "muslim" ||
+      sourceSlug === "abu-dawud" || sourceSlug === "tirmidhi" ||
+      sourceSlug === "nasai" || sourceSlug === "ibn-majah"
+    );
+    const isBibleSource = (
+      sourceSlug === "tanakh" || sourceSlug === "new-testament" ||
+      sourceSlug === "bible-interlinear" || sourceSlug === "apocryphal-gospels" ||
+      sourceSlug === "book-of-enoch"
+    );
+
+    if (sourceSlug === "quran") {
+      if (two) addQuranId(two[1], two[2]);
+      if (prefixed && /^(quran|qur'?an|surah?)$/i.test(prefixed[1])) {
+        addQuranId(prefixed[2], prefixed[3] || "1");
+      }
+    } else if (isHadithSource) {
+      if (onlyNum) addHadithId(q);
+      if (prefixed && /^(hadith|h|bukhari|muslim|dawud|abu\s*dawud|tirmidhi|nasa|nasai|ibn\s*majah)$/i.test(prefixed[1])) {
+        addHadithId(prefixed[2]);
+      }
+    } else if (isBibleSource) {
+      if (prefixed) addBibleId(prefixed[1], prefixed[2], prefixed[3]);
+    } else if (sourceSlug === "mishnah") {
+      if (prefixed) addTractateId(prefixed[1], prefixed[2], prefixed[3]);
+      // Chapter-only and mishnah-only within a currently-open tractate are
+      // handled by text scan, since we don't know the tractate from the query.
+    } else if (sourceSlug === "ibn-kathir") {
+      // Per-surah page; "a1" is the first ayah commentary on the open page.
+      if (onlyNum) ids.push("a" + q);
+      if (two) ids.push("a" + two[2]);
+    }
+
+    return ids;
   }
 
   function performSearch(side) {
@@ -224,6 +414,22 @@
       els.results.innerHTML = "";
       return;
     }
+
+    const slug = els.select.value;
+    const source = SOURCE_BY_SLUG[slug];
+
+    // Multi-page sources: search the pre-built JSON index.
+    if (source && source.indexUrl) {
+      performIndexedSearch(side, source, query);
+      return;
+    }
+
+    // Single-page sources: scan the iframe DOM.
+    performIframeSearch(side, slug, query);
+  }
+
+  function performIframeSearch(side, slug, query) {
+    const els = getPaneEls(side);
     const doc = iframeDoc(els.frame);
     if (!doc) {
       els.results.innerHTML = '<div class="compare-search-status">Iframe still loading — try again in a moment.</div>';
@@ -231,14 +437,27 @@
       return;
     }
 
-    // Optimisation: if the query looks like an anchor id the source uses,
-    // jump straight to it instead of doing a text scan.
+    // Try candidate IDs derived from a friendly verse reference first.
+    const derivedIds = candidateIds(query, slug);
+    for (let j = 0; j < derivedIds.length; j++) {
+      const el = doc.getElementById(derivedIds[j]);
+      if (el) {
+        scrollFrameTo(els.frame, el);
+        els.results.innerHTML = '<div class="compare-search-status">Jumped to #' + derivedIds[j] + '.</div>';
+        els.results.hidden = false;
+        setTimeout(function () { els.results.hidden = true; }, 1800);
+        return;
+      }
+    }
+
+    // Raw anchor id (user typed it exactly — e.g. "s2v23", "genesis-1-1").
+    // All IDs in the readers are lowercase, so try the lowercased form too.
     const looksLikeId = /^[a-z0-9][a-z0-9\-]*$/i.test(query) && query.length <= 40 && query.indexOf(" ") < 0;
     if (looksLikeId) {
-      const byId = doc.getElementById(query);
+      const byId = doc.getElementById(query) || doc.getElementById(query.toLowerCase());
       if (byId) {
         scrollFrameTo(els.frame, byId);
-        els.results.innerHTML = '<div class="compare-search-status">Jumped to #' + query + '.</div>';
+        els.results.innerHTML = '<div class="compare-search-status">Jumped to #' + byId.id + '.</div>';
         els.results.hidden = false;
         setTimeout(function () { els.results.hidden = true; }, 1800);
         return;
@@ -259,7 +478,48 @@
         });
       }
     }
-    renderResults(els, matches, query, els.frame);
+    renderResults(els, matches, query, function (m) {
+      scrollFrameTo(els.frame, m.el);
+    });
+  }
+
+  function performIndexedSearch(side, source, query) {
+    const els = getPaneEls(side);
+
+    // Show a loading state while the JSON fetches — multi-MB indexes
+    // take a noticeable moment the first time the user searches.
+    els.results.innerHTML =
+      '<div class="compare-search-status">Searching all of ' +
+      source.title.replace(/[<>&]/g, "") + "…</div>";
+    els.results.hidden = false;
+
+    // Remember what the user typed at fetch time so we don't render
+    // results for a stale query if the user kept typing.
+    const atSubmit = query;
+
+    Promise.resolve(loadIndex(source)).then(function (idx) {
+      // Bail if the input changed or the pane switched sources while we
+      // were waiting for the fetch.
+      if (els.search.value.trim() !== atSubmit) return;
+      if (els.select.value !== source.slug) return;
+
+      const res = searchIndexEntries(idx.entries || [], atSubmit, 50);
+      const rendered = res.matches.map(function (e) {
+        return {
+          ref:     e.ref || e.href || "",
+          snippet: buildSnippet(e.text || "", atSubmit),
+          href:    e.href,
+        };
+      });
+      renderResults(els, rendered, atSubmit, function (m) {
+        jumpIndexed(side, source, m.href);
+      }, res.total);
+    }).catch(function (err) {
+      els.results.innerHTML =
+        '<div class="compare-search-status">Could not load the search index: ' +
+        String(err.message || err).replace(/[<>&]/g, "") + "</div>";
+      els.results.hidden = false;
+    });
   }
 
   // -- Init --------------------------------------------------------------
@@ -314,9 +574,25 @@
           if (!win) return;
           win.addEventListener("hashchange", function () {
             const h = (win.location.hash || "").replace(/^#/, "");
+            // For indexed sources, the iframe may be on a sub-page; we
+            // also need to remember which sub-page so reload lands on
+            // the right one. We encode it as "<subpage>.html#<anchor>".
             const state = readParams();
-            if (side === "left")  state.lh = h;
-            if (side === "right") state.rh = h;
+            const slug = state[side];
+            const source = SOURCE_BY_SLUG[slug];
+            let value = h;
+            if (source && source.indexUrl && h) {
+              const pathname = win.location.pathname || "";
+              const filename = pathname.slice(pathname.lastIndexOf("/") + 1);
+              // Only prepend the sub-page when it's different from the
+              // source's index landing page.
+              const landing = source.path.slice(source.path.lastIndexOf("/") + 1);
+              if (filename && filename !== landing) {
+                value = filename + "#" + h;
+              }
+            }
+            if (side === "left")  state.lh = value;
+            if (side === "right") state.rh = value;
             writeParams(state);
           });
         } catch (_) {}
