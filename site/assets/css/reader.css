@@ -6,30 +6,88 @@
 
 .reader-layout {
   display: grid;
-  grid-template-columns: var(--reader-toc-w, 260px) 8px minmax(0, 1fr);
+  grid-template-columns: var(--reader-toc-w, 260px) 10px minmax(0, 1fr);
   gap: 0;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 32px;
 }
 
-/* Draggable handle between the sticky TOC and the reading column. */
+/* Draggable handle between the sticky TOC and the reading column.
+   The 10px column is the visible + hittable zone; ::before paints the
+   divider line (always subtle, bold accent on hover/drag); ::after
+   extends the click target slightly beyond the column so small cursor
+   misses still grab the handle. */
 .reader-layout > .splitter {
   position: sticky;
   top: 72px;
   align-self: start;
   height: calc(100vh - 90px);
   cursor: col-resize;
-  background: transparent;
   user-select: none;
   touch-action: none;
-  transition: background 0.15s;
+  z-index: 2;
 }
-.reader-layout > .splitter:hover,
-.reader-layout > .splitter:focus-visible,
-.reader-layout > .splitter.is-dragging {
+.reader-layout > .splitter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--border);
+  pointer-events: none;
+  transition: background 0.15s, width 0.15s;
+}
+.reader-layout > .splitter:hover::before,
+.reader-layout > .splitter:focus-visible::before,
+.reader-layout > .splitter.is-dragging::before {
   background: var(--accent);
+  width: 3px;
+}
+.reader-layout > .splitter:focus-visible { outline: none; }
+
+/* --- Collapse + expand arrow for the reader TOC splitter --------------- */
+/* When collapsed, the TOC column is 0px and the splitter shows a visible
+   arrow button so the user can expand the list back to its default width. */
+.reader-layout > .splitter .splitter-expand {
+  display: none;
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 44px;
+  padding: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  z-index: 3;
+}
+.reader-layout > .splitter .splitter-expand svg {
+  display: block;
+}
+.reader-layout > .splitter.is-collapsed .splitter-expand {
+  display: flex;
+}
+.reader-layout > .splitter .splitter-expand:hover,
+.reader-layout > .splitter .splitter-expand:focus-visible {
+  background: var(--panel-2);
+  color: var(--accent);
+  border-color: var(--accent);
   outline: none;
+}
+
+/* When collapsed the handle widens slightly and drops its line — the
+   arrow button is now the visual anchor. */
+.reader-layout > .splitter.is-collapsed::before {
+  background: transparent;
 }
 
 /* ===== Table of Contents (sticky sidebar) ===== */
@@ -39,13 +97,14 @@
   align-self: start;
   height: calc(100vh - 90px);
   overflow-y: auto;
-  /* Left padding is intentionally >= the negative margin that external
-     readers (tanakh, enoch, mishnah, talmud, etc.) apply to their
-     .toc-section labels (currently -12px). Without this, section labels
-     clip on browsers that treat `overflow-y: auto` as implicitly
-     clipping horizontal overflow. */
+  /* Clip horizontal overflow so a collapsed TOC (column width 0) doesn't
+     let its contents spill into the reader column. Left padding is >= the
+     negative margin that external readers (tanakh, enoch, mishnah, talmud,
+     etc.) apply to their .toc-section labels (currently -12px). */
+  overflow-x: hidden;
   padding: 32px 24px 32px 16px;
-  border-right: 1px solid var(--border);
+  /* Divider line moved to the adjacent .splitter so the visual line and
+     the draggable zone are in the same place. */
   font-size: 13px;
   scrollbar-width: thin;
   scrollbar-color: var(--border-hover) transparent;
@@ -164,6 +223,10 @@
 .surah {
   margin-bottom: 96px;
   scroll-margin-top: 80px;
+  /* Skip rendering off-screen sūrahs to keep splitter drags and scroll
+     smooth on long readers (Quran = 114 sūrahs × many verses). */
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 1200px;
 }
 
 .surah-header {
@@ -287,6 +350,8 @@
 .hadith-book {
   margin-bottom: 96px;
   scroll-margin-top: 80px;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 1600px;
 }
 
 .hadith-book-header {

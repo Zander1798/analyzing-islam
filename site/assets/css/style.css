@@ -1710,15 +1710,16 @@ blockquote {
   align-items: stretch;
 }
 
-/* The 20px middle column is the drag-to-resize splitter. Transparent by
-   default (matches the old 20px gap visually), highlights on hover/drag. */
+/* The 20px middle column is the drag-to-resize splitter. A faint 1px line
+   always shows so users can see where to grab; thickens to accent on
+   hover/drag. ::after extends the hit area slightly. */
 .compare-panes > .splitter {
   cursor: col-resize;
   background: transparent;
   user-select: none;
   touch-action: none;
   position: relative;
-  transition: background 0.15s;
+  z-index: 2;
 }
 .compare-panes > .splitter::before {
   content: "";
@@ -1726,15 +1727,17 @@ blockquote {
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 2px;
+  width: 1px;
   transform: translateX(-50%);
-  background: transparent;
-  transition: background 0.15s;
+  background: var(--border);
+  pointer-events: none;
+  transition: background 0.15s, width 0.15s;
 }
 .compare-panes > .splitter:hover::before,
 .compare-panes > .splitter:focus-visible::before,
 .compare-panes > .splitter.is-dragging::before {
   background: var(--accent);
+  width: 3px;
 }
 .compare-panes > .splitter:focus-visible { outline: none; }
 
@@ -2126,7 +2129,7 @@ blockquote {
   user-select: none;
   touch-action: none;
   position: relative;
-  transition: background 0.15s;
+  z-index: 2;
 }
 .build-panes > .splitter::before {
   content: "";
@@ -2134,15 +2137,17 @@ blockquote {
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 2px;
+  width: 1px;
   transform: translateX(-50%);
-  background: transparent;
-  transition: background 0.15s;
+  background: var(--border);
+  pointer-events: none;
+  transition: background 0.15s, width 0.15s;
 }
 .build-panes > .splitter:hover::before,
 .build-panes > .splitter:focus-visible::before,
 .build-panes > .splitter.is-dragging::before {
   background: var(--accent);
+  width: 3px;
 }
 .build-panes > .splitter:focus-visible { outline: none; }
 
