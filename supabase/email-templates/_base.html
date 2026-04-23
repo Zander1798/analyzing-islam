@@ -1,0 +1,95 @@
+{{/*
+  Reference base template. Every email in this folder is a filled-in copy
+  of this skeleton. Keep this one in sync with the others if you change
+  the brand look.
+
+  Bulletproof email rules we follow:
+  - Outer <table> + inner <table>, everything width=600px, centered.
+  - Inline styles for every visual property (Outlook, Yahoo, Gmail).
+  - Dark theme declared via <meta color-scheme> + the supported-color-
+    schemes hint so clients don't auto-invert.
+  - An MSO VML fallback is inside the CTA button so Windows Outlook
+    desktop still shows a real button.
+  - A visually-hidden preheader sits at the very top of <body>; it's the
+    short preview text that inbox clients show next to the subject.
+*/}}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark light">
+  <title>Analyzing Islam</title>
+</head>
+<body style="margin:0;padding:0;background:#0a0a0a;color:#f5f5f5;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <!-- preheader (hidden inbox preview) -->
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;visibility:hidden;mso-hide:all;">
+    {{/* subject-preview placeholder */}}
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0a0a0a;">
+    <tr><td align="center" style="padding:40px 16px;">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#0f0f0f;border:1px solid #1e1e1e;">
+
+        <!-- Brand header -->
+        <tr><td style="padding:28px 36px 0;text-align:left;">
+          <div style="font-family:Didot,'GFS Didot','Bodoni 72','Bodoni MT','Playfair Display',Georgia,serif;font-size:22px;font-weight:700;letter-spacing:-0.01em;color:#f5f5f5;line-height:1.1;">
+            Analyzing Islam
+          </div>
+          <div style="margin-top:4px;font-size:10px;text-transform:uppercase;letter-spacing:0.28em;color:#5a5a5a;font-weight:600;">
+            {{/* category placeholder: Welcome · Security · Account */}}
+          </div>
+        </td></tr>
+
+        <!-- Hero title -->
+        <tr><td style="padding:32px 36px 8px;">
+          <h1 style="margin:0;font-family:Didot,'GFS Didot','Bodoni 72','Bodoni MT','Playfair Display',Georgia,serif;font-size:34px;line-height:1.1;letter-spacing:-0.02em;color:#f5f5f5;font-weight:700;">
+            {{/* title */}}
+          </h1>
+        </td></tr>
+
+        <!-- Body copy -->
+        <tr><td style="padding:16px 36px 8px;font-size:15px;line-height:1.7;color:#d7d7d7;">
+          {{/* paragraphs */}}
+        </td></tr>
+
+        <!-- CTA -->
+        <tr><td style="padding:24px 36px 8px;" align="left">
+          <!--[if mso]>
+          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ .ConfirmationURL }}" style="height:48px;v-text-anchor:middle;width:220px;" arcsize="0%" stroke="f" fillcolor="#7aa2f7">
+            <w:anchorlock/>
+            <center style="color:#0a0a0a;font-family:sans-serif;font-size:14px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">CTA LABEL</center>
+          </v:roundrect>
+          <![endif]-->
+          <!--[if !mso]><!-->
+          <a href="{{ .ConfirmationURL }}"
+             style="display:inline-block;padding:14px 28px;background:#7aa2f7;color:#0a0a0a;font-weight:700;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;border:1px solid #7aa2f7;">
+            {{/* CTA label */}}
+          </a>
+          <!--<![endif]-->
+        </td></tr>
+
+        <!-- Fallback link -->
+        <tr><td style="padding:24px 36px 8px;font-size:12px;line-height:1.6;color:#9a9a9a;">
+          If the button doesn't work, copy and paste this link into your browser:<br>
+          <span style="display:inline-block;margin-top:6px;padding:8px 10px;background:#111;border:1px solid #1e1e1e;font-family:ui-monospace,'SF Mono',Consolas,monospace;font-size:11px;color:#d7d7d7;word-break:break-all;">
+            {{ .ConfirmationURL }}
+          </span>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="padding:28px 36px 36px;border-top:1px solid #1e1e1e;margin-top:24px;font-size:11px;line-height:1.7;color:#5a5a5a;">
+          {{/* context / ignore-if-not-you copy */}}
+          <br><br>
+          You received this because an action was taken on your Analyzing Islam account ({{ .Email }}).<br>
+          <a href="https://analyzingislam.com" style="color:#7aa2f7;text-decoration:none;">analyzingislam.com</a>
+        </td></tr>
+
+      </table>
+
+    </td></tr>
+  </table>
+</body>
+</html>
