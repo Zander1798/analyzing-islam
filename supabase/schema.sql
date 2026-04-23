@@ -141,6 +141,87 @@ create policy "notes_delete_own"
   on public.notes for delete
   using (auth.uid() = user_id);
 
+-- ---------- 5. builds table ----------
+-- A "build" is a user-authored argument: a Quill rich-text document
+-- assembled in the Build tab. content_delta is the Quill Delta (source of
+-- truth for the editor); content_html is a rendered snapshot for cheap
+-- read-only rendering on the shared-build viewer.
+create table if not exists public.builds (
+  id              bigserial primary key,
+  user_id         uuid not null references auth.users(id) on delete cascade,
+  name            text not null default 'Untitled build',
+  content_delta   jsonb not null default '{"ops":[]}'::jsonb,
+  content_html    text not null default '',
+  created_at      timestamptz default now(),
+  updated_at      timestamptz default now()
+);
+
+create index if not exists idx_builds_user on public.builds (user_id);
+
+drop trigger if exists touch_builds_updated_at on public.builds;
+create trigger touch_builds_updated_at
+  before update on public.builds
+  for each row execute procedure public.touch_updated_at();
+
+-- ---------- 6. shared_builds table ----------
+-- Public read-only snapshot of a build. Created when the owner clicks
+-- "Share" in the editor. id is a short URL-safe token that appears in the
+-- /build-shared.html?id=... link.
+create table if not exists public.shared_builds (
+  id              text primary key,
+  user_id         uuid not null references auth.users(id) on delete cascade,
+  build_id        bigint references public.builds(id) on delete set null,
+  name            text,
+  content_delta   jsonb,
+  content_html    text,
+  created_at      timestamptz default now()
+);
+
+create index if not exists idx_shared_builds_user on public.shared_builds (user_id);
+
+-- ---------- 7. Row-Level Security for builds ----------
+alter table public.builds        enable row level security;
+alter table public.shared_builds enable row level security;
+
+-- Builds: owner-only CRUD.
+drop policy if exists "builds_select_own" on public.builds;
+create policy "builds_select_own"
+  on public.builds for select
+  using (auth.uid() = user_id);
+
+drop policy if exists "builds_insert_own" on public.builds;
+create policy "builds_insert_own"
+  on public.builds for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists "builds_update_own" on public.builds;
+create policy "builds_update_own"
+  on public.builds for update
+  using (auth.uid() = user_id);
+
+drop policy if exists "builds_delete_own" on public.builds;
+create policy "builds_delete_own"
+  on public.builds for delete
+  using (auth.uid() = user_id);
+
+-- Shared builds: anyone can read by id (share-link viewer), only the
+-- owner can create/revoke their own shares.
+drop policy if exists "shared_builds_select_all" on public.shared_builds;
+create policy "shared_builds_select_all"
+  on public.shared_builds for select
+  using (true);
+
+drop policy if exists "shared_builds_insert_own" on public.shared_builds;
+create policy "shared_builds_insert_own"
+  on public.shared_builds for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists "shared_builds_delete_own" on public.shared_builds;
+create policy "shared_builds_delete_own"
+  on public.shared_builds for delete
+  using (auth.uid() = user_id);
+
 -- Done. Confirm by running:
 --   select * from public.bookmarks;    -- returns 0 rows for now
 --   select * from public.notes;        -- returns 0 rows for now
+--   select * from public.builds;       -- returns 0 rows for now

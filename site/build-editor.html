@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Build workspace — compose your own argument with a rich-text editor and a filterable source browser side by side.">
+<title>Build editor — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<!-- Quill v2 — rich-text editor. RTL-safe (Arabic, Hebrew), full toolbar. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html">Read</a>
+      <a href="compare.html">Compare</a>
+      <a href="build.html" class="active">Build</a>
+      <a href="stats.html">Stats</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main class="build-editor-main">
+  <!-- Sign-in gate; replaced with the editor once auth is ready. -->
+  <div id="build-editor-shell">
+    <div class="auth-message auth-message--info" style="max-width:640px; margin: 60px auto;">Loading…</div>
+  </div>
+</main>
+
+<!-- Save / Share modal overlay -->
+<div id="build-modal-overlay" class="build-modal-overlay" hidden>
+  <div class="build-modal" role="dialog" aria-modal="true" aria-labelledby="build-modal-title">
+    <h3 id="build-modal-title">Save build</h3>
+    <div class="build-modal-body"></div>
+    <div class="build-modal-actions">
+      <button type="button" class="btn" data-modal-cancel>Cancel</button>
+      <button type="button" class="btn btn-primary" data-modal-confirm>Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/builds.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<!-- Quill itself -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+<script src="assets/js/build-editor.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Build your own arguments on Analyzing Islam — a rich-text workspace with drag-and-drop access to every Qur'an verse, hadith, and catalog entry.">
+<title>Build — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html">Read</a>
+      <a href="compare.html">Compare</a>
+      <a href="build.html" class="active">Build</a>
+      <a href="stats.html">Stats</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <section class="hero" style="padding: 48px 0 16px; text-align:left;">
+    <h1 style="font-size:clamp(40px, 6vw, 72px);">Build</h1>
+    <p class="hero-tagline" style="font-size:16px; margin: 0; max-width: 760px; text-align:left;">Compose your own arguments inside a side-by-side workspace. Quote every Qur'an verse, every hadith, every catalog entry — drag it straight into a rich-text editor, edit and style it, then save and share.</p>
+  </section>
+
+  <section class="build-how">
+    <h2>How this works</h2>
+    <div class="build-how-grid">
+      <div class="build-how-step">
+        <div class="build-how-num">1</div>
+        <h3>Open the builder</h3>
+        <p>Hit <strong>+ Create</strong> to open an empty workspace: a full rich-text editor on the left, a filterable source browser on the right.</p>
+      </div>
+      <div class="build-how-step">
+        <div class="build-how-num">2</div>
+        <h3>Pull in sources</h3>
+        <p>Pick any readable source — Qur'an, the six hadith collections, Tanakh, New Testament, Mishnah, Talmud, Ibn Kathīr, or any catalog view — then search for a verse or keyword. Highlight what you want and drag it into the editor.</p>
+      </div>
+      <div class="build-how-step">
+        <div class="build-how-num">3</div>
+        <h3>Argue in your own voice</h3>
+        <p>Style your prose with fonts, headings, colour, bold, italics, highlights. Dropped quotations are fully editable — edit, restyle, or translate non-English words (Hebrew, Greek, Arabic) in-place.</p>
+      </div>
+      <div class="build-how-step">
+        <div class="build-how-num">4</div>
+        <h3>Save and share</h3>
+        <p>Save the build under a name of your choice. Come back later to edit, or generate a share link anyone can read.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="build-mybuilds-header">
+      <h2 style="margin: 0;">My builds</h2>
+      <a href="build-editor.html" class="btn btn-primary build-create-btn">+ Create</a>
+    </div>
+    <div id="build-list-shell"></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/builds.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+
+<script>
+(function () {
+  "use strict";
+
+  const shell = document.getElementById("build-list-shell");
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  function stripHtml(html) {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html || "";
+    const t = (tmp.textContent || "").replace(/\s+/g, " ").trim();
+    return t.length > 160 ? t.slice(0, 157) + "…" : t;
+  }
+
+  function renderSignedOut() {
+    shell.innerHTML =
+      '<div class="auth-message auth-message--info" style="max-width:640px;">' +
+      "You're not signed in. " +
+      '<a href="login.html?return=build.html">Sign in</a> or <a href="signup.html">create an account</a> to build and save your own arguments.' +
+      "</div>";
+  }
+
+  function renderEmpty() {
+    shell.innerHTML =
+      '<div class="auth-message auth-message--info" style="max-width:640px;">' +
+      "You haven't created any builds yet. Click <strong>+ Create</strong> above to start your first one." +
+      "</div>";
+  }
+
+  function renderCard(row) {
+    const preview = stripHtml(row.content_html);
+    const updated = new Date(row.updated_at || row.created_at).toLocaleDateString();
+    const editUrl = "build-editor.html?id=" + encodeURIComponent(row.id);
+    return (
+      '<article class="build-card" data-build-id="' + row.id + '">' +
+        '<div class="build-card-head">' +
+          '<h3 class="build-card-title"><a href="' + escapeHtml(editUrl) + '">' + escapeHtml(row.name || "Untitled build") + "</a></h3>" +
+          '<div class="build-card-actions">' +
+            '<a href="' + escapeHtml(editUrl) + '" class="build-action" data-action="edit" title="Edit this build">Edit</a>' +
+            '<button type="button" class="build-action" data-action="share" title="Copy a public share link">Share</button>' +
+            '<button type="button" class="build-action build-action-danger" data-action="delete" title="Delete this build">Delete</button>' +
+          "</div>" +
+        "</div>" +
+        '<div class="build-card-meta">Last saved ' + escapeHtml(updated) + "</div>" +
+        (preview
+          ? '<p class="build-card-preview">' + escapeHtml(preview) + "</p>"
+          : '<p class="build-card-preview build-card-preview--empty"><em>(Empty build — nothing written yet.)</em></p>") +
+        '<div class="build-card-share-url" hidden></div>' +
+      "</article>"
+    );
+  }
+
+  function bindCard(el) {
+    const buildId = el.getAttribute("data-build-id");
+    const shareOut = el.querySelector(".build-card-share-url");
+
+    el.querySelector('[data-action="delete"]').addEventListener("click", async function () {
+      if (!confirm("Delete this build? This cannot be undone.")) return;
+      const ok = await window.AI_BUILDS.remove(buildId);
+      if (ok) render();
+    });
+
+    el.querySelector('[data-action="share"]').addEventListener("click", async function (ev) {
+      const btn = ev.currentTarget;
+      btn.disabled = true;
+      btn.textContent = "Creating link…";
+      // Pull the current build so we snapshot its latest content.
+      const full = await window.AI_BUILDS.get(buildId);
+      if (!full) {
+        btn.textContent = "Share";
+        btn.disabled = false;
+        alert("Could not load build.");
+        return;
+      }
+      const share = await window.AI_BUILDS.createShare(buildId, {
+        name: full.name,
+        content_delta: full.content_delta,
+        content_html: full.content_html,
+      });
+      btn.disabled = false;
+      btn.textContent = "Share";
+      if (!share) {
+        alert("Could not create share link.");
+        return;
+      }
+      const url = new URL("build-shared.html", location.href);
+      url.searchParams.set("id", share.id);
+      shareOut.hidden = false;
+      shareOut.innerHTML =
+        '<strong>Share link:</strong> <input type="text" readonly value="' + escapeHtml(url.toString()) + '" />' +
+        ' <button type="button" class="build-action" data-action="copy">Copy</button>';
+      const input = shareOut.querySelector("input");
+      input.select();
+      shareOut.querySelector('[data-action="copy"]').addEventListener("click", function () {
+        input.select();
+        try {
+          navigator.clipboard.writeText(input.value);
+          this.textContent = "Copied ✓";
+          setTimeout(() => (this.textContent = "Copy"), 1500);
+        } catch (_) {
+          document.execCommand && document.execCommand("copy");
+        }
+      });
+    });
+  }
+
+  async function render() {
+    shell.innerHTML = '<div class="auth-message auth-message--info" style="max-width:640px;">Loading…</div>';
+    const rows = await window.AI_BUILDS.list();
+    if (!rows.length) {
+      renderEmpty();
+      return;
+    }
+    shell.innerHTML = '<div class="build-list">' + rows.map(renderCard).join("") + "</div>";
+    shell.querySelectorAll(".build-card").forEach(bindCard);
+  }
+
+  function paint() {
+    const sess = window.__session;
+    if (!sess || !sess.user) {
+      renderSignedOut();
+      return;
+    }
+    render();
+  }
+
+  function start() {
+    if (window.__authReady && typeof window.__authReady.then === "function") {
+      window.__authReady.then(paint);
+    } else {
+      paint();
+    }
+    window.addEventListener("auth-state", paint);
+    window.addEventListener("builds-changed", function () {
+      if (window.__session && window.__session.user) render();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
+})();
+</script>
+
+</body>
+</html>

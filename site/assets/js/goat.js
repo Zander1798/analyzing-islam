@@ -138,6 +138,7 @@
       "Screams in Hadith",
       "Much Knowledge",
       "Alhamdulillah!",
+      "Nibbling Quran bits...",
     ];
 
     function pickPhrase(exclude) {

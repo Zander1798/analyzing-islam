@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A shared build from Analyzing Islam — a user-authored argument, read-only.">
+<title>Shared build — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="read.html">Read</a>
+      <a href="compare.html">Compare</a>
+      <a href="build.html">Build</a>
+      <a href="stats.html">Stats</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div id="build-shared-shell" class="build-shared-shell">
+    <div class="auth-message auth-message--info" style="max-width:640px; margin: 60px auto;">Loading shared build…</div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/builds.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<script>
+(function () {
+  "use strict";
+  const shell = document.getElementById("build-shared-shell");
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  // Quill-authored HTML uses classes like ql-size-large / ql-font-serif
+  // / ql-align-center. Load Quill's snow stylesheet so the snapshot
+  // renders with the same styling the editor applied.
+  function injectQuillStylesIfNeeded() {
+    if (document.getElementById("ql-snow-stylesheet")) return;
+    const link = document.createElement("link");
+    link.id = "ql-snow-stylesheet";
+    link.rel = "stylesheet";
+    link.href = "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css";
+    document.head.appendChild(link);
+  }
+
+  async function render() {
+    const params = new URLSearchParams(location.search);
+    const shareId = params.get("id");
+    if (!shareId) {
+      shell.innerHTML =
+        '<div class="auth-message auth-message--error" style="max-width:640px; margin: 60px auto;">' +
+        'No share link specified. <a href="index.html">Home</a></div>';
+      return;
+    }
+
+    const share = await window.AI_BUILDS.getSharedPublic(shareId);
+    if (!share) {
+      shell.innerHTML =
+        '<div class="auth-message auth-message--error" style="max-width:640px; margin: 60px auto;">' +
+        'This share link is invalid or has been revoked. <a href="index.html">Home</a></div>';
+      return;
+    }
+
+    injectQuillStylesIfNeeded();
+
+    shell.innerHTML =
+      '<section class="build-shared-wrap">' +
+        '<header class="build-shared-header">' +
+          '<h1>' + escapeHtml(share.name || "Untitled build") + '</h1>' +
+          '<div class="build-shared-meta">Shared ' + escapeHtml(new Date(share.created_at).toLocaleDateString()) + ' · Read-only snapshot</div>' +
+        '</header>' +
+        '<article class="ql-snow build-shared-body"><div class="ql-editor">' +
+          (share.content_html || '<em style="color:var(--text-dim);">(Empty build.)</em>') +
+        '</div></article>' +
+        '<div class="build-shared-cta">' +
+          '<a class="btn" href="build.html">View my builds</a>' +
+          '<a class="btn btn-primary" href="build-editor.html">Create your own</a>' +
+        '</div>' +
+      '</section>';
+  }
+
+  function start() {
+    if (window.__authReady && typeof window.__authReady.then === "function") {
+      window.__authReady.then(render);
+    } else {
+      render();
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
+})();
+</script>
+</body>
+</html>
