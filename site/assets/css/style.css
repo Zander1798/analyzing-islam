@@ -380,12 +380,16 @@ code {
 
 /* ===== Section labels ===== */
 .section-title {
-  font-size: 11px;
+  /* Group-header eyebrow used across the site (catalog, categories,
+     landing pages). Bumped from 11→13px and 600→700 so the labels
+     read as deliberate section dividers instead of blending with the
+     body copy below them. */
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: var(--text-dim);
   margin-bottom: 24px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* Space between stacked sections so section-title floats centered in the gap */
@@ -549,6 +553,23 @@ main > section + section {
   color: var(--bg);
   border-color: var(--text);
 }
+
+/* Strength chips always carry their color + heavier weight so they
+   stand out from plain category chips even when inactive. Hover gets
+   a matching-color border for continuity; active fills with the colour. */
+.chip.strength-basic,
+.chip.strength-moderate,
+.chip.strength-strong {
+  font-weight: 800;
+}
+
+.chip.strength-basic:not(.active)    { color: var(--basic); }
+.chip.strength-moderate:not(.active) { color: var(--moderate); }
+.chip.strength-strong:not(.active)   { color: var(--strong); }
+
+.chip.strength-basic:not(.active):hover    { border-color: var(--basic);    color: var(--basic); }
+.chip.strength-moderate:not(.active):hover { border-color: var(--moderate); color: var(--moderate); }
+.chip.strength-strong:not(.active):hover   { border-color: var(--strong);   color: var(--strong); }
 
 .chip.strength-basic.active {
   background: var(--basic);
