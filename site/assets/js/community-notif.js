@@ -19,6 +19,8 @@
 
   let notifCount = 0;
   let pollTimer = null;
+  let obs = null;
+  let isApplying = false;
 
   function currentUser() {
     return window.AI_AUTH ? window.AI_AUTH.getUser() : null;
@@ -27,24 +29,50 @@
   // Find every Messages sidebar row on the page and make sure each
   // has a .cf-notif-badge child reflecting the current count (or no
   // badge at all when count is zero).
+  //
+  // CRITICAL: this mutates #cf-left, and the MutationObserver below
+  // watches #cf-left with subtree:true. If we don't disconnect the
+  // observer around our own writes, every write retriggers the
+  // observer -> applyBadges -> writes again -> infinite loop that
+  // freezes the tab with no console output. So we disconnect, guard
+  // re-entrancy, and skip no-op writes entirely.
   function applyBadges() {
-    const links = document.querySelectorAll('a.cf-side-link[href="messages.html"]');
-    links.forEach((a) => {
-      let badge = a.querySelector('.cf-notif-badge');
-      if (notifCount > 0) {
-        const text = notifCount > 99 ? "99+" : String(notifCount);
-        const label = notifCount + " unread notification" + (notifCount === 1 ? "" : "s");
-        if (!badge) {
-          badge = document.createElement('span');
-          badge.className = 'cf-notif-badge';
-          a.appendChild(badge);
+    if (isApplying) return;
+    isApplying = true;
+    if (obs) obs.disconnect();
+    try {
+      const links = document.querySelectorAll('a.cf-side-link[href="messages.html"]');
+      const text = notifCount > 99 ? "99+" : String(notifCount);
+      const label = notifCount + " unread notification" + (notifCount === 1 ? "" : "s");
+      links.forEach((a) => {
+        let badge = a.querySelector('.cf-notif-badge');
+        if (notifCount > 0) {
+          if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'cf-notif-badge';
+            badge.textContent = text;
+            badge.setAttribute('aria-label', label);
+            a.appendChild(badge);
+          } else {
+            // Skip no-op writes so we don't churn the DOM for nothing.
+            if (badge.textContent !== text) badge.textContent = text;
+            if (badge.getAttribute('aria-label') !== label) {
+              badge.setAttribute('aria-label', label);
+            }
+          }
+        } else if (badge) {
+          badge.remove();
         }
-        badge.textContent = text;
-        badge.setAttribute('aria-label', label);
-      } else if (badge) {
-        badge.remove();
-      }
-    });
+      });
+    } finally {
+      // Reconnect on the next microtask so our just-issued mutations
+      // have already been flushed and can't feed back into the observer.
+      Promise.resolve().then(() => {
+        isApplying = false;
+        const left = document.getElementById('cf-left');
+        if (obs && left) obs.observe(left, { childList: true, subtree: true });
+      });
+    }
   }
 
   async function loadNotifCount() {
@@ -79,7 +107,9 @@
     // whenever the host page wipes and re-injects the sidebar HTML.
     const left = document.getElementById('cf-left');
     if (left) {
-      const obs = new MutationObserver(() => applyBadges());
+      obs = new MutationObserver(() => {
+        if (!isApplying) applyBadges();
+      });
       obs.observe(left, { childList: true, subtree: true });
     }
 
