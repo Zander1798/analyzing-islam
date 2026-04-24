@@ -340,6 +340,13 @@
     panel.hidden = false;
     await loadRequests();
     renderRequests();
+    // Opening the panel counts as "reading" the requests — mark
+    // them all seen so the red notification badge on the Messages
+    // tab decreases even if the user doesn't accept/decline.
+    if (window.COMMUNITY_API && COMMUNITY_API.markIncomingRequestsSeen) {
+      try { await COMMUNITY_API.markIncomingRequestsSeen(); } catch (_) {}
+      broadcastNotifChange();
+    }
   }
 
   function closeRequests() {
@@ -397,17 +404,22 @@
 
     list.querySelectorAll(".cf-request-row").forEach((row) => {
       const id = Number(row.getAttribute("data-request-id"));
+      const requesterId = row.getAttribute("data-requester-id");
       row.querySelector('[data-action="accept"]').addEventListener("click", async () => {
         row.querySelectorAll("button").forEach((b) => (b.disabled = true));
         const { error } = await COMMUNITY_API.acceptFriendRequest(id);
         if (error) { alert("Accept failed: " + (error.message || error)); return; }
+        // Spin up a DM thread for the new friendship so a chat box
+        // appears in the inbox immediately, clickable to start
+        // messaging. startOrGetDM is idempotent — returns an
+        // existing thread if one somehow already exists.
+        const { error: tErr } = await COMMUNITY_API.startOrGetDM(requesterId);
+        if (tErr) console.warn("[messages] startOrGetDM failed", tErr);
         state.requests = state.requests.filter((r) => r.id !== id);
         renderRequests();
-        const countEl = shell.querySelector('[data-role="req-count"]');
-        if (countEl) {
-          countEl.textContent = String(state.requests.length);
-          countEl.classList.toggle("is-zero", state.requests.length === 0);
-        }
+        updateReqBadge();
+        await loadThreads();
+        broadcastNotifChange();
       });
       row.querySelector('[data-action="decline"]').addEventListener("click", async () => {
         row.querySelectorAll("button").forEach((b) => (b.disabled = true));
@@ -415,13 +427,23 @@
         if (error) { alert("Decline failed: " + (error.message || error)); return; }
         state.requests = state.requests.filter((r) => r.id !== id);
         renderRequests();
-        const countEl = shell.querySelector('[data-role="req-count"]');
-        if (countEl) {
-          countEl.textContent = String(state.requests.length);
-          countEl.classList.toggle("is-zero", state.requests.length === 0);
-        }
+        updateReqBadge();
+        broadcastNotifChange();
       });
     });
+  }
+
+  function updateReqBadge() {
+    const countEl = shell.querySelector('[data-role="req-count"]');
+    if (!countEl) return;
+    countEl.textContent = String(state.requests.length);
+    countEl.classList.toggle("is-zero", state.requests.length === 0);
+  }
+
+  // Tell the sidebar badge / any listener that unseen-request or
+  // unread-thread counts may have changed, so it can re-query.
+  function broadcastNotifChange() {
+    window.dispatchEvent(new CustomEvent("cf-messages-notif-change"));
   }
 
   // ---------- Boot ----------
@@ -453,6 +475,7 @@
     // Locally mark the thread read.
     const t = state.threads.find((x) => x.id === threadId);
     if (t) { t.unread = false; renderThreadList(); }
+    broadcastNotifChange();
   }
 
   async function pollActive() {

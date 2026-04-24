@@ -683,6 +683,59 @@
     return { count: count || 0, error };
   }
 
+  // Count only the pending incoming requests the viewer hasn't
+  // opened yet. Backed by the addressee_seen_at column added in
+  // supabase/messenger-notifications.sql. Used by the red
+  // notification badge on the Messages tab.
+  async function countUnseenFriendRequests() {
+    const u = currentUser();
+    if (!u) return { count: 0, error: null };
+    const { count, error } = await client()
+      .from("friendships")
+      .select("id", { count: "exact", head: true })
+      .eq("addressee_id", u.id)
+      .eq("status", "pending")
+      .is("addressee_seen_at", null);
+    return { count: count || 0, error };
+  }
+
+  // Flip every pending incoming request for the caller from unseen
+  // to seen. Invoked when the user opens the Requests panel.
+  async function markIncomingRequestsSeen() {
+    return await client().rpc("mark_incoming_requests_seen");
+  }
+
+  // Count DM threads where the most recent message is from the
+  // peer and hasn't been read by the viewer yet. The badge on the
+  // Messages link is (unseen requests) + (this count).
+  async function countUnreadThreads() {
+    const u = currentUser();
+    if (!u) return { count: 0, error: null };
+    const { data, error } = await client()
+      .from("direct_threads")
+      .select("user_a,user_b,last_message_at,last_sender_id,last_read_by_a,last_read_by_b")
+      .or(`user_a.eq.${u.id},user_b.eq.${u.id}`);
+    if (error) return { count: 0, error };
+    let n = 0;
+    (data || []).forEach((t) => {
+      if (!t.last_message_at || !t.last_sender_id) return;
+      if (t.last_sender_id === u.id) return;
+      const myRead = t.user_a === u.id ? t.last_read_by_a : t.last_read_by_b;
+      if (!myRead || new Date(t.last_message_at) > new Date(myRead)) n += 1;
+    });
+    return { count: n, error: null };
+  }
+
+  // Combined count used by the sidebar badge: unseen friend
+  // requests + unread threads.
+  async function countMessagesNotifications() {
+    const [req, thr] = await Promise.all([
+      countUnseenFriendRequests(),
+      countUnreadThreads(),
+    ]);
+    return { count: (req.count || 0) + (thr.count || 0), requests: req.count || 0, threads: thr.count || 0 };
+  }
+
   // ------------------------------------------------------------------
   // Direct messages (messenger)
   // ------------------------------------------------------------------
@@ -867,6 +920,10 @@
     removeFriendship,
     listIncomingFriendRequests,
     countIncomingFriendRequests,
+    countUnseenFriendRequests,
+    markIncomingRequestsSeen,
+    countUnreadThreads,
+    countMessagesNotifications,
     // Direct messages
     startOrGetDM,
     listMyThreads,

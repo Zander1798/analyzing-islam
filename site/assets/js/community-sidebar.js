@@ -18,6 +18,8 @@
     user: null,
     myCommunities: [],
     lastSignedIn: null,
+    notifCount: 0,       // combined unseen requests + unread threads
+    notifTimer: null,
   };
 
   function esc(s) {
@@ -126,7 +128,11 @@
           <span class="cf-side-icon">◎</span><span>Explore</span>
         </a>
         <a class="cf-side-link ${ctx.page === "messages" ? "active" : ""}" href="messages.html">
-          <span class="cf-side-icon">✉</span><span>Messages</span>
+          <span class="cf-side-icon">✉</span>
+          <span>Messages</span>
+          ${state.notifCount > 0
+            ? `<span class="cf-notif-badge" aria-label="${state.notifCount} unread notifications">${state.notifCount > 99 ? "99+" : state.notifCount}</span>`
+            : ""}
         </a>
         <a class="cf-side-link" href="community-create.html">
           <span class="cf-side-icon">+</span><span>Create community</span>
@@ -153,6 +159,36 @@
     state.myCommunities = data || [];
   }
 
+  // Fetch the combined notification count (unseen friend requests +
+  // unread direct-message threads) and re-render if it changed.
+  async function loadNotifCount() {
+    if (!state.user || !window.COMMUNITY_API ||
+        typeof COMMUNITY_API.countMessagesNotifications !== "function") {
+      if (state.notifCount !== 0) {
+        state.notifCount = 0;
+        render();
+      }
+      return;
+    }
+    try {
+      const { count } = await COMMUNITY_API.countMessagesNotifications();
+      if (count !== state.notifCount) {
+        state.notifCount = count;
+        render();
+      }
+    } catch (_) { /* best-effort */ }
+  }
+
+  function startNotifPoll() {
+    stopNotifPoll();
+    if (!state.user || document.hidden) return;
+    state.notifTimer = setInterval(loadNotifCount, 30000);
+  }
+
+  function stopNotifPoll() {
+    if (state.notifTimer) { clearInterval(state.notifTimer); state.notifTimer = null; }
+  }
+
   async function refresh() {
     const user = (window.AI_AUTH && window.AI_AUTH.getUser()) || null;
     const isIn = !!user;
@@ -164,6 +200,8 @@
     state.lastSignedIn = isIn;
     if (needFetch) await loadMyCommunities();
     render();
+    await loadNotifCount();
+    if (isIn) startNotifPoll(); else stopNotifPoll();
   }
 
   function init() {
@@ -173,6 +211,17 @@
     // Re-render on profile changes (avatar / username) without reloading
     // the whole community list.
     window.addEventListener("profile-state", () => { try { render(); } catch (_) {} });
+
+    // messages.js dispatches this when a thread is read, a request is
+    // accepted/declined, or the Requests panel is opened — refresh
+    // the badge immediately instead of waiting for the poller.
+    window.addEventListener("cf-messages-notif-change", () => { loadNotifCount(); });
+
+    // Pause polling when the tab is hidden; resume when visible.
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stopNotifPoll();
+      else if (state.user) { loadNotifCount(); startNotifPoll(); }
+    });
   }
 
   if (document.readyState === "loading") {
