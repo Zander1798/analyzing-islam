@@ -527,6 +527,47 @@ main > section + section {
   border-radius: 0;
 }
 
+/* ===== Native file inputs: match the dark theme site-wide =====
+   The browser default "Choose File" button renders as a white bar on
+   most OSes, which breaks the dark theme anywhere a raw
+   <input type="file"> is visible (community icon/banner uploads, etc).
+   Style the selector-button pseudo across engines to look like the
+   search-bar inputs. */
+input[type="file"] {
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13px;
+}
+
+input[type="file"]::-webkit-file-upload-button,
+input[type="file"]::file-selector-button {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  margin-right: 12px;
+  border-radius: 0;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover,
+input[type="file"]::file-selector-button:hover {
+  background: var(--panel);
+  border-color: var(--border-hover);
+  color: var(--accent);
+}
+
+input[type="file"]::-webkit-file-upload-button:focus,
+input[type="file"]::file-selector-button:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 #search:focus,
 #sv-search:focus {
   outline: none;
