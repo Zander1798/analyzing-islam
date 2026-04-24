@@ -145,11 +145,12 @@
     header.appendChild(link);
   });
 
-  // --- Hash anchor: land precisely on the entry after layout settles ---
-  // The native hash-scroll races with scroll-behavior: smooth + late-loading
-  // fonts/images, so the browser can stop short of the target. After `load`
-  // (all resources settled) we re-measure and snap to an exact offset below
-  // the sticky nav. Also re-fired on every hashchange (same-page card clicks).
+  // --- Hash anchor: land precisely on the entry's heading at the top ---
+  // html{scroll-behavior:smooth} is set globally, so behavior:"auto" inherits
+  // it and still animates — losing the race with late-loading fonts/images
+  // that shift the target. We force behavior:"instant" to bypass the CSS,
+  // and re-run across several frames so any post-load layout shift (fonts
+  // settling, image reflow, filter-chip wrap) gets snapped out.
   function scrollToHashEntry() {
     const hash = window.location.hash;
     if (!hash || hash.length < 2) return;
@@ -179,22 +180,25 @@
 
     const nav = document.querySelector(".site-nav");
     const navHeight = nav ? nav.getBoundingClientRect().height : 70;
-    const offset = navHeight + 24;
+    const offset = navHeight + 16;
     const rect = target.getBoundingClientRect();
     const top = rect.top + window.pageYOffset - offset;
-    // behavior: "auto" — snap, don't race smooth-scroll against layout.
-    window.scrollTo({ top, left: 0, behavior: "auto" });
+    window.scrollTo({ top, left: 0, behavior: "instant" });
+  }
+
+  function snapToHashEntry() {
+    scrollToHashEntry();
+    requestAnimationFrame(scrollToHashEntry);
+    setTimeout(scrollToHashEntry, 150);
+    setTimeout(scrollToHashEntry, 400);
   }
 
   if (document.readyState === "complete") {
-    scrollToHashEntry();
+    snapToHashEntry();
   } else {
-    window.addEventListener("load", function () {
-      // Small delay lets any web fonts paint before the final snap.
-      setTimeout(scrollToHashEntry, 40);
-    });
+    window.addEventListener("load", snapToHashEntry);
   }
-  window.addEventListener("hashchange", scrollToHashEntry);
+  window.addEventListener("hashchange", snapToHashEntry);
 
   // --- Initialize ---
   readURL();
