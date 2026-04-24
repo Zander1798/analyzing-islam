@@ -275,11 +275,22 @@
   // ------------------------------------------------------------------
   // Paint
   // ------------------------------------------------------------------
+  function renderBackBar() {
+    if (!state.community) return "";
+    return `
+      <div class="cf-back-bar">
+        <a class="cf-back-link" href="community-view.html?c=${encodeURIComponent(state.community.slug)}">
+          ← Back to ${esc(state.community.name)}
+        </a>
+      </div>`;
+  }
+
   function renderAll() {
     renderLeft();
     renderRight();
     if (!state.post || !state.community) { renderNotFound(); return; }
     $center.innerHTML = `
+      ${renderBackBar()}
       ${renderPostHtml()}
       ${renderCommentComposer()}
     `;
