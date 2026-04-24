@@ -249,14 +249,27 @@ create trigger tr_comment_vote_score
   after insert or update or delete on public.comment_votes
   for each row execute procedure public.cv_score_tr();
 
--- community_posts.comment_count
+-- community_posts.comment_count — reflects visible (non-soft-deleted)
+-- comments so the feed card matches the rendered comment list (which
+-- filters is_deleted = false). Fires on INSERT/UPDATE/DELETE so that
+-- soft-deletes via UPDATE is_deleted = true are counted too.
 create or replace function public.pc_count_tr()
 returns trigger language plpgsql as $$
 begin
   if tg_op = 'INSERT' then
-    update public.community_posts set comment_count = comment_count + 1 where id = new.post_id;
+    if new.is_deleted = false then
+      update public.community_posts set comment_count = comment_count + 1 where id = new.post_id;
+    end if;
   elsif tg_op = 'DELETE' then
-    update public.community_posts set comment_count = greatest(comment_count - 1, 0) where id = old.post_id;
+    if old.is_deleted = false then
+      update public.community_posts set comment_count = greatest(comment_count - 1, 0) where id = old.post_id;
+    end if;
+  elsif tg_op = 'UPDATE' then
+    if old.is_deleted = false and new.is_deleted = true then
+      update public.community_posts set comment_count = greatest(comment_count - 1, 0) where id = new.post_id;
+    elsif old.is_deleted = true and new.is_deleted = false then
+      update public.community_posts set comment_count = comment_count + 1 where id = new.post_id;
+    end if;
   end if;
   return null;
 end;
@@ -264,7 +277,7 @@ $$;
 
 drop trigger if exists tr_post_comment_count on public.post_comments;
 create trigger tr_post_comment_count
-  after insert or delete on public.post_comments
+  after insert or update or delete on public.post_comments
   for each row execute procedure public.pc_count_tr();
 
 -- post_comments.depth auto-set from parent + hard cap at 5

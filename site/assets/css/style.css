@@ -1473,7 +1473,8 @@ blockquote {
   font-weight: 600;
 }
 
-.auth-field input {
+.auth-field input,
+.auth-field textarea {
   appearance: none;
   background: var(--panel);
   border: 1px solid var(--border);
@@ -1485,7 +1486,14 @@ blockquote {
   transition: border-color 0.2s, background 0.2s;
 }
 
-.auth-field input:focus {
+.auth-field textarea {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.45;
+}
+
+.auth-field input:focus,
+.auth-field textarea:focus {
   outline: none;
   border-color: var(--accent);
   background: #1a1a1a;

@@ -25,12 +25,114 @@ begin
   end if;
 end$$;
 
--- ---------- 2. public_profiles view ----------
--- Joins profiles with aggregated post + comment counts from the
--- community tables plus the auth.users created_at so a public
--- profile page can render "Joined <date>" without leaking any
--- authentication state.
-create or replace view public.public_profiles as
+-- ---------- 2. profiles.post_count + comment_count ----------
+-- Denormalised counters so every viewer sees accurate totals on a
+-- public profile page regardless of RLS on the underlying posts /
+-- comments tables. The earlier view aggregated via count(*) over
+-- community_posts / post_comments, which inherits their RLS — so
+-- viewers outside a private community saw 0 for the profile owner's
+-- activity there. Triggers maintain these columns alongside the
+-- existing community / post counter triggers.
+alter table public.profiles
+  add column if not exists post_count    integer not null default 0,
+  add column if not exists comment_count integer not null default 0;
+
+-- Maintain profiles.post_count from community_posts. Mirrors the
+-- logic on community_posts.comment_count: INSERT / DELETE only count
+-- when the row is visible (is_deleted = false), and UPDATE handles
+-- the soft-delete / restore toggles.
+create or replace function public.profiles_post_count_tr()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if tg_op = 'INSERT' then
+    if coalesce(new.is_deleted, false) = false and new.author_id is not null then
+      update public.profiles set post_count = post_count + 1 where id = new.author_id;
+    end if;
+  elsif tg_op = 'DELETE' then
+    if coalesce(old.is_deleted, false) = false and old.author_id is not null then
+      update public.profiles set post_count = greatest(post_count - 1, 0) where id = old.author_id;
+    end if;
+  elsif tg_op = 'UPDATE' then
+    if coalesce(old.is_deleted, false) = false
+       and coalesce(new.is_deleted, false) = true
+       and old.author_id is not null then
+      update public.profiles set post_count = greatest(post_count - 1, 0) where id = old.author_id;
+    elsif coalesce(old.is_deleted, false) = true
+          and coalesce(new.is_deleted, false) = false
+          and new.author_id is not null then
+      update public.profiles set post_count = post_count + 1 where id = new.author_id;
+    end if;
+  end if;
+  return null;
+end;
+$$;
+
+drop trigger if exists tr_profiles_post_count on public.community_posts;
+create trigger tr_profiles_post_count
+  after insert or update or delete on public.community_posts
+  for each row execute procedure public.profiles_post_count_tr();
+
+-- Maintain profiles.comment_count from post_comments — same shape.
+create or replace function public.profiles_comment_count_tr()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if tg_op = 'INSERT' then
+    if coalesce(new.is_deleted, false) = false and new.author_id is not null then
+      update public.profiles set comment_count = comment_count + 1 where id = new.author_id;
+    end if;
+  elsif tg_op = 'DELETE' then
+    if coalesce(old.is_deleted, false) = false and old.author_id is not null then
+      update public.profiles set comment_count = greatest(comment_count - 1, 0) where id = old.author_id;
+    end if;
+  elsif tg_op = 'UPDATE' then
+    if coalesce(old.is_deleted, false) = false
+       and coalesce(new.is_deleted, false) = true
+       and old.author_id is not null then
+      update public.profiles set comment_count = greatest(comment_count - 1, 0) where id = old.author_id;
+    elsif coalesce(old.is_deleted, false) = true
+          and coalesce(new.is_deleted, false) = false
+          and new.author_id is not null then
+      update public.profiles set comment_count = comment_count + 1 where id = new.author_id;
+    end if;
+  end if;
+  return null;
+end;
+$$;
+
+drop trigger if exists tr_profiles_comment_count on public.post_comments;
+create trigger tr_profiles_comment_count
+  after insert or update or delete on public.post_comments
+  for each row execute procedure public.profiles_comment_count_tr();
+
+-- One-shot backfill from source of truth. Safe to re-run — it
+-- rewrites the counters from the current (visible) row set.
+update public.profiles p
+   set post_count = coalesce((
+         select count(*) from public.community_posts q
+          where q.author_id = p.id
+            and coalesce(q.is_deleted, false) = false
+       ), 0);
+
+update public.profiles p
+   set comment_count = coalesce((
+         select count(*) from public.post_comments c
+          where c.author_id = p.id
+            and coalesce(c.is_deleted, false) = false
+       ), 0);
+
+-- ---------- 3. public_profiles view ----------
+-- Reads the counters straight off profiles, so the numbers no longer
+-- depend on the viewer's RLS context. profiles is already select-any
+-- via profile-extensions.sql; auth.users.created_at is the original
+-- "joined on" timestamp.
+--
+-- Drop-before-create: the previous revision returned post_count /
+-- comment_count as bigint (from count(*)). Now they're integer (from
+-- the profiles columns). CREATE OR REPLACE VIEW can't change an
+-- existing column's type, so we drop first. Safe because nothing else
+-- in the schema depends on this view.
+drop view if exists public.public_profiles;
+create view public.public_profiles as
 select
   p.id,
   p.username,
@@ -38,29 +140,14 @@ select
   p.banner_url,
   p.bio,
   coalesce(u.created_at, p.created_at) as joined_at,
-  coalesce(post_agg.n, 0)    as post_count,
-  coalesce(comment_agg.n, 0) as comment_count
+  coalesce(p.post_count, 0)    as post_count,
+  coalesce(p.comment_count, 0) as comment_count
 from public.profiles p
-left join auth.users u on u.id = p.id
-left join (
-  select author_id, count(*) as n
-  from public.community_posts
-  where coalesce(is_deleted, false) = false
-  group by author_id
-) post_agg on post_agg.author_id = p.id
-left join (
-  select author_id, count(*) as n
-  from public.post_comments
-  where coalesce(is_deleted, false) = false
-  group by author_id
-) comment_agg on comment_agg.author_id = p.id;
+left join auth.users u on u.id = p.id;
 
--- Views inherit RLS from their base tables. profiles is already
--- select-any via profile-extensions.sql; community_posts /
--- post_comments have their own policies (respected here too).
 grant select on public.public_profiles to anon, authenticated;
 
--- ---------- 3. community_members: SELECT readable by anyone ----------
+-- ---------- 4. community_members: SELECT readable by anyone ----------
 -- Needed so a public user profile can show "communities this user
 -- is in". Only the fact of membership (community_id, user_id, role,
 -- joined_at) becomes public — posts inside private communities
@@ -72,7 +159,7 @@ create policy "community_members_select_any"
   on public.community_members for select
   using (true);
 
--- ---------- 4. Banner storage ----------
+-- ---------- 5. Banner storage ----------
 -- Keep everything in the existing avatars bucket — same per-user
 -- folder, owner-only write, public read. The file paths we write
 -- from the client look like:  <uid>/banner-<ts>.<ext>.

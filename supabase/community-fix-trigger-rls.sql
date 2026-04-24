@@ -81,17 +81,41 @@ end;
 $$;
 
 -- 5. comment_count on community_posts
+--
+-- comment_count must reflect "visible (non-soft-deleted) comments" so the
+-- feed card shows the same number as the comment list on the post page
+-- (which filters is_deleted = false). The original trigger only fired on
+-- INSERT/DELETE of rows, which left the count stale whenever a comment was
+-- soft-deleted via UPDATE is_deleted = true.
 create or replace function public.pc_count_tr()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
   if tg_op = 'INSERT' then
-    update public.community_posts set comment_count = comment_count + 1 where id = new.post_id;
+    if new.is_deleted = false then
+      update public.community_posts set comment_count = comment_count + 1 where id = new.post_id;
+    end if;
   elsif tg_op = 'DELETE' then
-    update public.community_posts set comment_count = greatest(comment_count - 1, 0) where id = old.post_id;
+    -- Only decrement on hard delete if the row was still visible; if it
+    -- was already soft-deleted the count was already adjusted.
+    if old.is_deleted = false then
+      update public.community_posts set comment_count = greatest(comment_count - 1, 0) where id = old.post_id;
+    end if;
+  elsif tg_op = 'UPDATE' then
+    if old.is_deleted = false and new.is_deleted = true then
+      update public.community_posts set comment_count = greatest(comment_count - 1, 0) where id = new.post_id;
+    elsif old.is_deleted = true and new.is_deleted = false then
+      update public.community_posts set comment_count = comment_count + 1 where id = new.post_id;
+    end if;
   end if;
   return null;
 end;
 $$;
+
+-- Re-create the trigger so it also fires on UPDATE (soft-delete toggles).
+drop trigger if exists tr_post_comment_count on public.post_comments;
+create trigger tr_post_comment_count
+  after insert or update or delete on public.post_comments
+  for each row execute procedure public.pc_count_tr();
 
 -- ============================================================
 -- One-shot resync of every cached count/score. Corrects drift
