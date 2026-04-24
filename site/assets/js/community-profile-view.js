@@ -83,6 +83,10 @@
             <strong>${fmtInt(profile.comment_count)}</strong>
             <span>${profile.comment_count === 1 ? "Comment" : "Comments"}</span>
           </div>
+          <div class="cf-user-stat" data-stat="friends">
+            <strong>${fmtInt(profile.friend_count || 0)}</strong>
+            <span>${(profile.friend_count || 0) === 1 ? "Friend" : "Friends"}</span>
+          </div>
           <div class="cf-user-stat">
             <strong>${fmtInt((memberships || []).length)}</strong>
             <span>${(memberships || []).length === 1 ? "Community" : "Communities"}</span>

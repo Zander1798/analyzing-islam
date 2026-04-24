@@ -153,7 +153,10 @@
           return;
         }
         state.friendship = data || { ...fr, status: "accepted" };
-        renderFriendAction();
+        if (state.profile) {
+          state.profile.friend_count = (state.profile.friend_count || 0) + 1;
+        }
+        render();
       });
       decline.addEventListener("click", async () => {
         accept.disabled = true; decline.disabled = true;
@@ -186,7 +189,10 @@
           return;
         }
         state.friendship = null;
-        renderFriendAction();
+        if (state.profile) {
+          state.profile.friend_count = Math.max(0, (state.profile.friend_count || 0) - 1);
+        }
+        render();
       });
     }
   }
