@@ -144,6 +144,17 @@ create policy "profiles_select_any"
   on public.profiles for select
   using (true);
 
+-- ---------- 6. Allow users to self-insert / upsert their own row ----------
+-- The original schema has no INSERT policy on profiles — rows are created
+-- by the handle_new_user trigger (security definer) only. But our client
+-- upserts to profiles when the user saves a username or avatar, and an
+-- upsert's INSERT leg needs an INSERT policy or it fails with RLS errors
+-- whenever a profile row is missing for any reason.
+drop policy if exists "profiles_insert_self" on public.profiles;
+create policy "profiles_insert_self"
+  on public.profiles for insert
+  with check (auth.uid() = id);
+
 -- ---------- Done ----------
 -- Verify with:
 --   select id, email, username, avatar_url from public.profiles limit 5;
