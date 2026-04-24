@@ -155,7 +155,7 @@
           ${p.body_html ? `<div class="cf-post-full-content ql-snow"><div class="ql-editor" style="padding:0;">${p.body_html}</div></div>` : ""}
           ${buildBlock}
           <div class="cf-post-actions">
-            <span>💬 ${fmt(p.comment_count)} comments</span>
+            <span data-role="comment-count">💬 ${fmt((state.comments || []).length)} comments</span>
             <button data-action="share">🔗 Share</button>
             ${state.user ? `<button data-action="report">⚑ Report</button>` : ""}
             ${canDelete ? `<button data-action="delete" class="cf-btn-danger" style="color:var(--strong);">🗑 Delete</button>` : ""}
@@ -278,6 +278,36 @@
     wireAll();
   }
 
+  // Re-render ONLY the comments section (used after local delete/submit
+  // and by the poller when another user's comment activity changes the
+  // list). Preserves any draft text the user has typed into composers.
+  function renderCommentsSection() {
+    const section = $center.querySelector(".cf-comments-section");
+    if (!section) { renderAll(); return; }
+
+    // Snapshot draft text + which composers are open so we can restore.
+    const drafts = {};
+    $center.querySelectorAll(".cf-comment-composer").forEach((c) => {
+      const parent = c.getAttribute("data-parent") || "";
+      const ta = c.querySelector("textarea");
+      if (ta && ta.value.trim()) drafts[parent] = ta.value;
+    });
+
+    section.outerHTML = renderCommentComposer();
+
+    // Restore drafts.
+    Object.entries(drafts).forEach(([parent, value]) => {
+      const c = $center.querySelector('.cf-comment-composer[data-parent="' + parent + '"] textarea');
+      if (c) c.value = value;
+    });
+
+    // Update the displayed count on the post-actions bar.
+    const countEl = $center.querySelector('[data-role="comment-count"]');
+    if (countEl) countEl.textContent = "💬 " + fmt((state.comments || []).length) + " comments";
+
+    wireComments();
+  }
+
   // ------------------------------------------------------------------
   // Interactions
   // ------------------------------------------------------------------
@@ -312,6 +342,12 @@
       if (deleteBtn) deleteBtn.addEventListener("click", deletePost);
     }
 
+    wireComments();
+  }
+
+  // Split out so renderCommentsSection() can re-wire the comment listeners
+  // without rebinding the post-level vote/share/delete handlers.
+  function wireComments() {
     // Top-level comment submit
     const topComposer = $center.querySelector('.cf-comment-composer[data-parent=""]');
     if (topComposer) {
@@ -435,7 +471,10 @@
     const { error } = await COMMUNITY_API.softDeleteComment(commentId);
     if (error) { alert("Delete failed: " + (error.message || error)); return; }
     state.comments = state.comments.filter((c) => c.id !== commentId);
-    renderAll();
+    if (state.post) {
+      state.post.comment_count = Math.max(0, (state.post.comment_count || 0) - 1);
+    }
+    renderCommentsSection();
   }
 
   // ------------------------------------------------------------------
@@ -475,6 +514,60 @@
   }
 
   // ------------------------------------------------------------------
+  // Live sync (poll for deletes/inserts by other users)
+  // ------------------------------------------------------------------
+  // Every ~10 s while the tab is visible, refetch the comment list. If
+  // the set has changed (a comment was deleted or added by someone in
+  // another tab / browser), re-render just the comments section so the
+  // current view updates without the user having to refresh.
+  const COMMENT_POLL_MS = 10000;
+  let commentPollTimer = null;
+
+  function startCommentPoll() {
+    stopCommentPoll();
+    if (!state.post) return;
+    if (document.hidden) return;
+    commentPollTimer = setInterval(syncCommentsIfChanged, COMMENT_POLL_MS);
+  }
+
+  function stopCommentPoll() {
+    if (commentPollTimer) {
+      clearInterval(commentPollTimer);
+      commentPollTimer = null;
+    }
+  }
+
+  async function syncCommentsIfChanged() {
+    if (!state.post) return;
+    const { data, error } = await COMMUNITY_API.listComments(state.post.id);
+    if (error) return;
+    const next = data || [];
+    // Cheap fingerprint over (id, score) — detects deletes, inserts,
+    // and vote-count drift without needing a deep diff.
+    const signature = (arr) =>
+      arr.map((c) => c.id + ":" + (c.score || 0)).join(",");
+    if (signature(state.comments) === signature(next)) return;
+
+    state.comments = next;
+    // Refresh my vote map so any new comments don't appear unvoted
+    // forever and existing votes stay highlighted.
+    if (state.user) {
+      const ids = next.map((c) => c.id);
+      state.myCommentVotes = await COMMUNITY_API.getMyCommentVotes(ids);
+    }
+    if (state.post) {
+      state.post.comment_count = next.length;
+    }
+    renderCommentsSection();
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopCommentPoll();
+    else startCommentPoll();
+  });
+  window.addEventListener("beforeunload", stopCommentPoll);
+
+  // ------------------------------------------------------------------
   // Boot
   // ------------------------------------------------------------------
   // Supabase fires auth-state on token refresh, not just sign-in/out.
@@ -494,6 +587,7 @@
     await Promise.all([loadMembership(), loadMyCommunities(), loadComments()]);
     await loadMyVotes();
     renderAll();
+    startCommentPoll();
   }
 
   function onReady() {
