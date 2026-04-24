@@ -144,11 +144,6 @@
 
     return `
       <article class="cf-post-full" data-post-id="${p.id}">
-        <div class="cf-post-votes">
-          <button class="cf-vote-btn up ${v === 1 ? "active" : ""}" data-vote="1" aria-label="Upvote">▲</button>
-          <span class="cf-vote-score">${fmt(p.score)}</span>
-          <button class="cf-vote-btn down ${v === -1 ? "active" : ""}" data-vote="-1" aria-label="Downvote">▼</button>
-        </div>
         <div class="cf-post-body">
           <div class="cf-post-meta">
             ${iconFor(c)}
@@ -163,6 +158,11 @@
           ${p.body_html ? `<div class="cf-post-full-content ql-snow"><div class="ql-editor" style="padding:0;">${p.body_html}</div></div>` : ""}
           ${buildBlock}
           <div class="cf-post-actions">
+            <div class="cf-post-votes-inline" aria-label="Votes">
+              <button class="cf-vote-btn up ${v === 1 ? "active" : ""}" data-vote="1" aria-label="Upvote">▲</button>
+              <span class="cf-vote-score">${fmt(p.score)}</span>
+              <button class="cf-vote-btn down ${v === -1 ? "active" : ""}" data-vote="-1" aria-label="Downvote">▼</button>
+            </div>
             <span data-role="comment-count">💬 ${fmt((state.comments || []).length)} comments</span>
             <button data-action="share">🔗 Share</button>
             ${state.user ? `<button data-action="report">⚑ Report</button>` : ""}

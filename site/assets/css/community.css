@@ -136,17 +136,19 @@
 }
 
 /* ===== Post card ===== */
+/* Reddit-style single-column post card. Votes used to live in a
+   vertical column on the left and media was a tiny thumbnail on
+   the right; now everything stacks vertically inside .cf-post-body
+   with the media rendered full-width and the vote pill in the
+   bottom action row alongside comments and share. */
 .cf-post {
   border: 1px solid var(--border);
   background: var(--panel);
-  border-radius: 6px;
-  margin-bottom: 12px;
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
+  border-radius: 12px;
+  margin-bottom: 14px;
   overflow: hidden;
   transition: border-color 0.15s;
 }
-.cf-post.has-thumb { grid-template-columns: 44px minmax(0, 1fr) auto; }
 .cf-post:hover { border-color: var(--border-hover); }
 
 /* Small media preview on feed cards (image or video attached to the post).
@@ -184,20 +186,22 @@
   pointer-events: none;
 }
 
+/* Legacy vertical vote column — kept only for community-search.js
+   inline use (which still renders a vertical-looking indicator).
+   Feed post cards and the single-post page now use
+   .cf-post-votes-inline instead. */
 .cf-post-votes {
   padding: 10px 4px;
-  background: var(--bg-elevated);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  border-right: 1px solid var(--border);
 }
 .cf-vote-btn {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
   padding: 4px 6px;
   line-height: 1;
@@ -210,11 +214,60 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
-  min-height: 18px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Reddit-style inline vote pill in the action row. Upvote arrow +
+   score + downvote arrow as one rounded control. */
+.cf-post-votes-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px 6px;
+}
+
+.cf-post-votes-inline .cf-vote-btn {
+  font-size: 13px;
+  padding: 4px 6px;
+  border-radius: 50%;
+}
+
+.cf-post-votes-inline .cf-vote-score {
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+/* Full-width media block rendered directly under the post title /
+   snippet. Matches Reddit's prominent photo/video style — image or
+   video sits edge-to-edge against the card on dark background,
+   capped at a reasonable height. */
+.cf-post-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  margin: 12px -18px 6px;
+  max-height: 600px;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.cf-post-media img,
+.cf-post-media video {
+  max-width: 100%;
+  max-height: 600px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .cf-post-body {
-  padding: 10px 14px 12px;
+  padding: 14px 18px 14px;
   min-width: 0;
 }
 
@@ -236,11 +289,12 @@
 .cf-post-meta .cf-dot { color: var(--text-dim); }
 
 .cf-post-title {
-  font-size: 17px;
-  line-height: 1.35;
-  margin: 0 0 8px;
-  font-weight: 500;
+  font-size: 19px;
+  line-height: 1.3;
+  margin: 4px 0 8px;
+  font-weight: 600;
   font-family: var(--sans);
+  color: var(--text);
 }
 .cf-post-title a { color: var(--text); text-decoration: none; }
 .cf-post-title a:hover { color: var(--accent); }
@@ -286,27 +340,36 @@
 
 .cf-post-actions {
   display: flex;
-  gap: 14px;
-  font-size: 12px;
-  color: var(--text-dim);
-  padding-top: 4px;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  padding-top: 8px;
+  flex-wrap: wrap;
 }
-.cf-post-actions button,
-.cf-post-actions a {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  font-size: 12px;
+.cf-post-actions > a,
+.cf-post-actions > button {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 6px 12px;
   text-decoration: none;
-  border-radius: 3px;
+  border-radius: 20px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
-.cf-post-actions button:hover,
-.cf-post-actions a:hover { color: var(--accent); background: var(--panel-2); }
+.cf-post-actions > a:hover,
+.cf-post-actions > button:hover {
+  color: var(--text);
+  background: var(--panel-2);
+  border-color: var(--border-hover);
+  text-decoration: none;
+}
 
 /* ===== Empty / signed-out / error states ===== */
 .cf-empty {
@@ -794,17 +857,32 @@
 .cf-attached-build-body img { max-width: 100%; height: auto; }
 
 /* ===== Single post page ===== */
+/* Reddit-style: single column, full-width content, votes inline in
+   the action row (via .cf-post-votes-inline) just like feed cards. */
 .cf-post-full {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 12px;
   overflow: hidden;
   margin-bottom: 14px;
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
 }
-.cf-post-full .cf-post-body { padding: 14px 20px 20px; }
-.cf-post-full .cf-post-title { font-size: 22px; margin-top: 4px; }
+.cf-post-full .cf-post-body { padding: 16px 22px 18px; }
+.cf-post-full .cf-post-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.cf-post-full .cf-post-full-content img,
+.cf-post-full .cf-post-full-content video {
+  display: block;
+  max-width: 100%;
+  max-height: 720px;
+  width: auto;
+  height: auto;
+  margin: 12px auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
 .cf-post-full-content {
   font-size: 15px;
   line-height: 1.7;

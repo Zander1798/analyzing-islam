@@ -229,24 +229,18 @@
 
     const permalink = `community-post.html?p=${p.id}`;
     const media = firstMediaFrom(p.body_html);
-    const thumb = media
+    const mediaBlock = media
       ? (media.type === "video"
-        ? `<a class="cf-post-thumb cf-post-thumb-video" href="${permalink}" aria-label="Open post">
-             <video src="${esc(media.src)}" muted preload="metadata" playsinline></video>
-             <span class="cf-post-thumb-play" aria-hidden="true">▶</span>
-           </a>`
-        : `<a class="cf-post-thumb cf-post-thumb-image" href="${permalink}" aria-label="Open post">
-             <img src="${esc(media.src)}" alt="" loading="lazy">
-           </a>`)
+          ? `<div class="cf-post-media">
+               <video src="${esc(media.src)}" controls preload="metadata" playsinline></video>
+             </div>`
+          : `<a class="cf-post-media" href="${permalink}" aria-label="Open post">
+               <img src="${esc(media.src)}" alt="" loading="lazy">
+             </a>`)
       : "";
 
     return `
-      <article class="cf-post ${thumb ? "has-thumb" : ""}" data-post-id="${p.id}">
-        <div class="cf-post-votes">
-          <button class="cf-vote-btn up ${myVote === 1 ? "active" : ""}" data-vote="1" aria-label="Upvote">▲</button>
-          <span class="cf-vote-score">${fmt(p.score)}</span>
-          <button class="cf-vote-btn down ${myVote === -1 ? "active" : ""}" data-vote="-1" aria-label="Downvote">▼</button>
-        </div>
+      <article class="cf-post" data-post-id="${p.id}">
         <div class="cf-post-body">
           <div class="cf-post-meta">
             ${iconFor(com)}
@@ -260,12 +254,17 @@
           <h2 class="cf-post-title"><a href="${permalink}">${esc(p.title)}</a></h2>
           ${buildBadge}
           ${snippet ? `<div class="cf-post-snippet">${snippet}</div>` : ""}
+          ${mediaBlock}
           <div class="cf-post-actions">
+            <div class="cf-post-votes-inline" aria-label="Votes">
+              <button class="cf-vote-btn up ${myVote === 1 ? "active" : ""}" data-vote="1" aria-label="Upvote">▲</button>
+              <span class="cf-vote-score">${fmt(p.score)}</span>
+              <button class="cf-vote-btn down ${myVote === -1 ? "active" : ""}" data-vote="-1" aria-label="Downvote">▼</button>
+            </div>
             <a href="${permalink}">💬 ${fmt(p.comment_count)} comments</a>
             <button data-action="share">🔗 Share</button>
           </div>
         </div>
-        ${thumb}
       </article>
     `;
   }
