@@ -20,6 +20,10 @@
     lastSignedIn: null,
     notifCount: 0,       // combined unseen requests + unread threads
     notifTimer: null,
+    isRendering: false,
+    isRefreshing: false,
+    notifInFlight: false,
+    pendingNotifRefresh: false,
   };
 
   function esc(s) {
@@ -101,9 +105,21 @@
   }
 
   function render() {
+    // Re-entrancy guard. render() writes to #cf-left and events
+    // like profile-state / cf-messages-notif-change can fire during
+    // that write — without this flag, a second render() can start
+    // before the first returns, which in the worst case cascades
+    // into an infinite paint loop and freezes the tab.
+    if (state.isRendering) return;
     const left = document.getElementById("cf-left");
     if (!left) return;
 
+    state.isRendering = true;
+    try { actuallyRender(left); }
+    finally { state.isRendering = false; }
+  }
+
+  function actuallyRender(left) {
     const ctx = currentContext();
     const { owned, joined } = partition(state.myCommunities);
 
@@ -161,7 +177,14 @@
 
   // Fetch the combined notification count (unseen friend requests +
   // unread direct-message threads) and re-render if it changed.
+  // Guarded against concurrent calls so stacked events (auth-state
+  // + profile-state + cf-messages-notif-change firing together) can't
+  // spin into a tight loop of re-queries.
   async function loadNotifCount() {
+    if (state.notifInFlight) {
+      state.pendingNotifRefresh = true;
+      return;
+    }
     if (!state.user || !window.COMMUNITY_API ||
         typeof COMMUNITY_API.countMessagesNotifications !== "function") {
       if (state.notifCount !== 0) {
@@ -170,6 +193,7 @@
       }
       return;
     }
+    state.notifInFlight = true;
     try {
       const { count } = await COMMUNITY_API.countMessagesNotifications();
       if (count !== state.notifCount) {
@@ -177,6 +201,15 @@
         render();
       }
     } catch (_) { /* best-effort */ }
+    finally {
+      state.notifInFlight = false;
+      if (state.pendingNotifRefresh) {
+        state.pendingNotifRefresh = false;
+        // One coalesced follow-up, scheduled async so events that
+        // triggered us don't recurse on the stack.
+        setTimeout(loadNotifCount, 0);
+      }
+    }
   }
 
   function startNotifPoll() {
@@ -190,18 +223,24 @@
   }
 
   async function refresh() {
-    const user = (window.AI_AUTH && window.AI_AUTH.getUser()) || null;
-    const isIn = !!user;
-    // Reload the community list only when the signed-in status flipped.
-    // On a plain profile-state event (username / avatar edit) we skip
-    // this and just re-render — the my-profile card picks up changes.
-    const needFetch = (state.lastSignedIn !== isIn);
-    state.user = user;
-    state.lastSignedIn = isIn;
-    if (needFetch) await loadMyCommunities();
-    render();
-    await loadNotifCount();
-    if (isIn) startNotifPoll(); else stopNotifPoll();
+    if (state.isRefreshing) return;
+    state.isRefreshing = true;
+    try {
+      const user = (window.AI_AUTH && window.AI_AUTH.getUser()) || null;
+      const isIn = !!user;
+      // Reload the community list only when the signed-in status flipped.
+      // On a plain profile-state event (username / avatar edit) we skip
+      // this and just re-render — the my-profile card picks up changes.
+      const needFetch = (state.lastSignedIn !== isIn);
+      state.user = user;
+      state.lastSignedIn = isIn;
+      if (needFetch) await loadMyCommunities();
+      render();
+      await loadNotifCount();
+      if (isIn) startNotifPoll(); else stopNotifPoll();
+    } finally {
+      state.isRefreshing = false;
+    }
   }
 
   function init() {

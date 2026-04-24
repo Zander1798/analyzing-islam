@@ -730,35 +730,63 @@
     return await client().rpc("mark_incoming_requests_seen");
   }
 
+  // Cache the "messenger tables missing" verdict for the session so a
+  // deployment without messenger-schema.sql applied doesn't keep
+  // 404ing the same endpoint every 30s.
+  let dmTablesMissing = false;
+
   // Count DM threads where the most recent message is from the
   // peer and hasn't been read by the viewer yet. The badge on the
-  // Messages link is (unseen requests) + (this count).
+  // Messages link is (unseen requests) + (this count). Returns
+  // 0 silently on any error (missing table, RLS, network) so a
+  // failed call doesn't cascade through event listeners.
   async function countUnreadThreads() {
     const u = currentUser();
     if (!u) return { count: 0, error: null };
-    const { data, error } = await client()
-      .from("direct_threads")
-      .select("user_a,user_b,last_message_at,last_sender_id,last_read_by_a,last_read_by_b")
-      .or(`user_a.eq.${u.id},user_b.eq.${u.id}`);
-    if (error) return { count: 0, error };
-    let n = 0;
-    (data || []).forEach((t) => {
-      if (!t.last_message_at || !t.last_sender_id) return;
-      if (t.last_sender_id === u.id) return;
-      const myRead = t.user_a === u.id ? t.last_read_by_a : t.last_read_by_b;
-      if (!myRead || new Date(t.last_message_at) > new Date(myRead)) n += 1;
-    });
-    return { count: n, error: null };
+    if (dmTablesMissing) return { count: 0, error: null };
+    try {
+      const { data, error } = await client()
+        .from("direct_threads")
+        .select("user_a,user_b,last_message_at,last_sender_id,last_read_by_a,last_read_by_b")
+        .or(`user_a.eq.${u.id},user_b.eq.${u.id}`);
+      if (error) {
+        const msg = (error.message || "").toLowerCase();
+        if (error.code === "42P01" || /relation .* does not exist/.test(msg) ||
+            /could not find the table/.test(msg)) {
+          dmTablesMissing = true;
+        }
+        return { count: 0, error: null };
+      }
+      let n = 0;
+      (data || []).forEach((t) => {
+        if (!t.last_message_at || !t.last_sender_id) return;
+        if (t.last_sender_id === u.id) return;
+        const myRead = t.user_a === u.id ? t.last_read_by_a : t.last_read_by_b;
+        if (!myRead || new Date(t.last_message_at) > new Date(myRead)) n += 1;
+      });
+      return { count: n, error: null };
+    } catch (_) {
+      return { count: 0, error: null };
+    }
   }
 
   // Combined count used by the sidebar badge: unseen friend
-  // requests + unread threads.
+  // requests + unread threads. Wrapped so a single failed sub-query
+  // can't throw across the event bus.
   async function countMessagesNotifications() {
-    const [req, thr] = await Promise.all([
-      countUnseenFriendRequests(),
-      countUnreadThreads(),
-    ]);
-    return { count: (req.count || 0) + (thr.count || 0), requests: req.count || 0, threads: thr.count || 0 };
+    try {
+      const [req, thr] = await Promise.all([
+        countUnseenFriendRequests().catch(() => ({ count: 0 })),
+        countUnreadThreads().catch(() => ({ count: 0 })),
+      ]);
+      return {
+        count: (req.count || 0) + (thr.count || 0),
+        requests: req.count || 0,
+        threads: thr.count || 0,
+      };
+    } catch (_) {
+      return { count: 0, requests: 0, threads: 0 };
+    }
   }
 
   // ------------------------------------------------------------------
