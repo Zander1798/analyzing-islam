@@ -449,9 +449,15 @@
 
 /* ===== Single community header =====
    Scaled to match the user-profile presence — tall banner, big
-   icon overlapping it, prominent title + action row. */
+   icon overlapping it, prominent title + action row.
+   Max-width is locked (960px) and the block is centred in the
+   column so every community — regardless of which one you're
+   viewing or which viewport width — renders at the same size. */
 .cf-community-banner {
   height: 280px;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
   background: linear-gradient(135deg, #1b2540, #0a0a0a);
   background-size: cover;
   background-position: center;
@@ -465,10 +471,14 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  margin: -60px 0 28px 0;
+  max-width: 960px;
+  margin: -60px auto 28px;
   position: relative;
   z-index: 1;
   flex-wrap: wrap;
+  min-height: 132px;  /* icon height + some padding — keeps card
+                          height visually stable even when action
+                          row or title wraps on narrow cards. */
 }
 .cf-community-icon {
   width: 128px;
@@ -1346,16 +1356,16 @@ img.cf-author-chip-avatar {
   display: block;
 }
 
-/* ===== Public user profile (user-profile.html + editor preview) ===== */
-/* Fills the width of the center column for a Reddit-style presence —
-   big banner, big avatar overlapping it, prominent username + bio,
-   generous stat numbers. No max-width cap; the center column's
-   natural 1fr width in cf-layout already keeps it under ~980 px. */
+/* ===== Public user profile (user-profile.html + editor preview) =====
+   Capped at 960px and centred in the column so every user's
+   profile renders at exactly the same size — matches the
+   .cf-community-banner/header cap for a consistent experience. */
 .cf-user-profile {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
+  max-width: 960px;
   margin: 0 auto;
 }
 
