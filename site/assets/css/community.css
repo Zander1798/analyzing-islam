@@ -1148,6 +1148,33 @@ img.cf-author-chip-avatar {
   opacity: 0.7;
 }
 
+/* Small circular avatar used in the search-bar dropdown and the
+   full search page user rows. Without these the inner <img>
+   renders at its natural (possibly huge) file size and blows out
+   the dropdown / row. */
+.cf-search-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #0a0a0a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.cf-search-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 /* ===== Public user profile (user-profile.html + editor preview) ===== */
 .cf-user-profile {
   background: var(--panel);
