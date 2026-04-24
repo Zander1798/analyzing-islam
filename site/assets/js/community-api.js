@@ -606,6 +606,58 @@
       .single();
   }
 
+  // ------------------------------------------------------------------
+  // Friendships
+  // ------------------------------------------------------------------
+  // Fetch the friendship row between the current viewer and another user
+  // (in either direction). Returns { data, error } with data === null
+  // when no relationship exists yet.
+  async function getFriendship(otherUserId) {
+    const u = currentUser();
+    if (!u || !otherUserId || u.id === otherUserId) return { data: null, error: null };
+    const { data, error } = await client()
+      .from("friendships")
+      .select("*")
+      .or(`and(requester_id.eq.${u.id},addressee_id.eq.${otherUserId}),and(requester_id.eq.${otherUserId},addressee_id.eq.${u.id})`)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return { data: data || null, error };
+  }
+
+  async function sendFriendRequest(otherUserId) {
+    const u = requireUser();
+    if (u.id === otherUserId) return { error: new Error("Cannot friend yourself") };
+    return await client()
+      .from("friendships")
+      .insert({ requester_id: u.id, addressee_id: otherUserId, status: "pending" })
+      .select()
+      .single();
+  }
+
+  async function acceptFriendRequest(friendshipId) {
+    return await client()
+      .from("friendships")
+      .update({ status: "accepted", decided_at: new Date().toISOString() })
+      .eq("id", friendshipId)
+      .select()
+      .single();
+  }
+
+  async function declineFriendRequest(friendshipId) {
+    return await client()
+      .from("friendships")
+      .update({ status: "declined", decided_at: new Date().toISOString() })
+      .eq("id", friendshipId);
+  }
+
+  // Cancel a pending outbound request OR unfriend after accept — both
+  // collapse to deleting the row. A declined row can also be cleared
+  // so the requester can try again later.
+  async function removeFriendship(friendshipId) {
+    return await client().from("friendships").delete().eq("id", friendshipId);
+  }
+
   window.COMMUNITY_API = {
     listCommunities,
     getCommunity,
@@ -653,5 +705,10 @@
     uploadImage,
     listMyBuilds,
     saveBuild,
+    getFriendship,
+    sendFriendRequest,
+    acceptFriendRequest,
+    declineFriendRequest,
+    removeFriendship,
   };
 })();

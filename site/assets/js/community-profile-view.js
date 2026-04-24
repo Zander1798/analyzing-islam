@@ -71,6 +71,7 @@
             <h1 class="cf-user-name">@${esc(profile.username || "user")}</h1>
             <div class="cf-user-meta">Joined ${fmtDate(profile.joined_at)}</div>
           </div>
+          <div class="cf-user-head-actions" data-role="user-actions"></div>
         </div>
         ${bio}
         <div class="cf-user-stats">

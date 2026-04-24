@@ -1439,6 +1439,18 @@ img.cf-author-chip-avatar {
   flex: 1;
 }
 
+/* Action buttons (Add friend / Accept / Friends / Sign in to add
+   friend) injected by user-profile.js. Sits on the far right of the
+   head row, flex-wraps below the name on narrow widths. */
+.cf-user-head-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-bottom: 16px;
+  flex-wrap: wrap;
+}
+.cf-user-head-actions:empty { display: none; }
+
 .cf-user-name {
   margin: 0 0 4px;
   font-family: var(--serif);
