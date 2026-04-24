@@ -358,7 +358,8 @@
   function renderPreview() {
     // Merge the draft on top of the saved profile so the preview shows
     // what a save-right-now would look like, including any un-uploaded
-    // image selections.
+    // image selections. post_count / comment_count come from the
+    // profiles row (maintained by trigger), so preview is accurate.
     const base = state.profile || {};
     const preview = {
       id: base.id,
@@ -367,8 +368,8 @@
       banner_url: state.bannerPreview || base.banner_url,
       bio: (state.dirty.bio !== undefined ? state.dirty.bio : base.bio) || base.bio,
       joined_at: (state.user && state.user.created_at) || null,
-      post_count: 0,
-      comment_count: 0,
+      post_count: Number(base.post_count || 0),
+      comment_count: Number(base.comment_count || 0),
     };
 
     const html = window.CF_PROFILE_VIEW.renderProfileHtml(

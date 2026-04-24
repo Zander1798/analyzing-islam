@@ -100,8 +100,10 @@
 
     // Keep selects aligned with the actual profiles table. display_name
     // was in the original schema.sql but has been removed in some
-    // deployments, so we don't rely on it here.
-    const fullCols = "id,email,username,avatar_url,banner_url,bio,created_at";
+    // deployments, so we don't rely on it here. post_count/comment_count
+    // come from profile-community-extensions.sql — the fallback select
+    // omits them so users on older DBs still get a usable profile.
+    const fullCols = "id,email,username,avatar_url,banner_url,bio,post_count,comment_count,created_at";
     const baseCols = "id,email,username,avatar_url,created_at";
 
     // Pick the query shape based on what we know about the DB. If we
