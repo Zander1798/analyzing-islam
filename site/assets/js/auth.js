@@ -174,28 +174,40 @@
     refetchProfile,
 
     // Check whether a username is available. Returns { available, reason }.
-    // reason ∈ {"format", "taken", null}. We lowercase before comparing.
+    // reason ∈ {"format", "taken", "error", null}. We lowercase before
+    // comparing. Logs the real PostgREST error when the lookup fails so
+    // missing-column or missing-RLS-policy issues surface in the console.
     checkUsernameAvailable: async (username) => {
       const u = (username || "").trim().toLowerCase();
       if (!USERNAME_RE.test(u)) {
         return { available: false, reason: "format" };
       }
       const me = window.__session && window.__session.user && window.__session.user.id;
-      let query = client.from("profiles").select("id").ilike("username", u).limit(1);
-      const { data, error } = await query;
-      if (error) return { available: false, reason: "error", error };
+      const { data, error } = await client
+        .from("profiles")
+        .select("id")
+        .ilike("username", u)
+        .limit(1);
+      if (error) {
+        console.error("[auth] checkUsernameAvailable failed", error);
+        return { available: false, reason: "error", error };
+      }
       const hit = data && data[0];
       if (!hit) return { available: true, reason: null };
-      // If the only match is us, it's still available (we already own it).
       if (me && hit.id === me) return { available: true, reason: null };
       return { available: false, reason: "taken" };
     },
 
     // Patch profile columns. Pass { username, avatar_url, display_name }.
+    // Uses upsert so a missing profile row gets created, and maybeSingle +
+    // a follow-up refetch so an RLS policy that blocks reading our own row
+    // back immediately after the write doesn't crash the save.
     updateProfile: async (fields) => {
-      const uid = window.__session && window.__session.user && window.__session.user.id;
+      const sess = window.__session;
+      const uid = sess && sess.user && sess.user.id;
       if (!uid) return { error: { message: "not signed in" } };
-      const patch = {};
+      const patch = { id: uid };
+      if (sess.user.email) patch.email = sess.user.email;
       if (typeof fields.username !== "undefined") {
         patch.username = fields.username
           ? String(fields.username).trim().toLowerCase()
@@ -203,17 +215,24 @@
       }
       if (typeof fields.avatar_url !== "undefined") patch.avatar_url = fields.avatar_url;
       if (typeof fields.display_name !== "undefined") patch.display_name = fields.display_name;
+
       const { data, error } = await client
         .from("profiles")
-        .update(patch)
-        .eq("id", uid)
+        .upsert(patch, { onConflict: "id" })
         .select()
-        .single();
-      if (!error) {
-        window.__profile = data;
-        window.dispatchEvent(new CustomEvent("profile-state", { detail: data }));
+        .maybeSingle();
+
+      if (error) {
+        console.error("[auth] updateProfile failed", error, patch);
+        return { data: null, error };
       }
-      return { data, error };
+
+      // If RLS allowed the write but blocked reading it back, refetch
+      // explicitly so the UI has the canonical row.
+      const next = data || (await refetchProfile());
+      window.__profile = next;
+      window.dispatchEvent(new CustomEvent("profile-state", { detail: next }));
+      return { data: next, error: null };
     },
 
     // Upload an avatar image to Storage under avatars/<user_id>/avatar.<ext>
