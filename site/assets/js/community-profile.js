@@ -255,6 +255,31 @@
       saveBtn.disabled = true;
       saveBtn.textContent = "Saving…";
 
+      // Format a Postgres / PostgREST error so the reason surfaces in the
+      // UI instead of a vague failure. Missing bio/banner_url columns are
+      // the most common foot-gun when the SQL migration hasn't been run.
+      function describe(err) {
+        const m = (err && (err.message || String(err))) || "Unknown error";
+        const code = err && err.code;
+        if (code === "42703" || /column .* does not exist/i.test(m) ||
+            /could not find the .* column/i.test(m)) {
+          return "Database migration missing. Paste supabase/profile-community-extensions.sql into the Supabase SQL editor and run it, then try again.";
+        }
+        if (code === "23505" || /duplicate/i.test(m)) {
+          return "That username is already taken.";
+        }
+        if (code === "23514" || /profiles_username_format/.test(m)) {
+          return "Invalid username format.";
+        }
+        if (code === "23514" || /profiles_bio_length/.test(m)) {
+          return "Bio is too long (500 characters max).";
+        }
+        if (code === "42501" || /row-level security/i.test(m)) {
+          return "Permission denied. Make sure you're signed in and the profile-extensions SQL has been applied.";
+        }
+        return m;
+      }
+
       try {
         // 1) Banner upload (if a file was picked).
         if (state.dirty.bannerFile) {
@@ -290,12 +315,7 @@
         }
         if (Object.keys(fields).length) {
           const { error } = await window.AI_AUTH.updateProfile(fields);
-          if (error) {
-            if (error.code === "23505" || /duplicate/i.test(error.message || "")) {
-              throw new Error("That username is already taken.");
-            }
-            throw error;
-          }
+          if (error) throw error;
         }
 
         // Refresh state from the canonical DB row.
@@ -312,8 +332,9 @@
         // Re-render so removed-avatar UI reflects state, etc.
         render();
       } catch (e) {
+        console.error("[community-profile] save failed", e);
         msg.className = "auth-message auth-message--error";
-        msg.textContent = e.message || String(e);
+        msg.textContent = describe(e);
         msg.style.display = "block";
       } finally {
         saveBtn.disabled = false;

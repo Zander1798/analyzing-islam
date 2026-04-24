@@ -80,11 +80,34 @@
       window.dispatchEvent(new CustomEvent("profile-state", { detail: null }));
       return null;
     }
-    const { data, error } = await client
+    // Try the full shape first (requires profile-community-extensions.sql).
+    // If those columns are missing (old DB) fall back to the base shape so
+    // the app still works — the community profile editor will just show
+    // empty bio/banner and any save that touches those columns will fail
+    // with a clear PostgREST error the caller can surface.
+    let { data, error } = await client
       .from("profiles")
       .select("id,email,username,avatar_url,banner_url,bio,display_name,created_at")
       .eq("id", uid)
       .maybeSingle();
+    if (error) {
+      const msg = (error.message || "").toLowerCase();
+      const missingCol =
+        error.code === "42703" ||
+        /column .* does not exist/.test(msg) ||
+        /could not find the .* column/.test(msg);
+      if (missingCol) {
+        console.warn(
+          "[auth] profile bio/banner columns missing — apply " +
+          "supabase/profile-community-extensions.sql. Falling back."
+        );
+        ({ data, error } = await client
+          .from("profiles")
+          .select("id,email,username,avatar_url,display_name,created_at")
+          .eq("id", uid)
+          .maybeSingle());
+      }
+    }
     if (error) {
       console.warn("[auth] profile fetch failed", error);
       window.__profile = null;
