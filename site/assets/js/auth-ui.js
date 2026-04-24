@@ -29,9 +29,21 @@
     return btn;
   }
 
+  function avatarMarkup(profile, email) {
+    if (profile && profile.avatar_url) {
+      return '<span class="auth-avatar auth-avatar--img" aria-hidden="true">' +
+             '<img src="' + escapeHtml(profile.avatar_url) + '" alt=""></span>';
+    }
+    const seed = (profile && profile.username) || email || "";
+    const letter = (seed[0] || "?").toUpperCase();
+    return '<span class="auth-avatar" aria-hidden="true">' + escapeHtml(letter) + '</span>';
+  }
+
   function buildLoggedInControl(prefix, sess) {
     const email = (sess.user && sess.user.email) || "";
-    const initial = (email[0] || "?").toUpperCase();
+    const profile = (typeof window !== "undefined" && window.__profile) || null;
+    const username = (profile && profile.username) || "";
+    const displayLabel = username ? "@" + username : "Account";
 
     // A wrapper that holds the trigger pill + the dropdown menu.
     const wrap = document.createElement("div");
@@ -42,16 +54,19 @@
     trigger.className = "auth-trigger";
     trigger.setAttribute("aria-haspopup", "true");
     trigger.setAttribute("aria-expanded", "false");
-    trigger.setAttribute("aria-label", "Account menu for " + email);
+    trigger.setAttribute("aria-label", "Account menu for " + (username || email));
     trigger.innerHTML =
-      '<span class="auth-avatar" aria-hidden="true">' + initial + "</span>" +
-      '<span class="auth-label">Account</span>';
+      avatarMarkup(profile, email) +
+      '<span class="auth-label">' + escapeHtml(displayLabel) + "</span>";
     wrap.appendChild(trigger);
 
     const menu = document.createElement("div");
     menu.className = "auth-menu";
     menu.setAttribute("role", "menu");
     menu.innerHTML =
+      (username
+        ? '<div class="auth-menu-handle">@' + escapeHtml(username) + "</div>"
+        : "") +
       '<div class="auth-menu-email">' + escapeHtml(email) + "</div>" +
       '<a href="' + prefix + 'saved.html" class="auth-menu-item" role="menuitem">My saved entries</a>' +
       '<a href="' + prefix + 'profile.html" class="auth-menu-item" role="menuitem">Profile</a>' +
@@ -121,8 +136,10 @@
       render();
     }
 
-    // Re-render when auth state changes.
+    // Re-render when auth state changes or the cached profile updates
+    // (username change, avatar upload, avatar removal).
     window.addEventListener("auth-state", render);
+    window.addEventListener("profile-state", render);
 
     // If goat.js or some other script mutates .site-nav-inner after us, re-inject.
     const navInner = document.querySelector(".site-nav-inner");

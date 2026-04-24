@@ -67,20 +67,72 @@
     setSession(session);
   });
 
+  // Profile cache: refetched on sign-in / profile update so callers (the
+  // auth-ui nav widget, profile page, share rendering, etc.) don't hammer
+  // the database. window.__profile is null when signed out.
+  window.__profile = null;
+  let profilePromise = null;
+
+  async function refetchProfile() {
+    const uid = window.__session && window.__session.user && window.__session.user.id;
+    if (!uid) {
+      window.__profile = null;
+      window.dispatchEvent(new CustomEvent("profile-state", { detail: null }));
+      return null;
+    }
+    const { data, error } = await client
+      .from("profiles")
+      .select("id,email,username,avatar_url,display_name,created_at")
+      .eq("id", uid)
+      .maybeSingle();
+    if (error) {
+      console.warn("[auth] profile fetch failed", error);
+      window.__profile = null;
+    } else {
+      window.__profile = data || null;
+    }
+    window.dispatchEvent(
+      new CustomEvent("profile-state", { detail: window.__profile })
+    );
+    return window.__profile;
+  }
+
+  // Refresh the profile cache whenever the session changes.
+  window.addEventListener("auth-state", () => {
+    profilePromise = refetchProfile();
+  });
+  // And do an initial fetch once the first session check has resolved.
+  window.__authReady.then(() => {
+    profilePromise = refetchProfile();
+  });
+
+  // USERNAME_RE is duplicated in the DB constraint (profiles_username_format).
+  // Keep in sync: lowercase, 3-20 chars, letters/digits/underscore, not
+  // starting with underscore.
+  const USERNAME_RE = /^[a-z0-9][a-z0-9_]{2,19}$/;
+
   // Minimal helper API — just wrappers so the login/signup pages don't have
   // to reach into the Supabase client directly.
   window.AI_AUTH = {
     client,
-    signUp: async (email, password) => {
+    USERNAME_RE,
+
+    signUp: async (email, password, username) => {
+      const cleanUsername = (username || "").trim().toLowerCase() || null;
+      const options = {
+        emailRedirectTo: new URL("index.html", location.origin + location.pathname).toString(),
+      };
+      if (cleanUsername) {
+        options.data = { username: cleanUsername };
+      }
       const { data, error } = await client.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: new URL("index.html", location.origin + location.pathname).toString(),
-        },
+        options,
       });
       return { data, error };
     },
+
     signIn: async (email, password) => {
       const { data, error } = await client.auth.signInWithPassword({
         email,
@@ -88,22 +140,126 @@
       });
       return { data, error };
     },
+
     signOut: async () => {
       const { error } = await client.auth.signOut();
       return { error };
     },
+
     resetPassword: async (email) => {
       const { data, error } = await client.auth.resetPasswordForEmail(email, {
         redirectTo: new URL("reset-password.html", location.origin + location.pathname).toString(),
       });
       return { data, error };
     },
+
     updatePassword: async (newPassword) => {
       const { data, error } = await client.auth.updateUser({ password: newPassword });
       return { data, error };
     },
+
     getUser: () => {
       return window.__session && window.__session.user ? window.__session.user : null;
+    },
+
+    // ---------- Profile ----------
+
+    // Returns the cached profile (or fetches it if not yet loaded).
+    getProfile: async () => {
+      if (window.__profile) return window.__profile;
+      if (!profilePromise) profilePromise = refetchProfile();
+      return profilePromise;
+    },
+
+    refetchProfile,
+
+    // Check whether a username is available. Returns { available, reason }.
+    // reason ∈ {"format", "taken", null}. We lowercase before comparing.
+    checkUsernameAvailable: async (username) => {
+      const u = (username || "").trim().toLowerCase();
+      if (!USERNAME_RE.test(u)) {
+        return { available: false, reason: "format" };
+      }
+      const me = window.__session && window.__session.user && window.__session.user.id;
+      let query = client.from("profiles").select("id").ilike("username", u).limit(1);
+      const { data, error } = await query;
+      if (error) return { available: false, reason: "error", error };
+      const hit = data && data[0];
+      if (!hit) return { available: true, reason: null };
+      // If the only match is us, it's still available (we already own it).
+      if (me && hit.id === me) return { available: true, reason: null };
+      return { available: false, reason: "taken" };
+    },
+
+    // Patch profile columns. Pass { username, avatar_url, display_name }.
+    updateProfile: async (fields) => {
+      const uid = window.__session && window.__session.user && window.__session.user.id;
+      if (!uid) return { error: { message: "not signed in" } };
+      const patch = {};
+      if (typeof fields.username !== "undefined") {
+        patch.username = fields.username
+          ? String(fields.username).trim().toLowerCase()
+          : null;
+      }
+      if (typeof fields.avatar_url !== "undefined") patch.avatar_url = fields.avatar_url;
+      if (typeof fields.display_name !== "undefined") patch.display_name = fields.display_name;
+      const { data, error } = await client
+        .from("profiles")
+        .update(patch)
+        .eq("id", uid)
+        .select()
+        .single();
+      if (!error) {
+        window.__profile = data;
+        window.dispatchEvent(new CustomEvent("profile-state", { detail: data }));
+      }
+      return { data, error };
+    },
+
+    // Upload an avatar image to Storage under avatars/<user_id>/avatar.<ext>
+    // and save the resulting public URL to profiles.avatar_url.
+    uploadAvatar: async (file) => {
+      const uid = window.__session && window.__session.user && window.__session.user.id;
+      if (!uid) return { error: { message: "not signed in" } };
+      if (!file) return { error: { message: "no file" } };
+      if (!/^image\//i.test(file.type)) {
+        return { error: { message: "Not an image file." } };
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        return { error: { message: "Image too large (5 MB max)." } };
+      }
+      // File extension — fallback to jpg if browser didn't give one.
+      let ext = (file.name.match(/\.([A-Za-z0-9]+)$/) || [])[1] || "jpg";
+      ext = ext.toLowerCase();
+      const path = uid + "/avatar-" + Date.now() + "." + ext;
+
+      const { error: upErr } = await client.storage
+        .from("avatars")
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: true,
+          contentType: file.type,
+        });
+      if (upErr) return { error: upErr };
+
+      const { data: pub } = client.storage.from("avatars").getPublicUrl(path);
+      const url = pub && pub.publicUrl;
+      if (!url) return { error: { message: "Could not resolve avatar URL." } };
+
+      const { data, error } = await window.AI_AUTH.updateProfile({ avatar_url: url });
+      return { data, error, url };
+    },
+
+    // Permanently delete the current account (removes auth.users row; ON
+    // DELETE CASCADE wipes profile, bookmarks, notes, builds, shares).
+    deleteAccount: async () => {
+      const { error } = await client.rpc("delete_current_user");
+      if (error) return { error };
+      // Server side the row is gone; client should forget the session.
+      try {
+        await client.auth.signOut();
+      } catch (_) {}
+      return { error: null };
     },
   };
 })();

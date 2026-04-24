@@ -26,6 +26,7 @@
       <a href="compare.html">Compare</a>
       <a href="build.html">Build</a>
       <a href="stats.html">Stats</a>
+      <a href="community.html">Community</a>
       <a href="about.html">About</a>
       <a href="faq.html">FAQ</a>
     </div>
@@ -38,6 +39,14 @@
 
   <form id="signup-form" class="auth-form" autocomplete="on">
     <div id="signup-message" class="auth-message auth-message--info" style="display:none;"></div>
+
+    <div class="auth-field">
+      <label for="signup-username">Username</label>
+      <input id="signup-username" name="username" type="text" autocomplete="username" required
+             minlength="3" maxlength="20" pattern="[a-z0-9][a-z0-9_]{2,19}"
+             placeholder="3–20 chars · letters, digits, underscore" spellcheck="false">
+      <div id="signup-username-hint" class="auth-hint">Public. Shown next to your shared builds and community posts.</div>
+    </div>
 
     <div class="auth-field">
       <label for="signup-email">Email</label>
@@ -74,11 +83,15 @@
 <script>
   (function () {
     const form = document.getElementById("signup-form");
+    const usernameIn = document.getElementById("signup-username");
+    const usernameHint = document.getElementById("signup-username-hint");
     const emailIn = document.getElementById("signup-email");
     const passwordIn = document.getElementById("signup-password");
     const confirmIn = document.getElementById("signup-confirm");
     const submit = document.getElementById("signup-submit");
     const msg = document.getElementById("signup-message");
+
+    const USERNAME_RE = /^[a-z0-9][a-z0-9_]{2,19}$/;
 
     function showMessage(kind, text) {
       msg.className = "auth-message auth-message--" + kind;
@@ -86,9 +99,53 @@
       msg.style.display = "block";
     }
 
+    function setHint(state, text) {
+      usernameHint.textContent = text;
+      usernameHint.className = "auth-hint auth-hint--" + state;
+    }
+
+    // Lowercase as the user types so the visible value matches the stored one.
+    usernameIn.addEventListener("input", function () {
+      const lower = usernameIn.value.toLowerCase();
+      if (lower !== usernameIn.value) usernameIn.value = lower;
+    });
+
+    // Debounced availability check.
+    let checkToken = 0;
+    usernameIn.addEventListener("input", function () {
+      const u = usernameIn.value.trim();
+      const myToken = ++checkToken;
+      if (!u) {
+        setHint("info", "Public. Shown next to your shared builds and community posts.");
+        return;
+      }
+      if (!USERNAME_RE.test(u)) {
+        setHint("error", "3–20 chars, lowercase letters/digits/underscore, can't start with _.");
+        return;
+      }
+      setHint("info", "Checking availability…");
+      setTimeout(async function () {
+        if (myToken !== checkToken) return;
+        if (!window.AI_AUTH) return;
+        const { available, reason } = await window.AI_AUTH.checkUsernameAvailable(u);
+        if (myToken !== checkToken) return;
+        if (available) setHint("success", "“" + u + "” is available.");
+        else if (reason === "taken") setHint("error", "“" + u + "” is already taken.");
+        else if (reason === "format") setHint("error", "Invalid format.");
+        else setHint("error", "Could not check availability. Try again.");
+      }, 400);
+    });
+
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
       msg.style.display = "none";
+
+      const username = usernameIn.value.trim().toLowerCase();
+      if (!USERNAME_RE.test(username)) {
+        showMessage("error", "Username must be 3–20 chars: lowercase letters, digits, underscore, can't start with _.");
+        usernameIn.focus();
+        return;
+      }
 
       if (passwordIn.value !== confirmIn.value) {
         showMessage("error", "Passwords don't match.");
@@ -100,10 +157,23 @@
         return;
       }
 
+      // Last-second availability check to avoid wasting an email send.
+      const avail = await window.AI_AUTH.checkUsernameAvailable(username);
+      if (!avail.available) {
+        showMessage("error", avail.reason === "taken"
+          ? "“" + username + "” is already taken. Pick a different username."
+          : "That username isn't valid.");
+        return;
+      }
+
       submit.disabled = true;
       submit.textContent = "Creating account…";
 
-      const { data, error } = await window.AI_AUTH.signUp(emailIn.value.trim(), passwordIn.value);
+      const { error } = await window.AI_AUTH.signUp(
+        emailIn.value.trim(),
+        passwordIn.value,
+        username
+      );
 
       if (error) {
         submit.disabled = false;
@@ -123,7 +193,7 @@
       form.style.display = "none";
       showMessage(
         "success",
-        "Account created. Check " + emailIn.value.trim() + " for a verification link — click it, then come back and sign in. (Check your spam folder if you don't see it within a minute.)"
+        "Account created as @" + username + ". Check " + emailIn.value.trim() + " for a verification link — click it, then come back and sign in. (Check your spam folder if you don't see it within a minute.)"
       );
     });
   })();

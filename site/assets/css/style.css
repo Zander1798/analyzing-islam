@@ -2666,3 +2666,266 @@ blockquote {
   flex-wrap: wrap;
 }
 
+/* ===== Profile page — avatar, sections, shares, danger zone ===== */
+
+/* The nav avatar now also renders an uploaded image; cover-fill inside
+   the existing circle. */
+.auth-avatar--img {
+  background: transparent;
+  overflow: hidden;
+}
+
+.auth-avatar--img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.auth-menu-handle {
+  padding: 14px 18px 4px;
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.auth-menu-handle + .auth-menu-email {
+  padding-top: 0;
+  border-top: 0;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* Small per-field hint under username inputs. */
+.auth-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+  min-height: 1em;
+}
+
+.auth-hint--info    { color: var(--text-dim); }
+.auth-hint--success { color: #78c07a; }
+.auth-hint--error   { color: #f4a4a4; }
+
+/* Profile header: avatar + identity block. */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 32px;
+}
+
+.profile-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-avatar--sm {
+  width: 72px;
+  height: 72px;
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-avatar-initial {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 34px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.profile-avatar--sm .profile-avatar-initial {
+  font-size: 28px;
+}
+
+.profile-header-text {
+  min-width: 0;
+}
+
+.profile-header-name {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  word-break: break-all;
+  margin-bottom: 2px;
+}
+
+.profile-header-email {
+  color: var(--text-muted);
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.profile-header-meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* Profile sections (avatar, username, shares, password, deactivate). */
+.profile-section {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.profile-section h2 {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--text);
+}
+
+.profile-section-lede {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 18px;
+}
+
+/* Avatar row on the Profile page — preview + actions. */
+.profile-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.profile-avatar-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-avatar-actions .btn {
+  cursor: pointer;
+}
+
+/* Ghost-style button for destructive-but-minor actions (remove avatar). */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+/* Danger-colored button variant used on Revoke and Deactivate. */
+.btn-danger {
+  color: #f4a4a4;
+  border-color: #553333;
+}
+
+.btn-danger:hover {
+  color: #ffd4d4;
+  border-color: #884444;
+}
+
+.auth-submit--danger {
+  background: #7a2b2b;
+  border-color: #8f3838;
+}
+
+.auth-submit--danger:hover {
+  background: #8f3838;
+}
+
+.auth-submit--danger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Share-link rows reused from the older profile layout. */
+.profile-share-row {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-share-row:last-child {
+  border-bottom: 0;
+}
+
+.profile-share-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.profile-share-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.profile-share-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.profile-share-controls input {
+  flex: 1 1 320px;
+  min-width: 0;
+  padding: 8px 10px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+}
+
+/* Danger zone — visually offset so it doesn't blend with neutral sections. */
+.profile-section--danger {
+  border-color: rgba(220, 80, 80, 0.35);
+  background: rgba(220, 80, 80, 0.04);
+  padding: 24px;
+  border-radius: var(--radius);
+  border-left: 3px solid #a04444;
+}
+
+.profile-section--danger h2 {
+  color: #f4a4a4;
+}
+
+.profile-section--danger code {
+  background: rgba(220, 80, 80, 0.15);
+  color: #f4a4a4;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+}
+
