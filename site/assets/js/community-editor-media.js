@@ -2,12 +2,13 @@
    Analyzing Islam — Community editor: media helpers
    -------------------------------------------------------------
    Extends the Quill editor used by community-new-post.js with:
-     1. Image resizing — click an image and pick Small / Medium /
-        Large / Full from a floating toolbar. Width is saved as
-        an inline style so the HTML serialises cleanly.
+     1. Image/video resizing — click an image or video, and four
+        corner handles appear. Drag any corner to resize; aspect
+        ratio is preserved (height stays auto) so the image never
+        stretches. Width is saved as inline style so the HTML
+        serialises cleanly. ✕ remove button lives at the top-right.
      2. Video embeds — a custom Quill "Video" blot (<video
-        controls>) so videos can be uploaded and rendered inline
-        in posts. Same resize toolbar works on videos.
+        controls>) so videos can be uploaded and rendered inline.
    ============================================================= */
 (function () {
   "use strict";
@@ -44,69 +45,94 @@
     Quill.register({ "formats/cf-video": VideoBlot }, true);
   }
 
-  // ---- 2. Floating size toolbar -----------------------------------
-  // Appears next to the currently-selected image or video inside the
-  // editor. Choices are width presets that map to CSS percentages so
-  // posts render consistently on any viewport width.
-  const PRESETS = [
-    { label: "S",    width: "25%" },
-    { label: "M",    width: "50%" },
-    { label: "L",    width: "75%" },
-    { label: "Full", width: "100%" },
-  ];
+  // ---- 2. Drag-to-resize overlay ----------------------------------
+  // When the user clicks an image or video inside the editor, an
+  // overlay with 4 corner handles is positioned over the element.
+  // Dragging any handle resizes the media by updating its inline
+  // style.width in pixels (height stays auto, so aspect ratio is
+  // preserved automatically). A ✕ button in the top-right corner
+  // removes the media.
+  const MIN_WIDTH_PX = 60;
 
   let activeEl = null;
-  let bar = null;
+  let overlay = null;
+  let drag = null;
 
-  function ensureBar() {
-    if (bar) return bar;
-    bar = document.createElement("div");
-    bar.className = "cf-media-bar";
-    bar.setAttribute("role", "toolbar");
-    bar.setAttribute("aria-label", "Media size");
-    bar.innerHTML =
-      PRESETS.map((p) =>
-        `<button type="button" data-w="${p.width}" aria-label="${p.label}">${p.label}</button>`
-      ).join("") +
-      `<span class="cf-media-bar-sep" aria-hidden="true"></span>` +
-      `<button type="button" data-action="remove" aria-label="Remove media">✕</button>`;
-    bar.addEventListener("mousedown", (e) => {
-      // Stop the editor from losing its selection when clicking the bar.
+  function ensureOverlay() {
+    if (overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.className = "cf-media-resize";
+    overlay.innerHTML =
+      '<button type="button" class="cf-media-resize-remove" data-action="remove" aria-label="Remove media">✕</button>' +
+      '<span class="cf-media-resize-handle" data-dir="nw" aria-hidden="true"></span>' +
+      '<span class="cf-media-resize-handle" data-dir="ne" aria-hidden="true"></span>' +
+      '<span class="cf-media-resize-handle" data-dir="sw" aria-hidden="true"></span>' +
+      '<span class="cf-media-resize-handle" data-dir="se" aria-hidden="true"></span>';
+
+    // Don't steal focus from the editor when clicking the overlay.
+    overlay.addEventListener("mousedown", (e) => e.preventDefault());
+
+    overlay.querySelector('[data-action="remove"]').addEventListener("click", (e) => {
       e.preventDefault();
+      e.stopPropagation();
+      removeActive();
     });
-    bar.addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
-      if (!btn || !activeEl) return;
-      if (btn.getAttribute("data-action") === "remove") {
-        removeActive();
-        return;
-      }
-      const w = btn.getAttribute("data-w");
-      if (w) setWidth(activeEl, w);
-      // Re-position in case reflow changed things.
-      position();
-      markActiveFromElement();
+
+    overlay.querySelectorAll(".cf-media-resize-handle").forEach((h) => {
+      h.addEventListener("mousedown", onHandleDown);
+      h.addEventListener("touchstart", onHandleDown, { passive: false });
     });
-    document.body.appendChild(bar);
-    return bar;
+
+    document.body.appendChild(overlay);
+    return overlay;
   }
 
-  function markActiveFromElement() {
-    if (!bar || !activeEl) return;
-    const current = activeEl.style.width;
-    bar.querySelectorAll("button[data-w]").forEach((b) => {
-      b.classList.toggle("is-active", b.getAttribute("data-w") === current);
-    });
+  // -------- Drag lifecycle --------
+  function onHandleDown(e) {
+    if (!activeEl) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const handle = e.currentTarget;
+    const dir = handle.getAttribute("data-dir");
+    const point = e.touches ? e.touches[0] : e;
+    const rect = activeEl.getBoundingClientRect();
+    drag = {
+      dir,
+      startX: point.clientX,
+      startWidth: rect.width,
+      parentWidth: activeEl.parentElement
+        ? activeEl.parentElement.getBoundingClientRect().width
+        : window.innerWidth,
+    };
+    document.addEventListener("mousemove", onDragMove);
+    document.addEventListener("mouseup", onDragUp);
+    document.addEventListener("touchmove", onDragMove, { passive: false });
+    document.addEventListener("touchend", onDragUp);
   }
 
-  function setWidth(el, w) {
-    // Store on the element as inline style — Quill serialises this in the
-    // output HTML, so posts render at the author-chosen width without
-    // needing a separate DB column.
-    el.style.width = w;
-    el.style.height = "auto";
-    // Keep a sane minimum so Small doesn't shrink to a thumbnail on phones.
-    el.style.maxWidth = "100%";
+  function onDragMove(e) {
+    if (!drag || !activeEl) return;
+    e.preventDefault();
+    const point = e.touches ? e.touches[0] : e;
+    const dx = point.clientX - drag.startX;
+    // Left-side handles (nw, sw) grow the width when dragged left.
+    const sign = drag.dir.indexOf("w") !== -1 ? -1 : 1;
+    let newWidth = drag.startWidth + dx * sign;
+    // Clamp between the minimum and the available parent width so the
+    // image never overflows the editor column.
+    newWidth = Math.max(MIN_WIDTH_PX, Math.min(newWidth, drag.parentWidth));
+    activeEl.style.width = Math.round(newWidth) + "px";
+    activeEl.style.height = "auto";
+    activeEl.style.maxWidth = "100%";
+    reposition();
+  }
+
+  function onDragUp() {
+    drag = null;
+    document.removeEventListener("mousemove", onDragMove);
+    document.removeEventListener("mouseup", onDragUp);
+    document.removeEventListener("touchmove", onDragMove);
+    document.removeEventListener("touchend", onDragUp);
   }
 
   function removeActive() {
@@ -116,30 +142,28 @@
     el.remove();
   }
 
-  function position() {
-    if (!bar || !activeEl || !activeEl.isConnected) return;
+  function reposition() {
+    if (!overlay || !activeEl || !activeEl.isConnected) return;
     const r = activeEl.getBoundingClientRect();
-    const barH = bar.offsetHeight || 36;
-    const top = Math.max(8, r.top + window.scrollY - barH - 8);
-    const left = Math.max(8, r.left + window.scrollX + r.width / 2 - (bar.offsetWidth || 160) / 2);
-    bar.style.top = top + "px";
-    bar.style.left = left + "px";
+    overlay.style.top = (r.top + window.scrollY) + "px";
+    overlay.style.left = (r.left + window.scrollX) + "px";
+    overlay.style.width = r.width + "px";
+    overlay.style.height = r.height + "px";
   }
 
   function select(el) {
     if (activeEl && activeEl !== el) deselect();
     activeEl = el;
     activeEl.classList.add("cf-media-selected");
-    ensureBar();
-    bar.classList.add("is-open");
-    position();
-    markActiveFromElement();
+    ensureOverlay();
+    overlay.classList.add("is-open");
+    reposition();
   }
 
   function deselect() {
     if (activeEl) activeEl.classList.remove("cf-media-selected");
     activeEl = null;
-    if (bar) bar.classList.remove("is-open");
+    if (overlay) overlay.classList.remove("is-open");
   }
 
   // ---- 3. Public helper: attach all of this to a Quill instance ---
@@ -158,15 +182,15 @@
       }
     });
 
-    // Keep the bar parked against the media as the page reflows.
-    window.addEventListener("scroll", position, { passive: true });
-    window.addEventListener("resize", position);
+    // Keep the overlay parked against the media as the page reflows.
+    window.addEventListener("scroll", reposition, { passive: true });
+    window.addEventListener("resize", reposition);
 
-    // Click outside the editor/bar → deselect.
+    // Click outside the editor / overlay → deselect.
     document.addEventListener("mousedown", (e) => {
       if (!activeEl) return;
       if (editorRoot.contains(e.target)) return;
-      if (bar && bar.contains(e.target)) return;
+      if (overlay && overlay.contains(e.target)) return;
       deselect();
     });
   }

@@ -1899,71 +1899,74 @@ body.cf-lightbox-open {
   cursor: pointer;
 }
 
-/* Highlighted state for a selected image/video in the editor. */
+/* Selected image/video in the editor — the visible border comes from
+   the .cf-media-resize overlay, so no outline is needed on the
+   element itself. Retained as a hook for other CSS / JS if wanted. */
 .cf-new-shell .ql-editor img.cf-media-selected,
 .cf-new-shell .ql-editor video.cf-media-selected {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  /* no outline — the drag overlay draws the border */
 }
 
-/* Floating size toolbar — positioned above the selected media. */
-.cf-media-bar {
+/* ===== Drag-to-resize overlay for images/videos in the editor =====
+   Positioned over the selected media. Four corner handles let the
+   user drag to resize (height stays auto so aspect ratio is kept).
+   A ✕ button sits at the top-right corner to remove the media. */
+.cf-media-resize {
   position: absolute;
-  z-index: 500;
   display: none;
-  gap: 2px;
-  padding: 4px;
-  background: #1a1a1a;
-  border: 1px solid var(--border-hover);
-  border-radius: 4px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
-  font-family: var(--sans);
+  box-sizing: border-box;
+  border: 2px solid var(--accent);
+  z-index: 500;
+  pointer-events: none;       /* Only the handles + remove button catch events */
 }
 
-.cf-media-bar.is-open {
+.cf-media-resize.is-open {
+  display: block;
+}
+
+.cf-media-resize-handle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  pointer-events: auto;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  touch-action: none;
+}
+
+.cf-media-resize-handle[data-dir="nw"] { top: -8px;    left: -8px;   cursor: nwse-resize; }
+.cf-media-resize-handle[data-dir="ne"] { top: -8px;    right: -8px;  cursor: nesw-resize; }
+.cf-media-resize-handle[data-dir="sw"] { bottom: -8px; left: -8px;   cursor: nesw-resize; }
+.cf-media-resize-handle[data-dir="se"] { bottom: -8px; right: -8px;  cursor: nwse-resize; }
+
+.cf-media-resize-remove {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid var(--border-hover);
+  color: #f4a4a4;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.cf-media-bar button {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  color: var(--text-muted);
-  font: inherit;
-  font-size: 12px;
-  padding: 4px 10px;
-  cursor: pointer;
-  border-radius: 3px;
-  min-width: 28px;
-  transition: background 0.15s, color 0.15s;
-}
-
-.cf-media-bar button:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text);
-}
-
-.cf-media-bar button.is-active {
-  background: var(--accent);
-  color: #0a0a0a;
-  font-weight: 600;
-}
-
-.cf-media-bar button[data-action="remove"] {
-  color: #f4a4a4;
-}
-
-.cf-media-bar button[data-action="remove"]:hover {
-  background: rgba(220, 80, 80, 0.18);
+.cf-media-resize-remove:hover {
+  background: rgba(220, 80, 80, 0.25);
   color: #ffd4d4;
-}
-
-.cf-media-bar-sep {
-  width: 1px;
-  height: 18px;
-  background: var(--border-hover);
-  margin: 0 4px;
+  border-color: #a04444;
 }
 
 /* ===== Inline reference card (catalog / reader) =====
