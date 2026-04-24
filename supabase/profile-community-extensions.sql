@@ -131,19 +131,27 @@ update public.profiles p
 -- the profiles columns). CREATE OR REPLACE VIEW can't change an
 -- existing column's type, so we drop first. Safe because nothing else
 -- in the schema depends on this view.
+--
+-- security_invoker = on: the view runs with the caller's RLS context
+-- so it can't bypass base-table policies the way a default
+-- (definer-style) view can. Dropping the auth.users join also clears
+-- Supabase's "Exposed Auth Users" linter critical — profiles already
+-- carries its own created_at seeded at signup, so the join wasn't
+-- adding any information.
 drop view if exists public.public_profiles;
-create view public.public_profiles as
+create view public.public_profiles
+  with (security_invoker = on)
+  as
 select
   p.id,
   p.username,
   p.avatar_url,
   p.banner_url,
   p.bio,
-  coalesce(u.created_at, p.created_at) as joined_at,
+  p.created_at                 as joined_at,
   coalesce(p.post_count, 0)    as post_count,
   coalesce(p.comment_count, 0) as comment_count
-from public.profiles p
-left join auth.users u on u.id = p.id;
+from public.profiles p;
 
 grant select on public.public_profiles to anon, authenticated;
 

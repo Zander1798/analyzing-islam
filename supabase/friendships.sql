@@ -125,19 +125,30 @@ update public.profiles p
 -- denormalised counters. Drop-before-create because the view's column
 -- list is changing — CREATE OR REPLACE VIEW can't add a trailing column
 -- if anything else depends on the existing shape.
+--
+-- Two security hardenings vs. the previous version:
+--   1. SECURITY INVOKER: the view runs with the caller's privileges
+--      and respects their RLS, so it can't be used to bypass the
+--      base-table policies the way a default (definer) view can.
+--   2. No auth.users join: the join was only there to read
+--      created_at, but profiles already has its own created_at
+--      seeded at signup. Dropping the join means the public view
+--      no longer crosses the auth.users boundary, which Supabase's
+--      linter flags as a "Exposed Auth Users" critical.
 drop view if exists public.public_profiles;
-create view public.public_profiles as
+create view public.public_profiles
+  with (security_invoker = on)
+  as
 select
   p.id,
   p.username,
   p.avatar_url,
   p.banner_url,
   p.bio,
-  coalesce(u.created_at, p.created_at) as joined_at,
+  p.created_at                 as joined_at,
   coalesce(p.post_count, 0)    as post_count,
   coalesce(p.comment_count, 0) as comment_count,
   coalesce(p.friend_count, 0)  as friend_count
-from public.profiles p
-left join auth.users u on u.id = p.id;
+from public.profiles p;
 
 grant select on public.public_profiles to anon, authenticated;
