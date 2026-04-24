@@ -145,60 +145,48 @@
     header.appendChild(link);
   });
 
-  // --- Hash anchor: land precisely on the entry's heading at the top ---
-  // html{scroll-behavior:smooth} is set globally, so behavior:"auto" inherits
-  // it and still animates — losing the race with late-loading fonts/images
-  // that shift the target. We force behavior:"instant" to bypass the CSS,
-  // and re-run across several frames so any post-load layout shift (fonts
-  // settling, image reflow, filter-chip wrap) gets snapped out.
-  function scrollToHashEntry() {
+  // --- Hash anchor: clear filters if the target is hidden ---
+  // The actual scroll is handled by snap-to-hash.js (universal across the
+  // site). We only need the catalog-specific bit here: if the target entry
+  // is currently filtered out, clear filters so it becomes visible, then
+  // let the snap helper re-snap to the now-visible element.
+  function revealHashEntry() {
     const hash = window.location.hash;
     if (!hash || hash.length < 2) return;
     let id;
     try { id = decodeURIComponent(hash.slice(1)); } catch (_) { id = hash.slice(1); }
     const target = document.getElementById(id);
     if (!target || !target.classList.contains("entry")) return;
+    if (!target.classList.contains("hidden")) return;
 
-    // If a filter hides the target, clear filters so the user can see it.
-    if (target.classList.contains("hidden")) {
-      state.category = "all";
-      state.strength = "all";
-      state.search = "";
-      if (searchInput) searchInput.value = "";
-      ["category", "strength"].forEach((type) => {
-        document
-          .querySelectorAll('.chip[data-filter-type="' + type + '"]')
-          .forEach((c) => c.classList.remove("active"));
-        const chip = document.querySelector(
-          '.chip[data-filter-type="' + type + '"][data-filter-value="all"]'
-        );
-        if (chip) chip.classList.add("active");
-      });
-      applyFilters();
-      updateURL();
+    state.category = "all";
+    state.strength = "all";
+    state.search = "";
+    if (searchInput) searchInput.value = "";
+    ["category", "strength"].forEach((type) => {
+      document
+        .querySelectorAll('.chip[data-filter-type="' + type + '"]')
+        .forEach((c) => c.classList.remove("active"));
+      const chip = document.querySelector(
+        '.chip[data-filter-type="' + type + '"][data-filter-value="all"]'
+      );
+      if (chip) chip.classList.add("active");
+    });
+    applyFilters();
+    updateURL();
+    // Target's position changed now that filters were cleared; re-snap.
+    if (typeof window.__snapToHash === "function") {
+      requestAnimationFrame(window.__snapToHash);
+      setTimeout(window.__snapToHash, 150);
     }
-
-    const nav = document.querySelector(".site-nav");
-    const navHeight = nav ? nav.getBoundingClientRect().height : 70;
-    const offset = navHeight + 16;
-    const rect = target.getBoundingClientRect();
-    const top = rect.top + window.pageYOffset - offset;
-    window.scrollTo({ top, left: 0, behavior: "instant" });
-  }
-
-  function snapToHashEntry() {
-    scrollToHashEntry();
-    requestAnimationFrame(scrollToHashEntry);
-    setTimeout(scrollToHashEntry, 150);
-    setTimeout(scrollToHashEntry, 400);
   }
 
   if (document.readyState === "complete") {
-    snapToHashEntry();
+    revealHashEntry();
   } else {
-    window.addEventListener("load", snapToHashEntry);
+    window.addEventListener("load", revealHashEntry);
   }
-  window.addEventListener("hashchange", snapToHashEntry);
+  window.addEventListener("hashchange", revealHashEntry);
 
   // --- Initialize ---
   readURL();
