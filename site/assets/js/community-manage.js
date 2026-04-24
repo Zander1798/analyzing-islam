@@ -18,6 +18,7 @@
     requests: [],
     members: [],
     reports: [],
+    profiles: {}, // user_id -> { username, display_name, email }
   };
 
   function esc(s) {
@@ -38,6 +39,14 @@
   function shortId(id) {
     const s = String(id || "");
     return s.length > 10 ? s.slice(0, 6) + "…" + s.slice(-4) : s;
+  }
+  function userLabel(userId) {
+    const p = state.profiles[userId];
+    if (p) {
+      if (p.username) return "@" + p.username;
+      if (p.display_name) return p.display_name;
+    }
+    return "User " + shortId(userId);
   }
 
   function renderGate(msg) {
@@ -75,12 +84,12 @@
       </div>
 
       <section class="cf-manage-section">
-        <h2>Pending join requests ${pendingCount ? `(${pendingCount})` : ""}</h2>
+        <h2>Pending join requests${pendingCount ? ` <span class="cf-notify-badge" title="${pendingCount} pending">${pendingCount}</span>` : ""}</h2>
         ${renderRequests()}
       </section>
 
       <section class="cf-manage-section">
-        <h2>Open reports ${reportCount ? `(${reportCount})` : ""}</h2>
+        <h2>Open reports${reportCount ? ` <span class="cf-notify-badge" title="${reportCount} open">${reportCount}</span>` : ""}</h2>
         ${renderReports()}
       </section>
 
@@ -165,7 +174,7 @@
     return state.requests.map((r) => `
       <div class="cf-manage-row" data-request-id="${r.id}">
         <div class="cf-manage-row-info">
-          <strong>User ${esc(shortId(r.user_id))}</strong>
+          <strong>${esc(userLabel(r.user_id))}</strong>
           <span>Requested ${ago(r.created_at)}${r.message ? ` · "${esc(r.message)}"` : ""}</span>
         </div>
         <div class="cf-manage-actions">
@@ -206,7 +215,7 @@
       return `
         <div class="cf-manage-row" data-user-id="${m.user_id}">
           <div class="cf-manage-row-info">
-            <strong>User ${esc(shortId(m.user_id))}${isSelf ? " (you)" : ""} ${roleBadge}</strong>
+            <strong>${esc(userLabel(m.user_id))}${isSelf ? " (you)" : ""} ${roleBadge}</strong>
             <span>Joined ${ago(m.joined_at)}</span>
           </div>
           <div class="cf-manage-actions">
@@ -222,16 +231,33 @@
   function wireRequests() {
     shell.querySelectorAll("[data-request-id]").forEach((row) => {
       const id = Number(row.getAttribute("data-request-id"));
-      row.querySelector('[data-action="approve"]').addEventListener("click", async () => {
-        const { error } = await COMMUNITY_API.approveRequest(id);
-        if (error) { alert("Approve failed: " + (error.message || error)); return; }
-        await reload();
-      });
-      row.querySelector('[data-action="deny"]').addEventListener("click", async () => {
-        const { error } = await COMMUNITY_API.denyRequest(id);
-        if (error) { alert("Deny failed: " + (error.message || error)); return; }
-        await reload();
-      });
+
+      async function handle(actionFn, label) {
+        // Optimistic: drop this request out of local state and from the DOM
+        // immediately, then hit the server. On failure, reload to restore
+        // the true state.
+        const prev = state.requests;
+        state.requests = prev.filter((r) => r.id !== id);
+        // Re-render only the pending-requests section + the count badge so
+        // the rest of the page (scroll position, form edits) doesn't reset.
+        renderShell();
+        const { error } = await actionFn(id);
+        if (error) {
+          alert(label + " failed: " + (error.message || error));
+          state.requests = prev;
+          renderShell();
+          return;
+        }
+        // Quiet reload in background to pick up the new member count, etc.
+        reload();
+      }
+
+      row.querySelector('[data-action="approve"]').addEventListener("click", () =>
+        handle(COMMUNITY_API.approveRequest, "Approve")
+      );
+      row.querySelector('[data-action="deny"]').addEventListener("click", () =>
+        handle(COMMUNITY_API.denyRequest, "Deny")
+      );
     });
   }
 
@@ -392,6 +418,18 @@
     state.requests = reqRes.data || [];
     state.members = memRes.data || [];
     state.reports = repRes.data || [];
+
+    // Resolve user_ids → profiles so we can label by the signup username
+    // instead of a truncated UUID. Silent on error — worst case the UI
+    // falls back to "User <shortId>".
+    const userIds = [
+      ...state.requests.map((r) => r.user_id),
+      ...state.members.map((m) => m.user_id),
+    ];
+    const { data: profiles } = await COMMUNITY_API.listProfiles(userIds);
+    const map = {};
+    (profiles || []).forEach((p) => { map[p.id] = p; });
+    state.profiles = map;
   }
 
   async function reload() {
