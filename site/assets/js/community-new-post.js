@@ -151,14 +151,16 @@
       theme: "snow",
       placeholder: "Write your post…",
       modules: {
-        toolbar: [
-          [{ header: [1, 2, 3, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ color: [] }, { background: [] }],
-          [{ list: "ordered" }, { list: "bullet" }],
-          ["blockquote", "link", "image"],
-          ["clean"],
-        ],
+        toolbar: {
+          container: [
+            [{ header: [1, 2, 3, false] }],
+            ["bold", "italic", "underline", "strike"],
+            [{ color: [] }, { background: [] }],
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["blockquote", "link", "image", "video", "cf-ref"],
+            ["clean"],
+          ],
+        },
       },
     });
   }
@@ -166,10 +168,19 @@
   function initBodyEditor() {
     state.bodyQuill = makeQuill("#cf-body-editor");
 
+    const toolbar = state.bodyQuill.getModule("toolbar");
     // Intercept the toolbar's "image" button so uploads go to Supabase Storage
     // instead of being base64-embedded.
-    const toolbar = state.bodyQuill.getModule("toolbar");
     toolbar.addHandler("image", () => pickAndUploadImage(state.bodyQuill));
+    // Video button: upload to Storage + insert a cf-video blot.
+    if (window.CF_EDITOR_MEDIA) {
+      toolbar.addHandler("video", () => window.CF_EDITOR_MEDIA.pickAndUploadVideo(state.bodyQuill));
+      window.CF_EDITOR_MEDIA.attach(state.bodyQuill.root);
+    }
+    // "Add reference" picker: catalog entries + reader (verse/hadith).
+    if (window.CF_EDITOR_REFS) {
+      window.CF_EDITOR_REFS.attach(state.bodyQuill);
+    }
   }
 
   function pickAndUploadImage(quill) {
@@ -279,6 +290,13 @@
     state.buildQuill = makeQuill("#cf-build-editor");
     const toolbar = state.buildQuill.getModule("toolbar");
     toolbar.addHandler("image", () => pickAndUploadImage(state.buildQuill));
+    if (window.CF_EDITOR_MEDIA) {
+      toolbar.addHandler("video", () => window.CF_EDITOR_MEDIA.pickAndUploadVideo(state.buildQuill));
+      window.CF_EDITOR_MEDIA.attach(state.buildQuill.root);
+    }
+    if (window.CF_EDITOR_REFS) {
+      window.CF_EDITOR_REFS.attach(state.buildQuill);
+    }
     state.buildQuill.setContents(build.content_delta || { ops: [] });
 
     const saveBtn = document.getElementById("cf-build-save-btn");
