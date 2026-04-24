@@ -130,7 +130,8 @@ body.embed-mode .reader-layout {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 24px;
+  column-gap: 24px;
+  row-gap: 0;
   flex-wrap: wrap;
 }
 
@@ -162,7 +163,7 @@ body.embed-mode .reader-layout {
   }
   .site-nav-inner .goat-scream {
     order: 100;
-    margin: 12px auto 0;
+    margin: 2px auto 0;
   }
 }
 
