@@ -13,6 +13,12 @@
   gap: 32px;
   align-items: start;
 }
+/* When a page renders the layout without a right sidebar (e.g.
+   user-profile.html), let the center column absorb that 340px so
+   the content reads as landscape, not squeezed. */
+.cf-layout:not(:has(.cf-right)) {
+  grid-template-columns: 280px minmax(0, 1fr);
+}
 @media (max-width: 1200px) {
   .cf-layout { grid-template-columns: 240px minmax(0, 1fr); gap: 24px; }
   .cf-right { display: none; }
@@ -1348,7 +1354,7 @@ img.cf-author-chip-avatar {
 
 .cf-user-banner {
   position: relative;
-  height: 280px;
+  height: 160px;
   overflow: hidden;
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
 }
@@ -1370,17 +1376,17 @@ img.cf-author-chip-avatar {
 .cf-user-head {
   display: flex;
   align-items: flex-end;
-  gap: 22px;
-  padding: 0 32px 20px;
-  margin-top: -80px;
+  gap: 20px;
+  padding: 0 28px 16px;
+  margin-top: -52px;
   position: relative;
 }
 
 .cf-user-avatar {
-  width: 160px;
-  height: 160px;
+  width: 112px;
+  height: 112px;
   border-radius: 50%;
-  border: 5px solid var(--panel);
+  border: 4px solid var(--panel);
   background: var(--accent);
   color: #0a0a0a;
   flex: 0 0 auto;
@@ -1400,37 +1406,37 @@ img.cf-author-chip-avatar {
 .cf-user-avatar-initial {
   font-family: var(--serif);
   font-weight: 700;
-  font-size: 64px;
+  font-size: 46px;
   line-height: 1;
   text-transform: uppercase;
 }
 
 .cf-user-head-text {
-  padding-bottom: 18px;
+  padding-bottom: 12px;
   min-width: 0;
   flex: 1;
 }
 
 .cf-user-name {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-family: var(--serif);
-  font-size: 40px;
+  font-size: 28px;
   font-weight: 700;
-  word-break: break-all;
-  line-height: 1.1;
+  word-break: break-word;
+  line-height: 1.15;
 }
 
 .cf-user-meta {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-dim);
 }
 
 .cf-user-bio {
-  padding: 0 32px;
-  margin: 0 0 24px;
+  padding: 0 28px;
+  margin: 0 0 16px;
   color: var(--text);
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.55;
   white-space: pre-wrap;
 }
 
@@ -1449,7 +1455,7 @@ img.cf-author-chip-avatar {
 
 .cf-user-stat {
   flex: 1;
-  padding: 22px 16px;
+  padding: 14px 16px;
   text-align: center;
   border-right: 1px solid var(--border);
 }
@@ -1461,9 +1467,9 @@ img.cf-author-chip-avatar {
 .cf-user-stat strong {
   display: block;
   font-family: var(--serif);
-  font-size: 32px;
+  font-size: 22px;
   color: var(--text);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   line-height: 1;
 }
 
@@ -1475,13 +1481,13 @@ img.cf-author-chip-avatar {
 }
 
 .cf-user-communities {
-  padding: 26px 32px 34px;
+  padding: 18px 28px 24px;
 }
 
 .cf-user-communities h3 {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   font-family: var(--serif);
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .cf-user-community-grid {
