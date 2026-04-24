@@ -110,6 +110,28 @@
     return { owned, joined };
   }
 
+  function myProfileCardHtml() {
+    const me = window.__profile || null;
+    if (!state.user) {
+      return `
+        <div class="cf-my-profile-card cf-my-profile-card--signedout">
+          <a href="login.html?return=community.html">Sign in</a> to manage your community profile.
+        </div>`;
+    }
+    const avatar = me && me.avatar_url
+      ? `<img src="${esc(me.avatar_url)}" alt="">`
+      : (me && me.username ? esc(me.username[0].toUpperCase()) : esc((state.user.email || "?")[0].toUpperCase()));
+    const name = (me && me.username) ? ("@" + me.username) : "(set a username)";
+    return `
+      <div class="cf-my-profile-card">
+        <div class="cf-my-profile-card-head">
+          <span class="cf-my-profile-avatar">${avatar}</span>
+          <span class="cf-my-profile-name">${esc(name)}</span>
+        </div>
+        <a class="cf-my-profile-edit" href="community-profile.html">Edit profile</a>
+      </div>`;
+  }
+
   function renderLeft() {
     const { owned, joined } = partitionMemberships(state.myCommunities);
 
@@ -122,6 +144,8 @@
       : `<div class="cf-side-empty">You haven't joined any communities yet.</div>`;
 
     $left.innerHTML = `
+      ${myProfileCardHtml()}
+
       <div class="cf-side-section">
         <a class="cf-side-link active" href="community.html">
           <span class="cf-side-icon">☰</span><span>Home</span>
@@ -227,6 +251,8 @@
           <div class="cf-post-meta">
             ${iconFor(com)}
             <a href="community-view.html?c=${encodeURIComponent(com.slug || "")}">${esc(com.name || com.slug || "community")}</a>
+            <span class="cf-dot">·</span>
+            <span>Posted by ${authorLink(p.author)}</span>
             <span class="cf-dot">·</span>
             <span>${ago(p.created_at)}</span>
             ${com.is_private ? `<span class="cf-dot">·</span><span class="cf-badge cf-badge-private">Private</span>` : ""}
@@ -445,6 +471,7 @@
     if (state.feed.length) {
       const ids = state.feed.map((p) => p.id);
       state.myVotes = await COMMUNITY_API.getMyPostVotes(ids);
+      await COMMUNITY_API.attachAuthors(state.feed);
     }
     renderFeed();
   }
@@ -475,6 +502,9 @@
       paint();
     }
     window.addEventListener("auth-state", paint);
+    // Re-render the sidebar when the cached profile changes (username
+    // save, avatar/banner upload) so the My profile card stays current.
+    window.addEventListener("profile-state", () => { try { renderLeft(); } catch (_) {} });
   }
 
   if (document.readyState === "loading") {

@@ -145,18 +145,44 @@
 
   async function approveRequest(requestId) {
     const u = requireUser();
-    return await client()
+    const { data, error } = await client()
       .from("community_join_requests")
       .update({ status: "approved", decided_by: u.id })
-      .eq("id", requestId);
+      .eq("id", requestId)
+      .select();
+    if (!error && (!data || !data.length)) {
+      return { data: null, error: new Error("Approve matched no rows — likely RLS or the request was already handled.") };
+    }
+    return { data, error };
   }
 
   async function denyRequest(requestId) {
     const u = requireUser();
-    return await client()
+    const { data, error } = await client()
       .from("community_join_requests")
       .update({ status: "denied", decided_by: u.id })
-      .eq("id", requestId);
+      .eq("id", requestId)
+      .select();
+    if (!error && (!data || !data.length)) {
+      return { data: null, error: new Error("Deny matched no rows — likely RLS or the request was already handled.") };
+    }
+    return { data, error };
+  }
+
+  // The requester cancels their own still-pending request. RLS
+  // (jr_update_admin_or_self) allows them to update their own row.
+  async function cancelRequest(requestId) {
+    const u = requireUser();
+    const { data, error } = await client()
+      .from("community_join_requests")
+      .update({ status: "cancelled" })
+      .eq("id", requestId)
+      .eq("user_id", u.id)
+      .select();
+    if (!error && (!data || !data.length)) {
+      return { data: null, error: new Error("Cancel matched no rows.") };
+    }
+    return { data, error };
   }
 
   // Cheap count-only query, works because RLS lets admins read their
@@ -212,6 +238,74 @@
       .delete()
       .eq("community_id", communityId)
       .eq("user_id", userId);
+  }
+
+  // Fetch public-facing profile columns for a batch of user_ids. Used by
+  // admin UIs (pending join requests, member lists) to label users by the
+  // username they signed up with rather than a truncated UUID.
+  async function listProfiles(userIds) {
+    const ids = Array.from(new Set((userIds || []).filter(Boolean)));
+    if (!ids.length) return { data: [], error: null };
+    return await client()
+      .from("profiles")
+      .select("id, username, display_name, email, avatar_url")
+      .in("id", ids);
+  }
+
+  // Decorate rows that have an author_id with a compact .author block
+  // of {id, username, avatar_url}. Works for post + comment lists and
+  // for a single-row wrapper. No-ops when the list is empty. Used from
+  // the post view, feed, and home feed so every renderer can show a
+  // clickable @username + avatar without re-querying per row.
+  async function attachAuthors(rows) {
+    const arr = Array.isArray(rows) ? rows : (rows ? [rows] : []);
+    if (!arr.length) return arr;
+    const { data } = await listProfiles(arr.map((r) => r.author_id));
+    const byId = {};
+    (data || []).forEach((p) => { byId[p.id] = p; });
+    arr.forEach((r) => {
+      const p = byId[r.author_id];
+      r.author = p
+        ? { id: p.id, username: p.username || null, avatar_url: p.avatar_url || null }
+        : { id: r.author_id, username: null, avatar_url: null };
+    });
+    return arr;
+  }
+
+  // Fetch the public profile row (username, avatar, banner, bio,
+  // joined_at, post_count, comment_count) by username OR id. Used by
+  // the public user-profile page and the editor's preview toggle.
+  async function getPublicProfile({ username, id }) {
+    let q = client().from("public_profiles").select("*").limit(1);
+    if (id) q = q.eq("id", id);
+    else if (username) q = q.ilike("username", username);
+    else return { data: null, error: { message: "username or id required" } };
+    const { data, error } = await q.maybeSingle();
+    return { data: data || null, error };
+  }
+
+  // Return the list of communities a user is a member of. Each row
+  // carries role (so the public profile can show "owner" badges) and
+  // the embedded community row for rendering.
+  async function listCommunitiesForUser(userId) {
+    if (!userId) return { data: [], error: null };
+    return await client()
+      .from("community_members")
+      .select("role, joined_at, communities(*)")
+      .eq("user_id", userId);
+  }
+
+  // Search profiles by username substring. Cap results and filter out
+  // rows with no username set (they can't be navigated to anyway).
+  async function searchProfiles(q, { limit = 10 } = {}) {
+    const needle = String(q || "").trim();
+    if (!needle) return { data: [], error: null };
+    return await client()
+      .from("profiles")
+      .select("id, username, avatar_url")
+      .ilike("username", "%" + needle + "%")
+      .not("username", "is", null)
+      .limit(limit);
   }
 
   // ------------------------------------------------------------------
@@ -527,8 +621,14 @@
     listPendingRequests,
     approveRequest,
     denyRequest,
+    cancelRequest,
     listMembers,
     removeMember,
+    listProfiles,
+    attachAuthors,
+    getPublicProfile,
+    listCommunitiesForUser,
+    searchProfiles,
     countPendingRequests,
     countMyAdminPending,
     listPosts,

@@ -1084,6 +1084,547 @@
 .cf-role-owner { color: var(--accent); border-color: var(--accent); }
 .cf-role-admin { color: var(--moderate); border-color: var(--moderate); }
 
+/* ===== Clickable author display (posts + comments) ===== */
+
+/* Plain inline @username link. Used in post meta rows and feed snippets. */
+.cf-author-link {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cf-author-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.cf-author-link--missing {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* Avatar + @username chip for comment headers. */
+.cf-author-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.cf-author-chip:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.cf-author-chip-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #0a0a0a;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+img.cf-author-chip-avatar {
+  padding: 0;
+}
+
+.cf-author-chip-name {
+  line-height: 1;
+}
+
+.cf-author-chip--missing {
+  opacity: 0.7;
+}
+
+/* ===== Public user profile (user-profile.html + editor preview) ===== */
+.cf-user-profile {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.cf-user-profile--empty {
+  padding: 40px;
+  text-align: center;
+}
+
+.cf-user-banner {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+.cf-user-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cf-user-banner-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+/* Avatar overlaps the banner's bottom edge. */
+.cf-user-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 0 24px 16px;
+  margin-top: -56px;
+  position: relative;
+}
+
+.cf-user-avatar {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  border: 4px solid var(--panel);
+  background: var(--accent);
+  color: #0a0a0a;
+  flex: 0 0 auto;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.cf-user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cf-user-avatar-initial {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 44px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.cf-user-head-text {
+  padding-bottom: 12px;
+  min-width: 0;
+}
+
+.cf-user-name {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.cf-user-meta {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.cf-user-bio {
+  padding: 0 24px;
+  margin: 0 0 18px;
+  color: var(--text);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.cf-user-bio--empty {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.cf-user-stats {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cf-user-stat {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.cf-user-stat:last-child {
+  border-right: 0;
+}
+
+.cf-user-stat strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.cf-user-stat span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+.cf-user-communities {
+  padding: 20px 24px 28px;
+}
+
+.cf-user-communities h3 {
+  margin: 0 0 14px;
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+.cf-user-community-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.cf-user-community-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-elevated);
+}
+
+.cf-user-community-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cf-user-community-link:hover {
+  text-decoration: none;
+}
+
+.cf-user-community-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.cf-user-community-icon--placeholder {
+  background: var(--accent);
+  color: #0a0a0a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.cf-user-community-meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.cf-user-community-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cf-user-community-members {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.cf-user-community-actions {
+  flex: 0 0 auto;
+}
+
+.cf-user-community-actions .cf-btn {
+  padding: 4px 12px;
+  font-size: 12px;
+}
+
+.cf-user-joined {
+  font-size: 11px;
+  color: var(--text-dim);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.cf-user-empty {
+  color: var(--text-dim);
+  font-size: 13px;
+  padding: 10px 0;
+}
+
+@media (max-width: 640px) {
+  .cf-user-banner { height: 140px; }
+  .cf-user-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: -48px;
+  }
+  .cf-user-avatar { width: 88px; height: 88px; }
+  .cf-user-stats {
+    flex-wrap: wrap;
+  }
+  .cf-user-stat { min-width: 33%; }
+}
+
+/* ===== Community profile editor ===== */
+.cf-profile-edit,
+.cf-profile-preview-wrap {
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.cf-profile-edit-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.cf-profile-edit-head h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 28px;
+}
+
+.cf-profile-mode-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.cf-profile-mode-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  padding: 8px 16px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+}
+
+.cf-profile-mode-btn.is-active {
+  background: var(--accent);
+  color: #0a0a0a;
+}
+
+.cf-profile-edit-lede {
+  color: var(--text-muted);
+  margin: 0 0 24px;
+  font-size: 14px;
+}
+
+.cf-profile-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 18px;
+}
+
+.cf-profile-section h2 {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+.cf-profile-section-lede {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0 0 14px;
+}
+
+.cf-profile-banner-preview {
+  width: 100%;
+  height: 160px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.cf-profile-banner-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cf-profile-banner-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.cf-profile-avatar-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cf-profile-avatar-preview {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #0a0a0a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 34px;
+  text-transform: uppercase;
+  flex: 0 0 auto;
+}
+
+.cf-profile-avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cf-profile-file-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cf-profile-save-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.cf-profile-save-row .auth-submit {
+  flex: 1;
+  max-width: 260px;
+}
+
+/* ===== My profile sidebar card (community home + view) ===== */
+.cf-my-profile-card {
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 14px;
+}
+
+.cf-my-profile-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cf-my-profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #0a0a0a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.cf-my-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cf-my-profile-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cf-my-profile-edit {
+  display: block;
+  text-align: center;
+  padding: 7px 10px;
+  border: 1px solid var(--border-hover);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text);
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.cf-my-profile-edit:hover {
+  background: rgba(122, 162, 247, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.cf-my-profile-card--signedout {
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.cf-my-profile-card--signedout a {
+  color: var(--accent);
+}
+
 /* ===== Media lightbox (full-screen photo / video viewer) ===== */
 
 /* Hint that post media is clickable. */

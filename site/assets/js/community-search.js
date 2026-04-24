@@ -11,6 +11,7 @@
     q: (params.get("q") || "").trim(),
     tab: params.get("tab") || "all",
     results: [],
+    users: [],
     loading: false,
   };
 
@@ -61,6 +62,7 @@
         <a data-tab="all"         class="${state.tab === "all" ? "active" : ""}"         href="community-search.html?q=${encodeURIComponent(state.q)}&tab=all">All</a>
         <a data-tab="communities" class="${state.tab === "communities" ? "active" : ""}" href="community-search.html?q=${encodeURIComponent(state.q)}&tab=communities">Communities</a>
         <a data-tab="posts"       class="${state.tab === "posts" ? "active" : ""}"       href="community-search.html?q=${encodeURIComponent(state.q)}&tab=posts">Posts</a>
+        <a data-tab="users"       class="${state.tab === "users" ? "active" : ""}"       href="community-search.html?q=${encodeURIComponent(state.q)}&tab=users">Users</a>
       </div>
 
       <div id="cf-search-results">${state.loading ? `<div class="cf-search-empty">Searching…</div>` : renderResults()}</div>
@@ -74,16 +76,42 @@
     });
   }
 
+  function renderUserRow(u) {
+    const href = `user-profile.html?u=${encodeURIComponent(u.username)}`;
+    const avatar = u.avatar_url
+      ? `<img src="${esc(u.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;">`
+      : `<span>${esc((u.username || "?")[0].toUpperCase())}</span>`;
+    return `
+      <a class="cf-post" href="${href}" style="text-decoration:none; grid-template-columns: 68px minmax(0,1fr);">
+        <div class="cf-post-votes" style="justify-content:center; align-items:center;">
+          <span class="cf-search-user-avatar" style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:#0a0a0a;display:inline-flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;">${avatar}</span>
+        </div>
+        <div class="cf-post-body">
+          <h2 class="cf-post-title" style="font-size:16px;">@${esc(u.username)}</h2>
+          <div class="cf-post-meta">User profile</div>
+        </div>
+      </a>`;
+  }
+
   function renderResults() {
     let rows = state.results || [];
     if (state.tab === "communities") rows = rows.filter((r) => r.kind === "community");
     if (state.tab === "posts") rows = rows.filter((r) => r.kind === "post");
+    if (state.tab === "users") rows = [];
 
-    if (!rows.length) {
+    const users = (state.tab === "all" || state.tab === "users") ? (state.users || []) : [];
+
+    if (!rows.length && !users.length) {
       return `<div class="cf-search-empty">No ${state.tab === "all" ? "" : state.tab + " "}results for "${esc(state.q)}".</div>`;
     }
 
-    return rows
+    const usersHtml = users.length
+      ? (state.tab === "all"
+          ? `<div style="margin:8px 0 4px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim);">Users</div>`
+          : "") + users.map(renderUserRow).join("")
+      : "";
+
+    const postsHtml = rows
       .map((r) => {
         const href = r.kind === "community"
           ? `community-view.html?c=${encodeURIComponent(r.id)}`
@@ -104,18 +132,30 @@
           </a>`;
       })
       .join("");
+
+    const postsSectionLabel = (state.tab === "all" && rows.length && users.length)
+      ? `<div style="margin:18px 0 4px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim);">Communities &amp; posts</div>`
+      : "";
+
+    return usersHtml + postsSectionLabel + postsHtml;
   }
 
   async function runSearch() {
     state.loading = true;
     renderShell();
-    const { data, error } = await COMMUNITY_API.search(state.q, 50);
+    // Strip a leading "@" so users searching for "@alice" find users.
+    const needle = state.q.replace(/^@/, "");
+    const [resA, resB] = await Promise.all([
+      COMMUNITY_API.search(state.q, 50),
+      COMMUNITY_API.searchProfiles(needle, { limit: 20 }),
+    ]);
     state.loading = false;
-    if (error) {
-      shell.innerHTML = `<div class="cf-error">${esc(error.message || error)}</div>`;
+    if (resA.error) {
+      shell.innerHTML = `<div class="cf-error">${esc(resA.error.message || resA.error)}</div>`;
       return;
     }
-    state.results = data || [];
+    state.results = resA.data || [];
+    state.users = resB.data || [];
     renderShell();
   }
 

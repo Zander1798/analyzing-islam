@@ -94,6 +94,28 @@
       </a>`;
   }
 
+  function myProfileCardHtml() {
+    const me = window.__profile || null;
+    if (!state.user) {
+      return `
+        <div class="cf-my-profile-card cf-my-profile-card--signedout">
+          <a href="login.html?return=community-view.html${location.search}">Sign in</a> to manage your community profile.
+        </div>`;
+    }
+    const avatar = me && me.avatar_url
+      ? `<img src="${esc(me.avatar_url)}" alt="">`
+      : (me && me.username ? esc(me.username[0].toUpperCase()) : esc((state.user.email || "?")[0].toUpperCase()));
+    const name = (me && me.username) ? ("@" + me.username) : "(set a username)";
+    return `
+      <div class="cf-my-profile-card">
+        <div class="cf-my-profile-card-head">
+          <span class="cf-my-profile-avatar">${avatar}</span>
+          <span class="cf-my-profile-name">${esc(name)}</span>
+        </div>
+        <a class="cf-my-profile-edit" href="community-profile.html">Edit profile</a>
+      </div>`;
+  }
+
   function renderLeft() {
     const owned = [];
     const joined = [];
@@ -115,6 +137,7 @@
       : `<div class="cf-side-empty">You haven't joined any communities.</div>`;
 
     $left.innerHTML = `
+      ${myProfileCardHtml()}
       <div class="cf-side-section">
         <a class="cf-side-link" href="community.html">
           <span class="cf-side-icon">☰</span><span>Home</span>
@@ -179,7 +202,7 @@
     }
     if (c.is_private) {
       if (state.joinRequest && state.joinRequest.status === "pending") {
-        return `<button class="cf-btn" disabled>Request sent</button>`;
+        return `<button class="cf-btn" data-action="cancel-request" title="Withdraw your join request">Cancel request</button>`;
       }
       if (state.joinRequest && state.joinRequest.status === "denied") {
         return `<button class="cf-btn" data-action="request-join">Request to join</button>
@@ -266,7 +289,9 @@
         </div>
         <div class="cf-post-body">
           <div class="cf-post-meta">
-            <span>Posted ${ago(p.created_at)}</span>
+            <span>Posted by ${authorLink(p.author)}</span>
+            <span class="cf-dot">·</span>
+            <span>${ago(p.created_at)}</span>
           </div>
           <h2 class="cf-post-title"><a href="${permalink}">${esc(p.title)}</a></h2>
           ${buildBadge}
@@ -332,6 +357,7 @@
       if (action === "join") btn.addEventListener("click", handleJoin);
       if (action === "leave") btn.addEventListener("click", handleLeave);
       if (action === "request-join") btn.addEventListener("click", handleRequestJoin);
+      if (action === "cancel-request") btn.addEventListener("click", handleCancelRequest);
     });
   }
 
@@ -354,6 +380,15 @@
     const msg = prompt("Message to the admin (optional):", "") || "";
     const { error } = await COMMUNITY_API.requestToJoin(state.community.id, msg);
     if (error) { alert("Could not send request: " + (error.message || error)); return; }
+    await reloadCore();
+  }
+
+  async function handleCancelRequest() {
+    if (!state.joinRequest) return;
+    if (!confirm("Cancel your join request?")) return;
+    const { error } = await COMMUNITY_API.cancelRequest(state.joinRequest.id);
+    if (error) { alert("Could not cancel request: " + (error.message || error)); return; }
+    state.joinRequest = null;
     await reloadCore();
   }
 
@@ -468,6 +503,7 @@
     if (state.posts.length) {
       const ids = state.posts.map((p) => p.id);
       state.myVotes = await COMMUNITY_API.getMyPostVotes(ids);
+      await COMMUNITY_API.attachAuthors(state.posts);
     }
     renderCenter();
   }
@@ -515,6 +551,7 @@
     if (window.__authReady) window.__authReady.then(paint);
     else paint();
     window.addEventListener("auth-state", paint);
+    window.addEventListener("profile-state", () => { try { renderLeft(); } catch (_) {} });
   }
 
   if (document.readyState === "loading") {

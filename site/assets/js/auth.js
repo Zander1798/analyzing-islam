@@ -82,7 +82,7 @@
     }
     const { data, error } = await client
       .from("profiles")
-      .select("id,email,username,avatar_url,display_name,created_at")
+      .select("id,email,username,avatar_url,banner_url,bio,display_name,created_at")
       .eq("id", uid)
       .maybeSingle();
     if (error) {
@@ -214,6 +214,11 @@
           : null;
       }
       if (typeof fields.avatar_url !== "undefined") patch.avatar_url = fields.avatar_url;
+      if (typeof fields.banner_url !== "undefined") patch.banner_url = fields.banner_url;
+      if (typeof fields.bio !== "undefined") {
+        const b = fields.bio == null ? null : String(fields.bio);
+        patch.bio = b && b.length ? b : null;
+      }
       if (typeof fields.display_name !== "undefined") patch.display_name = fields.display_name;
 
       const { data, error } = await client
@@ -233,6 +238,36 @@
       window.__profile = next;
       window.dispatchEvent(new CustomEvent("profile-state", { detail: next }));
       return { data: next, error: null };
+    },
+
+    // Upload a banner image to Storage under avatars/<user_id>/banner-*.<ext>
+    // and save the resulting public URL to profiles.banner_url.
+    uploadBanner: async (file) => {
+      const uid = window.__session && window.__session.user && window.__session.user.id;
+      if (!uid) return { error: { message: "not signed in" } };
+      if (!file) return { error: { message: "no file" } };
+      if (!/^image\//i.test(file.type)) return { error: { message: "Not an image file." } };
+      if (file.size > 5 * 1024 * 1024) return { error: { message: "Image too large (5 MB max)." } };
+
+      let ext = (file.name.match(/\.([A-Za-z0-9]+)$/) || [])[1] || "jpg";
+      ext = ext.toLowerCase();
+      const path = uid + "/banner-" + Date.now() + "." + ext;
+
+      const { error: upErr } = await client.storage
+        .from("avatars")
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: true,
+          contentType: file.type,
+        });
+      if (upErr) return { error: upErr };
+
+      const { data: pub } = client.storage.from("avatars").getPublicUrl(path);
+      const url = pub && pub.publicUrl;
+      if (!url) return { error: { message: "Could not resolve banner URL." } };
+
+      const { data, error } = await window.AI_AUTH.updateProfile({ banner_url: url });
+      return { data, error, url };
     },
 
     // Upload an avatar image to Storage under avatars/<user_id>/avatar.<ext>

@@ -29,7 +29,7 @@
     wrap.innerHTML = `
       <div class="cf-search" style="margin: 14px auto 0; max-width: 1400px; padding: 0 16px;">
         <span class="cf-search-icon">🔍</span>
-        <input type="search" id="cf-global-search" placeholder="Search communities and posts…" autocomplete="off">
+        <input type="search" id="cf-global-search" placeholder="Search communities, posts, and @usernames…" autocomplete="off">
         <div class="cf-search-dropdown" id="cf-global-search-dropdown"></div>
       </div>
     `;
@@ -75,20 +75,46 @@
     dropdown.classList.add("open");
 
     if (!window.COMMUNITY_API) return; // not loaded yet on this page
-    const { data, error } = await COMMUNITY_API.search(q, 10);
+
+    // Strip a leading "@" so users can type "@alice" and still get a
+    // username-only search.
+    const needle = q.replace(/^@/, "");
+
+    const [searchResult, profilesResult] = await Promise.all([
+      COMMUNITY_API.search(q, 10),
+      COMMUNITY_API.searchProfiles(needle, { limit: 5 }),
+    ]);
+
     if (lastQuery !== q) return; // newer query came in
 
-    if (error) {
+    if (searchResult.error) {
       dropdown.innerHTML = `<div class="cf-search-empty">Search failed.</div>`;
       return;
     }
-    const rows = data || [];
-    if (!rows.length) {
+    const rows = searchResult.data || [];
+    const users = profilesResult.data || [];
+
+    if (!rows.length && !users.length) {
       dropdown.innerHTML = `<div class="cf-search-empty">No matches for "${esc(q)}".</div>`;
       return;
     }
 
-    const html = rows.map((r) => {
+    const userHtml = users.map((u) => {
+      const href = `user-profile.html?u=${encodeURIComponent(u.username)}`;
+      const avatar = u.avatar_url
+        ? `<img src="${esc(u.avatar_url)}" alt="">`
+        : `<span>${esc((u.username || "?")[0].toUpperCase())}</span>`;
+      return `
+        <a class="cf-search-result" href="${href}">
+          <span class="cf-search-result-kind">User</span>
+          <span class="cf-search-user-avatar">${avatar}</span>
+          <div class="cf-search-result-title">
+            <strong>@${esc(u.username)}</strong>
+          </div>
+        </a>`;
+    }).join("");
+
+    const postHtml = rows.map((r) => {
       const href = r.kind === "community"
         ? `community-view.html?c=${encodeURIComponent(r.id)}`
         : `community-post.html?p=${encodeURIComponent(r.id)}`;
@@ -103,7 +129,7 @@
         </a>`;
     }).join("");
 
-    dropdown.innerHTML = html + `
+    dropdown.innerHTML = userHtml + postHtml + `
       <a class="cf-search-result" href="community-search.html?q=${encodeURIComponent(q)}" style="justify-content:center; color:var(--accent);">
         <span>See all results for "${esc(q)}" →</span>
       </a>`;

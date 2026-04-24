@@ -154,7 +154,9 @@
             ${iconFor(c)}
             <a href="community-view.html?c=${encodeURIComponent(c.slug)}">${esc(c.name)}</a>
             <span class="cf-dot">·</span>
-            <span>Posted ${ago(p.created_at)}</span>
+            <span>Posted by ${authorLink(p.author)}</span>
+            <span class="cf-dot">·</span>
+            <span>${ago(p.created_at)}</span>
             ${c.is_private ? `<span class="cf-dot">·</span><span class="cf-badge cf-badge-private">Private</span>` : ""}
           </div>
           <h1 class="cf-post-title">${esc(p.title)}</h1>
@@ -245,7 +247,7 @@
     return `
       <div class="cf-comment" data-depth="${depth}" data-comment-id="${c.id}">
         <div class="cf-comment-head">
-          <strong>user</strong>
+          ${authorChip(c.author)}
           <span>· ${ago(c.created_at)}</span>
         </div>
         <div class="cf-comment-body">${esc(c.body)}</div>
@@ -424,6 +426,14 @@
     });
     textarea.disabled = false;
     if (error) { alert("Comment failed: " + (error.message || error)); return; }
+    // Attach the current user's author block so the new comment renders
+    // with a username right away, before the poller catches up.
+    const me = window.__profile || {};
+    data.author = {
+      id: state.user ? state.user.id : null,
+      username: me.username || null,
+      avatar_url: me.avatar_url || null,
+    };
     state.comments.push(data);
     state.post.comment_count = (state.post.comment_count || 0) + 1;
     state.replyingTo = null;
@@ -491,6 +501,7 @@
     if (error || !data) { state.post = null; state.community = null; return; }
     state.post = data;
     state.community = data.communities || null;
+    await COMMUNITY_API.attachAuthors([state.post]);
   }
 
   async function loadMembership() {
@@ -515,6 +526,7 @@
     if (!state.post) { state.comments = []; return; }
     const { data } = await COMMUNITY_API.listComments(state.post.id);
     state.comments = data || [];
+    await COMMUNITY_API.attachAuthors(state.comments);
   }
 
   async function loadMyVotes() {
@@ -559,6 +571,7 @@
       arr.map((c) => c.id + ":" + (c.score || 0)).join(",");
     if (signature(state.comments) === signature(next)) return;
 
+    await COMMUNITY_API.attachAuthors(next);
     state.comments = next;
     // Refresh my vote map so any new comments don't appear unvoted
     // forever and existing votes stay highlighted.
