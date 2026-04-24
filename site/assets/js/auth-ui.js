@@ -107,24 +107,41 @@
     });
   }
 
+  // The MutationObserver below watches the nav for external scripts
+  // that rebuild it (goat.js, etc.). Since render() itself mutates the
+  // nav, we have to pause the observer around our own mutations or we
+  // trigger ourselves in an infinite loop, freezing the tab.
+  let navObserver = null;
+  let isRendering = false;
+
   function render() {
     const navInner = document.querySelector(".site-nav-inner");
     if (!navInner) return;
+    if (isRendering) return; // hard guard against re-entrancy
+    isRendering = true;
+    if (navObserver) navObserver.disconnect();
+    try {
+      const prev = navInner.querySelector(".auth-button");
+      if (prev) prev.remove();
 
-    // Remove any previously-injected button.
-    const prev = navInner.querySelector(".auth-button");
-    if (prev) prev.remove();
+      const prefix = assetPrefix();
+      const sess = session();
+      const node = sess ? buildLoggedInControl(prefix, sess) : buildLoggedOutButton(prefix);
 
-    const prefix = assetPrefix();
-    const sess = session();
-    const node = sess ? buildLoggedInControl(prefix, sess) : buildLoggedOutButton(prefix);
-
-    // Insert before the goat so the auth control sits to the goat's LEFT.
-    const goat = navInner.querySelector(".goat-scream");
-    if (goat) {
-      navInner.insertBefore(node, goat);
-    } else {
-      navInner.appendChild(node);
+      // Insert before the goat so the auth control sits to the goat's LEFT.
+      const goat = navInner.querySelector(".goat-scream");
+      if (goat) {
+        navInner.insertBefore(node, goat);
+      } else {
+        navInner.appendChild(node);
+      }
+    } finally {
+      // Reconnect on the next microtask so our just-issued DOM mutation
+      // has been flushed — otherwise the observer sees it and re-triggers.
+      Promise.resolve().then(() => {
+        isRendering = false;
+        if (navObserver) navObserver.observe(navInner, { childList: true });
+      });
     }
   }
 
@@ -144,13 +161,14 @@
     // If goat.js or some other script mutates .site-nav-inner after us, re-inject.
     const navInner = document.querySelector(".site-nav-inner");
     if (navInner) {
-      const observer = new MutationObserver(function () {
+      navObserver = new MutationObserver(function () {
+        if (isRendering) return;
         const navInner2 = document.querySelector(".site-nav-inner");
         if (navInner2 && !navInner2.querySelector(".auth-button")) {
           render();
         }
       });
-      observer.observe(navInner, { childList: true });
+      navObserver.observe(navInner, { childList: true });
     }
   }
 
