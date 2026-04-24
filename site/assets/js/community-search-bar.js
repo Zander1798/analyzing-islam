@@ -28,7 +28,6 @@
     wrap.className = "cf-search-global";
     wrap.innerHTML = `
       <div class="cf-search" style="margin: 14px auto 0; max-width: 1400px; padding: 0 16px;">
-        <span class="cf-search-icon">🔍</span>
         <input type="search" id="cf-global-search" placeholder="Search communities, posts, and @usernames…" autocomplete="off">
         <div class="cf-search-dropdown" id="cf-global-search-dropdown"></div>
       </div>

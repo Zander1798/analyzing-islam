@@ -33,7 +33,6 @@
         <h1 style="font-family:var(--sans); font-size:22px; font-weight:600; margin:0 0 20px;">Search communities &amp; posts</h1>
         <form id="cf-search-form">
           <div class="cf-search">
-            <span class="cf-search-icon">🔍</span>
             <input type="search" id="cf-search-input" placeholder="Try 'warfare', 'aisha', 'apologetics'…" autocomplete="off" autofocus>
           </div>
         </form>
@@ -53,7 +52,6 @@
 
       <form id="cf-search-form" style="margin-bottom:18px;">
         <div class="cf-search">
-          <span class="cf-search-icon">🔍</span>
           <input type="search" id="cf-search-input" placeholder="Refine your search…" autocomplete="off" value="${esc(state.q)}">
         </div>
       </form>
