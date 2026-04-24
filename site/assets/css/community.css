@@ -125,8 +125,19 @@
   font-style: italic;
 }
 
-/* ===== Center column ===== */
-.cf-center { min-width: 0; }
+/* ===== Center column =====
+   The generic `main { max-width: 1200px; padding: 60px 32px 120px }`
+   rule in style.css caps any <main> element. Inside .cf-layout the
+   center column is a grid track and we want it to fill whatever the
+   track gives it — on wide no-right pages (user profile, messages,
+   community profile editor) that cap would clip the content. Reset
+   both the cap and the extra vertical padding here. */
+.cf-center {
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+}
 
 .cf-main-bar {
   display: flex;
