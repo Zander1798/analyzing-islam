@@ -145,6 +145,57 @@
     header.appendChild(link);
   });
 
+  // --- Hash anchor: land precisely on the entry after layout settles ---
+  // The native hash-scroll races with scroll-behavior: smooth + late-loading
+  // fonts/images, so the browser can stop short of the target. After `load`
+  // (all resources settled) we re-measure and snap to an exact offset below
+  // the sticky nav. Also re-fired on every hashchange (same-page card clicks).
+  function scrollToHashEntry() {
+    const hash = window.location.hash;
+    if (!hash || hash.length < 2) return;
+    let id;
+    try { id = decodeURIComponent(hash.slice(1)); } catch (_) { id = hash.slice(1); }
+    const target = document.getElementById(id);
+    if (!target || !target.classList.contains("entry")) return;
+
+    // If a filter hides the target, clear filters so the user can see it.
+    if (target.classList.contains("hidden")) {
+      state.category = "all";
+      state.strength = "all";
+      state.search = "";
+      if (searchInput) searchInput.value = "";
+      ["category", "strength"].forEach((type) => {
+        document
+          .querySelectorAll('.chip[data-filter-type="' + type + '"]')
+          .forEach((c) => c.classList.remove("active"));
+        const chip = document.querySelector(
+          '.chip[data-filter-type="' + type + '"][data-filter-value="all"]'
+        );
+        if (chip) chip.classList.add("active");
+      });
+      applyFilters();
+      updateURL();
+    }
+
+    const nav = document.querySelector(".site-nav");
+    const navHeight = nav ? nav.getBoundingClientRect().height : 70;
+    const offset = navHeight + 24;
+    const rect = target.getBoundingClientRect();
+    const top = rect.top + window.pageYOffset - offset;
+    // behavior: "auto" — snap, don't race smooth-scroll against layout.
+    window.scrollTo({ top, left: 0, behavior: "auto" });
+  }
+
+  if (document.readyState === "complete") {
+    scrollToHashEntry();
+  } else {
+    window.addEventListener("load", function () {
+      // Small delay lets any web fonts paint before the final snap.
+      setTimeout(scrollToHashEntry, 40);
+    });
+  }
+  window.addEventListener("hashchange", scrollToHashEntry);
+
   // --- Initialize ---
   readURL();
   applyFilters();

@@ -605,7 +605,7 @@ main > section + section {
   border: 1px solid var(--border);
   padding: 28px 32px;
   margin-bottom: 14px;
-  scroll-margin-top: 90px;
+  scroll-margin-top: 110px;
   transition: border-color 0.2s;
   border-radius: 0;
 }
