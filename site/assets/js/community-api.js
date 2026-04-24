@@ -658,6 +658,161 @@
     return await client().from("friendships").delete().eq("id", friendshipId);
   }
 
+  // List pending friend requests where the viewer is the addressee
+  // (i.e. other users asking to friend them). Used by the messenger
+  // Requests panel.
+  async function listIncomingFriendRequests() {
+    const u = currentUser();
+    if (!u) return { data: [], error: null };
+    return await client()
+      .from("friendships")
+      .select("*")
+      .eq("addressee_id", u.id)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
+  }
+
+  async function countIncomingFriendRequests() {
+    const u = currentUser();
+    if (!u) return { count: 0, error: null };
+    const { count, error } = await client()
+      .from("friendships")
+      .select("id", { count: "exact", head: true })
+      .eq("addressee_id", u.id)
+      .eq("status", "pending");
+    return { count: count || 0, error };
+  }
+
+  // ------------------------------------------------------------------
+  // Direct messages (messenger)
+  // ------------------------------------------------------------------
+
+  // Start (or get) a DM thread with a peer. Requires an accepted
+  // friendship — enforced server-side by the RPC.
+  async function startOrGetDM(peerId) {
+    const { data, error } = await client().rpc("start_or_get_dm", { peer_id: peerId });
+    return { threadId: data || null, error };
+  }
+
+  // List all threads the viewer is a participant of, with the peer
+  // user's profile (username, avatar_url) attached. Ordered by most
+  // recent activity first.
+  async function listMyThreads() {
+    const u = currentUser();
+    if (!u) return { data: [], error: null };
+    const { data, error } = await client()
+      .from("direct_threads")
+      .select("*")
+      .or(`user_a.eq.${u.id},user_b.eq.${u.id}`)
+      .order("last_message_at", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false });
+    if (error) return { data: [], error };
+
+    // Collect the peer ids and fetch their profiles.
+    const peerIds = (data || []).map((t) => (t.user_a === u.id ? t.user_b : t.user_a));
+    const profiles = {};
+    if (peerIds.length) {
+      const { data: rows } = await listProfiles(peerIds);
+      (rows || []).forEach((p) => { profiles[p.id] = p; });
+    }
+    const enriched = (data || []).map((t) => {
+      const peerId = t.user_a === u.id ? t.user_b : t.user_a;
+      const myLastRead = t.user_a === u.id ? t.last_read_by_a : t.last_read_by_b;
+      const unread = !!(t.last_message_at && t.last_sender_id && t.last_sender_id !== u.id &&
+                        (!myLastRead || new Date(t.last_message_at) > new Date(myLastRead)));
+      return { ...t, peer_id: peerId, peer: profiles[peerId] || null, unread };
+    });
+    return { data: enriched, error: null };
+  }
+
+  async function getThread(threadId) {
+    const u = currentUser();
+    if (!u) return { data: null, error: null };
+    const { data, error } = await client()
+      .from("direct_threads")
+      .select("*")
+      .eq("id", threadId)
+      .maybeSingle();
+    if (error || !data) return { data: null, error };
+    const peerId = data.user_a === u.id ? data.user_b : data.user_a;
+    const { data: peerRows } = await listProfiles([peerId]);
+    const peer = (peerRows && peerRows[0]) || null;
+    return { data: { ...data, peer_id: peerId, peer }, error: null };
+  }
+
+  async function listMessages(threadId, { limit = 100, before } = {}) {
+    let q = client()
+      .from("direct_messages")
+      .select("*")
+      .eq("thread_id", threadId)
+      .eq("is_deleted", false)
+      .order("created_at", { ascending: true })
+      .limit(limit);
+    if (before) q = q.lt("created_at", before);
+    return await q;
+  }
+
+  async function sendMessage({ threadId, body = "", attachments = [] }) {
+    const u = requireUser();
+    const trimmedBody = (body || "").trim();
+    if (!trimmedBody && (!attachments || !attachments.length)) {
+      return { error: new Error("Message is empty") };
+    }
+    return await client()
+      .from("direct_messages")
+      .insert({
+        thread_id: threadId,
+        sender_id: u.id,
+        body: trimmedBody,
+        attachments: attachments || [],
+      })
+      .select()
+      .single();
+  }
+
+  async function markThreadRead(threadId) {
+    return await client().rpc("dm_mark_read", { p_thread_id: threadId });
+  }
+
+  async function softDeleteMessage(messageId) {
+    return await client()
+      .from("direct_messages")
+      .update({ is_deleted: true })
+      .eq("id", messageId);
+  }
+
+  // Upload a file (image or video) to the dm-attachments bucket under
+  // dm-attachments/<uid>/<timestamp>.<ext> and return its public URL.
+  async function uploadDMAttachment(file) {
+    const u = requireUser();
+    if (!file) return { error: new Error("no file") };
+    if (file.size > 50 * 1024 * 1024) {
+      return { error: new Error("File too large (50 MB max).") };
+    }
+    const ext = (file.name.match(/\.([A-Za-z0-9]+)$/) || [])[1] || "bin";
+    const path = u.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + "." + ext.toLowerCase();
+    const { error: upErr } = await client().storage
+      .from("dm-attachments")
+      .upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || "application/octet-stream",
+      });
+    if (upErr) return { error: upErr };
+    const { data: pub } = client().storage.from("dm-attachments").getPublicUrl(path);
+    return {
+      data: {
+        url: pub && pub.publicUrl,
+        path,
+        name: file.name,
+        type: /^image\//i.test(file.type) ? "image" : (/^video\//i.test(file.type) ? "video" : "file"),
+        size: file.size,
+        mime: file.type,
+      },
+      error: null,
+    };
+  }
+
   window.COMMUNITY_API = {
     listCommunities,
     getCommunity,
@@ -710,5 +865,16 @@
     acceptFriendRequest,
     declineFriendRequest,
     removeFriendship,
+    listIncomingFriendRequests,
+    countIncomingFriendRequests,
+    // Direct messages
+    startOrGetDM,
+    listMyThreads,
+    getThread,
+    listMessages,
+    sendMessage,
+    markThreadRead,
+    softDeleteMessage,
+    uploadDMAttachment,
   };
 })();

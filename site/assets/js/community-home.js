@@ -156,6 +156,9 @@
         <a class="cf-side-link" href="community.html?view=explore">
           <span class="cf-side-icon">◎</span><span>Explore</span>
         </a>
+        <a class="cf-side-link" href="messages.html">
+          <span class="cf-side-icon">✉</span><span>Messages</span>
+        </a>
         <a class="cf-side-link" href="community-create.html">
           <span class="cf-side-icon">+</span><span>Create community</span>
         </a>

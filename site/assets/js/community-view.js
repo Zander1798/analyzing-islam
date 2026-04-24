@@ -145,6 +145,9 @@
         <a class="cf-side-link" href="community.html?sort=top">
           <span class="cf-side-icon">★</span><span>Popular</span>
         </a>
+        <a class="cf-side-link" href="messages.html">
+          <span class="cf-side-icon">✉</span><span>Messages</span>
+        </a>
         <a class="cf-side-link" href="community-create.html">
           <span class="cf-side-icon">+</span><span>Create community</span>
         </a>

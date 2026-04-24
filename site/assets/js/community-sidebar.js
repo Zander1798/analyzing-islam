@@ -40,6 +40,9 @@
     if (path.endsWith("community-view.html")) {
       return { slug: (params.get("c") || "").trim() };
     }
+    if (path.endsWith("messages.html")) {
+      return { page: "messages" };
+    }
     return {};
   }
 
@@ -121,6 +124,9 @@
         </a>
         <a class="cf-side-link" href="community.html?view=explore">
           <span class="cf-side-icon">◎</span><span>Explore</span>
+        </a>
+        <a class="cf-side-link ${ctx.page === "messages" ? "active" : ""}" href="messages.html">
+          <span class="cf-side-icon">✉</span><span>Messages</span>
         </a>
         <a class="cf-side-link" href="community-create.html">
           <span class="cf-side-icon">+</span><span>Create community</span>
