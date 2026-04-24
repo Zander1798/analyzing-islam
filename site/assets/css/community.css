@@ -18,8 +18,11 @@
 }
 /* When a page renders the layout without a right sidebar (e.g.
    user-profile.html), let the center column absorb that 340px so
-   the content reads as landscape, not squeezed. */
-.cf-layout:not(:has(.cf-right)) {
+   the content reads as landscape, not squeezed. The explicit class
+   is the fallback for browsers that don't yet support :has(). */
+.cf-layout:not(:has(.cf-right)),
+.cf-layout.cf-layout--no-right {
+  max-width: 1900px;
   grid-template-columns: 280px minmax(0, 1fr);
 }
 @media (max-width: 1200px) {
@@ -1365,8 +1368,8 @@ img.cf-author-chip-avatar {
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  max-width: 960px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .cf-user-profile--empty {
