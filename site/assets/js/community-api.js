@@ -206,7 +206,7 @@
 
     return await client()
       .from("community_posts")
-      .select("*, communities(slug, name, icon_url, is_private)")
+      .select("*, communities(id, slug, name, icon_url, is_private)")
       .in("community_id", ids)
       .eq("is_deleted", false)
       .order(column, { ascending: false })
@@ -216,7 +216,7 @@
   async function getPost(postId) {
     return await client()
       .from("community_posts")
-      .select("*, communities(slug, name, icon_url, is_private)")
+      .select("*, communities(id, slug, name, description, icon_url, banner_url, is_private, member_count, post_count, created_at)")
       .eq("id", postId)
       .single();
   }
