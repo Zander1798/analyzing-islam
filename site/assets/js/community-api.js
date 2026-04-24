@@ -248,7 +248,7 @@
     if (!ids.length) return { data: [], error: null };
     return await client()
       .from("profiles")
-      .select("id, username, display_name, email, avatar_url")
+      .select("id, username, email, avatar_url")
       .in("id", ids);
   }
 

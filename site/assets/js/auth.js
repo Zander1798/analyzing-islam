@@ -98,8 +98,11 @@
       return null;
     }
 
-    const fullCols = "id,email,username,avatar_url,banner_url,bio,display_name,created_at";
-    const baseCols = "id,email,username,avatar_url,display_name,created_at";
+    // Keep selects aligned with the actual profiles table. display_name
+    // was in the original schema.sql but has been removed in some
+    // deployments, so we don't rely on it here.
+    const fullCols = "id,email,username,avatar_url,banner_url,bio,created_at";
+    const baseCols = "id,email,username,avatar_url,created_at";
 
     // Pick the query shape based on what we know about the DB. If we
     // haven't probed yet, try the full shape first — on failure we
@@ -251,7 +254,7 @@
     },
 
     // Patch profile columns. Pass { username, avatar_url, banner_url,
-    // bio, display_name }. Returns { data, error, droppedFields? }.
+    // bio }. Returns { data, error, droppedFields? }.
     //
     // Uses upsert so a missing profile row gets created, maybeSingle +
     // follow-up refetch so an RLS-filtered read-back doesn't crash the
@@ -273,7 +276,6 @@
           : null;
       }
       if (typeof fields.avatar_url !== "undefined") basePatch.avatar_url = fields.avatar_url;
-      if (typeof fields.display_name !== "undefined") basePatch.display_name = fields.display_name;
 
       // Extended patch: adds bio/banner_url if the caller asked for them.
       const extendedPatch = { ...basePatch };
