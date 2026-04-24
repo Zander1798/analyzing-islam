@@ -658,6 +658,31 @@
     return await client().from("friendships").delete().eq("id", friendshipId);
   }
 
+  // List every user the viewer is mutually-accepted friends with, with
+  // each peer's profile (id, username, avatar_url) attached. Used by
+  // the share-to-friend popover on post cards.
+  async function listMyFriends() {
+    const u = currentUser();
+    if (!u) return { data: [], error: null };
+    const { data, error } = await client()
+      .from("friendships")
+      .select("*")
+      .or(`requester_id.eq.${u.id},addressee_id.eq.${u.id}`)
+      .eq("status", "accepted");
+    if (error || !data) return { data: [], error };
+    const peerIds = data.map((r) => (r.requester_id === u.id ? r.addressee_id : r.requester_id));
+    const { data: profiles } = await listProfiles(peerIds);
+    const byId = {};
+    (profiles || []).forEach((p) => { byId[p.id] = p; });
+    return {
+      data: data.map((r) => {
+        const peerId = r.requester_id === u.id ? r.addressee_id : r.requester_id;
+        return { ...r, peer_id: peerId, peer: byId[peerId] || null };
+      }),
+      error: null,
+    };
+  }
+
   // List pending friend requests where the viewer is the addressee
   // (i.e. other users asking to friend them). Used by the messenger
   // Requests panel.
@@ -918,6 +943,7 @@
     acceptFriendRequest,
     declineFriendRequest,
     removeFriendship,
+    listMyFriends,
     listIncomingFriendRequests,
     countIncomingFriendRequests,
     countUnseenFriendRequests,

@@ -451,17 +451,12 @@
     renderAll();
   }
 
-  async function sharePost() {
-    const url = new URL(`community-post.html?p=${state.post.id}`, location.href).toString();
-    if (navigator.share) { try { await navigator.share({ url }); return; } catch (_) {} }
-    try {
-      await navigator.clipboard.writeText(url);
-      const btn = $center.querySelector('.cf-post-full [data-action="share"]');
-      if (btn) {
-        btn.textContent = "✓ Copied";
-        setTimeout(() => (btn.textContent = "🔗 Share"), 1800);
-      }
-    } catch { prompt("Copy this link:", url); }
+  function sharePost(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (e && e.stopPropagation) e.stopPropagation();
+    const btn = $center.querySelector('.cf-post-full [data-action="share"]');
+    if (!btn || !state.post || !window.CF_SHARE) return;
+    window.CF_SHARE.open(btn, state.post.id, state.post.title || "");
   }
 
   async function reportPost() {

@@ -397,20 +397,15 @@
 
   function wireShare() {
     $center.querySelectorAll('[data-action="share"]').forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
+      btn.addEventListener("click", (e) => {
         e.preventDefault();
+        e.stopPropagation();
         const post = btn.closest(".cf-post");
         const id = post.getAttribute("data-post-id");
-        const url = new URL(`community-post.html?p=${id}`, location.href).toString();
-        if (navigator.share) {
-          try { await navigator.share({ url }); return; } catch (_) {}
-        }
-        try {
-          await navigator.clipboard.writeText(url);
-          btn.textContent = "✓ Copied";
-          setTimeout(() => (btn.textContent = "🔗 Share"), 1800);
-        } catch {
-          prompt("Copy this link:", url);
+        const titleEl = post.querySelector(".cf-post-title a");
+        const title = titleEl ? titleEl.textContent.trim() : "";
+        if (window.CF_SHARE) {
+          window.CF_SHARE.open(btn, id, title);
         }
       });
     });
