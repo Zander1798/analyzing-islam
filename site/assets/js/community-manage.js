@@ -135,12 +135,29 @@
           </div>
         </form>
       </section>
+
+      ${state.membership && state.membership.role === "owner" ? `
+      <section class="cf-manage-section" style="border-color: var(--strong);">
+        <h2 style="color: var(--strong);">Danger zone</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 14px;">
+          Deleting this community removes every post, comment, member and join request attached to it. This cannot be undone.
+        </p>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 10px;">
+          Type the slug <code>${esc(c.slug)}</code> below to confirm, then click Delete.
+        </p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <input type="text" id="cf-delete-confirm" placeholder="${esc(c.slug)}" autocomplete="off"
+                 style="flex:1 1 240px; max-width:320px; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text); padding:10px 12px; border-radius:4px; font-family:inherit; font-size:14px;">
+          <button type="button" class="cf-btn cf-btn-danger" id="cf-delete-btn" disabled>Delete community</button>
+        </div>
+      </section>` : ""}
     `;
 
     wireRequests();
     wireReports();
     wireMembers();
     wireEditForm();
+    wireDeleteCommunity();
   }
 
   function renderRequests() {
@@ -323,6 +340,32 @@
       } finally {
         saveBtn.disabled = false;
       }
+    });
+  }
+
+  function wireDeleteCommunity() {
+    const input = document.getElementById("cf-delete-confirm");
+    const btn = document.getElementById("cf-delete-btn");
+    if (!input || !btn) return;
+
+    const expected = state.community.slug;
+    input.addEventListener("input", () => {
+      btn.disabled = input.value.trim() !== expected;
+    });
+
+    btn.addEventListener("click", async () => {
+      if (input.value.trim() !== expected) return;
+      if (!confirm(`Really delete "${state.community.name}"? Every post, comment, and member will be removed. This is permanent.`)) return;
+      btn.disabled = true;
+      btn.textContent = "Deleting…";
+      const { error } = await COMMUNITY_API.deleteCommunity(state.community.id);
+      if (error) {
+        alert("Delete failed: " + (error.message || error));
+        btn.disabled = false;
+        btn.textContent = "Delete community";
+        return;
+      }
+      location.href = "community.html";
     });
   }
 
