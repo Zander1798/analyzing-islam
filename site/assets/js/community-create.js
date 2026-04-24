@@ -195,6 +195,24 @@
           throw error;
         }
 
+        // Belt-and-suspenders: the DB trigger should have already enrolled
+        // us as the owner, but defensively upsert in case it didn't, so
+        // comment + post rights work from the first page load.
+        try {
+          const u = window.AI_AUTH && window.AI_AUTH.getUser();
+          if (u && window.__supabase) {
+            await window.__supabase
+              .from("community_members")
+              .upsert(
+                { community_id: data.id, user_id: u.id, role: "owner" },
+                { onConflict: "community_id,user_id" }
+              );
+          }
+        } catch (_) {
+          // Non-fatal: the DB trigger almost certainly ran. Worst case the
+          // user sees "Join" on their own community and clicks it once.
+        }
+
         location.href = "community-view.html?c=" + encodeURIComponent(data.slug);
       } catch (err) {
         showError(err.message || String(err));
