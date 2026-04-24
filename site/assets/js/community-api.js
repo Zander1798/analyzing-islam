@@ -159,6 +159,45 @@
       .eq("id", requestId);
   }
 
+  // Cheap count-only query, works because RLS lets admins read their
+  // community's join requests.
+  async function countPendingRequests(communityId) {
+    const { count, error } = await client()
+      .from("community_join_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("community_id", communityId)
+      .eq("status", "pending");
+    return { count: count || 0, error: error || null };
+  }
+
+  // For every community the current user admins, count pending requests.
+  // Returns a Map<communityId, number>. Silent on errors (returns what it
+  // got so far) — this is UI-adornment, not load-bearing.
+  async function countMyAdminPending() {
+    const u = currentUser();
+    if (!u) return new Map();
+    const { data, error } = await client()
+      .from("community_members")
+      .select("community_id, role")
+      .eq("user_id", u.id)
+      .in("role", ["owner", "admin"]);
+    if (error || !data || !data.length) return new Map();
+    const ids = data.map((r) => r.community_id);
+    const out = new Map();
+    const results = await Promise.all(
+      ids.map(async (id) => {
+        const { count } = await client()
+          .from("community_join_requests")
+          .select("id", { count: "exact", head: true })
+          .eq("community_id", id)
+          .eq("status", "pending");
+        return [id, count || 0];
+      })
+    );
+    results.forEach(([id, n]) => out.set(id, n));
+    return out;
+  }
+
   async function listMembers(communityId) {
     return await client()
       .from("community_members")
@@ -490,6 +529,8 @@
     denyRequest,
     listMembers,
     removeMember,
+    countPendingRequests,
+    countMyAdminPending,
     listPosts,
     listFeed,
     getPost,

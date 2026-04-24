@@ -146,7 +146,43 @@
   overflow: hidden;
   transition: border-color 0.15s;
 }
+.cf-post.has-thumb { grid-template-columns: 44px minmax(0, 1fr) auto; }
 .cf-post:hover { border-color: var(--border-hover); }
+
+/* Small media preview on feed cards (image or video attached to the post).
+   Lives in the third grid column so it sits to the right of the body. */
+.cf-post-thumb {
+  position: relative;
+  display: block;
+  width: 80px;
+  height: 80px;
+  margin: 10px 12px 10px 4px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  align-self: start;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.cf-post-thumb img,
+.cf-post-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cf-post-thumb-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+}
 
 .cf-post-votes {
   padding: 10px 4px;

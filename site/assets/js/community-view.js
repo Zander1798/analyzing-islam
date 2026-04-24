@@ -23,6 +23,8 @@
     myVotes: {},
     sort: params.get("sort") || "new",
     error: null,
+    pendingCount: 0,          // for this community (admin-only)
+    pendingByCommunity: null, // Map<communityId, number> for sidebar
   };
 
   // ------------------------------------------------------------------
@@ -60,6 +62,18 @@
     tmp.innerHTML = html || "";
     return tmp.textContent || "";
   }
+  // Pull the first <img> / <video> out of body_html so the feed card can
+  // show a small thumbnail. Returns { type, src } or null.
+  function firstMediaFrom(html) {
+    if (!html) return null;
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    const el = tmp.querySelector("img[src], video[src]");
+    if (!el) return null;
+    const src = el.getAttribute("src");
+    if (!src) return null;
+    return { type: el.tagName.toLowerCase() === "video" ? "video" : "image", src };
+  }
 
   // ------------------------------------------------------------------
   // Left sidebar (same shape as home)
@@ -68,11 +82,15 @@
   // it), "Joined communities" = role member or admin. The currently-
   // viewed community gets an "active" class in whichever list it lands.
   function sideRowHtml(c) {
+    const pendingMap = state.pendingByCommunity;
+    const n = pendingMap && pendingMap.get ? pendingMap.get(c.id) : 0;
+    const badge = n ? `<span class="cf-notify-badge" title="${n} pending join request${n === 1 ? "" : "s"}">${n}</span>` : "";
     return `
       <a class="cf-side-link ${c.slug === slug ? "active" : ""}"
          href="community-view.html?c=${encodeURIComponent(c.slug)}">
         ${iconFor(c)}
         <span>${esc(c.name)}</span>
+        ${badge}
       </a>`;
   }
 
@@ -138,7 +156,9 @@
         <div style="font-size:12px; color:var(--text-dim);">Created ${ago(c.created_at)}</div>
         ${isAdmin ? `
           <div style="margin-top:14px;">
-            <a class="cf-btn" href="community-manage.html?c=${encodeURIComponent(c.slug)}" style="width:100%; justify-content:center;">Manage community</a>
+            <a class="cf-btn" href="community-manage.html?c=${encodeURIComponent(c.slug)}" style="width:100%; justify-content:center;">
+              Manage community${state.pendingCount ? `<span class="cf-notify-badge" title="${state.pendingCount} pending join request${state.pendingCount === 1 ? "" : "s"}">${state.pendingCount}</span>` : ""}
+            </a>
           </div>` : ""}
       </div>
     `;
@@ -225,9 +245,20 @@
         )}</strong></span></div>`
       : "";
     const permalink = `community-post.html?p=${p.id}`;
+    const media = firstMediaFrom(p.body_html);
+    const thumb = media
+      ? (media.type === "video"
+        ? `<a class="cf-post-thumb cf-post-thumb-video" href="${permalink}" aria-label="Open post">
+             <video src="${esc(media.src)}" muted preload="metadata" playsinline></video>
+             <span class="cf-post-thumb-play" aria-hidden="true">▶</span>
+           </a>`
+        : `<a class="cf-post-thumb cf-post-thumb-image" href="${permalink}" aria-label="Open post">
+             <img src="${esc(media.src)}" alt="" loading="lazy">
+           </a>`)
+      : "";
 
     return `
-      <article class="cf-post" data-post-id="${p.id}">
+      <article class="cf-post ${thumb ? "has-thumb" : ""}" data-post-id="${p.id}">
         <div class="cf-post-votes">
           <button class="cf-vote-btn up ${myVote === 1 ? "active" : ""}" data-vote="1" aria-label="Upvote">▲</button>
           <span class="cf-vote-score">${fmt(p.score)}</span>
@@ -245,6 +276,7 @@
             <button data-action="share">🔗 Share</button>
           </div>
         </div>
+        ${thumb}
       </article>`;
   }
 
@@ -400,9 +432,23 @@
   }
 
   async function loadMyCommunities() {
-    if (!state.user) { state.myCommunities = []; return; }
+    if (!state.user) { state.myCommunities = []; state.pendingByCommunity = null; return; }
     const { data } = await COMMUNITY_API.listMyCommunities();
     state.myCommunities = data || [];
+    try {
+      state.pendingByCommunity = await COMMUNITY_API.countMyAdminPending();
+    } catch (_) {
+      state.pendingByCommunity = null;
+    }
+  }
+
+  async function loadPendingCount() {
+    state.pendingCount = 0;
+    if (!state.community || !state.membership) return;
+    const role = state.membership.role;
+    if (role !== "owner" && role !== "admin") return;
+    const { count } = await COMMUNITY_API.countPendingRequests(state.community.id);
+    state.pendingCount = count || 0;
   }
 
   async function loadPosts() {
@@ -459,6 +505,7 @@
       return;
     }
     await loadMembership();
+    await loadPendingCount();
     renderLeft();
     renderRight();
     await loadPosts();

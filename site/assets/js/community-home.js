@@ -20,6 +20,7 @@
     sort: new URL(location.href).searchParams.get("sort") || "new",
     loading: true,
     error: null,
+    pendingByCommunity: null, // Map<communityId, number>
   };
 
   // ------------------------------------------------------------------
@@ -63,6 +64,19 @@
     return tmp.textContent || "";
   }
 
+  // Pull the first <img> / <video> out of body_html so the feed card can
+  // show a small thumbnail. Returns { type, src } or null.
+  function firstMediaFrom(html) {
+    if (!html) return null;
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    const el = tmp.querySelector("img[src], video[src]");
+    if (!el) return null;
+    const src = el.getAttribute("src");
+    if (!src) return null;
+    return { type: el.tagName.toLowerCase() === "video" ? "video" : "image", src };
+  }
+
   // ------------------------------------------------------------------
   // Left sidebar
   // ------------------------------------------------------------------
@@ -70,11 +84,15 @@
   // created (role === "owner"), "Joined communities" = ones they joined
   // but did not create (role member or admin).
   function sideRowHtml(c, activeSlug) {
+    const pendingMap = state.pendingByCommunity;
+    const n = pendingMap && pendingMap.get ? pendingMap.get(c.id) : 0;
+    const badge = n ? `<span class="cf-notify-badge" title="${n} pending join request${n === 1 ? "" : "s"}">${n}</span>` : "";
     return `
       <a class="cf-side-link ${activeSlug && c.slug === activeSlug ? "active" : ""}"
          href="community-view.html?c=${encodeURIComponent(c.slug)}">
         ${iconFor(c)}
         <span>${esc(c.name)}</span>
+        ${badge}
       </a>`;
   }
 
@@ -186,9 +204,20 @@
       : "";
 
     const permalink = `community-post.html?p=${p.id}`;
+    const media = firstMediaFrom(p.body_html);
+    const thumb = media
+      ? (media.type === "video"
+        ? `<a class="cf-post-thumb cf-post-thumb-video" href="${permalink}" aria-label="Open post">
+             <video src="${esc(media.src)}" muted preload="metadata" playsinline></video>
+             <span class="cf-post-thumb-play" aria-hidden="true">▶</span>
+           </a>`
+        : `<a class="cf-post-thumb cf-post-thumb-image" href="${permalink}" aria-label="Open post">
+             <img src="${esc(media.src)}" alt="" loading="lazy">
+           </a>`)
+      : "";
 
     return `
-      <article class="cf-post" data-post-id="${p.id}">
+      <article class="cf-post ${thumb ? "has-thumb" : ""}" data-post-id="${p.id}">
         <div class="cf-post-votes">
           <button class="cf-vote-btn up ${myVote === 1 ? "active" : ""}" data-vote="1" aria-label="Upvote">▲</button>
           <span class="cf-vote-score">${fmt(p.score)}</span>
@@ -210,6 +239,7 @@
             <button data-action="share">🔗 Share</button>
           </div>
         </div>
+        ${thumb}
       </article>
     `;
   }
@@ -379,6 +409,7 @@
   async function loadMyCommunities() {
     if (!state.user) {
       state.myCommunities = [];
+      state.pendingByCommunity = null;
       renderLeft();
       return;
     }
@@ -388,6 +419,11 @@
       state.myCommunities = [];
     } else {
       state.myCommunities = data || [];
+    }
+    try {
+      state.pendingByCommunity = await COMMUNITY_API.countMyAdminPending();
+    } catch (_) {
+      state.pendingByCommunity = null;
     }
     renderLeft();
   }

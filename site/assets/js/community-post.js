@@ -25,6 +25,7 @@
     myPostVote: 0,
     myCommentVotes: {},
     replyingTo: null, // comment id currently being replied to
+    pendingByCommunity: null, // Map<communityId, number>
   };
 
   // ------------------------------------------------------------------
@@ -66,11 +67,16 @@
       .filter(Boolean)
       .sort((a, b) => a.name.localeCompare(b.name));
     const currentSlug = state.community && state.community.slug;
+    const pendingMap = state.pendingByCommunity;
     const myListHtml = myList.length
-      ? myList.map((c) => `
+      ? myList.map((c) => {
+          const n = pendingMap && pendingMap.get ? pendingMap.get(c.id) : 0;
+          const badge = n ? `<span class="cf-notify-badge" title="${n} pending join request${n === 1 ? "" : "s"}">${n}</span>` : "";
+          return `
           <a class="cf-side-link ${c.slug === currentSlug ? "active" : ""}" href="community-view.html?c=${encodeURIComponent(c.slug)}">
-            ${iconFor(c)}<span>${esc(c.name)}</span>
-          </a>`).join("")
+            ${iconFor(c)}<span>${esc(c.name)}</span>${badge}
+          </a>`;
+        }).join("")
       : `<div class="cf-side-empty">You haven't joined any communities.</div>`;
 
     $left.innerHTML = `
@@ -495,9 +501,14 @@
   }
 
   async function loadMyCommunities() {
-    if (!state.user) { state.myCommunities = []; return; }
+    if (!state.user) { state.myCommunities = []; state.pendingByCommunity = null; return; }
     const { data } = await COMMUNITY_API.listMyCommunities();
     state.myCommunities = data || [];
+    try {
+      state.pendingByCommunity = await COMMUNITY_API.countMyAdminPending();
+    } catch (_) {
+      state.pendingByCommunity = null;
+    }
   }
 
   async function loadComments() {
