@@ -211,8 +211,16 @@
     });
   }
 
+  // Track the last signed-in state so we don't repaint (and wipe the
+  // form) on every auth-state event. Supabase fires auth-state on token
+  // refresh too, not just sign-in / sign-out.
+  let lastSignedIn = null;
+
   function paint() {
     const user = window.AI_AUTH && window.AI_AUTH.getUser();
+    const isIn = !!user;
+    if (lastSignedIn === isIn) return; // no meaningful change, keep typed input
+    lastSignedIn = isIn;
     if (!user) renderSignedOut();
     else renderForm();
   }

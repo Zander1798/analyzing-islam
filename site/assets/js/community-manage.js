@@ -399,8 +399,17 @@
     renderShell();
   }
 
+  // Supabase fires auth-state on token refresh, not just sign-in/out.
+  // Skip repaint when the signed-in status hasn't changed so the admin
+  // doesn't lose typed input in the manage form on a token refresh.
+  let lastSignedIn = null;
+
   async function paint() {
-    state.user = (window.AI_AUTH && window.AI_AUTH.getUser()) || null;
+    const user = (window.AI_AUTH && window.AI_AUTH.getUser()) || null;
+    const isIn = !!user;
+    if (lastSignedIn !== null && lastSignedIn === isIn) return;
+    lastSignedIn = isIn;
+    state.user = user;
     if (!state.user) { renderGate("Sign in to manage a community"); return; }
     if (!slug) { renderNotFound(); return; }
     await loadAll();

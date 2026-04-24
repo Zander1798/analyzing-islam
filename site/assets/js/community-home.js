@@ -392,8 +392,17 @@
   // ------------------------------------------------------------------
   // Paint cycle
   // ------------------------------------------------------------------
+  // Supabase fires auth-state on token refresh, not just sign-in/out.
+  // Skip repaint when the signed-in status hasn't changed so a token
+  // refresh doesn't flicker the feed and re-issue network requests.
+  let lastSignedIn = null;
+
   async function paint() {
-    state.user = (window.AI_AUTH && window.AI_AUTH.getUser()) || null;
+    const user = (window.AI_AUTH && window.AI_AUTH.getUser()) || null;
+    const isIn = !!user;
+    if (lastSignedIn !== null && lastSignedIn === isIn) return;
+    lastSignedIn = isIn;
+    state.user = user;
     renderLeft();
     await Promise.all([loadPopular(), loadMyCommunities()]);
     await loadFeed();

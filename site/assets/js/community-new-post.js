@@ -399,8 +399,17 @@
   // ------------------------------------------------------------------
   // Boot
   // ------------------------------------------------------------------
+  // Supabase fires auth-state on token refresh, not just sign-in/out.
+  // Skip repaint when the signed-in status hasn't changed so a token
+  // refresh doesn't wipe the in-progress post the user is drafting.
+  let lastSignedIn = null;
+
   async function paint() {
-    state.user = (window.AI_AUTH && window.AI_AUTH.getUser()) || null;
+    const user = (window.AI_AUTH && window.AI_AUTH.getUser()) || null;
+    const isIn = !!user;
+    if (lastSignedIn !== null && lastSignedIn === isIn) return;
+    lastSignedIn = isIn;
+    state.user = user;
     if (!state.user) { renderSignedOut(); return; }
     if (!slug) {
       shell.innerHTML = `<div class="cf-form"><p>No community specified. <a href="community.html">Back to community home</a>.</p></div>`;
