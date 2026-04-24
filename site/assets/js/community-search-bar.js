@@ -91,13 +91,32 @@
       dropdown.innerHTML = `<div class="cf-search-empty">Search failed.</div>`;
       return;
     }
-    const rows = searchResult.data || [];
+    // Dropdown is a quick-jump to users + communities only. Post hits
+    // stay reachable via the "See all results" link at the bottom so
+    // the typeahead doesn't get noisy.
+    const communities = (searchResult.data || []).filter((r) => r.kind === "community");
     const users = profilesResult.data || [];
 
-    if (!rows.length && !users.length) {
-      dropdown.innerHTML = `<div class="cf-search-empty">No matches for "${esc(q)}".</div>`;
+    if (!communities.length && !users.length) {
+      dropdown.innerHTML = `
+        <div class="cf-search-empty">No users or communities match "${esc(q)}".</div>
+        <a class="cf-search-result" href="community-search.html?q=${encodeURIComponent(q)}" style="justify-content:center; color:var(--accent);">
+          <span>Search posts for "${esc(q)}" →</span>
+        </a>`;
       return;
     }
+
+    const communityHtml = communities.map((r) => {
+      const href = `community-view.html?c=${encodeURIComponent(r.id)}`;
+      return `
+        <a class="cf-search-result" href="${href}">
+          <span class="cf-search-result-kind">Community</span>
+          <div class="cf-search-result-title">
+            <strong>${esc(r.title || r.community_name || "(untitled)")}</strong>
+            ${r.subtitle ? `<span>${esc(r.subtitle.slice(0, 120))}</span>` : ""}
+          </div>
+        </a>`;
+    }).join("");
 
     const userHtml = users.map((u) => {
       const href = `user-profile.html?u=${encodeURIComponent(u.username)}`;
@@ -114,22 +133,7 @@
         </a>`;
     }).join("");
 
-    const postHtml = rows.map((r) => {
-      const href = r.kind === "community"
-        ? `community-view.html?c=${encodeURIComponent(r.id)}`
-        : `community-post.html?p=${encodeURIComponent(r.id)}`;
-      const kind = r.kind === "community" ? "Community" : "Post";
-      return `
-        <a class="cf-search-result" href="${href}">
-          <span class="cf-search-result-kind">${kind}</span>
-          <div class="cf-search-result-title">
-            <strong>${esc(r.title || "(untitled)")}</strong>
-            <span>${esc(r.community_name ? "in " + r.community_name : "")}${r.subtitle ? (r.community_name ? " · " : "") + esc(r.subtitle.slice(0, 120)) : ""}</span>
-          </div>
-        </a>`;
-    }).join("");
-
-    dropdown.innerHTML = userHtml + postHtml + `
+    dropdown.innerHTML = communityHtml + userHtml + `
       <a class="cf-search-result" href="community-search.html?q=${encodeURIComponent(q)}" style="justify-content:center; color:var(--accent);">
         <span>See all results for "${esc(q)}" →</span>
       </a>`;
