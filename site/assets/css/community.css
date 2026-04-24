@@ -9,8 +9,11 @@
   margin: 0 auto;
   padding: 28px 20px 80px;
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr) 340px;
-  gap: 32px;
+  /* Right sidebar slimmer (340 -> 280) so the center column in 3-col
+     mode feels as wide as it does when the right sidebar collapses
+     at the 1200px breakpoint. */
+  grid-template-columns: 260px minmax(0, 1fr) 280px;
+  gap: 28px;
   align-items: start;
 }
 /* When a page renders the layout without a right sidebar (e.g.
@@ -439,50 +442,54 @@
   color: var(--text-dim);
 }
 
-/* ===== Single community header ===== */
+/* ===== Single community header =====
+   Scaled to match the user-profile presence — tall banner, big
+   icon overlapping it, prominent title + action row. */
 .cf-community-banner {
-  height: 200px;
+  height: 280px;
   background: linear-gradient(135deg, #1b2540, #0a0a0a);
   background-size: cover;
   background-position: center;
-  border-radius: 10px 10px 0 0;
+  border-radius: 12px 12px 0 0;
 }
 .cf-community-header {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 0 0 10px 10px;
-  padding: 20px 24px;
+  border-radius: 0 0 12px 12px;
+  padding: 24px 32px 24px;
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin: -40px 0 24px 0;
+  gap: 24px;
+  margin: -60px 0 28px 0;
   position: relative;
   z-index: 1;
   flex-wrap: wrap;
 }
 .cf-community-icon {
-  width: 92px;
-  height: 92px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   background: var(--panel-2);
-  border: 4px solid var(--bg);
-  flex: 0 0 92px;
+  border: 5px solid var(--panel);
+  flex: 0 0 128px;
   overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
+  font-size: 48px;
   color: var(--text-muted);
   font-weight: 600;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.5);
 }
 .cf-community-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cf-community-title { flex: 1 1 260px; min-width: 0; }
 .cf-community-title h1 {
   font-family: var(--sans);
-  font-size: 28px;
-  margin: 0 0 4px;
-  font-weight: 600;
+  font-size: 36px;
+  margin: 0 0 6px;
+  font-weight: 700;
   color: var(--text);
+  letter-spacing: -0.01em;
 }
 .cf-community-title .cf-community-slug {
   color: var(--text-muted);
