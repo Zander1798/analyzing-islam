@@ -18,14 +18,15 @@ SITE = ROOT / "site"
 
 # (order matches how the nav should render)
 NAV_LINKS = [
-    ("Home",    "index.html"),
-    ("Catalog", "catalog.html"),
-    ("Read",    "read.html"),
-    ("Compare", "compare.html"),
-    ("Build",   "build.html"),
-    ("Stats",   "stats.html"),
-    ("About",   "about.html"),
-    ("FAQ",     "faq.html"),
+    ("Home",      "index.html"),
+    ("Catalog",   "catalog.html"),
+    ("Read",      "read.html"),
+    ("Compare",   "compare.html"),
+    ("Build",     "build.html"),
+    ("Stats",     "stats.html"),
+    ("Community", "community.html"),
+    ("About",     "about.html"),
+    ("FAQ",       "faq.html"),
 ]
 
 NAV_BLOCK_RE = re.compile(
