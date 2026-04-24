@@ -64,18 +64,36 @@
   // ------------------------------------------------------------------
   // Left sidebar (same shape as home)
   // ------------------------------------------------------------------
-  function renderLeft() {
-    const myList = (state.myCommunities || [])
-      .map((m) => m.communities)
-      .filter(Boolean)
-      .sort((a, b) => a.name.localeCompare(b.name));
+  // Split memberships: "Your communities" = role owner (the user created
+  // it), "Joined communities" = role member or admin. The currently-
+  // viewed community gets an "active" class in whichever list it lands.
+  function sideRowHtml(c) {
+    return `
+      <a class="cf-side-link ${c.slug === slug ? "active" : ""}"
+         href="community-view.html?c=${encodeURIComponent(c.slug)}">
+        ${iconFor(c)}
+        <span>${esc(c.name)}</span>
+      </a>`;
+  }
 
-    const myListHtml = myList.length
-      ? myList.map((c) => `
-          <a class="cf-side-link ${c.slug === slug ? "active" : ""}" href="community-view.html?c=${encodeURIComponent(c.slug)}">
-            ${iconFor(c)}
-            <span>${esc(c.name)}</span>
-          </a>`).join("")
+  function renderLeft() {
+    const owned = [];
+    const joined = [];
+    (state.myCommunities || []).forEach((m) => {
+      if (!m || !m.communities) return;
+      if (m.role === "owner") owned.push(m.communities);
+      else joined.push(m.communities);
+    });
+    const byName = (a, b) => a.name.localeCompare(b.name);
+    owned.sort(byName);
+    joined.sort(byName);
+
+    const ownedHtml = owned.length
+      ? owned.map(sideRowHtml).join("")
+      : `<div class="cf-side-empty">You haven't created any communities.</div>`;
+
+    const joinedHtml = joined.length
+      ? joined.map(sideRowHtml).join("")
       : `<div class="cf-side-empty">You haven't joined any communities.</div>`;
 
     $left.innerHTML = `
@@ -92,7 +110,11 @@
       </div>
       <div class="cf-side-section">
         <p class="cf-side-label">Your communities</p>
-        ${myListHtml}
+        ${ownedHtml}
+      </div>
+      <div class="cf-side-section">
+        <p class="cf-side-label">Joined communities</p>
+        ${joinedHtml}
       </div>
     `;
   }

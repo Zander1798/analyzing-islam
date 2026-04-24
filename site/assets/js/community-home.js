@@ -66,22 +66,41 @@
   // ------------------------------------------------------------------
   // Left sidebar
   // ------------------------------------------------------------------
-  function renderLeft() {
-    const myList = (state.myCommunities || [])
-      .map((m) => m.communities)
-      .filter(Boolean)
-      .sort((a, b) => a.name.localeCompare(b.name));
+  // Split memberships into two lists: "Your communities" = ones the user
+  // created (role === "owner"), "Joined communities" = ones they joined
+  // but did not create (role member or admin).
+  function sideRowHtml(c, activeSlug) {
+    return `
+      <a class="cf-side-link ${activeSlug && c.slug === activeSlug ? "active" : ""}"
+         href="community-view.html?c=${encodeURIComponent(c.slug)}">
+        ${iconFor(c)}
+        <span>${esc(c.name)}</span>
+      </a>`;
+  }
 
-    const myListHtml = myList.length
-      ? myList
-          .map(
-            (c) => `
-          <a class="cf-side-link" href="community-view.html?c=${encodeURIComponent(c.slug)}">
-            ${iconFor(c)}
-            <span>${esc(c.name)}</span>
-          </a>`
-          )
-          .join("")
+  function partitionMemberships(memberships) {
+    const owned = [];
+    const joined = [];
+    (memberships || []).forEach((m) => {
+      if (!m || !m.communities) return;
+      if (m.role === "owner") owned.push(m.communities);
+      else joined.push(m.communities);
+    });
+    const byName = (a, b) => a.name.localeCompare(b.name);
+    owned.sort(byName);
+    joined.sort(byName);
+    return { owned, joined };
+  }
+
+  function renderLeft() {
+    const { owned, joined } = partitionMemberships(state.myCommunities);
+
+    const ownedHtml = owned.length
+      ? owned.map((c) => sideRowHtml(c)).join("")
+      : `<div class="cf-side-empty">You haven't created any communities yet.</div>`;
+
+    const joinedHtml = joined.length
+      ? joined.map((c) => sideRowHtml(c)).join("")
       : `<div class="cf-side-empty">You haven't joined any communities yet.</div>`;
 
     $left.innerHTML = `
@@ -102,7 +121,12 @@
 
       <div class="cf-side-section">
         <p class="cf-side-label">Your communities</p>
-        ${myListHtml}
+        ${ownedHtml}
+      </div>
+
+      <div class="cf-side-section">
+        <p class="cf-side-label">Joined communities</p>
+        ${joinedHtml}
       </div>
     `;
   }
