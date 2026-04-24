@@ -163,6 +163,41 @@
   // ------------------------------------------------------------------
   // Right sidebar — About card, stats, admin actions
   // ------------------------------------------------------------------
+  function renderMembersPanel() {
+    const members = state.members || [];
+    if (!members.length) return "";
+    const CAP = 12;
+    const shown = members.slice(0, CAP);
+    const extra = Math.max(0, members.length - CAP);
+    const rows = shown.map((m) => {
+      const username = (m.profile && m.profile.username) || "";
+      const avatarUrl = m.profile && m.profile.avatar_url;
+      const href = username ? `user-profile.html?u=${encodeURIComponent(username)}` : `user-profile.html?id=${encodeURIComponent(m.user_id)}`;
+      const letter = (username || "?")[0].toUpperCase();
+      const avatar = avatarUrl
+        ? `<span class="cf-member-avatar"><img src="${esc(avatarUrl)}" alt=""></span>`
+        : `<span class="cf-member-avatar">${esc(letter)}</span>`;
+      const roleBadge = m.role === "owner"
+        ? `<span class="cf-role-badge cf-role-owner">Owner</span>`
+        : (m.role === "admin" ? `<span class="cf-role-badge cf-role-admin">Admin</span>` : "");
+      return `
+        <a class="cf-member-row" href="${href}">
+          ${avatar}
+          <span class="cf-member-name">${username ? "@" + esc(username) : "(unnamed)"}</span>
+          ${roleBadge}
+        </a>`;
+    }).join("");
+    const more = extra
+      ? `<div class="cf-member-more">+ ${fmt(extra)} more</div>`
+      : "";
+    return `
+      <div class="cf-panel" style="margin-top:12px;">
+        <h3>Members</h3>
+        <div class="cf-member-list">${rows}</div>
+        ${more}
+      </div>`;
+  }
+
   function renderRight() {
     if (!state.community) { $right.innerHTML = ""; return; }
     const c = state.community;
@@ -184,6 +219,7 @@
             </a>
           </div>` : ""}
       </div>
+      ${renderMembersPanel()}
     `;
   }
 
@@ -476,6 +512,30 @@
     }
   }
 
+  async function loadMembers() {
+    state.members = [];
+    if (!state.community) return;
+    const { data, error } = await COMMUNITY_API.listMembers(state.community.id);
+    if (error || !data) return;
+    const { data: profiles } = await COMMUNITY_API.listProfiles(data.map((m) => m.user_id));
+    const byId = {};
+    (profiles || []).forEach((p) => { byId[p.id] = p; });
+    // Sort owner → admin → member, then by join date (earliest first).
+    const roleRank = { owner: 0, admin: 1, member: 2 };
+    state.members = data
+      .map((m) => ({
+        user_id: m.user_id,
+        role: m.role,
+        joined_at: m.joined_at,
+        profile: byId[m.user_id] || null,
+      }))
+      .sort((a, b) => {
+        const r = (roleRank[a.role] ?? 9) - (roleRank[b.role] ?? 9);
+        if (r !== 0) return r;
+        return new Date(a.joined_at) - new Date(b.joined_at);
+      });
+  }
+
   async function loadPendingCount() {
     state.pendingCount = 0;
     if (!state.community || !state.membership) return;
@@ -510,7 +570,7 @@
   async function reloadCore() {
     await loadCommunity();
     await loadMembership();
-    await loadPosts();
+    await Promise.all([loadPosts(), loadMembers()]);
     renderRight();
     renderLeft();
   }
@@ -542,8 +602,11 @@
     await loadMembership();
     await loadPendingCount();
     renderLeft();
+    // Member list + posts fetch in parallel so neither blocks the right
+    // sidebar render more than it already has to.
+    const membersP = loadMembers().then(renderRight);
     renderRight();
-    await loadPosts();
+    await Promise.all([loadPosts(), membersP]);
   }
 
   function onReady() {
