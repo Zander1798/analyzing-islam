@@ -313,9 +313,13 @@
             (state.dirty.bio || "") !== ((state.profile && state.profile.bio) || "")) {
           fields.bio = state.dirty.bio || null;
         }
+        let partial = null;
         if (Object.keys(fields).length) {
-          const { error } = await window.AI_AUTH.updateProfile(fields);
-          if (error) throw error;
+          const res = await window.AI_AUTH.updateProfile(fields);
+          if (res.error) throw res.error;
+          if (res.droppedFields && res.droppedFields.length) {
+            partial = res.droppedFields;
+          }
         }
 
         // Refresh state from the canonical DB row.
@@ -325,8 +329,15 @@
         state.avatarPreview = null;
         state.bannerPreview = null;
 
-        msg.className = "auth-message auth-message--success";
-        msg.textContent = "Profile saved.";
+        if (partial) {
+          msg.className = "auth-message auth-message--error";
+          msg.textContent = "Saved partially. Could not save: " +
+            partial.join(", ") +
+            ". Paste supabase/profile-community-extensions.sql into the Supabase SQL editor and run it.";
+        } else {
+          msg.className = "auth-message auth-message--success";
+          msg.textContent = "Profile saved.";
+        }
         msg.style.display = "block";
 
         // Re-render so removed-avatar UI reflects state, etc.

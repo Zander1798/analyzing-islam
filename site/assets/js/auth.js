@@ -73,6 +73,23 @@
   window.__profile = null;
   let profilePromise = null;
 
+  // Cached knowledge about which extended profile columns (bio,
+  // banner_url) the DB actually has. We discover this on the first
+  // SELECT/UPDATE that mentions them and then use the answer for the
+  // rest of the session so we don't keep hitting PostgREST with 400s.
+  //   null   — not yet checked
+  //   true   — extended columns exist (profile-community-extensions.sql applied)
+  //   false  — extended columns missing (fallback mode)
+  let extendedProfileColsKnown = null;
+
+  function isMissingColumnError(error) {
+    if (!error) return false;
+    if (error.code === "42703") return true;
+    const m = (error.message || "").toLowerCase();
+    return /column .* does not exist/.test(m) ||
+           /could not find the .* column/.test(m);
+  }
+
   async function refetchProfile() {
     const uid = window.__session && window.__session.user && window.__session.user.id;
     if (!uid) {
@@ -80,34 +97,46 @@
       window.dispatchEvent(new CustomEvent("profile-state", { detail: null }));
       return null;
     }
-    // Try the full shape first (requires profile-community-extensions.sql).
-    // If those columns are missing (old DB) fall back to the base shape so
-    // the app still works — the community profile editor will just show
-    // empty bio/banner and any save that touches those columns will fail
-    // with a clear PostgREST error the caller can surface.
-    let { data, error } = await client
-      .from("profiles")
-      .select("id,email,username,avatar_url,banner_url,bio,display_name,created_at")
-      .eq("id", uid)
-      .maybeSingle();
-    if (error) {
-      const msg = (error.message || "").toLowerCase();
-      const missingCol =
-        error.code === "42703" ||
-        /column .* does not exist/.test(msg) ||
-        /could not find the .* column/.test(msg);
-      if (missingCol) {
+
+    const fullCols = "id,email,username,avatar_url,banner_url,bio,display_name,created_at";
+    const baseCols = "id,email,username,avatar_url,display_name,created_at";
+
+    // Pick the query shape based on what we know about the DB. If we
+    // haven't probed yet, try the full shape first — on failure we
+    // flip the flag and fall back to the base shape (once).
+    const tryFull = extendedProfileColsKnown !== false;
+    let data = null;
+    let error = null;
+
+    if (tryFull) {
+      const res = await client
+        .from("profiles")
+        .select(fullCols)
+        .eq("id", uid)
+        .maybeSingle();
+      data = res.data;
+      error = res.error;
+      if (!error) {
+        extendedProfileColsKnown = true;
+      } else if (isMissingColumnError(error)) {
+        extendedProfileColsKnown = false;
         console.warn(
           "[auth] profile bio/banner columns missing — apply " +
           "supabase/profile-community-extensions.sql. Falling back."
         );
-        ({ data, error } = await client
-          .from("profiles")
-          .select("id,email,username,avatar_url,display_name,created_at")
-          .eq("id", uid)
-          .maybeSingle());
       }
     }
+
+    if (extendedProfileColsKnown === false && (error || !tryFull)) {
+      const res = await client
+        .from("profiles")
+        .select(baseCols)
+        .eq("id", uid)
+        .maybeSingle();
+      data = res.data;
+      error = res.error;
+    }
+
     if (error) {
       console.warn("[auth] profile fetch failed", error);
       window.__profile = null;
@@ -221,42 +250,101 @@
       return { available: false, reason: "taken" };
     },
 
-    // Patch profile columns. Pass { username, avatar_url, display_name }.
-    // Uses upsert so a missing profile row gets created, and maybeSingle +
-    // a follow-up refetch so an RLS policy that blocks reading our own row
-    // back immediately after the write doesn't crash the save.
+    // Patch profile columns. Pass { username, avatar_url, banner_url,
+    // bio, display_name }. Returns { data, error, droppedFields? }.
+    //
+    // Uses upsert so a missing profile row gets created, maybeSingle +
+    // follow-up refetch so an RLS-filtered read-back doesn't crash the
+    // save, and gracefully retries without bio/banner_url when those
+    // columns don't exist yet in the DB (old migration state). In that
+    // case droppedFields is populated so the caller can tell the user
+    // which fields couldn't be saved.
     updateProfile: async (fields) => {
       const sess = window.__session;
       const uid = sess && sess.user && sess.user.id;
       if (!uid) return { error: { message: "not signed in" } };
-      const patch = { id: uid };
-      if (sess.user.email) patch.email = sess.user.email;
+
+      // Base patch: columns that exist in every schema version.
+      const basePatch = { id: uid };
+      if (sess.user.email) basePatch.email = sess.user.email;
       if (typeof fields.username !== "undefined") {
-        patch.username = fields.username
+        basePatch.username = fields.username
           ? String(fields.username).trim().toLowerCase()
           : null;
       }
-      if (typeof fields.avatar_url !== "undefined") patch.avatar_url = fields.avatar_url;
-      if (typeof fields.banner_url !== "undefined") patch.banner_url = fields.banner_url;
+      if (typeof fields.avatar_url !== "undefined") basePatch.avatar_url = fields.avatar_url;
+      if (typeof fields.display_name !== "undefined") basePatch.display_name = fields.display_name;
+
+      // Extended patch: adds bio/banner_url if the caller asked for them.
+      const extendedPatch = { ...basePatch };
+      const wantsExtended = (typeof fields.banner_url !== "undefined") ||
+                            (typeof fields.bio !== "undefined");
+      if (typeof fields.banner_url !== "undefined") extendedPatch.banner_url = fields.banner_url;
       if (typeof fields.bio !== "undefined") {
         const b = fields.bio == null ? null : String(fields.bio);
-        patch.bio = b && b.length ? b : null;
+        extendedPatch.bio = b && b.length ? b : null;
       }
-      if (typeof fields.display_name !== "undefined") patch.display_name = fields.display_name;
 
-      const { data, error } = await client
+      // If we already know the extended columns are missing, skip the
+      // 400-producing attempt entirely.
+      if (wantsExtended && extendedProfileColsKnown === false) {
+        const { data, error } = await client
+          .from("profiles")
+          .upsert(basePatch, { onConflict: "id" })
+          .select()
+          .maybeSingle();
+        if (error) {
+          console.error("[auth] updateProfile failed (base patch)", error, basePatch);
+          return { data: null, error };
+        }
+        const droppedFields = [];
+        if (typeof fields.bio !== "undefined") droppedFields.push("bio");
+        if (typeof fields.banner_url !== "undefined") droppedFields.push("banner_url");
+        const next = data || (await refetchProfile());
+        window.__profile = next;
+        window.dispatchEvent(new CustomEvent("profile-state", { detail: next }));
+        return { data: next, error: null, droppedFields };
+      }
+
+      // Try extended (or base, if nothing extended was requested) first.
+      const firstPatch = wantsExtended ? extendedPatch : basePatch;
+      let { data, error } = await client
         .from("profiles")
-        .upsert(patch, { onConflict: "id" })
+        .upsert(firstPatch, { onConflict: "id" })
         .select()
         .maybeSingle();
 
+      if (error && wantsExtended && isMissingColumnError(error)) {
+        extendedProfileColsKnown = false;
+        console.warn(
+          "[auth] bio/banner_url columns missing — retrying without them. " +
+          "Apply supabase/profile-community-extensions.sql to persist these."
+        );
+        const res = await client
+          .from("profiles")
+          .upsert(basePatch, { onConflict: "id" })
+          .select()
+          .maybeSingle();
+        data = res.data;
+        error = res.error;
+        if (!error) {
+          const droppedFields = [];
+          if (typeof fields.bio !== "undefined") droppedFields.push("bio");
+          if (typeof fields.banner_url !== "undefined") droppedFields.push("banner_url");
+          const next = data || (await refetchProfile());
+          window.__profile = next;
+          window.dispatchEvent(new CustomEvent("profile-state", { detail: next }));
+          return { data: next, error: null, droppedFields };
+        }
+      } else if (!error && wantsExtended) {
+        extendedProfileColsKnown = true;
+      }
+
       if (error) {
-        console.error("[auth] updateProfile failed", error, patch);
+        console.error("[auth] updateProfile failed", error, firstPatch);
         return { data: null, error };
       }
 
-      // If RLS allowed the write but blocked reading it back, refetch
-      // explicitly so the UI has the canonical row.
       const next = data || (await refetchProfile());
       window.__profile = next;
       window.dispatchEvent(new CustomEvent("profile-state", { detail: next }));
@@ -264,7 +352,9 @@
     },
 
     // Upload a banner image to Storage under avatars/<user_id>/banner-*.<ext>
-    // and save the resulting public URL to profiles.banner_url.
+    // and save the resulting public URL to profiles.banner_url. If the
+    // banner_url column doesn't exist yet (migration not applied), this
+    // returns a clear error instead of silently succeeding.
     uploadBanner: async (file) => {
       const uid = window.__session && window.__session.user && window.__session.user.id;
       if (!uid) return { error: { message: "not signed in" } };
@@ -289,8 +379,18 @@
       const url = pub && pub.publicUrl;
       if (!url) return { error: { message: "Could not resolve banner URL." } };
 
-      const { data, error } = await window.AI_AUTH.updateProfile({ banner_url: url });
-      return { data, error, url };
+      const res = await window.AI_AUTH.updateProfile({ banner_url: url });
+      if (res.droppedFields && res.droppedFields.includes("banner_url")) {
+        return {
+          data: null,
+          error: {
+            code: "42703",
+            message: "banner_url column does not exist — apply supabase/profile-community-extensions.sql first.",
+          },
+          url,
+        };
+      }
+      return { data: res.data, error: res.error, url };
     },
 
     // Upload an avatar image to Storage under avatars/<user_id>/avatar.<ext>
