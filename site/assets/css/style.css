@@ -847,6 +847,32 @@ blockquote {
   color: var(--text-muted);
 }
 
+/* Random catalog-fact line on community pages — visually distinct from
+   the all-caps boilerplate footer everywhere else (sentence case,
+   easier to read at a glance). */
+.cf-footer-fact {
+  display: inline-block;
+  max-width: 760px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.cf-footer-fact strong {
+  color: var(--text);
+  font-weight: 600;
+  margin-right: 4px;
+}
+.cf-footer-fact a {
+  color: var(--accent);
+  white-space: nowrap;
+  margin-left: 6px;
+}
+.cf-footer-fact a:hover {
+  color: var(--accent-hover);
+}
+
 /* ===== Screaming goat button (top-right of header) ===== */
 .goat-scream {
   appearance: none;

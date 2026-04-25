@@ -20,10 +20,19 @@
     lastSignedIn: null,
     notifCount: 0,       // combined unseen requests + unread threads
     notifTimer: null,
+    notifChannel: null,  // realtime channel that nudges loadNotifCount
     isRendering: false,
     isRefreshing: false,
     notifInFlight: false,
     pendingNotifRefresh: false,
+    // Map<communityId, number> — pending join-request count per community
+    // the viewer owns or admins. Drives the red badge on each "Your
+    // communities" sidebar row. Auto-decreases as admins approve / deny
+    // requests on the manage screen (status leaves 'pending').
+    pendingByCommunity: new Map(),
+    pendingChannel: null,
+    pendingInFlight: false,
+    pendingPending: false,
   };
 
   function esc(s) {
@@ -94,13 +103,18 @@
     return { owned, joined };
   }
 
-  function sideRow(c, ctx) {
+  function sideRow(c, ctx, opts) {
     const isActive = ctx.slug && c.slug === ctx.slug;
+    const pending = opts && opts.pending ? Number(opts.pending) : 0;
+    const badge = pending > 0
+      ? `<span class="cf-notif-badge" aria-label="${pending} pending join request${pending === 1 ? "" : "s"}">${pending > 99 ? "99+" : pending}</span>`
+      : "";
     return `
       <a class="cf-side-link ${isActive ? "active" : ""}"
          href="community-view.html?c=${encodeURIComponent(c.slug)}">
         ${iconFor(c)}
         <span>${esc(c.name)}</span>
+        ${badge}
       </a>`;
   }
 
@@ -123,11 +137,12 @@
     const ctx = currentContext();
     const { owned, joined } = partition(state.myCommunities);
 
+    const pendingMap = state.pendingByCommunity || new Map();
     const ownedHtml = owned.length
-      ? owned.map((c) => sideRow(c, ctx)).join("")
+      ? owned.map((c) => sideRow(c, ctx, { pending: pendingMap.get(c.id) || 0 })).join("")
       : `<div class="cf-side-empty">You haven't created any communities.</div>`;
     const joinedHtml = joined.length
-      ? joined.map((c) => sideRow(c, ctx)).join("")
+      ? joined.map((c) => sideRow(c, ctx, { pending: pendingMap.get(c.id) || 0 })).join("")
       : `<div class="cf-side-empty">You haven't joined any communities.</div>`;
 
     left.innerHTML = `
@@ -175,6 +190,47 @@
     state.myCommunities = data || [];
   }
 
+  // Pending join-request counts for every community the viewer owns or
+  // admins. Re-entrancy guarded so cascaded events (auth-state +
+  // realtime + cf-community-pending-change) coalesce instead of stacking.
+  async function loadPendingByCommunity() {
+    if (state.pendingInFlight) {
+      state.pendingPending = true;
+      return;
+    }
+    if (!state.user || !window.COMMUNITY_API ||
+        typeof COMMUNITY_API.countMyAdminPending !== "function") {
+      if (state.pendingByCommunity.size) {
+        state.pendingByCommunity = new Map();
+        render();
+      }
+      return;
+    }
+    state.pendingInFlight = true;
+    try {
+      const map = await COMMUNITY_API.countMyAdminPending();
+      // Only re-render when the totals actually changed.
+      const next = map instanceof Map ? map : new Map();
+      let changed = next.size !== state.pendingByCommunity.size;
+      if (!changed) {
+        for (const [k, v] of next) {
+          if (state.pendingByCommunity.get(k) !== v) { changed = true; break; }
+        }
+      }
+      if (changed) {
+        state.pendingByCommunity = next;
+        render();
+      }
+    } catch (_) { /* best-effort */ }
+    finally {
+      state.pendingInFlight = false;
+      if (state.pendingPending) {
+        state.pendingPending = false;
+        setTimeout(loadPendingByCommunity, 0);
+      }
+    }
+  }
+
   // Fetch the combined notification count (unseen friend requests +
   // unread direct-message threads) and re-render if it changed.
   // Guarded against concurrent calls so stacked events (auth-state
@@ -215,11 +271,77 @@
   function startNotifPoll() {
     stopNotifPoll();
     if (!state.user || document.hidden) return;
-    state.notifTimer = setInterval(loadNotifCount, 30000);
+    // Keep a 60s safety net even with realtime in case the WebSocket
+    // drops mid-session and the user has no live tab to recover from.
+    state.notifTimer = setInterval(loadNotifCount, 60000);
   }
 
   function stopNotifPoll() {
     if (state.notifTimer) { clearInterval(state.notifTimer); state.notifTimer = null; }
+  }
+
+  // Subscribe to direct_messages / direct_threads / friendships so the
+  // unread badge ticks up the instant a peer messages or friend-requests
+  // the viewer. RLS already restricts these tables to participants /
+  // addressees, so the channel only ever delivers events the viewer
+  // is allowed to see.
+  function startNotifRealtime() {
+    stopNotifRealtime();
+    if (!state.user || !window.__supabase) return;
+    state.notifChannel = window.__supabase
+      .channel("notif-" + state.user.id)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "direct_messages" },
+        () => { loadNotifCount(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "direct_threads" },
+        () => { loadNotifCount(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "friendships", filter: "addressee_id=eq." + state.user.id },
+        () => { loadNotifCount(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "friendships", filter: "addressee_id=eq." + state.user.id },
+        () => { loadNotifCount(); }
+      )
+      .subscribe();
+  }
+
+  function stopNotifRealtime() {
+    if (state.notifChannel && window.__supabase) {
+      try { window.__supabase.removeChannel(state.notifChannel); } catch (_) {}
+    }
+    state.notifChannel = null;
+  }
+
+  // Realtime channel for community_join_requests so the per-community
+  // pending badge ticks the moment a request is created or resolved
+  // (status leaves 'pending'). RLS limits these events to communities
+  // the viewer admins, so we don't need a per-community filter here.
+  function startPendingRealtime() {
+    stopPendingRealtime();
+    if (!state.user || !window.__supabase) return;
+    state.pendingChannel = window.__supabase
+      .channel("pending-" + state.user.id)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "community_join_requests" },
+        () => { loadPendingByCommunity(); }
+      )
+      .subscribe();
+  }
+
+  function stopPendingRealtime() {
+    if (state.pendingChannel && window.__supabase) {
+      try { window.__supabase.removeChannel(state.pendingChannel); } catch (_) {}
+    }
+    state.pendingChannel = null;
   }
 
   async function refresh() {
@@ -236,8 +358,9 @@
       state.lastSignedIn = isIn;
       if (needFetch) await loadMyCommunities();
       render();
-      await loadNotifCount();
-      if (isIn) startNotifPoll(); else stopNotifPoll();
+      await Promise.all([loadNotifCount(), loadPendingByCommunity()]);
+      if (isIn) { startNotifPoll(); startNotifRealtime(); startPendingRealtime(); }
+      else { stopNotifPoll(); stopNotifRealtime(); stopPendingRealtime(); }
     } finally {
       state.isRefreshing = false;
     }
@@ -256,10 +379,21 @@
     // the badge immediately instead of waiting for the poller.
     window.addEventListener("cf-messages-notif-change", () => { loadNotifCount(); });
 
+    // community-manage.js dispatches this after approve / deny so the
+    // per-community pending badges drop right away instead of waiting
+    // for the realtime channel to redeliver the row update.
+    window.addEventListener("cf-community-pending-change", () => { loadPendingByCommunity(); });
+
     // Pause polling when the tab is hidden; resume when visible.
+    // Realtime channel stays open across visibility changes so the
+    // badge is already up to date by the time the user returns.
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) stopNotifPoll();
       else if (state.user) { loadNotifCount(); startNotifPoll(); }
+    });
+    window.addEventListener("beforeunload", () => {
+      stopNotifRealtime();
+      stopPendingRealtime();
     });
   }
 

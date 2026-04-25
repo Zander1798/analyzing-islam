@@ -24,7 +24,9 @@
     requests: [],             // pending incoming
     reqProfiles: {},           // user_id -> { username, avatar_url }
     draftAttachments: [],      // uploads queued on the composer
-    pollTimer: null,
+    replyTo: null,             // { id, body, attachments, sender_id } — the message currently being quoted
+    threadChannel: null,       // realtime channel for the active thread's messages
+    inboxChannel: null,        // realtime channel for the inbox + friend requests
   };
 
   // ---------- Utilities ----------
@@ -178,12 +180,17 @@
         <div class="cf-empty" style="padding:20px;">Loading messages…</div>
       </div>
       <form class="cf-chat-composer" data-role="composer" autocomplete="off">
+        <div class="cf-chat-reply" data-role="reply-chip" hidden></div>
         <div class="cf-chat-attachments" data-role="attach-previews"></div>
         <div class="cf-chat-composer-row">
-          <label class="cf-chat-attach-btn" title="Attach image or video">
+          <button type="button" class="cf-chat-attach-btn" data-role="attach-btn" title="Attach photo, video, or file" aria-label="Attach">
             📎
-            <input type="file" accept="image/*,video/*" multiple style="display:none;" data-role="attach-input">
-          </label>
+          </button>
+          <button type="button" class="cf-chat-emoji-btn" data-role="emoji-btn" title="Insert emoji" aria-label="Insert emoji">
+            😊
+          </button>
+          <input type="file" accept="image/*,video/*" multiple style="display:none;" data-role="attach-input-media">
+          <input type="file" multiple style="display:none;" data-role="attach-input-file">
           <textarea class="cf-chat-input" data-role="chat-input" rows="1" placeholder="Message @${esc(username)}…"></textarea>
           <button type="submit" class="cf-btn cf-btn-primary" data-role="send-btn">Send</button>
         </div>
@@ -192,6 +199,46 @@
 
     wireChat();
     renderMessages();
+  }
+
+  // One-line preview of a message — body if any, else first attachment
+  // type. Used by the quoted-reply chip on the composer and on bubbles.
+  function messagePreview(m) {
+    if (!m) return "";
+    const body = (m.body || "").trim();
+    if (body) return body.length > 140 ? body.slice(0, 140) + "…" : body;
+    const a = (m.attachments || [])[0];
+    if (a) return a.type === "video" ? "[video]" : "[image]";
+    return "";
+  }
+
+  // Lookup helper — peer username for a message's sender, used in
+  // the quoted-reply chip's header line.
+  function senderLabel(senderId) {
+    if (!state.user) return "user";
+    if (senderId === state.user.id) return "You";
+    const peer = state.activeThread && state.activeThread.peer;
+    return peer && peer.username ? "@" + peer.username : "user";
+  }
+
+  // Render the small quoted-reply block that sits inside a bubble
+  // when the message is a reply. Tappable to scroll back to the
+  // original; missing originals (deleted, hadn't loaded yet) render
+  // as a faded "Original message unavailable" placeholder.
+  function quotedHtml(m) {
+    if (!m || !m.reply_to_id) return "";
+    const orig = state.messages.find((x) => x.id === m.reply_to_id);
+    if (!orig) {
+      return `<button type="button" class="cf-chat-quote cf-chat-quote--missing" disabled>
+                <span class="cf-chat-quote-name">Reply</span>
+                <span class="cf-chat-quote-body">Original message unavailable</span>
+              </button>`;
+    }
+    return `
+      <button type="button" class="cf-chat-quote" data-jump-to="${orig.id}">
+        <span class="cf-chat-quote-name">${esc(senderLabel(orig.sender_id))}</span>
+        <span class="cf-chat-quote-body">${esc(messagePreview(orig))}</span>
+      </button>`;
   }
 
   function renderMessages() {
@@ -209,14 +256,278 @@
       return `
         <div class="cf-chat-msg ${mine ? "is-mine" : ""}" data-message-id="${m.id}">
           <div class="cf-chat-bubble">
+            ${quotedHtml(m)}
             ${bodyHtml}
             ${attach}
           </div>
           <div class="cf-chat-msg-meta">${fmtTime(m.created_at)}</div>
         </div>`;
     }).join("");
+    wireMessageInteractions(box);
     // Scroll to bottom after DOM settles.
     setTimeout(() => { box.scrollTop = box.scrollHeight; }, 0);
+  }
+
+  // Per-message interactions:
+  //   - right-click → "Reply" context menu (desktop)
+  //   - swipe-left ≥ 56px → start a reply (mobile / touch)
+  //   - tap on a quoted-reply chip → scroll to and flash the original
+  function wireMessageInteractions(box) {
+    box.querySelectorAll(".cf-chat-msg").forEach((node) => {
+      const id = Number(node.getAttribute("data-message-id"));
+
+      node.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        openMessageContextMenu(e.clientX, e.clientY, id);
+      });
+
+      // Touch: track horizontal swipe on the bubble. Negative deltaX
+      // (right→left) starts a reply once it crosses the threshold.
+      let startX = null, startY = null, decided = false;
+      node.addEventListener("touchstart", (e) => {
+        if (e.touches.length !== 1) return;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        decided = false;
+        node.style.transition = "";
+      }, { passive: true });
+      node.addEventListener("touchmove", (e) => {
+        if (startX == null) return;
+        const dx = e.touches[0].clientX - startX;
+        const dy = e.touches[0].clientY - startY;
+        if (!decided) {
+          if (Math.abs(dy) > Math.abs(dx)) {
+            // Vertical scroll — abandon this gesture.
+            startX = null;
+            return;
+          }
+          decided = true;
+        }
+        const drag = Math.max(-80, Math.min(0, dx));
+        node.style.transform = `translateX(${drag}px)`;
+      }, { passive: true });
+      function endTouch() {
+        if (startX == null) return;
+        const m = state.messages.find((x) => x.id === id);
+        const tr = node.style.transform;
+        const match = /translateX\((-?\d+(?:\.\d+)?)px\)/.exec(tr || "");
+        const dx = match ? Number(match[1]) : 0;
+        node.style.transition = "transform 160ms ease-out";
+        node.style.transform = "";
+        if (m && dx <= -56) startReplyTo(m);
+        startX = null;
+      }
+      node.addEventListener("touchend", endTouch);
+      node.addEventListener("touchcancel", endTouch);
+    });
+
+    box.querySelectorAll("[data-jump-to]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = Number(btn.getAttribute("data-jump-to"));
+        scrollToMessage(targetId);
+      });
+    });
+  }
+
+  // Build a small one-action context menu at the click coordinates.
+  // Closes on outside click, Escape, or scroll.
+  function openMessageContextMenu(x, y, messageId) {
+    closeMessageContextMenu();
+    const menu = document.createElement("div");
+    menu.className = "cf-chat-ctx-menu";
+    menu.setAttribute("role", "menu");
+    menu.innerHTML = `<button type="button" data-action="reply">↩ Reply</button>`;
+    document.body.appendChild(menu);
+    // Position, clamping to the viewport so the menu doesn't clip.
+    const r = menu.getBoundingClientRect();
+    const left = Math.min(x, window.innerWidth - r.width - 8);
+    const top = Math.min(y, window.innerHeight - r.height - 8);
+    menu.style.left = left + "px";
+    menu.style.top = top + "px";
+    menu.querySelector('[data-action="reply"]').addEventListener("click", () => {
+      const m = state.messages.find((x) => x.id === messageId);
+      if (m) startReplyTo(m);
+      closeMessageContextMenu();
+    });
+    setTimeout(() => {
+      document.addEventListener("click", closeMessageContextMenu, { once: true });
+      document.addEventListener("keydown", escClose);
+      window.addEventListener("scroll", closeMessageContextMenu, { once: true, capture: true });
+    }, 0);
+  }
+  function escClose(e) {
+    if (e.key === "Escape") closeMessageContextMenu();
+  }
+  function closeMessageContextMenu() {
+    document.querySelectorAll(".cf-chat-ctx-menu").forEach((n) => n.remove());
+    document.removeEventListener("keydown", escClose);
+  }
+
+  // Attach sheet: tiny popup anchored above the paperclip with two
+  // entries that each kick off the corresponding file input. Adding
+  // a third option later (catalog / verse / build picker — task #4)
+  // is just one more entry in the sheet.
+  function openAttachSheet(anchorEl, handlers) {
+    closePopover();
+    const sheet = document.createElement("div");
+    sheet.className = "cf-chat-popover cf-chat-attach-sheet";
+    sheet.innerHTML = `
+      <button type="button" data-action="media">📷 Photo or video</button>
+      <button type="button" data-action="file">📎 File</button>
+    `;
+    document.body.appendChild(sheet);
+    anchorPopover(sheet, anchorEl);
+    sheet.querySelector('[data-action="media"]').addEventListener("click", () => {
+      closePopover();
+      try { handlers.media(); } catch (_) {}
+    });
+    sheet.querySelector('[data-action="file"]').addEventListener("click", () => {
+      closePopover();
+      try { handlers.file(); } catch (_) {}
+    });
+    armPopoverDismiss();
+  }
+
+  // Emoji picker: an inline grid keyed by category. ~150 emojis, no
+  // dependency. Clicking one inserts the codepoint at the textarea's
+  // current cursor position and re-focuses so typing continues
+  // without an extra tap.
+  const EMOJI_CATEGORIES = [
+    { label: "Smileys", emoji: "😀😃😄😁😆😅🤣😂🙂🙃😉😊😇🥰😍🤩😘😗☺😚😙🥲😋😛😜🤪😝🤑🤗🤭🤫🤔🤐🤨😐😑😶😏😒🙄😬😮😯😲🥱😴🤤😪😵🤐🥴🥺😢😭😤😠😡🤬🤯😳😱🥵🥶😨😰😥😓🤗🤔🤭" },
+    { label: "Gestures", emoji: "👍👎👌🤌🤏✌🤞🤟🤘🤙👈👉👆🖕👇☝👋🤚🖐✋🖖👌🤛🤜👊✊🤝🙏✍💅🤳💪🦾🦵🦶👂🦻👃🧠🦷🦴👀👁👅👄💋" },
+    { label: "Hearts", emoji: "❤🧡💛💚💙💜🖤🤍🤎💔❣💕💞💓💗💖💘💝💟" },
+    { label: "Animals", emoji: "🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🦆🦅🦉🐺🐗🐴🦄🐝🐛🦋🐌🐞🐜🦂🦗🕷🐢🐍🦎🦖🐙🐠🐟🐬🐳🐋🦈🐊🐅🐆🦓🦍🦧🐘🦏🦛🐪🐫🦒🦘🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🐈🦃🦚🦜🦢🦩🐇🐀🐁🐿🦔" },
+    { label: "Food", emoji: "🍏🍎🍐🍊🍋🍌🍉🍇🍓🫐🍈🍒🍑🥭🍍🥥🥝🍅🍆🥑🥦🥬🥒🌶🫑🌽🥕🫒🧄🧅🥔🍠🥐🥯🍞🥖🥨🧀🥚🍳🧈🥞🧇🥓🥩🍗🍖🦴🌭🍔🍟🍕🥪🥙🧆🌮🌯🫔🥗🥘🫕🍝🍜🍲🍛🍣🍱🥟🦪🍤🍙🍚🍘🍥🥠🥮🍢🍡🍧🍨🍦🥧🧁🍰🎂🍮🍭🍬🍫🍿🍩🍪🌰🥜🍯☕🍵🍶🍾🍷🍸🍹🍺🍻🥂🥃🥤🧋🧃🧉🧊" },
+    { label: "Travel", emoji: "🚗🚕🚙🚌🚎🏎🚓🚑🚒🚐🛻🚚🚛🚜🦯🦽🦼🛴🚲🛵🏍🛺🚨🚔🚍🚘🚖🚡🚠🚟🚃🚋🚞🚝🚄🚅🚈🚂🚆🚇🚊🚉✈🛫🛬🛩💺🛰🚀🛸🚁🛶⛵🚤🛥🛳⛴🚢⚓🪝⛽🚧🚦🚥🚏🗺🗿🗽🗼🏰🏯🏟🎡🎢🎠⛲⛱🏖🏝🏜🌋⛰🏔🗻🏕⛺🏠🏡🏘🏚🏗🏭🏢🏬🏣🏤🏥🏦🏨🏪🏫🏩💒🏛⛪🕌🛕🕍⛩🕋⛩🛤🛣🗾🎑🏞🌅🌄🌠🎇🎆🌇🌆🏙🌃🌌🌉🌁" },
+    { label: "Symbols", emoji: "✅❌⭕🚫⛔📛🚭❗❓❔❕💯🔔🔕🔇🔈🔉🔊📣📢👁‍🗨💬💭🗯♨💈🛑🚸⚠☢☣⬆↗➡↘⬇↙⬅↖↕↔↩↪⤴⤵🔃🔄🔙🔚🔛🔜🔝🛐⚛🕉✡☸☯✝☦☪☮🕎🔯♈♉♊♋♌♍♎♏♐♑♒♓⛎🆔🈳🈹Ⓜ🉐㊙㊗🈴🈲🅰🅱🆎🅾💠♻⚜🔱📛🔰⭕✅☑✔❌❎➕➖➗✖💲💱©®™" },
+  ];
+
+  function openEmojiPicker(anchorEl, textarea) {
+    closePopover();
+    const wrap = document.createElement("div");
+    wrap.className = "cf-chat-popover cf-chat-emoji-picker";
+    const tabs = EMOJI_CATEGORIES.map((cat, i) =>
+      `<button type="button" class="cf-emoji-tab ${i === 0 ? 'is-active' : ''}" data-tab="${i}" title="${esc(cat.label)}">${Array.from(cat.emoji)[0]}</button>`
+    ).join("");
+    wrap.innerHTML = `
+      <div class="cf-emoji-tabs">${tabs}</div>
+      <div class="cf-emoji-grid" data-role="emoji-grid"></div>
+    `;
+    document.body.appendChild(wrap);
+    const grid = wrap.querySelector('[data-role="emoji-grid"]');
+    function paintGrid(idx) {
+      const chars = Array.from(EMOJI_CATEGORIES[idx].emoji);
+      grid.innerHTML = chars.map((ch) => `<button type="button" class="cf-emoji-cell">${ch}</button>`).join("");
+      grid.querySelectorAll(".cf-emoji-cell").forEach((b) => {
+        b.addEventListener("click", () => insertAtCursor(textarea, b.textContent));
+      });
+    }
+    wrap.querySelectorAll(".cf-emoji-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        wrap.querySelectorAll(".cf-emoji-tab").forEach((t) => t.classList.remove("is-active"));
+        tab.classList.add("is-active");
+        paintGrid(Number(tab.getAttribute("data-tab")));
+      });
+    });
+    paintGrid(0);
+    anchorPopover(wrap, anchorEl);
+    armPopoverDismiss();
+  }
+
+  // Insert a string at the textarea's selection point and grow the
+  // textarea so the row reflows. Mirrors the auto-grow handler.
+  function insertAtCursor(textarea, text) {
+    const start = textarea.selectionStart || 0;
+    const end = textarea.selectionEnd || 0;
+    const v = textarea.value;
+    textarea.value = v.slice(0, start) + text + v.slice(end);
+    const cursor = start + text.length;
+    textarea.setSelectionRange(cursor, cursor);
+    textarea.focus();
+    textarea.style.height = "auto";
+    textarea.style.height = Math.min(textarea.scrollHeight, 180) + "px";
+  }
+
+  // Position a popover above its anchor button and clamp into the
+  // viewport. Used for both the attach sheet and the emoji picker.
+  function anchorPopover(popover, anchor) {
+    const r = anchor.getBoundingClientRect();
+    const pr = popover.getBoundingClientRect();
+    let left = r.left;
+    if (left + pr.width > window.innerWidth - 8) left = window.innerWidth - pr.width - 8;
+    if (left < 8) left = 8;
+    let top = r.top - pr.height - 8;
+    if (top < 8) top = r.bottom + 8;
+    popover.style.left = left + "px";
+    popover.style.top  = top  + "px";
+  }
+
+  function armPopoverDismiss() {
+    setTimeout(() => {
+      document.addEventListener("click", outsidePopoverClose, true);
+      document.addEventListener("keydown", escPopover);
+    }, 0);
+  }
+  function escPopover(e) { if (e.key === "Escape") closePopover(); }
+  function outsidePopoverClose(e) {
+    const p = document.querySelector(".cf-chat-popover");
+    if (!p) return;
+    if (p.contains(e.target)) return;
+    // Don't close if the click was on the anchor button — the click
+    // handler there will close + reopen on its own.
+    if (e.target.closest('[data-role="attach-btn"], [data-role="emoji-btn"]')) return;
+    closePopover();
+  }
+  function closePopover() {
+    document.querySelectorAll(".cf-chat-popover").forEach((n) => n.remove());
+    document.removeEventListener("click", outsidePopoverClose, true);
+    document.removeEventListener("keydown", escPopover);
+  }
+
+  // Scroll the chat pane so the target message is centred, then
+  // briefly highlight it so the eye can land on it after the jump.
+  function scrollToMessage(id) {
+    const node = shell.querySelector(`.cf-chat-msg[data-message-id="${id}"]`);
+    if (!node) return;
+    node.scrollIntoView({ behavior: "smooth", block: "center" });
+    node.classList.add("cf-chat-msg--flash");
+    setTimeout(() => node.classList.remove("cf-chat-msg--flash"), 1600);
+  }
+
+  function startReplyTo(message) {
+    state.replyTo = {
+      id: message.id,
+      body: message.body || "",
+      attachments: message.attachments || [],
+      sender_id: message.sender_id,
+    };
+    renderReplyChip();
+    const input = shell.querySelector('[data-role="chat-input"]');
+    if (input) input.focus();
+  }
+
+  function clearReplyTo() {
+    state.replyTo = null;
+    renderReplyChip();
+  }
+
+  function renderReplyChip() {
+    const chip = shell.querySelector('[data-role="reply-chip"]');
+    if (!chip) return;
+    if (!state.replyTo) {
+      chip.hidden = true;
+      chip.innerHTML = "";
+      return;
+    }
+    chip.hidden = false;
+    chip.innerHTML = `
+      <div class="cf-chat-reply-bar"></div>
+      <div class="cf-chat-reply-text">
+        <strong>Replying to ${esc(senderLabel(state.replyTo.sender_id))}</strong>
+        <span>${esc(messagePreview(state.replyTo))}</span>
+      </div>
+      <button type="button" class="cf-chat-reply-close" aria-label="Cancel reply">✕</button>`;
+    chip.querySelector(".cf-chat-reply-close").addEventListener("click", clearReplyTo);
   }
 
   function attachmentHtml(a) {
@@ -238,7 +549,10 @@
   function wireChat() {
     const form = shell.querySelector('[data-role="composer"]');
     const input = shell.querySelector('[data-role="chat-input"]');
-    const file = shell.querySelector('[data-role="attach-input"]');
+    const fileMedia = shell.querySelector('[data-role="attach-input-media"]');
+    const fileAny   = shell.querySelector('[data-role="attach-input-file"]');
+    const attachBtn = shell.querySelector('[data-role="attach-btn"]');
+    const emojiBtn  = shell.querySelector('[data-role="emoji-btn"]');
 
     // Auto-grow textarea.
     input.addEventListener("input", () => {
@@ -252,10 +566,11 @@
       }
     });
 
-    file.addEventListener("change", async () => {
-      const files = Array.from(file.files || []);
-      file.value = "";
-      if (!files.length) return;
+    // Both file inputs feed the same upload pipeline. We split them so
+    // the system picker can default to the camera roll for media and
+    // a generic file picker for everything else (matters most on iOS).
+    async function handleFileSelection(files) {
+      if (!files || !files.length) return;
       for (const f of files) {
         const preview = showUploadingPreview(f);
         const { data, error } = await COMMUNITY_API.uploadDMAttachment(f);
@@ -268,6 +583,32 @@
         preview.remove();
         renderAttachmentPreview(data);
       }
+    }
+    fileMedia.addEventListener("change", () => {
+      const files = Array.from(fileMedia.files || []);
+      fileMedia.value = "";
+      handleFileSelection(files);
+    });
+    fileAny.addEventListener("change", () => {
+      const files = Array.from(fileAny.files || []);
+      fileAny.value = "";
+      handleFileSelection(files);
+    });
+
+    // Tapping the paperclip opens a tiny sheet: "Photo or video" (uses
+    // the media-only input so the OS opens the photo library / camera
+    // first) and "File" (uses the unrestricted input).
+    attachBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      openAttachSheet(attachBtn, {
+        media: () => fileMedia.click(),
+        file:  () => fileAny.click(),
+      });
+    });
+
+    emojiBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      openEmojiPicker(emojiBtn, input);
     });
 
     form.addEventListener("submit", async (e) => {
@@ -276,10 +617,12 @@
       if (!body.trim() && !state.draftAttachments.length) return;
       const sendBtn = shell.querySelector('[data-role="send-btn"]');
       sendBtn.disabled = true;
+      const replyToId = state.replyTo ? state.replyTo.id : null;
       const { data, error } = await COMMUNITY_API.sendMessage({
         threadId: state.activeThreadId,
         body,
         attachments: state.draftAttachments.slice(),
+        replyToId,
       });
       sendBtn.disabled = false;
       if (error) {
@@ -290,6 +633,7 @@
       input.style.height = "auto";
       state.draftAttachments = [];
       shell.querySelector('[data-role="attach-previews"]').innerHTML = "";
+      clearReplyTo();
       state.messages.push(data);
       renderMessages();
       // Move the thread to the top of the inbox optimistically.
@@ -454,6 +798,9 @@
   }
 
   async function openThread(threadId) {
+    // Reset reply draft when navigating between conversations — a
+    // reply target only makes sense within its own thread.
+    state.replyTo = null;
     state.activeThreadId = threadId;
     // Write to URL so the thread is shareable and survives refresh.
     const q = new URLSearchParams(location.search);
@@ -470,6 +817,8 @@
     const { data: msgs } = await COMMUNITY_API.listMessages(threadId);
     state.messages = msgs || [];
     renderMessages();
+    // Subscribe to incoming messages on this thread.
+    subscribeThread(threadId);
     // Mark-as-read so the unread dot clears.
     await COMMUNITY_API.markThreadRead(threadId);
     // Locally mark the thread read.
@@ -478,34 +827,99 @@
     broadcastNotifChange();
   }
 
-  async function pollActive() {
-    if (document.hidden || !state.activeThreadId) return;
-    const { data: msgs } = await COMMUNITY_API.listMessages(state.activeThreadId);
-    const next = msgs || [];
-    // Only re-render if the last id changed.
-    const lastNow = state.messages.length ? state.messages[state.messages.length - 1].id : 0;
-    const lastNext = next.length ? next[next.length - 1].id : 0;
-    if (lastNow !== lastNext) {
-      state.messages = next;
-      renderMessages();
-      await COMMUNITY_API.markThreadRead(state.activeThreadId);
-    }
-    // Also refresh the inbox to pick up other threads' activity.
-    loadThreads();
+  // ---------- Realtime ----------
+  // Subscribes to the active thread's direct_messages so a peer's
+  // send pops into view without a refresh. RLS already restricts
+  // SELECT on direct_messages to the two participants, so the
+  // channel only ever delivers events the viewer is allowed to see.
+  function subscribeThread(threadId) {
+    unsubscribeThread();
+    if (!threadId || !window.__supabase) return;
+    const channel = window.__supabase
+      .channel("dm-thread-" + threadId)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "direct_messages", filter: "thread_id=eq." + threadId },
+        (payload) => {
+          const msg = payload.new;
+          if (!msg || msg.is_deleted) return;
+          if (state.messages.some((m) => m.id === msg.id)) return;
+          state.messages.push(msg);
+          renderMessages();
+          // If the new message is from the peer, mark the thread read
+          // so the unread dot doesn't reappear when the inbox refreshes.
+          if (state.user && msg.sender_id !== state.user.id) {
+            COMMUNITY_API.markThreadRead(threadId).catch(() => {});
+            broadcastNotifChange();
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "direct_messages", filter: "thread_id=eq." + threadId },
+        (payload) => {
+          const msg = payload.new;
+          if (!msg) return;
+          // Soft-delete clears the row from view; otherwise replace in place.
+          if (msg.is_deleted) {
+            state.messages = state.messages.filter((m) => m.id !== msg.id);
+          } else {
+            const i = state.messages.findIndex((m) => m.id === msg.id);
+            if (i !== -1) state.messages[i] = msg;
+          }
+          renderMessages();
+        }
+      )
+      .subscribe();
+    state.threadChannel = channel;
   }
 
-  function startPolling() {
-    stopPolling();
-    state.pollTimer = setInterval(pollActive, 6000);
+  function unsubscribeThread() {
+    if (state.threadChannel && window.__supabase) {
+      try { window.__supabase.removeChannel(state.threadChannel); } catch (_) {}
+    }
+    state.threadChannel = null;
   }
-  function stopPolling() {
-    if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+
+  // Subscribes to direct_threads so the inbox preview / unread dot
+  // updates the moment a peer sends a message in any thread, and to
+  // friendships so the Requests badge counts incoming requests live.
+  function subscribeInbox() {
+    unsubscribeInbox();
+    if (!state.user || !window.__supabase) return;
+    const channel = window.__supabase
+      .channel("dm-inbox-" + state.user.id)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "direct_threads" },
+        () => { loadThreads(); broadcastNotifChange(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "friendships", filter: "addressee_id=eq." + state.user.id },
+        () => { if (state.requestsOpen) loadRequests().then(renderRequests); broadcastNotifChange(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "friendships", filter: "addressee_id=eq." + state.user.id },
+        () => { if (state.requestsOpen) loadRequests().then(renderRequests); broadcastNotifChange(); }
+      )
+      .subscribe();
+    state.inboxChannel = channel;
   }
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) stopPolling();
-    else startPolling();
-  });
-  window.addEventListener("beforeunload", stopPolling);
+
+  function unsubscribeInbox() {
+    if (state.inboxChannel && window.__supabase) {
+      try { window.__supabase.removeChannel(state.inboxChannel); } catch (_) {}
+    }
+    state.inboxChannel = null;
+  }
+
+  function teardownRealtime() {
+    unsubscribeThread();
+    unsubscribeInbox();
+  }
+  window.addEventListener("beforeunload", teardownRealtime);
 
   let lastSignedIn = null;
   async function paint() {
@@ -514,13 +928,13 @@
     if (lastSignedIn !== null && lastSignedIn === isIn) return;
     lastSignedIn = isIn;
     state.user = user;
-    if (!user) { renderSignedOut(); stopPolling(); return; }
+    if (!user) { renderSignedOut(); teardownRealtime(); return; }
     renderShell();
     await Promise.all([loadThreads(), loadRequests()]);
     if (state.activeThreadId) {
       await openThread(state.activeThreadId);
     }
-    startPolling();
+    subscribeInbox();
   }
 
   function onReady() {

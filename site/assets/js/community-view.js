@@ -490,6 +490,16 @@
     const { data, error } = await COMMUNITY_API.getCommunity(slug);
     if (error) { state.error = error; state.community = null; return; }
     if (!data) { state.error = new Error("Community not found"); state.community = null; return; }
+    // Self-heal any drift in member_count / post_count before About-
+    // Community renders. Only signed-in viewers can call this (RPC is
+    // authenticated-only); anon viewers fall back to the stored numbers.
+    if (state.user && typeof COMMUNITY_API.recomputeCommunityCounts === "function") {
+      try {
+        await COMMUNITY_API.recomputeCommunityCounts(data.id);
+        const refreshed = await COMMUNITY_API.getCommunity(slug);
+        if (!refreshed.error && refreshed.data) { state.community = refreshed.data; return; }
+      } catch (_) { /* fall through to the unrefreshed row */ }
+    }
     state.community = data;
   }
 
@@ -575,7 +585,69 @@
     await Promise.all([loadPosts(), loadMembers()]);
     renderRight();
     renderLeft();
+    startRealtime();
   }
+
+  // ------------------------------------------------------------------
+  // Live sync — Supabase realtime channel filtered to this community.
+  // RLS already restricts SELECT on community_posts in private
+  // communities to members, so non-members never receive events.
+  // ------------------------------------------------------------------
+  let realtimeChannel = null;
+
+  function startRealtime() {
+    stopRealtime();
+    if (!state.community || !window.__supabase) return;
+    const cid = state.community.id;
+    realtimeChannel = window.__supabase
+      .channel("community-" + cid)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "community_posts", filter: "community_id=eq." + cid },
+        async (payload) => {
+          const p = payload.new;
+          if (!p || p.is_deleted) return;
+          if (state.posts.some((x) => x.id === p.id)) return;
+          await COMMUNITY_API.attachAuthors([p]);
+          if (state.sort === "new") state.posts.unshift(p);
+          else state.posts.push(p);
+          renderCenter();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "community_posts", filter: "community_id=eq." + cid },
+        (payload) => {
+          const p = payload.new;
+          if (!p) return;
+          const i = state.posts.findIndex((x) => x.id === p.id);
+          if (i === -1) return;
+          if (p.is_deleted) {
+            state.posts.splice(i, 1);
+            renderCenter();
+            return;
+          }
+          state.posts[i] = { ...state.posts[i], ...p, author: state.posts[i].author };
+          const card = $center.querySelector('.cf-post[data-post-id="' + p.id + '"]');
+          if (card) {
+            const sc = card.querySelector(".cf-vote-score");
+            if (sc) sc.textContent = fmt(p.score);
+            const cm = card.querySelector('.cf-post-actions a[href^="community-post.html?p="]');
+            if (cm) cm.textContent = "💬 " + fmt(p.comment_count) + " comments";
+          }
+        }
+      )
+      .subscribe();
+  }
+
+  function stopRealtime() {
+    if (realtimeChannel && window.__supabase) {
+      try { window.__supabase.removeChannel(realtimeChannel); } catch (_) {}
+    }
+    realtimeChannel = null;
+  }
+
+  window.addEventListener("beforeunload", stopRealtime);
 
   // ------------------------------------------------------------------
   // Boot
@@ -609,6 +681,7 @@
     const membersP = loadMembers().then(renderRight);
     renderRight();
     await Promise.all([loadPosts(), membersP]);
+    startRealtime();
   }
 
   function onReady() {

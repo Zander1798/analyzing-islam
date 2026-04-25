@@ -15,6 +15,9 @@
   grid-template-columns: 260px minmax(0, 1fr) 280px;
   gap: 28px;
   align-items: start;
+  /* Reserve enough vertical space that the footer never floats up
+     into the middle of the viewport while the feed is still loading. */
+  min-height: calc(100vh - 220px);
 }
 /* When a page renders the layout without a right sidebar (e.g.
    user-profile.html), let the center column absorb that 340px so
@@ -1074,6 +1077,44 @@
 .cf-comment-actions button:hover { color: var(--accent); }
 .cf-comment-actions .cf-vote-btn.up.active { color: var(--basic); }
 .cf-comment-actions .cf-vote-btn.down.active { color: var(--strong); }
+
+/* Quoted-parent preview on top of nested replies. Same shape as the
+   chat bubble's reply chip — accent left bar, dim author + body. */
+.cf-comment-quote {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  margin: 4px 0 6px;
+  padding: 6px 10px;
+  border: none;
+  border-left: 3px solid var(--accent);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+.cf-comment-quote-name { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.cf-comment-quote-body {
+  font-size: 12px;
+  color: var(--text-dim);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cf-comment-quote--missing { cursor: default; opacity: 0.6; }
+
+.cf-comment--flash {
+  animation: cf-comment-flash 1.4s ease-out 1;
+}
+@keyframes cf-comment-flash {
+  0%   { background: rgba(116, 185, 255, 0.18); }
+  100% { background: transparent; }
+}
 .cf-comment-actions .cf-vote-score { color: var(--text-muted); font-weight: 600; }
 
 .cf-comment-deleted {
@@ -2792,6 +2833,226 @@ body.cf-lightbox-open {
   font-size: 11px;
   cursor: pointer;
 }
+
+/* --- Reply-to-message: composer chip + bubble quote --- */
+/* The chip sits above the composer row when state.replyTo is set,
+   showing who is being replied to and a one-line preview, with an
+   X to clear the draft. */
+.cf-chat-reply {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+.cf-chat-reply[hidden] { display: none; }
+.cf-chat-reply-bar {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  flex: 0 0 auto;
+}
+.cf-chat-reply-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cf-chat-reply-text strong { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.cf-chat-reply-text span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cf-chat-reply-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+  flex: 0 0 auto;
+}
+.cf-chat-reply-close:hover { color: var(--text); }
+
+/* Quoted-reply chip rendered inside a bubble — clicking jumps to
+   the original message. The vertical accent bar mirrors the
+   composer chip so the pairing is obvious. */
+.cf-chat-quote {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  border: none;
+  border-left: 3px solid var(--accent);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+.cf-chat-msg.is-mine .cf-chat-quote {
+  background: rgba(0, 0, 0, 0.12);
+  border-left-color: rgba(0, 0, 0, 0.55);
+}
+.cf-chat-quote-name { font-size: 11px; font-weight: 700; opacity: 0.8; }
+.cf-chat-quote-body {
+  font-size: 12px;
+  opacity: 0.85;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cf-chat-quote--missing { cursor: default; opacity: 0.6; }
+
+/* Brief flash highlight after scrolling to a message via jump-to. */
+.cf-chat-msg--flash .cf-chat-bubble {
+  animation: cf-chat-flash 1.4s ease-out 1;
+}
+@keyframes cf-chat-flash {
+  0%   { box-shadow: 0 0 0 3px var(--accent); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* Touch swipe: smooth out the snap-back when the gesture ends. */
+.cf-chat-msg { touch-action: pan-y; }
+
+/* Right-click context menu (desktop). Spawned at the cursor in
+   document coordinates and removed on outside-click / scroll. */
+.cf-chat-ctx-menu {
+  position: fixed;
+  z-index: 900;
+  min-width: 140px;
+  padding: 4px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+.cf-chat-ctx-menu button {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.cf-chat-ctx-menu button:hover { background: var(--panel-2); }
+
+/* Emoji button — mirrors the paperclip's circular look so the row
+   has two consistent action buttons. */
+.cf-chat-emoji-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  flex: 0 0 auto;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.cf-chat-emoji-btn:hover {
+  background: var(--panel-2);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+/* Generic popover container shared by the attach sheet and the
+   emoji picker. Position is set inline by anchorPopover(). */
+.cf-chat-popover {
+  position: fixed;
+  z-index: 910;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  padding: 6px;
+}
+
+.cf-chat-attach-sheet {
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+}
+.cf-chat-attach-sheet button {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  text-align: left;
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.cf-chat-attach-sheet button:hover { background: var(--panel-2); }
+
+/* Emoji picker: tab strip on top, scrollable 8-column grid below.
+   Width clamps to viewport so it stays usable on phone screens. */
+.cf-chat-emoji-picker {
+  width: 320px;
+  max-width: calc(100vw - 16px);
+  display: flex;
+  flex-direction: column;
+}
+.cf-emoji-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.cf-emoji-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 18px;
+  padding: 6px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1;
+}
+.cf-emoji-tab:hover,
+.cf-emoji-tab.is-active { background: var(--panel-2); }
+
+.cf-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.cf-emoji-cell {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 20px;
+  padding: 4px 0;
+  cursor: pointer;
+  line-height: 1;
+  border-radius: 6px;
+}
+.cf-emoji-cell:hover { background: var(--panel-2); }
 
 /* --- Requests panel (modal overlay) --- */
 .cf-requests-panel {

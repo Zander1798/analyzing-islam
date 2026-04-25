@@ -19,6 +19,7 @@
 
   let notifCount = 0;
   let pollTimer = null;
+  let realtimeChannel = null;
   let obs = null;
   let isApplying = false;
 
@@ -95,11 +96,52 @@
   function startPoll() {
     stopPoll();
     if (!currentUser() || document.hidden) return;
-    pollTimer = setInterval(loadNotifCount, 30000);
+    // Slow safety-net poll; realtime does the heavy lifting.
+    pollTimer = setInterval(loadNotifCount, 60000);
   }
 
   function stopPoll() {
     if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  }
+
+  // Subscribe to direct_messages / direct_threads / friendships so a
+  // peer's send or friend-request bumps the badge without waiting on
+  // the safety-net poll. RLS keeps these tables scoped to participants
+  // / addressees, so unrelated traffic doesn't flow through the channel.
+  function startRealtime() {
+    stopRealtime();
+    const u = currentUser();
+    if (!u || !window.__supabase) return;
+    realtimeChannel = window.__supabase
+      .channel("notif-" + u.id)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "direct_messages" },
+        () => { loadNotifCount(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "direct_threads" },
+        () => { loadNotifCount(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "friendships", filter: "addressee_id=eq." + u.id },
+        () => { loadNotifCount(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "friendships", filter: "addressee_id=eq." + u.id },
+        () => { loadNotifCount(); }
+      )
+      .subscribe();
+  }
+
+  function stopRealtime() {
+    if (realtimeChannel && window.__supabase) {
+      try { window.__supabase.removeChannel(realtimeChannel); } catch (_) {}
+    }
+    realtimeChannel = null;
   }
 
   function init() {
@@ -114,11 +156,11 @@
     }
 
     // Initial fetch + start polling.
-    if (window.__authReady) window.__authReady.then(loadNotifCount);
-    else loadNotifCount();
+    if (window.__authReady) window.__authReady.then(() => { loadNotifCount(); startRealtime(); });
+    else { loadNotifCount(); startRealtime(); }
     startPoll();
 
-    window.addEventListener('auth-state', () => { loadNotifCount(); startPoll(); });
+    window.addEventListener('auth-state', () => { loadNotifCount(); startPoll(); startRealtime(); });
     // messages.js fires this when a thread is opened, a request is
     // accepted/declined, or the Requests panel is opened — refresh
     // immediately rather than wait for the poller.
@@ -127,6 +169,7 @@
       if (document.hidden) stopPoll();
       else { loadNotifCount(); startPoll(); }
     });
+    window.addEventListener('beforeunload', stopRealtime);
   }
 
   if (document.readyState === 'loading') {

@@ -86,7 +86,11 @@
   function sideRowHtml(c, activeSlug) {
     const pendingMap = state.pendingByCommunity;
     const n = pendingMap && pendingMap.get ? pendingMap.get(c.id) : 0;
-    const badge = n ? `<span class="cf-notify-badge" title="${n} pending join request${n === 1 ? "" : "s"}">${n}</span>` : "";
+    // cf-notif-badge matches the styled red badge used elsewhere
+    // (Messages tab); cf-notify-badge was a typo with no CSS rule.
+    const badge = n
+      ? `<span class="cf-notif-badge" aria-label="${n} pending join request${n === 1 ? "" : "s"}">${n > 99 ? "99+" : n}</span>`
+      : "";
     return `
       <a class="cf-side-link ${activeSlug && c.slug === activeSlug ? "active" : ""}"
          href="community-view.html?c=${encodeURIComponent(c.slug)}">
@@ -443,6 +447,19 @@
     } else {
       state.myCommunities = data || [];
     }
+    await loadPendingByCommunity();
+  }
+
+  // Refresh the per-community pending-request totals and re-render the
+  // left sidebar. Called on initial load, on realtime events from
+  // community_join_requests, and whenever the manage screen dispatches
+  // cf-community-pending-change after an approve / deny.
+  async function loadPendingByCommunity() {
+    if (!state.user) {
+      state.pendingByCommunity = null;
+      renderLeft();
+      return;
+    }
     try {
       state.pendingByCommunity = await COMMUNITY_API.countMyAdminPending();
     } catch (_) {
@@ -474,6 +491,88 @@
   }
 
   // ------------------------------------------------------------------
+  // Live sync — Supabase realtime channel for new posts in the user's
+  // joined communities. RLS already filters out posts in private
+  // communities the viewer doesn't belong to, but for the merged
+  // home feed we additionally check community_id against the joined
+  // list so unrelated public-community posts don't bleed in.
+  // ------------------------------------------------------------------
+  let realtimeChannel = null;
+
+  function startRealtime() {
+    stopRealtime();
+    if (!state.user || !window.__supabase) return;
+    const joinedIds = new Set(
+      (state.myCommunities || [])
+        .map((m) => m.communities && m.communities.id)
+        .filter(Boolean)
+    );
+    realtimeChannel = window.__supabase
+      .channel("home-feed-" + state.user.id)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "community_posts" },
+        async (payload) => {
+          const p = payload.new;
+          if (!p || p.is_deleted) return;
+          if (!joinedIds.has(p.community_id)) return;
+          if (state.feed.some((x) => x.id === p.id)) return;
+          // Refetch the row with its joined community block (the
+          // realtime payload doesn't carry it) and pop it onto the
+          // top of the feed.
+          const { data } = await COMMUNITY_API.getPost(p.id).catch(() => ({ data: null }));
+          if (!data) return;
+          await COMMUNITY_API.attachAuthors([data]);
+          if (state.sort === "new") state.feed.unshift(data);
+          else state.feed.push(data);
+          renderFeed();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "community_join_requests" },
+        () => { loadPendingByCommunity(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "community_posts" },
+        (payload) => {
+          const p = payload.new;
+          if (!p) return;
+          const i = state.feed.findIndex((x) => x.id === p.id);
+          if (i === -1) return;
+          if (p.is_deleted) {
+            state.feed.splice(i, 1);
+            renderFeed();
+            return;
+          }
+          // Patch in score / comment_count without disturbing the
+          // attached community + author blocks the feed renderer needs.
+          state.feed[i] = { ...state.feed[i], ...p, communities: state.feed[i].communities, author: state.feed[i].author };
+          // Update the score / comments badge in place to avoid blowing
+          // away listeners on the rest of the feed.
+          const card = $center.querySelector('.cf-post[data-post-id="' + p.id + '"]');
+          if (card) {
+            const sc = card.querySelector(".cf-vote-score");
+            if (sc) sc.textContent = fmt(p.score);
+            const cm = card.querySelector('.cf-post-actions a[href^="community-post.html?p="]');
+            if (cm) cm.textContent = "💬 " + fmt(p.comment_count) + " comments";
+          }
+        }
+      )
+      .subscribe();
+  }
+
+  function stopRealtime() {
+    if (realtimeChannel && window.__supabase) {
+      try { window.__supabase.removeChannel(realtimeChannel); } catch (_) {}
+    }
+    realtimeChannel = null;
+  }
+
+  window.addEventListener("beforeunload", stopRealtime);
+
+  // ------------------------------------------------------------------
   // Paint cycle
   // ------------------------------------------------------------------
   // Supabase fires auth-state on token refresh, not just sign-in/out.
@@ -490,6 +589,7 @@
     renderLeft();
     await Promise.all([loadPopular(), loadMyCommunities()]);
     await loadFeed();
+    startRealtime();
   }
 
   function onReady() {
@@ -502,6 +602,10 @@
     // Re-render the sidebar when the cached profile changes (username
     // save, avatar/banner upload) so the My profile card stays current.
     window.addEventListener("profile-state", () => { try { renderLeft(); } catch (_) {} });
+    // community-manage.js dispatches this after approve / deny, so the
+    // home-page sidebar's red badge counts down right away instead of
+    // waiting for realtime to redeliver the row update.
+    window.addEventListener("cf-community-pending-change", () => { loadPendingByCommunity(); });
   }
 
   if (document.readyState === "loading") {

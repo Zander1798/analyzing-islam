@@ -28,11 +28,24 @@
       state.profile = null;
       return;
     }
-    const { data } = await COMMUNITY_API.getPublicProfile({
-      username: queryUsername || undefined,
-      id: queryId || undefined,
-    });
-    state.profile = data || null;
+    // First fetch is just to resolve username -> id so we can resync
+    // the denormalised counters before rendering. Skipped for signed-out
+    // visitors (recompute_profile_counts is authenticated-only).
+    let initial = null;
+    {
+      const { data } = await COMMUNITY_API.getPublicProfile({
+        username: queryUsername || undefined,
+        id: queryId || undefined,
+      });
+      initial = data || null;
+    }
+    if (initial && state.user) {
+      try { await COMMUNITY_API.recomputeProfileCounts(initial.id); } catch (_) {}
+      const { data } = await COMMUNITY_API.getPublicProfile({ id: initial.id });
+      state.profile = data || initial;
+    } else {
+      state.profile = initial;
+    }
   }
 
   async function loadMemberships() {

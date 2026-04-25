@@ -284,6 +284,26 @@
     return { data: data || null, error };
   }
 
+  // Server-side resync of post / comment / friend counters for a
+  // single profile. Trigger-maintained counters can in theory drift
+  // (manual edits, restored backups) — calling this before rendering
+  // a profile makes the displayed counts self-heal.
+  // Defined in supabase/reconcile-profile-counts.sql.
+  async function recomputeProfileCounts(userId) {
+    if (!userId) return { data: null, error: null };
+    return await client().rpc("recompute_profile_counts", { p_id: userId });
+  }
+
+  // Server-side resync of communities.member_count and post_count for a
+  // single community. Same role as recomputeProfileCounts — call it
+  // before rendering the About-Community panel so the displayed
+  // numbers can't be wrong even if the trigger missed an event.
+  // Defined in supabase/reconcile-community-counts.sql.
+  async function recomputeCommunityCounts(communityId) {
+    if (!communityId) return { data: null, error: null };
+    return await client().rpc("recompute_community_counts", { p_id: communityId });
+  }
+
   // Return the list of communities a user is a member of. Each row
   // carries role (so the public profile can show "owner" badges) and
   // the embedded community row for rendering.
@@ -849,7 +869,7 @@
   async function listMessages(threadId, { limit = 100, before } = {}) {
     let q = client()
       .from("direct_messages")
-      .select("*")
+      .select("id,thread_id,sender_id,body,attachments,is_deleted,created_at,reply_to_id")
       .eq("thread_id", threadId)
       .eq("is_deleted", false)
       .order("created_at", { ascending: true })
@@ -858,7 +878,7 @@
     return await q;
   }
 
-  async function sendMessage({ threadId, body = "", attachments = [] }) {
+  async function sendMessage({ threadId, body = "", attachments = [], replyToId = null }) {
     const u = requireUser();
     const trimmedBody = (body || "").trim();
     if (!trimmedBody && (!attachments || !attachments.length)) {
@@ -871,6 +891,7 @@
         sender_id: u.id,
         body: trimmedBody,
         attachments: attachments || [],
+        reply_to_id: replyToId || null,
       })
       .select()
       .single();
@@ -940,6 +961,8 @@
     listProfiles,
     attachAuthors,
     getPublicProfile,
+    recomputeProfileCounts,
+    recomputeCommunityCounts,
     listCommunitiesForUser,
     searchProfiles,
     countPendingRequests,

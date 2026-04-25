@@ -222,6 +222,32 @@
     return roots;
   }
 
+  // Indexed lookup for "what is this comment replying to?" — used by
+  // the quoted-reply chip rendered on top of nested replies. Reads
+  // from the flat state list so it doesn't need the tree.
+  function commentById(id) {
+    if (!id) return null;
+    return (state.comments || []).find((c) => c.id === id) || null;
+  }
+  function quotedCommentChipHtml(c) {
+    if (!c.parent_comment_id) return "";
+    const parent = commentById(c.parent_comment_id);
+    if (!parent) {
+      return `<button type="button" class="cf-comment-quote cf-comment-quote--missing" disabled>
+                <span class="cf-comment-quote-name">Reply</span>
+                <span class="cf-comment-quote-body">Original comment unavailable</span>
+              </button>`;
+    }
+    const name = parent.author && parent.author.username ? "@" + parent.author.username : "user";
+    const body = (parent.body || "").trim();
+    const preview = body.length > 140 ? body.slice(0, 140) + "…" : body;
+    return `
+      <button type="button" class="cf-comment-quote" data-jump-to="${parent.id}">
+        <span class="cf-comment-quote-name">${esc(name)}</span>
+        <span class="cf-comment-quote-body">${esc(preview)}</span>
+      </button>`;
+  }
+
   function renderCommentNode(c) {
     const myVote = state.myCommentVotes[c.id] || 0;
     const canDelete =
@@ -250,6 +276,7 @@
           ${authorChip(c.author)}
           <span>· ${ago(c.created_at)}</span>
         </div>
+        ${quotedCommentChipHtml(c)}
         <div class="cf-comment-body">${esc(c.body)}</div>
         <div class="cf-comment-actions">
           <button class="cf-vote-btn up ${myVote === 1 ? "active" : ""}" data-vote="1" aria-label="Upvote">▲</button>
@@ -422,6 +449,18 @@
 
       const deleteBtn = node.querySelector(':scope > .cf-comment-actions [data-action="delete"]');
       if (deleteBtn) deleteBtn.addEventListener("click", () => deleteComment(cid));
+
+      // Click on the quoted-parent chip → scroll to & flash the parent.
+      const quote = node.querySelector(":scope > .cf-comment-quote[data-jump-to]");
+      if (quote) quote.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const targetId = Number(quote.getAttribute("data-jump-to"));
+        const target = $center.querySelector(`.cf-comment[data-comment-id="${targetId}"]`);
+        if (!target) return;
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        target.classList.add("cf-comment--flash");
+        setTimeout(() => target.classList.remove("cf-comment--flash"), 1600);
+      });
     });
   }
 
@@ -543,59 +582,94 @@
   }
 
   // ------------------------------------------------------------------
-  // Live sync (poll for deletes/inserts by other users)
+  // Live sync — Supabase realtime channels
   // ------------------------------------------------------------------
-  // Every ~10 s while the tab is visible, refetch the comment list. If
-  // the set has changed (a comment was deleted or added by someone in
-  // another tab / browser), re-render just the comments section so the
-  // current view updates without the user having to refresh.
-  const COMMENT_POLL_MS = 10000;
-  let commentPollTimer = null;
+  // One channel per post: subscribes to post_comments (filtered by
+  // post_id) for inserts / updates / deletes, and to community_posts
+  // for the post's own row so the score and comment_count reflect
+  // votes and comment activity from other users without a refresh.
+  // RLS already restricts SELECT on these tables to authorised users,
+  // so the channel only delivers events the viewer can see.
+  let realtimeChannel = null;
 
-  function startCommentPoll() {
-    stopCommentPoll();
-    if (!state.post) return;
-    if (document.hidden) return;
-    commentPollTimer = setInterval(syncCommentsIfChanged, COMMENT_POLL_MS);
+  function startRealtime() {
+    stopRealtime();
+    if (!state.post || !window.__supabase) return;
+    const postId = state.post.id;
+    realtimeChannel = window.__supabase
+      .channel("post-" + postId)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "post_comments", filter: "post_id=eq." + postId },
+        async (payload) => {
+          const c = payload.new;
+          if (!c || c.is_deleted) return;
+          if (state.comments.some((x) => x.id === c.id)) return;
+          await COMMUNITY_API.attachAuthors([c]);
+          state.comments.push(c);
+          if (state.post) state.post.comment_count = (state.post.comment_count || 0) + 1;
+          if (state.user) {
+            // New comments default to no-vote, but refresh the lookup
+            // so the rendered up/down arrows stay in sync.
+            const ids = state.comments.map((x) => x.id);
+            state.myCommentVotes = await COMMUNITY_API.getMyCommentVotes(ids);
+          }
+          renderCommentsSection();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "post_comments", filter: "post_id=eq." + postId },
+        (payload) => {
+          const c = payload.new;
+          if (!c) return;
+          if (c.is_deleted) {
+            state.comments = state.comments.filter((x) => x.id !== c.id);
+          } else {
+            const i = state.comments.findIndex((x) => x.id === c.id);
+            if (i !== -1) {
+              // Preserve the .author block we already attached.
+              state.comments[i] = { ...state.comments[i], ...c, author: state.comments[i].author };
+            }
+          }
+          renderCommentsSection();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "post_comments", filter: "post_id=eq." + postId },
+        (payload) => {
+          const oldId = payload.old && payload.old.id;
+          if (!oldId) return;
+          state.comments = state.comments.filter((x) => x.id !== oldId);
+          renderCommentsSection();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "community_posts", filter: "id=eq." + postId },
+        (payload) => {
+          const p = payload.new;
+          if (!p || !state.post) return;
+          state.post = { ...state.post, ...p };
+          // Update the score + comment-count badge in place.
+          const scoreEl = $center.querySelector(".cf-post-full .cf-vote-score");
+          if (scoreEl) scoreEl.textContent = fmt(state.post.score);
+          const countEl = $center.querySelector('[data-role="comment-count"]');
+          if (countEl) countEl.textContent = "💬 " + fmt((state.comments || []).length) + " comments";
+        }
+      )
+      .subscribe();
   }
 
-  function stopCommentPoll() {
-    if (commentPollTimer) {
-      clearInterval(commentPollTimer);
-      commentPollTimer = null;
+  function stopRealtime() {
+    if (realtimeChannel && window.__supabase) {
+      try { window.__supabase.removeChannel(realtimeChannel); } catch (_) {}
     }
+    realtimeChannel = null;
   }
 
-  async function syncCommentsIfChanged() {
-    if (!state.post) return;
-    const { data, error } = await COMMUNITY_API.listComments(state.post.id);
-    if (error) return;
-    const next = data || [];
-    // Cheap fingerprint over (id, score) — detects deletes, inserts,
-    // and vote-count drift without needing a deep diff.
-    const signature = (arr) =>
-      arr.map((c) => c.id + ":" + (c.score || 0)).join(",");
-    if (signature(state.comments) === signature(next)) return;
-
-    await COMMUNITY_API.attachAuthors(next);
-    state.comments = next;
-    // Refresh my vote map so any new comments don't appear unvoted
-    // forever and existing votes stay highlighted.
-    if (state.user) {
-      const ids = next.map((c) => c.id);
-      state.myCommentVotes = await COMMUNITY_API.getMyCommentVotes(ids);
-    }
-    if (state.post) {
-      state.post.comment_count = next.length;
-    }
-    renderCommentsSection();
-  }
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) stopCommentPoll();
-    else startCommentPoll();
-  });
-  window.addEventListener("beforeunload", stopCommentPoll);
+  window.addEventListener("beforeunload", stopRealtime);
 
   // ------------------------------------------------------------------
   // Boot
@@ -617,7 +691,7 @@
     await Promise.all([loadMembership(), loadMyCommunities(), loadComments()]);
     await loadMyVotes();
     renderAll();
-    startCommentPoll();
+    startRealtime();
   }
 
   function onReady() {

@@ -248,6 +248,10 @@
           renderShell();
           return;
         }
+        // Tell the sidebar to redraw its per-community pending badges
+        // right away; realtime would catch up on its own but this is
+        // instant from the admin's own action.
+        try { window.dispatchEvent(new CustomEvent("cf-community-pending-change")); } catch (_) {}
         // Quiet reload in background to pick up the new member count, etc.
         reload();
       }
