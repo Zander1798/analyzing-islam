@@ -14,6 +14,7 @@
 <title>Read the Quran — Analyzing Islam</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/reader.css">
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -33,7 +34,7 @@
   </div>
 </nav>
 
-<div class="reader-layout">
+<div class="reader-layout has-hl-card">
 
   <aside class="reader-toc">
     <div class="reader-toc-header">Sūrahs</div>
@@ -7544,6 +7545,16 @@
 </article>
   </main>
 
+  <aside class="hl-card" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 </div>
 
 <footer class="site-footer">
@@ -7560,5 +7571,27 @@
 <script src="../assets/js/verse-parser.js" defer></script>
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=1" defer></script>
+<script defer>
+  // Wait for highlights.js + auth to be ready, then attach.
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "quran",
+        scope: document.querySelector(".reader-main"),
+        anchorRe: /^s\d+v\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    // Mobile drawer toggle.
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>
