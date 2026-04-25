@@ -120,6 +120,7 @@
 }
 .ibnk-footnav a:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -270,6 +271,16 @@
 <section class="ibnk-ayah" id="a119"><header class="ibnk-ayah-head"><span>Ayah 5:119</span><a class="ibnk-ayah-link" href="../read/quran.html#s5v119">Read verse ↗</a></header><div class="ibnk-body"><h2>Only Truth will be of Benefit on the Day of Resurrection</h2><p>Allah answers His servant and Messenger `Isa, son of Maryam, after he disowns  the disbelieving Christians who lied about Allah and His Messenger, and when  `Isa refers their end to the will of his Lord, </p><div class="arabic uthmani"></div><p>(This is a Day on which the truthful will profit from their truth.) Ad-Dahhak  said that Ibn `Abbas commented, "This is the Day when Tawhid will benefit those  who believed in it." </p><div class="arabic uthmani"></div><p>(Theirs are Gardens under which rivers flow (in Paradise) -- they shall abide  therein forever.) and they will never be removed from it, </p><div class="arabic uthmani"></div><p>(Allah is pleased with them and they with Him.) </p><div class="arabic uthmani"></div><p>(But the greatest bliss is the good pleasure of Allah.) 9:72 We will  mention the Hadiths about this Ayah 9:72 later on. Allah's statement, </p><div class="arabic uthmani"></div><p>(That is the great success.) means, this is the great success, other than  which there is no greater success. Allah said in another Ayat, </p><div class="arabic uthmani"></div><p>(For the like of this let the workers work.) 37:61, and, </p><div class="arabic uthmani"></div><p>(And for this let (all) those strive who want to strive.) 83:26 Allah's  statement, </p><div class="arabic uthmani"></div><p>(To Allah belongs the dominion of the heavens and the earth and all that is  therein, and He is able to do all things.) means, He created everything, owns  everything, controls the affairs of everything and is able to do all things.  Therefore, everything and everyone are in His domain and under His power and  will. There is none like Him, nor is there rival, ancestor, son, or wife for  Him, nor a lord or god besides Him. Ibn Wahb said that he heard Huyay bin  `Abdullah saying that Abu `Abdur-Rahman Al-Habli said that `Abdullah bin `Amr  said, "The last revealed Surah was Surat Al-Ma'idah."</p></div></section>
 <section class="ibnk-ayah" id="a120"><header class="ibnk-ayah-head"><span>Ayah 5:120</span><a class="ibnk-ayah-link" href="../read/quran.html#s5v120">Read verse ↗</a></header><div class="ibnk-body"><h2>Only Truth will be of Benefit on the Day of Resurrection</h2><p>Allah answers His servant and Messenger `Isa, son of Maryam, after he disowns  the disbelieving Christians who lied about Allah and His Messenger, and when  `Isa refers their end to the will of his Lord, </p><div class="arabic uthmani"></div><p>(This is a Day on which the truthful will profit from their truth.) Ad-Dahhak  said that Ibn `Abbas commented, "This is the Day when Tawhid will benefit those  who believed in it." </p><div class="arabic uthmani"></div><p>(Theirs are Gardens under which rivers flow (in Paradise) -- they shall abide  therein forever.) and they will never be removed from it, </p><div class="arabic uthmani"></div><p>(Allah is pleased with them and they with Him.) </p><div class="arabic uthmani"></div><p>(But the greatest bliss is the good pleasure of Allah.) 9:72 We will  mention the Hadiths about this Ayah 9:72 later on. Allah's statement, </p><div class="arabic uthmani"></div><p>(That is the great success.) means, this is the great success, other than  which there is no greater success. Allah said in another Ayat, </p><div class="arabic uthmani"></div><p>(For the like of this let the workers work.) 37:61, and, </p><div class="arabic uthmani"></div><p>(And for this let (all) those strive who want to strive.) 83:26 Allah's  statement, </p><div class="arabic uthmani"></div><p>(To Allah belongs the dominion of the heavens and the earth and all that is  therein, and He is able to do all things.) means, He created everything, owns  everything, controls the affairs of everything and is able to do all things.  Therefore, everything and everyone are in His domain and under His power and  will. There is none like Him, nor is there rival, ancestor, son, or wife for  Him, nor a lord or god besides Him. Ibn Wahb said that he heard Huyay bin  `Abdullah saying that Abu `Abdur-Rahman Al-Habli said that `Abdullah bin `Amr  said, "The last revealed Surah was Surat Al-Ma'idah."</p></div></section>
 </article>
+  <aside class="hl-card hl-card--floating" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 
 <nav class="ibnk-footnav">
   <a href="ibn-kathir-4.html">← Surah 4</a>
@@ -290,5 +301,25 @@
 
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "ibn-kathir-5",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^ibnk-\d+-\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

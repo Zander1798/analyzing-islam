@@ -120,6 +120,7 @@
 }
 .ibnk-footnav a:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -273,6 +274,16 @@
 <section class="ibnk-ayah" id="a122"><header class="ibnk-ayah-head"><span>Ayah 11:122</span><a class="ibnk-ayah-link" href="../read/quran.html#s11v122">Read verse ↗</a></header><div class="ibnk-body"><h2>Allah, the Exalted, commands His Messenger to say to those who disbelieve in what he has come ...</h2><div class="arabic uthmani"></div><p>(Act according to your ability) This means upon your path and your way. </p><div class="arabic uthmani"></div><p>(We are acting (in our way). This means that we are upon our path and our way (Islam). </p><div class="arabic uthmani"></div><p>(And you wait ! We (too) are waiting.) This means, </p><div class="arabic uthmani"></div><p>(And you will come to know for which of us will be the (happy) end in the Hereafter. Certainly the wrongdoers will not be successful.)6:135 Verily, Allah fulfilled His promise to His Messenger , helped him and aided him. He made His Word uppermost (victorious), and the word of those who disbelieved lowly and disgraced. Allah is truly the Most Mighty, Most Wise. </p></div></section>
 <section class="ibnk-ayah" id="a123"><header class="ibnk-ayah-head"><span>Ayah 11:123</span><a class="ibnk-ayah-link" href="../read/quran.html#s11v123">Read verse ↗</a></header><div class="ibnk-body"><h2>Allah, the Exalted, informs that He is the All-Knower of the unseenof the heavens and the earth and that unto Him is the final return.</h2><p>He explains that everyone who does a deed, He will give them their deed (reward for it) on the Day of Reckoning. Unto Him belongs the creation and the command. Then He, the Exalted, commands that He should be worshipped and relied upon, for verily, He is sufficient for whoever trusts and turns to Him. Concerning His statement, </p><div class="arabic uthmani"></div><p>(And your Lord is not unaware of what you do.) This means, `The lies (of the disbelievers) against you O Muhammad are not hidden from Him. He is the All-Knower of the conditions of His creatures and He will give them the perfect recompense for their deeds in this life and the Hereafter. He will aid you (Muhammad) and His party over the disbelievers in this life and in the Hereafter.' This is the end of the Tafsir of Surah Hud, and all praises and thanks are due to Allah.</p></div></section>
 </article>
+  <aside class="hl-card hl-card--floating" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 
 <nav class="ibnk-footnav">
   <a href="ibn-kathir-10.html">← Surah 10</a>
@@ -293,5 +304,25 @@
 
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "ibn-kathir-11",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^ibnk-\d+-\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

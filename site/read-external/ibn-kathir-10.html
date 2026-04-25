@@ -120,6 +120,7 @@
 }
 .ibnk-footnav a:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -259,6 +260,16 @@
 <section class="ibnk-ayah" id="a108"><header class="ibnk-ayah-head"><span>Ayah 10:108</span><a class="ibnk-ayah-link" href="../read/quran.html#s10v108">Read verse ↗</a></header><div class="ibnk-body"><div class="arabic uthmani"></div><p>(And I am not set over you as a guardian) This means, `I am not a guardian over you in order for you to become believers. I am only a warner to you and guidance belongs to Allah, the Exalted.' Concerning Allah's statement, </p><div class="arabic uthmani"></div><p>(And follow what has been revealed to you, and be patient) This means, `Adhere to that which Allah has revealed to you, and inspired you with, and be patient with the opposition that you meet from the people.' </p><div class="arabic uthmani"></div><p>(until Allah gives judgment) This means, `Until Allah judges between you and them.' </p><div class="arabic uthmani"></div><p>(And He is the best of judges. ) This means that He is the best of those who pass judgment, due to His Justice and His wisdom.</p></div></section>
 <section class="ibnk-ayah" id="a109"><header class="ibnk-ayah-head"><span>Ayah 10:109</span><a class="ibnk-ayah-link" href="../read/quran.html#s10v109">Read verse ↗</a></header><div class="ibnk-body"><div class="arabic uthmani"></div><p>(And I am not set over you as a guardian) This means, `I am not a guardian over you in order for you to become believers. I am only a warner to you and guidance belongs to Allah, the Exalted.' Concerning Allah's statement, </p><div class="arabic uthmani"></div><p>(And follow what has been revealed to you, and be patient) This means, `Adhere to that which Allah has revealed to you, and inspired you with, and be patient with the opposition that you meet from the people.' </p><div class="arabic uthmani"></div><p>(until Allah gives judgment) This means, `Until Allah judges between you and them.' </p><div class="arabic uthmani"></div><p>(And He is the best of judges. ) This means that He is the best of those who pass judgment, due to His Justice and His wisdom.</p></div></section>
 </article>
+  <aside class="hl-card hl-card--floating" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 
 <nav class="ibnk-footnav">
   <a href="ibn-kathir-9.html">← Surah 9</a>
@@ -279,5 +290,25 @@
 
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "ibn-kathir-10",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^ibnk-\d+-\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

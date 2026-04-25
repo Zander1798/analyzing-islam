@@ -39,7 +39,16 @@
     const min = parseInt(el.getAttribute("data-splitter-min") || "140", 10);
     const max = parseInt(el.getAttribute("data-splitter-max") || "600", 10);
     const refSel = el.getAttribute("data-splitter-ref");
-    const refEl = refSel ? document.querySelector(refSel) : el.previousElementSibling;
+    // data-splitter-side="right" → splitter sits to the LEFT of the
+    // resizable pane (rather than to its right). Used for the highlights
+    // sidebar which lives at the far right of reader layouts. In that
+    // mode `refEl` is the resizable pane itself (nextElementSibling), and
+    // the drag formula inverts so that dragging LEFT grows the pane.
+    const side = (el.getAttribute("data-splitter-side") || "left").toLowerCase();
+    const isRight = side === "right";
+    const refEl = refSel
+      ? document.querySelector(refSel)
+      : (isRight ? el.nextElementSibling : el.previousElementSibling);
     if (!refEl) return;
 
     // Reader TOCs default to collapsible — users want a "hide the chapter
@@ -118,6 +127,8 @@
 
     let dragging = false;
     // Cached at drag start so we don't call getBoundingClientRect() per move.
+    // For left splitters: refLeft = left edge of left pane (used: w = x - refLeft).
+    // For right splitters: refLeft = right edge of right pane (used: w = refLeft - x).
     let refLeft = 0;
     // Drag intent (where the left pane's right edge will land on release).
     // Updated via translateX on the ghost element — compositor-only, no reflow.
@@ -152,9 +163,12 @@
     // where the divider will actually land — so the ghost lines up exactly
     // with the post-release position.
     function resolveX(x) {
-      let w = Math.round(x - refLeft);
-      if (collapsible && w < collapseThreshold) return refLeft;
-      return refLeft + clamp(w, min, max);
+      let w = isRight ? Math.round(refLeft - x) : Math.round(x - refLeft);
+      if (collapsible && w < collapseThreshold) {
+        return refLeft; // ghost snaps back to the pane's anchored edge
+      }
+      const cw = clamp(w, min, max);
+      return isRight ? (refLeft - cw) : (refLeft + cw);
     }
 
     function positionGhost() {
@@ -171,7 +185,7 @@
 
     function commitFinal() {
       if (pendingX == null) return;
-      let w = Math.round(pendingX - refLeft);
+      let w = isRight ? Math.round(refLeft - pendingX) : Math.round(pendingX - refLeft);
       if (collapsible && w < collapseThreshold) {
         document.documentElement.style.setProperty(cssVar, "0px");
         setCollapsed(true);
@@ -186,7 +200,8 @@
       if (isHidden()) return;
       if (e.target !== el) return;
       dragging = true;
-      refLeft = refEl.getBoundingClientRect().left;
+      const rect = refEl.getBoundingClientRect();
+      refLeft = isRight ? rect.right : rect.left;
       pendingX = currentX(e);
       el.classList.add("is-dragging");
       document.body.classList.add("splitter-dragging");
@@ -238,8 +253,9 @@
         getComputedStyle(refEl).width, 10
       ) || refEl.getBoundingClientRect().width;
       let next = current;
-      if (e.key === "ArrowLeft") next = current - step;
-      else if (e.key === "ArrowRight") next = current + step;
+      // For right-side splitters, arrow direction inverts (left grows the pane).
+      if (e.key === "ArrowLeft")  next = current + (isRight ? step : -step);
+      else if (e.key === "ArrowRight") next = current + (isRight ? -step : step);
       else if (e.key === "Home") next = collapsible ? 0 : min;
       else if (e.key === "End") next = max;
       else if (e.key === "Enter" || e.key === " ") {

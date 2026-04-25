@@ -120,6 +120,7 @@
 }
 .ibnk-footnav a:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -202,6 +203,16 @@
 <section class="ibnk-ayah" id="a51"><header class="ibnk-ayah-head"><span>Ayah 14:51</span><a class="ibnk-ayah-link" href="../read/quran.html#s14v51">Read verse ↗</a></header><div class="ibnk-body"><h2>The Condition of the criminals on the Day of Resurrection</h2><p>Allah said,</p><p>(On the Day when the earth will be changed to another earth and so will be the heavens) `and the creations will be brought before their Lord, and you, O Muhammad, will witness the criminals who committed the crimes of Kufr and mischief,'</p><p>(Muqarranin) bound together, each with his or her like, just as Allah said,</p><p>(Assemble those who did wrong, together with their companions.) 37:22</p><p>(And when the souls are joined with their bodies.)81:7,</p><p>(And when they shall be thrown into a narrow place thereof, chained together, they will exclaim therein for destruction.) 25:13 and,</p><p>    -    </p><p>(And also the Shayatin from the Jinn (including) every kind of builder and diver, and also others bound in fetters.)38:37-38 Allah said next,</p><p>(Their garments will be of Qatiran (pitch),) that is used to coat camels. Qatadah commented that Qatiran (tar) is one of the fastest objects to catch fire. Ibn `Abbas used to say that the Qatiran, mentioned in the Ayah, is dissolved lead. It is possible that this Ayah reads as: refering to heated lead that has reached tremendous heat, according to Mujahid, Ikrimah, Sa'id bin Jubayr Al-Hasan and Qatadah. Allah said next,</p><p>(and fire will cover their faces), which is similar to His other statement,</p><p>(The Fire will burn their faces, and therein they will grin, with displaced lips.)23:104 Imam Ahmad recorded that Yahya bin Abi Ishaq said that Aban bin Yazid said that Yahya bin Abi Kathir said that Zayd bin Abi Salam said that Abu Malik Al-Ash`ari said that the Messenger of Allah  said,</p><p>(Four characteristics from the time of Jahiliyyah will remain in my Ummah, since they will not abandon them: boasting about their family lineage, discrediting family ties, seeking rain through the stars, and wailing for their dead. Verily, if she who wails, dies before she repents from her behavior, she will be resurrected on the Day of Resurrection while wearing a dress of Qatiran and a cloak of mange.) Muslim collected this Hadith. Allah said next,</p><p>(That Allah may requite each person according to what he has earned.) meaning, on the Day of Resurrection. Allah said in another Ayah,</p><p>(That He may requite those who do evil with that which they have done.) 53:31 Allah said here,</p><p>(Truly, Allah is swift at reckoning.) when He wills to reckon a servants of His, for He knows everything and nothing ever escapes His observation. Verily, His power over all of His creation is the same as His power over one creature,</p><p>(The creation of you all and the resurrection of you all are only as a single person. )31:28 And this is why Mujahid said,</p><p>(swift at reckoning), means "keeping count."</p></div></section>
 <section class="ibnk-ayah" id="a52"><header class="ibnk-ayah-head"><span>Ayah 14:52</span><a class="ibnk-ayah-link" href="../read/quran.html#s14v52">Read verse ↗</a></header><div class="ibnk-body"><h2>Allah states that this Qur'an is a Message for mankind,</h2><div class="arabic uthmani"></div><p>((So) that I may therewith warn you and whomsoever it may reach.) 6:19 This Qur'an is for all mankind and the Jinns, just as Allah said in the beginning of this Surah,</p><div class="arabic uthmani"></div><p>(Alif-Lam-Ra. (This is) a Book which We have revealed unto you in order that you might lead mankind out of darkness into light.) 14:1 Allah said next,</p><div class="arabic uthmani"></div><p>(in order that they may be warned thereby), or to receive and draw lessons from it,</p><div class="arabic uthmani"></div><p>(and that they may know that He is the only One God) using its proofs and evidences that testify that there is no true deity except Allah,</p><div class="arabic uthmani"></div><p>(and that men of understanding may take heed.) meaning those who have good minds. aThis is the end of the Tafsir of Surah Ibrahim, and all praise is due to Allah.</p></div></section>
 </article>
+  <aside class="hl-card hl-card--floating" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 
 <nav class="ibnk-footnav">
   <a href="ibn-kathir-13.html">← Surah 13</a>
@@ -222,5 +233,25 @@
 
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "ibn-kathir-14",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^ibnk-\d+-\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

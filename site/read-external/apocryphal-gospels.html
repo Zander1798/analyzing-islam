@@ -14,6 +14,7 @@
 <title>Apocryphal Infancy Gospels — Analyzing Islam</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/reader.css">
+<link rel="stylesheet" href="../assets/css/highlights.css">
 <style>
   .reader-toc li.toc-section {
     list-style: none;
@@ -89,7 +90,7 @@
   </div>
 </nav>
 
-<div class="reader-layout">
+<div class="reader-layout has-hl-card">
 
   <aside class="reader-toc">
     <div class="reader-toc-header">Works</div>
@@ -344,6 +345,16 @@
 
   </main>
 
+  <div class="splitter" data-splitter-var="--reader-hl-w" data-splitter-side="right" data-splitter-min="180" data-splitter-max="480" data-splitter-key="reader-hl" aria-label="Resize highlights panel"></div>
+  <aside class="hl-card" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
 </div>
 
 <footer class="site-footer">
@@ -360,5 +371,25 @@
 <script src="../assets/js/verse-parser.js" defer></script>
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "apocryphal-gospels",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^[a-z0-9-]+-\d+(?:-\d+)?$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

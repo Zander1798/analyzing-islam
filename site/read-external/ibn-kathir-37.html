@@ -120,6 +120,7 @@
 }
 .ibnk-footnav a:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -332,6 +333,16 @@
 <section class="ibnk-ayah" id="a181"><header class="ibnk-ayah-head"><span>Ayah 37:181</span><a class="ibnk-ayah-link" href="../read/quran.html#s37v181">Read verse ↗</a></header><div class="ibnk-body"><h2>Allah glorified Himself and states that He is far above what the lying wrongdoers say about Him;</h2><p>Allah says:</p><p>(Glorified be your Lord, the Lord of Al-`Izzah!) meaning, the Owner of might and power Whom none can resist.</p><p>((He is free) from what they attribute unto Him!) means, from what these lying fabricators say.</p><p>(And Salam be on the Messengers!) means, may the peace of Allah be upon them in this world and in the Hereafter, because what they say about their Lord is sound, correct and true.</p><p>(And all the praises and thanks be to Allah, Lord of all that exists.) means, praise be to Him at the beginning and end of all things. Because Tasbih (glorification) implies a declaration of being free from all shortcomings, the two ideas appear together here and in many places in the Qur'an. Allah says:</p><p>        -    -</p><p>(Glorified be your Lord, the Lord of Al-`Izzah! (He is free) from what they attribute unto Him! And Salam (peace!) be on the Messengers! And all the praises and thanks be to Allah, Lord of all that exists.) Sa`id bin Abi `Arubah narrated that Qatadah said, "The Messenger of Allah  said:</p><p>(When you send Salam on me, send Salam on all the Messengers, for I am one of the Messengers.)" This was recorded by Ibn Jarir and Ibn Abi Hatim. Abu Muhammad Al-Baghawi recorded in his Tafsir that `Ali, may Allah be pleased with him, said: "Whoever wants a greater measure of reward on the Day of Resurrection, let him say at the end of any gathering,</p><p>        -    -</p><p>(Glorified be your Lord, the Lord of honor, glory and power! (He is free) from what they attribute unto Him! And Salam (peace!) be on the Messengers! And all the praises and thanks be to Allah, Lord of all that exists)." Other Hadiths concerning the expiation for any wrongs that may have occurred during a gathering prescribe saying the words: "Glory be to You, O Allah, and praise. There is no God except You; I seek your forgiveness and I repent to you. " I have written a chapter dealing exclusively with this topic. This is the end of the Tafsir of Surat As-Saffat. And Allah, may He be glorified and exalted, knows best.</p></div></section>
 <section class="ibnk-ayah" id="a182"><header class="ibnk-ayah-head"><span>Ayah 37:182</span><a class="ibnk-ayah-link" href="../read/quran.html#s37v182">Read verse ↗</a></header><div class="ibnk-body"><h2>Allah glorified Himself and states that He is far above what the lying wrongdoers say about Him;</h2><p>Allah says:</p><p>(Glorified be your Lord, the Lord of Al-`Izzah!) meaning, the Owner of might and power Whom none can resist.</p><p>((He is free) from what they attribute unto Him!) means, from what these lying fabricators say.</p><p>(And Salam be on the Messengers!) means, may the peace of Allah be upon them in this world and in the Hereafter, because what they say about their Lord is sound, correct and true.</p><p>(And all the praises and thanks be to Allah, Lord of all that exists.) means, praise be to Him at the beginning and end of all things. Because Tasbih (glorification) implies a declaration of being free from all shortcomings, the two ideas appear together here and in many places in the Qur'an. Allah says:</p><p>        -    -</p><p>(Glorified be your Lord, the Lord of Al-`Izzah! (He is free) from what they attribute unto Him! And Salam (peace!) be on the Messengers! And all the praises and thanks be to Allah, Lord of all that exists.) Sa`id bin Abi `Arubah narrated that Qatadah said, "The Messenger of Allah  said:</p><p>(When you send Salam on me, send Salam on all the Messengers, for I am one of the Messengers.)" This was recorded by Ibn Jarir and Ibn Abi Hatim. Abu Muhammad Al-Baghawi recorded in his Tafsir that `Ali, may Allah be pleased with him, said: "Whoever wants a greater measure of reward on the Day of Resurrection, let him say at the end of any gathering,</p><p>        -    -</p><p>(Glorified be your Lord, the Lord of honor, glory and power! (He is free) from what they attribute unto Him! And Salam (peace!) be on the Messengers! And all the praises and thanks be to Allah, Lord of all that exists)." Other Hadiths concerning the expiation for any wrongs that may have occurred during a gathering prescribe saying the words: "Glory be to You, O Allah, and praise. There is no God except You; I seek your forgiveness and I repent to you. " I have written a chapter dealing exclusively with this topic. This is the end of the Tafsir of Surat As-Saffat. And Allah, may He be glorified and exalted, knows best.</p></div></section>
 </article>
+  <aside class="hl-card hl-card--floating" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 
 <nav class="ibnk-footnav">
   <a href="ibn-kathir-36.html">← Surah 36</a>
@@ -352,5 +363,25 @@
 
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "ibn-kathir-37",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^ibnk-\d+-\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

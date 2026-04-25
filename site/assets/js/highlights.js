@@ -19,16 +19,38 @@
 (function () {
   "use strict";
 
+  // Darker, saturated colours that contrast with white text on a dark
+  // background. White text stays readable over each of these.
   const PALETTE = [
-    "#ffeb3b", // yellow
-    "#a5d6a7", // green
-    "#90caf9", // blue
-    "#f48fb1", // pink
-    "#ffb74d", // orange
-    "#ce93d8", // purple
+    "#b8860b", // dark goldenrod
+    "#1b5e20", // forest green
+    "#0d47a1", // deep blue
+    "#b71c1c", // dark red
+    "#e65100", // burnt orange
+    "#4a148c", // deep purple
   ];
   const DEFAULT_COLOR = PALETTE[0];
   const SNIPPET_LEN = 80;
+
+  // Visually preview a colour change without writing to the server.
+  // Used while the user drags through the <input type="color"> spectrum.
+  // The actual save happens once on the picker's `change` event.
+  function previewColor(scope, id, groupId, hex, listItem) {
+    let marks;
+    if (groupId) {
+      marks = scope.querySelectorAll('mark.ai-hl[data-hl-group="' + cssEscapeAttr(groupId) + '"]');
+    } else {
+      marks = scope.querySelectorAll('mark.ai-hl[data-hl-id="' + cssEscapeAttr(String(id)) + '"]');
+    }
+    marks.forEach((m) => { m.style.backgroundColor = hex; });
+    if (listItem) {
+      const swatch = listItem.querySelector(".hl-swatch");
+      if (swatch) swatch.style.background = hex;
+    }
+  }
+  function cssEscapeAttr(s) {
+    return String(s).replace(/"/g, '\\"').replace(/\\/g, "\\\\");
+  }
 
   function sb()  { return window.__supabase; }
   function uid() { const s = window.__session; return s && s.user ? s.user.id : null; }
@@ -294,7 +316,7 @@
     mark.setAttribute("data-hl-id", String(row.id));
     mark.setAttribute("data-hl-group", row.group_id || "");
     mark.style.backgroundColor = row.color || DEFAULT_COLOR;
-    mark.style.color = "inherit";
+    mark.style.color = "#ffffff";
     // For multi-node ranges surroundContents throws; extract + wrap instead.
     try {
       mark.appendChild(range.extractContents());
@@ -538,19 +560,32 @@
           }, 60);
         }
       });
-      cardEl.addEventListener("input", async (e) => {
-        if (e.target.classList.contains("hl-color-input")) {
-          const li = e.target.closest(".hl-card-item");
-          if (!li) return;
-          const group = li.getAttribute("data-group");
-          const id = li.getAttribute("data-id");
-          const hex = e.target.value;
-          if (group) {
-            const rows = (await list(source)).filter((r) => r.group_id === group);
-            await Promise.all(rows.map((r) => recolor(source, r.id, hex)));
-          } else {
-            await recolor(source, isNaN(Number(id)) ? id : Number(id), hex);
-          }
+      // Live preview while dragging through the colour spectrum: only
+      // mutate the local <mark> background + the swatch dot. Do NOT hit
+      // Supabase or fire highlights-changed (each fire triggers a global
+      // repaint that corrupts the DOM mid-drag and bugs the highlight).
+      // Persist exactly once when the picker closes (`change` event).
+      cardEl.addEventListener("input", (e) => {
+        if (!e.target.classList.contains("hl-color-input")) return;
+        const li = e.target.closest(".hl-card-item");
+        if (!li) return;
+        const id    = li.getAttribute("data-id");
+        const group = li.getAttribute("data-group");
+        const hex   = e.target.value;
+        previewColor(scope, id, group, hex, li);
+      });
+      cardEl.addEventListener("change", async (e) => {
+        if (!e.target.classList.contains("hl-color-input")) return;
+        const li = e.target.closest(".hl-card-item");
+        if (!li) return;
+        const group = li.getAttribute("data-group");
+        const id    = li.getAttribute("data-id");
+        const hex   = e.target.value;
+        if (group) {
+          const rows = (await list(source)).filter((r) => r.group_id === group);
+          await Promise.all(rows.map((r) => recolor(source, r.id, hex)));
+        } else {
+          await recolor(source, isNaN(Number(id)) ? id : Number(id), hex);
         }
       });
     }

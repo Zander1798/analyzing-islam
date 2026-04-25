@@ -120,6 +120,7 @@
 }
 .ibnk-footnav a:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -225,6 +226,16 @@
 <section class="ibnk-ayah" id="a74"><header class="ibnk-ayah-head"><span>Ayah 8:74</span><a class="ibnk-ayah-link" href="../read/quran.html#s8v74">Read verse ↗</a></header><div class="ibnk-body"><h2>Believers in Truth</h2><p>After Allah affirmed the ruling of loyalty and protection between the believers in this life, He then mentioned their destination in the Hereafter. Allah also affirmed the faith of the believers, just as mentioned in the beginning of this Surah, and that He will reward them with forgiveness and by erasing their sins, if they have any. He also promised them honorable provisions that are abundant, pure, everlasting and eternal; provisions that never end or run out, nor will they ever cause boredom, for they are delightful and come in great varieties. Allah then mentioned that those who follow the path of the believers in faith and performing good deeds, will be with them in the Hereafter. Just as Allah said,</p><p>(And the foremost to embrace Islam...) 9:100, until the end of the Ayah. He also said,</p><p>(And those who came after them ...) 59:10.</p><p>A Hadith that is in the Two Sahihs, which is Mutawatir and has several authentic chains of narrations, mentions that the Messenger of Allah  said,</p><p>(One will be in the company of those whom he loves.) Another Hadith states,</p><p>(He who loves a people is one of them), and in another narration, he said,</p><p>(...will be gathered with them (on the Day of Resurrection).)</p><h2>Inheritance is for Designated Degrees of Relatives</h2><p>Allah said,</p><p>(But kindred by blood are nearer to one another (regarding inheritance) in the decree ordained by Allah), meaning, in Allah's decision. This Ayah encompasses all relatives, not only the degrees of relative who do not have a fixed, designated share in the inheritance, as some people claim and use this Ayah to argue. According to Ibn `Abbas, Mujahid, `Ikrimah, Al-Hasan, Qatadah and several others, this Ayah abrogated inheriting from those with whom one had ties of treaties or brotherhood, as was the case in the beginning of Islam. So it applies to all relatives, and as for those who do not inherit, then this is supported by the Hadith,</p><p>(Indeed Allah had alloted every right to the one who deserves it, so there may be no will for an heir.)</p><p>Therefore, this Ayah also includes those who have a fixed share of inheritance. Allah knows best.</p><p>This is the end of the Tafsir of Surat Al-Anfal, all praise and thanks are for Allah, in Him we trust, and He is sufficient for us, what an excellent supporter He is.</p></div></section>
 <section class="ibnk-ayah" id="a75"><header class="ibnk-ayah-head"><span>Ayah 8:75</span><a class="ibnk-ayah-link" href="../read/quran.html#s8v75">Read verse ↗</a></header><div class="ibnk-body"><h2>Believers in Truth</h2><p>After Allah affirmed the ruling of loyalty and protection between the believers in this life, He then mentioned their destination in the Hereafter. Allah also affirmed the faith of the believers, just as mentioned in the beginning of this Surah, and that He will reward them with forgiveness and by erasing their sins, if they have any. He also promised them honorable provisions that are abundant, pure, everlasting and eternal; provisions that never end or run out, nor will they ever cause boredom, for they are delightful and come in great varieties. Allah then mentioned that those who follow the path of the believers in faith and performing good deeds, will be with them in the Hereafter. Just as Allah said,</p><p>(And the foremost to embrace Islam...) 9:100, until the end of the Ayah. He also said,</p><p>(And those who came after them ...) 59:10.</p><p>A Hadith that is in the Two Sahihs, which is Mutawatir and has several authentic chains of narrations, mentions that the Messenger of Allah  said,</p><p>(One will be in the company of those whom he loves.) Another Hadith states,</p><p>(He who loves a people is one of them), and in another narration, he said,</p><p>(...will be gathered with them (on the Day of Resurrection).)</p><h2>Inheritance is for Designated Degrees of Relatives</h2><p>Allah said,</p><p>(But kindred by blood are nearer to one another (regarding inheritance) in the decree ordained by Allah), meaning, in Allah's decision. This Ayah encompasses all relatives, not only the degrees of relative who do not have a fixed, designated share in the inheritance, as some people claim and use this Ayah to argue. According to Ibn `Abbas, Mujahid, `Ikrimah, Al-Hasan, Qatadah and several others, this Ayah abrogated inheriting from those with whom one had ties of treaties or brotherhood, as was the case in the beginning of Islam. So it applies to all relatives, and as for those who do not inherit, then this is supported by the Hadith,</p><p>(Indeed Allah had alloted every right to the one who deserves it, so there may be no will for an heir.)</p><p>Therefore, this Ayah also includes those who have a fixed share of inheritance. Allah knows best.</p><p>This is the end of the Tafsir of Surat Al-Anfal, all praise and thanks are for Allah, in Him we trust, and He is sufficient for us, what an excellent supporter He is.</p></div></section>
 </article>
+  <aside class="hl-card hl-card--floating" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 
 <nav class="ibnk-footnav">
   <a href="ibn-kathir-7.html">← Surah 7</a>
@@ -245,5 +256,25 @@
 
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "ibn-kathir-8",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^ibnk-\d+-\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

@@ -120,6 +120,7 @@
 }
 .ibnk-footnav a:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -268,6 +269,16 @@
 <section class="ibnk-ayah" id="a117"><header class="ibnk-ayah-head"><span>Ayah 23:117</span><a class="ibnk-ayah-link" href="../read/quran.html#s23v117">Read verse ↗</a></header><div class="ibnk-body"><h2>Shirk is the Worst form of Wrong, its Practitioner shall never succeed. Allah threatens those who associate anything else withHim and worship anything with Him. He informs that those whoassociate others with Allah:</h2><div class="arabic uthmani"></div><p>(of whom he has no proof), meaning no evidence for what he says. Then Allah says:</p><div class="arabic uthmani"></div><p>(And whoever invokes, besides Allah, any other god, of whom he has no proof;) this is a conditional sentence, whose fulfilling clause is:</p><div class="arabic uthmani"></div><p>(then his reckoning is only with his Lord.) meaning, Allah will call him to account for that. Then Allah tells us:</p><div class="arabic uthmani"></div><p>(Surely, disbelievers will not be successful.) meaning, they will not be successful with Him on the Day of Resurrection; they will not prosper or be saved.</p><div class="arabic uthmani"></div><p>(And say: "My Lord! Forgive and have mercy, for You are the best of those who show mercy!") Here Allah is teaching us to recite this supplication, for forgiveness, in a general sense, means wiping away sins and concealing them from people, and mercy means guiding a person and helping him to say and do good things.</p></div></section>
 <section class="ibnk-ayah" id="a118"><header class="ibnk-ayah-head"><span>Ayah 23:118</span><a class="ibnk-ayah-link" href="../read/quran.html#s23v118">Read verse ↗</a></header><div class="ibnk-body"><h2>Shirk is the Worst form of Wrong, its Practitioner shall never succeed. Allah threatens those who associate anything else withHim and worship anything with Him. He informs that those whoassociate others with Allah:</h2><div class="arabic uthmani"></div><p>(of whom he has no proof), meaning no evidence for what he says. Then Allah says:</p><div class="arabic uthmani"></div><p>(And whoever invokes, besides Allah, any other god, of whom he has no proof;) this is a conditional sentence, whose fulfilling clause is:</p><div class="arabic uthmani"></div><p>(then his reckoning is only with his Lord.) meaning, Allah will call him to account for that. Then Allah tells us:</p><div class="arabic uthmani"></div><p>(Surely, disbelievers will not be successful.) meaning, they will not be successful with Him on the Day of Resurrection; they will not prosper or be saved.</p><div class="arabic uthmani"></div><p>(And say: "My Lord! Forgive and have mercy, for You are the best of those who show mercy!") Here Allah is teaching us to recite this supplication, for forgiveness, in a general sense, means wiping away sins and concealing them from people, and mercy means guiding a person and helping him to say and do good things.</p></div></section>
 </article>
+  <aside class="hl-card hl-card--floating" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 
 <nav class="ibnk-footnav">
   <a href="ibn-kathir-22.html">← Surah 22</a>
@@ -288,5 +299,25 @@
 
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "ibn-kathir-23",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^ibnk-\d+-\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

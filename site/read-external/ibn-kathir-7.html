@@ -120,6 +120,7 @@
 }
 .ibnk-footnav a:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -356,6 +357,16 @@
 <section class="ibnk-ayah" id="a205"><header class="ibnk-ayah-head"><span>Ayah 7:205</span><a class="ibnk-ayah-link" href="../read/quran.html#s7v205">Read verse ↗</a></header><div class="ibnk-body"><h2>Remembering Allah in the Mornings and Afternoons</h2><p>Allah ordains that He be remembered more often in the mornings and the afternoons. Just as He ordered that He be worshipped during these two times when He said,</p><p>(And glorify the praises of your Lord, before the rising of the sun and before (its) setting.) 50:39 Before the night of Isra', when the five daily prayers were ordained, this Ayah was revealed in Makkah ordering that Allah be worshipped at these times, Allah said next,</p><p>(humbly and with fear) meaning, remember your Lord in secret, not loudly, with eagerness and fear. This is why Allah said next,</p><p>(and without loudness in words). Therefore, it is recommended that remembering Allah in Dhikr is not performed in a loud voice. When the Companions asked the Messenger of Allah , "Is our Lord close, so that we call Him in secret, or far, so that we raise our voices" Allah sent down the verse,</p><p>(And when My servants ask you concerning Me, then (answer them), I am indeed near (to them by My knowledge). I respond to the invocations of the supplicant when he calls on Me (without any mediator or intercessor).) 2:186 In the Two Sahihs, it is recorded that Abu Musa Al-Ash`ari said, "The people raised their voices with Du`a' (invoking Allah) while travelling. The Prophet said to them,</p><p>(O people! Take it easy on yourselves, for He Whom you are calling is not deaf or absent. Verily, He Whom you are calling is the All-Hearer, close (by His knowledge), closer to one of you than the neck of his animal.)" These texts encourage the servants to invoke Allah in Dhikr often, especially in the mornings and afternoons, so that they are not among those who neglect remembering Him. This is why Allah praised the angels who praise Him night and day without tiring,</p><p>(Surely, those who are with your Lord (i.e., angels) are never too proud to perform acts of worship to Him) Allah reminded the servants of this fact so that they imitate the angels in their tireless worship and obedience of Allah. Prostration, here, upon the mention that the angels prostrate to Allah is legitimate. A Hadith reads;</p><p>(Why not you stand in line (for the prayer) like the angels stand in line before their Lord They continue the first then the next lines and they stand close to each other in line. ) This is the first place in the Qur'an where it has been legitimized -- according to the agreement of the scholars -- for the readers of the Qur'an, and those listening to its recitation, to perform prostration.</p></div></section>
 <section class="ibnk-ayah" id="a206"><header class="ibnk-ayah-head"><span>Ayah 7:206</span><a class="ibnk-ayah-link" href="../read/quran.html#s7v206">Read verse ↗</a></header><div class="ibnk-body"><h2>Remembering Allah in the Mornings and Afternoons</h2><p>Allah ordains that He be remembered more often in the mornings and the afternoons. Just as He ordered that He be worshipped during these two times when He said,</p><p>(And glorify the praises of your Lord, before the rising of the sun and before (its) setting.) 50:39 Before the night of Isra', when the five daily prayers were ordained, this Ayah was revealed in Makkah ordering that Allah be worshipped at these times, Allah said next,</p><p>(humbly and with fear) meaning, remember your Lord in secret, not loudly, with eagerness and fear. This is why Allah said next,</p><p>(and without loudness in words). Therefore, it is recommended that remembering Allah in Dhikr is not performed in a loud voice. When the Companions asked the Messenger of Allah , "Is our Lord close, so that we call Him in secret, or far, so that we raise our voices" Allah sent down the verse,</p><p>(And when My servants ask you concerning Me, then (answer them), I am indeed near (to them by My knowledge). I respond to the invocations of the supplicant when he calls on Me (without any mediator or intercessor).) 2:186 In the Two Sahihs, it is recorded that Abu Musa Al-Ash`ari said, "The people raised their voices with Du`a' (invoking Allah) while travelling. The Prophet said to them,</p><p>(O people! Take it easy on yourselves, for He Whom you are calling is not deaf or absent. Verily, He Whom you are calling is the All-Hearer, close (by His knowledge), closer to one of you than the neck of his animal.)" These texts encourage the servants to invoke Allah in Dhikr often, especially in the mornings and afternoons, so that they are not among those who neglect remembering Him. This is why Allah praised the angels who praise Him night and day without tiring,</p><p>(Surely, those who are with your Lord (i.e., angels) are never too proud to perform acts of worship to Him) Allah reminded the servants of this fact so that they imitate the angels in their tireless worship and obedience of Allah. Prostration, here, upon the mention that the angels prostrate to Allah is legitimate. A Hadith reads;</p><p>(Why not you stand in line (for the prayer) like the angels stand in line before their Lord They continue the first then the next lines and they stand close to each other in line. ) This is the first place in the Qur'an where it has been legitimized -- according to the agreement of the scholars -- for the readers of the Qur'an, and those listening to its recitation, to perform prostration.</p></div></section>
 </article>
+  <aside class="hl-card hl-card--floating" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 
 <nav class="ibnk-footnav">
   <a href="ibn-kathir-6.html">← Surah 6</a>
@@ -376,5 +387,25 @@
 
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "ibn-kathir-7",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^ibnk-\d+-\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

@@ -120,6 +120,7 @@
 }
 .ibnk-footnav a:hover { color: var(--text); }
 </style>
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -238,6 +239,16 @@
 <section class="ibnk-ayah" id="a87"><header class="ibnk-ayah-head"><span>Ayah 38:87</span><a class="ibnk-ayah-link" href="../read/quran.html#s38v87">Read verse ↗</a></header><div class="ibnk-body"><div class="arabic uthmani"></div><p>(nor am I one of the Mutakallifin.) means, `and I do not add anything to that which Allah has told me. Whatever I am commanded to do, I do it, and I do not add anything or take anything away. By doing this I am seeking the Face of Allah and the Hereafter.' Sufyan Ath-Thawri, narrated from Al-A`mash and Mansur from Abu Ad-Duha that Masruq said, "We went to `Abdullah bin Mas`ud, may Allah be pleased with him. He said, `O people! Whoever knows a thing should say it, and whoever does not know should say, `Allah knows best."' It is part of knowledge, when one does not know, to say "Allah knows best." For Allah said to your Prophet :</p><div class="arabic uthmani"></div><p>(Say: "No wage do I ask of you for this, nor am I one of the Mutakallifin.")  This was reported by Al-Bukhari and Muslim.</p><div class="arabic uthmani"></div><p>(It is only a Reminder for all the creatures.) means, the Qur'an is a reminder for all those who are held accountable, men and Jinn. This was the view of Ibn `Abbas, may Allah be pleased with him. This Ayah is like the Ayat:</p><div class="arabic uthmani"></div><p>(that I may therewith warn you and whomsoever it may reach) (<a class="tafsir-ref" href="../read/quran.html#s6v19">6:19</a>), and</p><div class="arabic uthmani"></div><p>(but those of the sects that reject it, the Fire will be their promised meeting place) (<a class="tafsir-ref" href="../read/quran.html#s11v17">11:17</a>).</p><div class="arabic uthmani"></div><p>(And you shall certainly know the truth of it) means, `you will see confirmation that what he says is true.'</p><div class="arabic uthmani"></div><p>(after a while.) means, soon. Qatadah said, "After death. `Ikrimah said, "It means, on the Day of Resurrection." There is no contradiction between the two views, because whoever dies comes under the rulings of the Day of Resurrection. This is the end of the Tafsir of Surah Sad. All praise and gratitude is due to Allah, and Allah may He be glorified and exalted, knows best.</p></div></section>
 <section class="ibnk-ayah" id="a88"><header class="ibnk-ayah-head"><span>Ayah 38:88</span><a class="ibnk-ayah-link" href="../read/quran.html#s38v88">Read verse ↗</a></header><div class="ibnk-body"><div class="arabic uthmani"></div><p>(nor am I one of the Mutakallifin.) means, `and I do not add anything to that which Allah has told me. Whatever I am commanded to do, I do it, and I do not add anything or take anything away. By doing this I am seeking the Face of Allah and the Hereafter.' Sufyan Ath-Thawri, narrated from Al-A`mash and Mansur from Abu Ad-Duha that Masruq said, "We went to `Abdullah bin Mas`ud, may Allah be pleased with him. He said, `O people! Whoever knows a thing should say it, and whoever does not know should say, `Allah knows best."' It is part of knowledge, when one does not know, to say "Allah knows best." For Allah said to your Prophet :</p><div class="arabic uthmani"></div><p>(Say: "No wage do I ask of you for this, nor am I one of the Mutakallifin.")  This was reported by Al-Bukhari and Muslim.</p><div class="arabic uthmani"></div><p>(It is only a Reminder for all the creatures.) means, the Qur'an is a reminder for all those who are held accountable, men and Jinn. This was the view of Ibn `Abbas, may Allah be pleased with him. This Ayah is like the Ayat:</p><div class="arabic uthmani"></div><p>(that I may therewith warn you and whomsoever it may reach) (<a class="tafsir-ref" href="../read/quran.html#s6v19">6:19</a>), and</p><div class="arabic uthmani"></div><p>(but those of the sects that reject it, the Fire will be their promised meeting place) (<a class="tafsir-ref" href="../read/quran.html#s11v17">11:17</a>).</p><div class="arabic uthmani"></div><p>(And you shall certainly know the truth of it) means, `you will see confirmation that what he says is true.'</p><div class="arabic uthmani"></div><p>(after a while.) means, soon. Qatadah said, "After death. `Ikrimah said, "It means, on the Day of Resurrection." There is no contradiction between the two views, because whoever dies comes under the rulings of the Day of Resurrection. This is the end of the Tafsir of Surah Sad. All praise and gratitude is due to Allah, and Allah may He be glorified and exalted, knows best.</p></div></section>
 </article>
+  <aside class="hl-card hl-card--floating" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
+
 
 <nav class="ibnk-footnav">
   <a href="ibn-kathir-37.html">← Surah 37</a>
@@ -258,5 +269,25 @@
 
 <script src="../assets/js/reader-search.js" defer></script>
 <script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=2" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "ibn-kathir-38",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^ibnk-\d+-\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>

@@ -5,14 +5,12 @@
 
 /* ---------- The painted highlight itself ---------- */
 mark.ai-hl {
-  background-color: #ffeb3b;
-  color: inherit;
+  background-color: #b8860b;
+  color: #ffffff;
   padding: 0 1px;
   border-radius: 2px;
-  /* mix-blend-mode: multiply lets overlapping highlights blend their
-     colours visibly without one fully hiding the other. The dark page
-     background means we use `screen` instead so colours stay visible. */
-  mix-blend-mode: screen;
+  /* No mix-blend-mode: with dark stock colours over white text we want
+     the colour to render solidly so the text stays legible. */
   cursor: pointer;
   transition: outline-color 0.15s, box-shadow 0.15s;
 }
@@ -221,13 +219,102 @@ mark.ai-hl.is-flash {
   font-style: italic;
 }
 
-/* ---------- Reader layout: 4-column variant ---------- */
+/* ---------- Reader layout: 5-column variant (TOC | split | main | split | hl) ---------- */
 .reader-layout.has-hl-card {
   grid-template-columns:
     var(--reader-toc-w, 260px)
     10px
     minmax(0, 1fr)
-    var(--reader-hl-w, 280px);
+    10px
+    var(--reader-hl-w, 240px);
+}
+/* Collapsing the right splitter to 0 gives the reading column full width. */
+
+/* When the right splitter collapses the highlights card to 0 we hide
+   the card, identical to how the left TOC handles its splitter. */
+.reader-layout.has-hl-card:has(> .splitter[data-splitter-key="reader-hl"].is-collapsed) > .hl-card {
+  padding-left: 0;
+  padding-right: 0;
+  visibility: hidden;
+  width: 0;
+  min-width: 0;
+  border-left: 0;
+}
+
+/* Right-side splitter mirrors the left one but anchors to the next
+   sibling. The expand button sits on the LEFT face of the splitter. */
+.reader-layout > .splitter[data-splitter-side="right"] .splitter-expand {
+  /* Flip the chevron so the arrow points LEFT (= expand the right pane). */
+  transform: translateX(-50%) scaleX(-1);
+}
+
+/* Bible interlinear uses .bible-layout (TOC + main, 2-col). Extend to
+   4-col when the highlights card is present (TOC | main | splitter | hl). */
+.bible-layout.has-hl-card {
+  grid-template-columns: 240px minmax(0, 1fr) 10px var(--reader-hl-w, 280px);
+}
+.bible-layout.has-hl-card:has(> .splitter[data-splitter-key="reader-hl"].is-collapsed) > .hl-card {
+  padding-left: 0;
+  padding-right: 0;
+  visibility: hidden;
+  width: 0;
+  min-width: 0;
+  border-left: 0;
+}
+.bible-layout > .splitter {
+  position: sticky;
+  top: 72px;
+  align-self: start;
+  height: calc(100vh - 90px);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  z-index: 2;
+}
+.bible-layout > .splitter::before {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--border, #2a2a2a);
+  pointer-events: none;
+  transition: background 0.15s, width 0.15s;
+}
+.bible-layout > .splitter:hover::before,
+.bible-layout > .splitter.is-dragging::before {
+  background: var(--accent, #ff8a4a);
+  width: 3px;
+}
+
+/* Floating variant for readers that don't have a grid layout (e.g.
+   Ibn-Kathir per-surah pages with .ibnk-wrap). The card pins to the
+   right edge of the viewport without disturbing the article column. */
+.hl-card--floating {
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  width: var(--reader-hl-w, 280px);
+  height: calc(100vh - 110px);
+  max-height: calc(100vh - 110px);
+  background: var(--bg, #0a0a0a);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 8px;
+  padding: 16px 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  z-index: 40;
+}
+@media (max-width: 1280px) {
+  /* On narrower screens the floating card collides with the article
+     column — fall back to the same drawer behaviour as grid layouts. */
+  .hl-card--floating {
+    transform: translateX(110%);
+    transition: transform 0.18s ease-out;
+    border-radius: 8px 0 0 8px;
+    right: 0;
+  }
+  .hl-card--floating.is-open { transform: translateX(0); }
 }
 
 @media (max-width: 1100px) {

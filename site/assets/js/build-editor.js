@@ -314,8 +314,74 @@
             '<div class="build-source-hint">Highlight text → drag into the editor on the left.</div>' +
           '</div>' +
           '<iframe class="compare-frame" id="source-frame" title="Source browser" loading="lazy"></iframe>' +
+          '<aside class="hl-card" id="build-hl-card" aria-label="Highlights">' +
+            '<header class="hl-card-head">' +
+              '<h3>Highlights</h3>' +
+              '<span class="hl-card-count">0</span>' +
+            '</header>' +
+            '<ol class="hl-card-list" id="build-hl-card-list"></ol>' +
+            '<p class="hl-card-empty">Highlight text in the source on the right to save it here.</p>' +
+          '</aside>' +
         '</section>' +
       '</div>';
+  }
+
+  // ============ Highlights inside the source iframe ====================
+  // The iframe is same-origin; we attach AI_HIGHLIGHTS against its
+  // contentDocument every time it navigates, scoped to the slug of the
+  // source currently loaded. The card lives in the parent document
+  // (under the iframe) so it survives iframe reloads.
+  function attachIframeHighlights() {
+    const frame = document.getElementById("source-frame");
+    const card  = document.getElementById("build-hl-card");
+    if (!frame || !card || !window.AI_HIGHLIGHTS) return;
+
+    let lastDetach = null;
+    function attach() {
+      const doc = iframeDoc(frame);
+      if (!doc || !doc.body) return;
+      const sel = document.getElementById("source-select");
+      const slug = sel ? sel.value : null;
+      if (!slug) return;
+      // Pick an anchor regex per source family. Catalog/category pages
+      // use entry-NNN ids; readers use s/v, h, gen-c-v, etc.
+      const anchorRe = anchorReFor(slug);
+      try { if (lastDetach) lastDetach(); } catch (_) {}
+      const handle = window.AI_HIGHLIGHTS.attach({
+        source: slug,
+        scope: doc.body,
+        anchorRe: anchorRe,
+        cardEl: card,
+      });
+      lastDetach = function () {
+        // No real teardown API yet; the next attach simply replaces the
+        // toolbar and listeners by overwriting them in the new doc.
+      };
+      void handle;
+    }
+
+    frame.addEventListener("load", attach);
+    // Cover the case where the iframe is already loaded.
+    setTimeout(attach, 200);
+
+    // Re-attach when the user picks a different source — handled by
+    // setSource() via the load event above; nothing extra needed here.
+  }
+
+  // Map a source slug to an id-anchor regex. Mirrors what
+  // inject-highlights.py emits per reader; kept here for the iframe.
+  function anchorReFor(slug) {
+    if (slug === "quran" || slug === "cat-quran") return /^s\d+v\d+$|^entry-/;
+    if (/^cat-|^ct-/.test(slug)) return /^entry-/;
+    if (/^bible/.test(slug))     return /^[a-z0-9]+-\d+-\d+$/;
+    if (slug === "tanakh" || slug === "new-testament" || slug === "apocryphal-gospels" || slug === "book-of-enoch")
+      return /^[a-z0-9-]+-\d+-\d+$/;
+    if (slug === "mishnah") return /^[a-z-]+-\d+(?:-\d+)?$/;
+    if (/^talmud/.test(slug))    return /^[a-z0-9-]+$/;
+    if (slug === "josephus")     return /^[a-z0-9-]+$/;
+    if (/^ibn-kathir/.test(slug)) return /^ibnk-\d+-\d+$|^a\d+$/;
+    // Default: hadith-style "h<n>".
+    return /^h\d+$/;
   }
 
   // ============ Font catalogue ========================================
@@ -1619,6 +1685,9 @@
 
     // Translate popover on selection of non-Latin script.
     attachTranslator(quill);
+
+    // Highlights inside the source iframe — saved per source slug.
+    attachIframeHighlights();
 
     // Track dirty state.
     quill.on("text-change", function () {
