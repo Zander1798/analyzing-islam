@@ -107,11 +107,42 @@
   const HEBREW_RE = /[֐-׿יִ-ﭏ]/;
   const GREEK_RE  = /[Ͱ-Ͽἀ-῿]/;
 
+  // Pick the source language by which non-Latin script DOMINATES the
+  // selection — counting characters, not just first-hit. Stops mixed
+  // quotations like "And said, اللّٰه, the Most High" from being sent
+  // wholesale as Arabic→English (which mangles the English half).
   function detectLang(text) {
-    if (ARABIC_RE.test(text)) return "ar";
-    if (HEBREW_RE.test(text)) return "he";
-    if (GREEK_RE.test(text))  return "el";
-    return null;
+    const s = String(text || "");
+    let ar = 0, he = 0, gr = 0;
+    for (let i = 0; i < s.length; i++) {
+      const ch = s.charAt(i);
+      if (ARABIC_RE.test(ch))      ar++;
+      else if (HEBREW_RE.test(ch)) he++;
+      else if (GREEK_RE.test(ch))  gr++;
+    }
+    const max = Math.max(ar, he, gr);
+    if (max === 0) return null;
+    if (max === ar) return "ar";
+    if (max === he) return "he";
+    return "el";
+  }
+
+  // Vocalisation marks confuse MyMemory's MT engines. The Quran reader
+  // serves fully-vocalised mushaf text (full ḥarakāt + shadda + sukūn),
+  // and the interlinear bible serves Hebrew with the complete Masoretic
+  // taamim (cantillation marks). Both translate substantially better
+  // when sent as plain consonantal text.
+  //   Arabic harakat:    U+064B–U+065F, U+0670 (alef khanjariya)
+  //   Quranic marks:     U+06D6–U+06ED (sajda, hizb, etc.)
+  //   Hebrew niqqud:     U+05B0–U+05BC, U+05BF, U+05C1, U+05C2, U+05C7
+  //   Hebrew taamim:     U+0591–U+05AF
+  //   Greek combining:   U+0300–U+036F (rare in TAGNT but possible)
+  // Tatweel (U+0640) is intentionally kept — it's a glyph stretcher,
+  // not a vowel, and removing it can break some reader-pasted text.
+  const STRIP_FOR_TRANSLATE_RE = /[ً-ٰٟۖ-ۭ֑-ְ֯-ׇּֿׁׂ̀-ͯ]/g;
+
+  function stripMarksForTranslate(text) {
+    return String(text || "").replace(STRIP_FOR_TRANSLATE_RE, "");
   }
 
   // ============ DOM shortcuts ==========================================
@@ -932,8 +963,11 @@
   const TRANSLATE_TOTAL_MAX = 10000; // guard against runaway selections
 
   // Split `text` into ≤TRANSLATE_CHUNK_MAX chunks. Prefer breaks at
-  // sentence terminators (. ! ? ؟ 。), then clause terminators
-  // (, ; ، 、), then the last whitespace, finally a hard cut.
+  // sentence terminators (Latin . ! ? · Arabic ؟ · Urdu/Persian ۔ ·
+  // CJK 。 · Greek ; (U+037E) which is the Greek question mark), then
+  // clause terminators (, ; ، 、), then the last whitespace, finally a
+  // hard cut. Including Urdu ۔ and Greek ; matters because MyMemory
+  // does each chunk in isolation — bad cuts kill MT coherence.
   function chunkForTranslate(text) {
     const t = String(text || "").trim();
     if (!t) return [];
@@ -944,7 +978,9 @@
       const window = rest.slice(0, TRANSLATE_CHUNK_MAX);
       let cut = -1;
       // Sentence boundary — last occurrence within window.
-      const sentence = /[.!?؟。]\s/g;
+      // (U+037E = Greek question mark; renders as `;`. ASCII `;` is
+      // intentionally absent — it stays a clause separator below.)
+      const sentence = /[.!?؟۔。;]\s/g;
       let m;
       while ((m = sentence.exec(window)) !== null) cut = m.index + 1;
       if (cut < 0) {
@@ -960,23 +996,61 @@
     return chunks;
   }
 
+  // Tiny sleep helper for retry backoff. MyMemory's free tier is
+  // shared-IP rate-limited; on a long passage you can occasionally
+  // get 429 mid-stream even when serial.
+  function sleep(ms) {
+    return new Promise(function (r) { setTimeout(r, ms); });
+  }
+
   async function translateOne(text, source) {
+    // Strip vocalisation/cantillation before sending — see
+    // STRIP_FOR_TRANSLATE_RE above for rationale. Keeps the user's
+    // displayed text unchanged; only the network payload is plain.
+    const cleaned = stripMarksForTranslate(text);
+    // Append a project email so MyMemory bumps the daily quota from
+    // 5,000 → 50,000 chars/day (free anonymous vs free identified).
+    // The address is not used for marketing — it only keys the quota.
     const url =
       "https://api.mymemory.translated.net/get?q=" +
-      encodeURIComponent(text) +
-      "&langpair=" + encodeURIComponent(source || "auto") + "|en";
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("translate http " + res.status);
-    const json = await res.json();
-    // MyMemory returns an error payload with responseStatus != 200 when
-    // it's unhappy (rate limit, bad pair, length). Surface it as a
-    // thrown Error so the caller can show the user something useful.
-    if (json && json.responseStatus && json.responseStatus !== 200
-        && json.responseStatus !== "200") {
-      const details = (json.responseDetails || "translate failed").toString();
-      throw new Error(details);
+      encodeURIComponent(cleaned) +
+      "&langpair=" + encodeURIComponent(source || "auto") + "|en" +
+      "&de=" + encodeURIComponent("translator@analyzingislam.org");
+
+    let lastErr = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const res = await fetch(url);
+        if (res.status === 429 || res.status >= 500) {
+          // Transient — back off and retry.
+          lastErr = new Error("translate http " + res.status);
+          await sleep(400 * (attempt + 1));
+          continue;
+        }
+        if (!res.ok) throw new Error("translate http " + res.status);
+        const json = await res.json();
+        // MyMemory returns an error payload with responseStatus != 200
+        // when it's unhappy (rate limit, bad pair, length). Treat 429
+        // here as retriable, surface anything else.
+        const rs = json && json.responseStatus;
+        if (rs && rs !== 200 && rs !== "200") {
+          if (rs === 429 || rs === "429") {
+            lastErr = new Error("translate quota 429");
+            await sleep(400 * (attempt + 1));
+            continue;
+          }
+          const details = (json.responseDetails || "translate failed").toString();
+          throw new Error(details);
+        }
+        return (json && json.responseData && json.responseData.translatedText) || "";
+      } catch (err) {
+        lastErr = err;
+        // Network blip — one quick retry, then give up.
+        if (attempt < 2) { await sleep(400 * (attempt + 1)); continue; }
+        throw err;
+      }
     }
-    return (json && json.responseData && json.responseData.translatedText) || "";
+    throw lastErr || new Error("translate failed");
   }
 
   // Public API. `onProgress(done, total)` gets called after each chunk
