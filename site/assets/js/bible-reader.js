@@ -25,6 +25,20 @@
     catch (e) { return {}; }
   })();
 
+  // Canonical book order so the aggregated concordance lists hits in
+  // OT-then-NT canonical sequence rather than alphabetical book code.
+  const BOOK_ORDER = {
+    gen:1, exo:2, lev:3, num:4, deu:5, jos:6, jdg:7, rut:8, "1sa":9, "2sa":10,
+    "1ki":11, "2ki":12, "1ch":13, "2ch":14, ezr:15, neh:16, est:17, job:18,
+    psa:19, pro:20, ecc:21, sng:22, isa:23, jer:24, lam:25, ezk:26, dan:27,
+    hos:28, jol:29, amo:30, oba:31, jon:32, mic:33, nam:34, hab:35, zep:36,
+    hag:37, zec:38, mal:39,
+    mat:40, mrk:41, luk:42, jhn:43, act:44, rom:45, "1co":46, "2co":47,
+    gal:48, eph:49, php:50, col:51, "1th":52, "2th":53, "1ti":54, "2ti":55,
+    tit:56, phm:57, heb:58, jas:59, "1pe":60, "2pe":61, "1jn":62, "2jn":63,
+    "3jn":64, jud:65, rev:66,
+  };
+
   // --- Lazy caches ---
   let strongsHeb = null;
   let strongsGrk = null;
@@ -91,12 +105,40 @@
     return concordance;
   }
 
+  // STEPBible's TAHOT/TAGNT data tags words with a disambiguation
+  // suffix (e.g. H0776G, H7225G, H2148v, G2316T) that the OpenScriptures
+  // Strong's dictionaries don't carry — those use the bare number
+  // (H0776, G2316). Strip the trailing letter(s) to fall back to the
+  // base entry. Case-insensitive so H2148v / H2148w also strip.
+  function baseSid(sid) {
+    return String(sid || "").replace(/[A-Z]+$/i, "");
+  }
+  // Some words carry a compound tag like "H0001G,H5703" meaning the
+  // word fuses two lemmas. Take the first as the primary lookup.
+  function primarySid(sid) {
+    const s = String(sid || "");
+    const comma = s.indexOf(",");
+    return comma >= 0 ? s.slice(0, comma) : s;
+  }
+  // Resolve a Strong's tag against a dictionary using all fallbacks.
+  function resolveEntry(dict, sid) {
+    if (!dict || !sid) return null;
+    return dict[sid] ||
+           dict[baseSid(sid)] ||
+           dict[primarySid(sid)] ||
+           dict[baseSid(primarySid(sid))] ||
+           null;
+  }
+
   // --- Format the panel body ---
   function renderPanel(meta) {
     // meta: {strongs, morph, morph_en, orig, trans, gloss, verseRef, lang}
     const sid = meta.strongs;
     const dict = meta.lang === "heb" ? strongsHeb : strongsGrk;
-    const entry = dict && dict[sid];
+    // Lexicon lookup: exact key first (H0776A); fall back through the
+    // disambiguation-stripped base number (H0776), then the first half
+    // of any compound tag (H0001G,H5703 → H0001G → H0001).
+    const entry = resolveEntry(dict, sid);
 
     panelLemma.textContent = entry ? (entry.lemma || meta.orig) : meta.orig;
     panelMeta.textContent = [
@@ -139,11 +181,18 @@
         '</dl>' +
         '</div>';
     } else if (sid) {
+      // Reaching this branch now means BOTH the suffixed sid AND the
+      // base number missed. That genuinely indicates a grammatical-
+      // morpheme tag (H9xxx range used by STEPBible for affixes,
+      // particles, joiners etc.) that has no Strong's entry.
+      const isMorpheme = /^[HG]9\d{3}/i.test(sid);
       html += '<div class="panel-section"><div class="panel-section-label">Strong\'s ' +
         escapeHtml(sid) + '</div>' +
-        '<div class="panel-section-content">No lexicon entry loaded — this may be a ' +
-        'grammatical-morpheme tag (e.g. H9xxx) not present in the Strong\'s dictionary.</div>' +
-        '</div>';
+        '<div class="panel-section-content">' +
+        (isMorpheme
+          ? 'STEPBible grammatical morpheme (H9xxx range) — no Strong\'s entry exists. These tags mark prefixes, suffixes, conjunctions, and other grammatical particles, not lexical roots.'
+          : 'No lexicon entry available for this Strong\'s tag.') +
+        '</div></div>';
     }
 
     // Concordance
@@ -161,7 +210,41 @@
   async function loadConcordance(sid, meta) {
     try {
       const conc = await ensureConcordance();
-      const hits = conc[sid] || [];
+      // Concordance was built per raw `data-s` value, so H0776, H0776A,
+      // H0776G are split into separate keys. Aggregate every variant of
+      // the base number so the user sees the full base-word concordance,
+      // not the fragment for one inflected form. De-dupe by location.
+      // Aggregate across every key that shares the same base number, so
+      // H0776, H0776A, H0776B, H0776G all contribute to the lookup of
+      // any one of them. Also handles compound tags by using the
+      // primary (first) half. Letter suffixes are matched case-insensitively.
+      const base = baseSid(primarySid(sid));
+      const seen = new Set();
+      let hits = [];
+      const isVariant = function (k) {
+        if (k === base) return true;
+        if (k.indexOf(base) !== 0) return false;
+        return /^[A-Za-z]+$/.test(k.slice(base.length));
+      };
+      const variantKeys = Object.keys(conc).filter(isVariant);
+      // Always include the exact sid first if present, even if its base
+      // didn't match the filter above (defensive).
+      if (variantKeys.indexOf(sid) < 0 && conc[sid]) variantKeys.push(sid);
+      for (const k of variantKeys) {
+        const list = conc[k];
+        if (!Array.isArray(list)) continue;
+        for (const row of list) {
+          const key = row.join(":");
+          if (seen.has(key)) continue;
+          seen.add(key);
+          hits.push(row);
+        }
+      }
+      // Sort for deterministic ordering: by book index, chapter, verse, word.
+      hits.sort(function (a, b) {
+        const ai = BOOK_ORDER[a[0]] || 999, bi = BOOK_ORDER[b[0]] || 999;
+        return ai - bi || a[1] - b[1] || a[2] - b[2] || a[3] - b[3];
+      });
       const target = document.getElementById("panel-concordance");
       if (!target) return;
       if (!hits.length) {
