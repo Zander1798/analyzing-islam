@@ -24,7 +24,6 @@ NAV_LINKS = [
     ("Compare",   "compare.html"),
     ("Build",     "build.html"),
     ("Stats",     "stats.html"),
-    ("Community", "community.html"),
     ("About",     "about.html"),
     ("FAQ",       "faq.html"),
 ]

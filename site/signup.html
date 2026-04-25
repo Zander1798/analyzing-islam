@@ -26,7 +26,6 @@
       <a href="compare.html">Compare</a>
       <a href="build.html">Build</a>
       <a href="stats.html">Stats</a>
-      <a href="community.html">Community</a>
       <a href="about.html">About</a>
       <a href="faq.html">FAQ</a>
     </div>
@@ -45,7 +44,7 @@
       <input id="signup-username" name="username" type="text" autocomplete="username" required
              minlength="3" maxlength="20" pattern="[a-z0-9][a-z0-9_]{2,19}"
              placeholder="3–20 chars · letters, digits, underscore" spellcheck="false">
-      <div id="signup-username-hint" class="auth-hint">Public. Shown next to your shared builds and community posts.</div>
+      <div id="signup-username-hint" class="auth-hint">Public. Shown next to your shared builds.</div>
     </div>
 
     <div class="auth-field">
@@ -116,7 +115,7 @@
       const u = usernameIn.value.trim();
       const myToken = ++checkToken;
       if (!u) {
-        setHint("info", "Public. Shown next to your shared builds and community posts.");
+        setHint("info", "Public. Shown next to your shared builds.");
         return;
       }
       if (!USERNAME_RE.test(u)) {
