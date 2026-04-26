@@ -1,10 +1,18 @@
 """
-Build the Dossiers tab — landing page + 7 source pages.
+Build the Dossiers tab — landing page + 7 source pages + per-argument pages.
 
-Reads JSON from arguments-data/ and writes static HTML pages into
-site/arguments/ (per-source) and site/arguments.html (landing).
-File paths still use "arguments" for URL stability; only the visible
-tab/page label is "Dossiers".
+Reads JSON from arguments-data/ and writes static HTML pages into:
+
+  site/arguments.html                             - dossiers landing (7 source cards)
+  site/arguments/{slug}.html                      - per-source case index (TOC of 20)
+  site/arguments/{slug}/{entry_id}.html           - one page per argument
+
+Per-argument pages have Prev / Next / All-cases links that navigate to
+real URLs (no in-page scrolling) and a sidebar TOC for jumping between
+the 20 cases in the same source.
+
+URL paths still use "arguments" (rather than "dossiers") for stability;
+only the visible label says "Dossiers".
 
 The pages are auth-gated: the rendered content is hidden until
 window.__authReady resolves and a session is detected. When signed
@@ -32,49 +40,44 @@ ARGS_DIR = SITE_DIR / "arguments"
 # verse/hadith inside the readable source pages.
 #
 # Anchor schemes (mirrors link-refs.py used by the catalog tab):
-#   Quran     ../read/quran.html      #s{surah}v{verse}
-#   Bukhari   ../read/bukhari.html    #h{idInBook}
-#   Muslim    ../read/muslim.html     #h{idInBook}
-#   Abu Dawud ../read/abu-dawud.html  #h{idInBook}
-#   Tirmidhi  ../read/tirmidhi.html   #h{idInBook}
-#   Nasa'i    ../read/nasai.html      #h{idInBook}
-#   Ibn Majah ../read/ibn-majah.html  #h{idInBook}
+#   Quran     {prefix}/quran.html      #s{surah}v{verse}
+#   Bukhari   {prefix}/bukhari.html    #h{idInBook}
+#   Muslim    {prefix}/muslim.html     #h{idInBook}
+#   Abu Dawud {prefix}/abu-dawud.html  #h{idInBook}
+#   Tirmidhi  {prefix}/tirmidhi.html   #h{idInBook}
+#   Nasa'i    {prefix}/nasai.html      #h{idInBook}
+#   Ibn Majah {prefix}/ibn-majah.html  #h{idInBook}
 #
-# For ranges ("4141-4146"), the whole range becomes one link to the first
-# number — same convention link-refs.py uses on the catalog pages. For
-# comma/slash lists ("Bukhari 5134, 5158, 3894"), each number is linked
-# separately so the reader can jump to any of them.
+# `{prefix}` is the path-relative root of the read/ directory — depends on the
+# depth of the page calling link_refs:
+#   site/arguments/{slug}.html              -> "../read"
+#   site/arguments/{slug}/{entry}.html      -> "../../read"
+#
+# It's set globally via set_path_prefix() before each render so that the
+# helper functions below can stay simple.
 # ============================================================
 
 DASH = r"[-–—]"
 
-# "Q 4:34" / "Q 4:11-12" — the explicit-Quran form used in our JSON.
 _QURAN_RE = re.compile(rf"(?<![A-Za-z\d])Q\s+(?P<surah>\d+):(?P<verse>\d+)(?:{DASH}\d+)?")
-
-# Bare "N:M" continuations after an explicit Q reference — only activated when
-# the surrounding text already mentioned "Q ".
 _BARE_VERSE_RE = re.compile(rf"(?<![A-Za-z\d:.])(?P<surah>\d{{1,3}}):(?P<verse>\d{{1,3}})(?:{DASH}\d{{1,3}})?(?![A-Za-z\d:#])")
-
-# Hadith collection patterns. Each captures the source name plus the FIRST
-# number; comma/slash continuations are handled by a follow-on pass on the
-# numbers immediately after the matched anchor.
 _BUKHARI_RE = re.compile(rf"(?<![A-Za-z])(?:S[aā]ḥīḥ\s+(?:al-)?|Sahih\s+(?:al-)?)?Bukh[aā]r[iī]\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
 _MUSLIM_RE = re.compile(rf"(?<![A-Za-z])(?:S[aā]ḥīḥ\s+|Sahih\s+)?Muslim\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
 _ABU_DAWUD_RE = re.compile(rf"(?<![A-Za-z])(?:Sunan\s+)?Ab[iuū]\s+D[aā]w[uū]d\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
 _TIRMIDHI_RE = re.compile(rf"(?<![A-Za-z])(?:J[aā]mi[ʿ'’`]?\s+(?:at-|al-)?)?(?:at-|al-)?Tirmidh[iī]\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
 _NASAI_RE = re.compile(rf"(?<![A-Za-z])(?:Sunan\s+(?:an-|al-)?)?Nas[aā][ʾ’‘'”]?[iī]\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
 _IBN_MAJAH_RE = re.compile(rf"(?<![A-Za-z])(?:Sunan\s+)?Ibn\s+M[aā]jah\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
-
-# After we've placed an anchor for (e.g.) "Bukhari 5134", look at the text
-# that immediately follows. If it's a comma/slash separator followed by more
-# numbers (e.g., ", 5158, 3894" or " / 3268"), link each of those numbers
-# under the same source slug too.
 _CONTINUATION_RE = re.compile(rf"(\s*[,/]\s*)#?(\d+)(?:{DASH}#?\d+)?")
-
-# Already-linked tokens — protect them from being re-matched.
 _ALREADY_LINKED_RE = re.compile(r"<a\s[^>]*>.*?</a>", re.DOTALL)
 
-PATH_PREFIX = "../read"  # relative to site/arguments/{slug}.html
+# Mutable path prefix used by the link-helpers below. Set by set_path_prefix()
+# at the start of each render_* function based on the page's depth.
+PATH_PREFIX = "../read"
+
+
+def set_path_prefix(prefix: str) -> None:
+    global PATH_PREFIX
+    PATH_PREFIX = prefix
 
 
 def _q_link(m: re.Match) -> str:
@@ -89,12 +92,6 @@ def _bare_verse_link(m: re.Match) -> str:
     if not (1 <= surah <= 114 and 1 <= verse <= 286):
         return m.group(0)
     return f'<a class="cite-link" href="{PATH_PREFIX}/quran.html#s{surah}v{verse}">{m.group(0)}</a>'
-
-
-def _hadith_linker(slug: str):
-    def fn(m: re.Match) -> str:
-        return f'<a class="cite-link" href="{PATH_PREFIX}/{slug}.html#h{m.group("num")}">{m.group(0)}</a>'
-    return fn
 
 
 _HADITH_PATTERNS = [
@@ -119,10 +116,6 @@ def _overlaps(start: int, end: int, spans: list[tuple[int, int]]) -> bool:
 
 
 def _apply_pattern(text: str, pattern: re.Pattern, repl_fn) -> str:
-    """Run pattern.sub with overlap-protection against already-linked spans
-    AND with continuation-linking: after each successful link, walk forward
-    through ", N, N" / " / N" continuations and link them under the same slug
-    (for hadith patterns only — handled by the slug captured via repl_fn)."""
     spans = _protected_spans(text)
     out: list[str] = []
     last = 0
@@ -137,8 +130,6 @@ def _apply_pattern(text: str, pattern: re.Pattern, repl_fn) -> str:
 
 
 def _apply_with_continuations(text: str, pattern: re.Pattern, slug: str) -> str:
-    """For hadith sources only: link the primary 'Source N' and any trailing
-    ', N, N' / ' / N' continuations to the same slug."""
     spans = _protected_spans(text)
     out: list[str] = []
     last = 0
@@ -151,19 +142,17 @@ def _apply_with_continuations(text: str, pattern: re.Pattern, slug: str) -> str:
             pos = m.end()
             continue
         out.append(text[last:m.start()])
-        # Anchor the primary number.
         href = f'{PATH_PREFIX}/{slug}.html#h{m.group("num")}'
         out.append(f'<a class="cite-link" href="{href}">{m.group(0)}</a>')
         cursor = m.end()
-        # Walk forward through "[, /] N(-N)?" continuations and link each.
         while True:
             cont = _CONTINUATION_RE.match(text, cursor)
             if not cont:
                 break
-            sep = cont.group(1)              # ", " / " / " / etc.
-            num = cont.group(2)              # the first number — used for href
-            full = cont.group(0)             # entire matched continuation
-            link_text = full[len(sep):]      # everything after the separator
+            sep = cont.group(1)
+            num = cont.group(2)
+            full = cont.group(0)
+            link_text = full[len(sep):]
             href = f'{PATH_PREFIX}/{slug}.html#h{num}'
             out.append(sep)
             out.append(f'<a class="cite-link" href="{href}">{link_text}</a>')
@@ -175,26 +164,20 @@ def _apply_with_continuations(text: str, pattern: re.Pattern, slug: str) -> str:
 
 
 def link_refs(escaped_text: str) -> str:
-    """Insert <a class='cite-link'> anchors over every reference token in the
-    given (already-HTML-escaped) text. Safe to call on any of the rendered
-    fields — verse_text, context, premises, conclusion, response/counter."""
     if not escaped_text:
         return escaped_text
-
     text = escaped_text
-
-    # 1) Quran — explicit "Q N:M" first.
     text = _apply_pattern(text, _QURAN_RE, _q_link)
-
-    # 2) Bare "N:M" — only meaningful when the original mentioned "Q ".
     if "Q " in escaped_text or "Quran" in escaped_text:
         text = _apply_pattern(text, _BARE_VERSE_RE, _bare_verse_link)
-
-    # 3) Each hadith collection, with continuation linking for ", N, N" lists.
     for slug, pat in _HADITH_PATTERNS:
         text = _apply_with_continuations(text, pat, slug)
-
     return text
+
+
+def _esc_link(text: str) -> str:
+    return link_refs(escape(text))
+
 
 # (slug, json filename, display name, eyebrow, intro)
 SOURCES = [
@@ -255,7 +238,7 @@ SOURCES = [
 NAV_LINKS = [
     ("index.html", "Home", False),
     ("catalog.html", "Catalog", False),
-    ("arguments.html", "Dossiers", True),  # this is the new tab (URL kept as arguments.html for stability)
+    ("arguments.html", "Dossiers", True),  # URL kept as arguments.html for stability
     ("read.html", "Read", False),
     ("compare.html", "Compare", False),
     ("build.html", "Build", False),
@@ -265,11 +248,11 @@ NAV_LINKS = [
 ]
 
 
-def render_nav(prefix: str, active_filename: str) -> str:
+def render_nav(prefix: str) -> str:
     parts = []
     for filename, label, _ in NAV_LINKS:
         href = prefix + filename
-        cls = ' class="active"' if filename == active_filename else ""
+        cls = ' class="active"' if filename == "arguments.html" else ""
         parts.append(f'      <a href="{href}"{cls}>{label}</a>')
     return "\n".join(parts)
 
@@ -315,9 +298,11 @@ def auth_scripts(prefix: str) -> str:
 <script src="{prefix}assets/js/snap-to-hash.js" defer></script>"""
 
 
-# ----------------- landing page -----------------
+# ----------------- dossiers landing (arguments.html) -----------------
 
 def render_landing() -> str:
+    set_path_prefix("read")  # cite-links unused on this page; safe default
+
     cards = []
     for slug, _, name, eyebrow, intro in SOURCES:
         href = f"arguments/{slug}.html"
@@ -349,7 +334,7 @@ def render_landing() -> str:
   <div class="site-nav-inner">
     <a href="index.html" class="site-brand">Analyzing Islam</a>
     <div class="site-nav-links">
-{render_nav("", "arguments.html")}
+{render_nav("")}
     </div>
   </div>
 </nav>
@@ -414,14 +399,113 @@ def render_landing() -> str:
 """
 
 
-# ----------------- per-source page -----------------
+# ----------------- per-source case index (arguments/{slug}.html) -----------------
 
-def _esc_link(text: str) -> str:
-    """Escape HTML, then insert ref-link anchors. Order matters: escape first
-    so that quotation marks and angle brackets in the source text don't break
-    the anchor tags we then add."""
-    return link_refs(escape(text))
+def render_source_index_items(entries: list[dict], slug: str) -> str:
+    items = []
+    for i, e in enumerate(entries, start=1):
+        eid = e["id"]
+        title = escape(e["title"])
+        ref = escape(e["ref"])
+        items.append(f"""    <a href="{slug}/{escape(eid, quote=True)}.html" class="args-index-card">
+      <div class="args-index-num">{i:02d}</div>
+      <div class="args-index-body">
+        <div class="args-index-title">{title}</div>
+        <div class="args-index-ref">{ref}</div>
+      </div>
+      <div class="args-index-arrow" aria-hidden="true">→</div>
+    </a>""")
+    return "\n".join(items)
 
+
+def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) -> str:
+    set_path_prefix("../read")
+
+    head = head_block(
+        title=f"{name} — Dossiers — Analyzing Islam",
+        description=intro,
+        prefix="../",
+        og_url_path=f"arguments/{slug}.html",
+    )
+
+    items_html = render_source_index_items(entries, slug)
+    total = len(entries)
+
+    return f"""{head}
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="../index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+{render_nav("../")}
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div id="args-shell" class="args-shell is-loading">
+    <a href="../arguments.html" class="args-back-link">← All sources</a>
+
+    <h1 class="args-source-title">{escape(name)}</h1>
+    <p class="args-source-intro">{escape(intro)}</p>
+
+    <div class="args-index-meta">{total} cases · click any case to read it</div>
+
+    <div class="args-index">
+{items_html}
+    </div>
+  </div>
+
+  <div id="args-gate-mount"></div>
+</main>
+
+<footer class="site-footer">
+  Account-only content. The texts cited above are quoted verbatim from the standard Muslim editions — verify before citing.
+</footer>
+
+{auth_scripts("../")}
+<script>
+(function () {{
+  "use strict";
+  const shell = document.getElementById("args-shell");
+  const mount = document.getElementById("args-gate-mount");
+
+  function render() {{
+    const sess = window.__session;
+    if (!sess || !sess.user) {{
+      shell.style.display = "none";
+      const returnHere = location.pathname.replace(/^\\//, "") + (location.hash || "");
+      const returnEnc = encodeURIComponent(returnHere);
+      mount.innerHTML =
+        '<div class="args-gate">' +
+        '<h2>Sign in to read</h2>' +
+        '<p>The Dossiers library is available to account-holders only. ' +
+        '<a href="../login.html?return=' + returnEnc + '">Sign in</a> ' +
+        'or <a href="../signup.html">create an account</a> to continue.</p>' +
+        '</div>';
+      return;
+    }}
+    shell.style.display = "";
+    shell.classList.remove("is-loading");
+    mount.innerHTML = "";
+  }}
+
+  if (window.__authReady) {{
+    window.__authReady.then(render);
+  }} else {{
+    render();
+  }}
+  window.addEventListener("auth-state", render);
+}})();
+</script>
+
+</body>
+</html>
+"""
+
+
+# ----------------- per-argument page (arguments/{slug}/{id}.html) -----------------
 
 def render_premises(premises: list[str]) -> str:
     items = "\n".join(f"        <li>{_esc_link(p)}</li>" for p in premises)
@@ -445,7 +529,34 @@ def render_responses(responses: list[dict]) -> str:
       </div>"""
 
 
-def render_article(entry: dict, idx: int, total: int, source_slug: str) -> str:
+def render_sidebar_toc(entries: list[dict], active_eid: str) -> str:
+    items = []
+    for i, e in enumerate(entries, start=1):
+        cls = ' class="active"' if e["id"] == active_eid else ""
+        items.append(
+            f'        <li><a href="{escape(e["id"], quote=True)}.html"{cls}><span class="args-toc-num">{i:02d}</span>{escape(e["title"])}</a></li>'
+        )
+    body = "\n".join(items)
+    return f"""    <aside class="args-toc">
+      <div class="args-toc-title">All 20 cases</div>
+      <ul class="args-toc-list">
+{body}
+      </ul>
+    </aside>"""
+
+
+def render_argument_page(
+    entry: dict,
+    idx: int,
+    total: int,
+    slug: str,
+    source_name: str,
+    all_entries: list[dict],
+    prev_entry: dict | None,
+    next_entry: dict | None,
+) -> str:
+    set_path_prefix("../../read")
+
     eid = entry["id"]
     title = entry["title"]
     ref = entry["ref"]
@@ -455,7 +566,6 @@ def render_article(entry: dict, idx: int, total: int, source_slug: str) -> str:
     conclusion = entry.get("conclusion", "")
     responses = entry.get("muslim_responses", [])
 
-    # Context can have paragraph breaks separated by \n\n
     context_paras = "\n".join(
         f"        <p>{_esc_link(p)}</p>" for p in context.split("\n\n") if p.strip()
     )
@@ -463,110 +573,82 @@ def render_article(entry: dict, idx: int, total: int, source_slug: str) -> str:
         f"        <p>{_esc_link(p)}</p>" for p in conclusion.split("\n\n") if p.strip()
     )
 
-    prev_link = ""
-    next_link = ""
-    if idx > 1:
-        prev_id = f"#arg-{idx - 1:02d}"
-        prev_link = f'<a href="{prev_id}" class="prev">← Previous argument</a>'
+    if prev_entry is not None:
+        prev_link = f'<a href="{escape(prev_entry["id"], quote=True)}.html" class="prev">← Previous argument</a>'
     else:
         prev_link = '<a class="prev disabled" aria-disabled="true">← Previous argument</a>'
 
-    if idx < total:
-        next_id = f"#arg-{idx + 1:02d}"
-        next_link = f'<a href="{next_id}" class="next">Next argument →</a>'
+    if next_entry is not None:
+        next_link = f'<a href="{escape(next_entry["id"], quote=True)}.html" class="next">Next argument →</a>'
     else:
         next_link = '<a class="next disabled" aria-disabled="true">Next argument →</a>'
 
-    return f"""    <article class="arg-article" id="arg-{idx:02d}" data-arg-id="{escape(eid, quote=True)}">
-      <div class="arg-header">
-        <div>
-          <div class="arg-num">Dossier {idx} of {total}</div>
-          <h2 class="arg-title">{escape(title)}</h2>
-          <div class="arg-ref">{_esc_link(ref)}</div>
-        </div>
-        <button type="button" class="arg-share-btn" data-share-target="arg-{idx:02d}" aria-label="Copy link to this dossier">
-          <span class="arg-share-icon" aria-hidden="true">⤴</span>
-          <span class="arg-share-text">Share</span>
-        </button>
-      </div>
-
-      <div class="arg-section-label">The text</div>
-      <div class="arg-verse-box">{_esc_link(verse_text)}</div>
-
-      <div class="arg-section-label">Context</div>
-      <div class="arg-context">
-{context_paras}
-      </div>
-
-      <div class="arg-section-label">Premises</div>
-{render_premises(premises)}
-
-      <div class="arg-section-label">Conclusion</div>
-      <div class="arg-conclusion-box">
-{conclusion_paras}
-      </div>
-
-      <div class="arg-section-label">Common Muslim responses · with counter-responses</div>
-{render_responses(responses)}
-
-      <nav class="arg-pager">
-        {prev_link}
-        <a href="#args-toc" class="next" style="flex:0 1 auto;">Back to top</a>
-        {next_link}
-      </nav>
-    </article>"""
-
-
-def render_toc(entries: list[dict]) -> str:
-    items = []
-    for i, e in enumerate(entries, start=1):
-        items.append(
-            f'        <li><a href="#arg-{i:02d}" data-toc-target="arg-{i:02d}"><span class="args-toc-num">{i:02d}</span>{escape(e["title"])}</a></li>'
-        )
-    body = "\n".join(items)
-    return f"""    <aside class="args-toc" id="args-toc">
-      <div class="args-toc-title">All 20 arguments</div>
-      <ul class="args-toc-list">
-{body}
-      </ul>
-    </aside>"""
-
-
-def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) -> str:
     head = head_block(
-        title=f"{name} — Dossiers — Analyzing Islam",
-        description=intro,
-        prefix="../",
-        og_url_path=f"arguments/{slug}.html",
+        title=f"{title} — {source_name} — Dossiers — Analyzing Islam",
+        description=f"{title}. Argument {idx} of {total} from {source_name}.",
+        prefix="../../",
+        og_url_path=f"arguments/{slug}/{eid}.html",
     )
 
-    articles = "\n".join(
-        render_article(e, i, len(entries), slug) for i, e in enumerate(entries, start=1)
-    )
+    sidebar = render_sidebar_toc(all_entries, eid)
 
     return f"""{head}
 <body>
 
 <nav class="site-nav">
   <div class="site-nav-inner">
-    <a href="../index.html" class="site-brand">Analyzing Islam</a>
+    <a href="../../index.html" class="site-brand">Analyzing Islam</a>
     <div class="site-nav-links">
-{render_nav("../", "arguments.html")}
+{render_nav("../../")}
     </div>
   </div>
 </nav>
 
 <main>
   <div id="args-shell" class="args-shell is-loading">
-    <a href="../arguments.html" class="args-back-link">← All sources</a>
-
-    <h1 class="args-source-title">{escape(name)}</h1>
-    <p class="args-source-intro">{escape(intro)}</p>
+    <a href="../{slug}.html" class="args-back-link">← All cases · {escape(source_name)}</a>
 
     <div class="args-source-shell">
-{render_toc(entries)}
+{sidebar}
       <div class="args-main">
-{articles}
+        <article class="arg-article" data-arg-id="{escape(eid, quote=True)}">
+          <div class="arg-header">
+            <div>
+              <div class="arg-num">Argument {idx} of {total} · {escape(source_name)}</div>
+              <h2 class="arg-title">{escape(title)}</h2>
+              <div class="arg-ref">{_esc_link(ref)}</div>
+            </div>
+            <button type="button" class="arg-share-btn" aria-label="Copy link to this dossier">
+              <span class="arg-share-icon" aria-hidden="true">⤴</span>
+              <span class="arg-share-text">Share</span>
+            </button>
+          </div>
+
+          <div class="arg-section-label">The text</div>
+          <div class="arg-verse-box">{_esc_link(verse_text)}</div>
+
+          <div class="arg-section-label">Context</div>
+          <div class="arg-context">
+{context_paras}
+          </div>
+
+          <div class="arg-section-label">Premises</div>
+{render_premises(premises)}
+
+          <div class="arg-section-label">Conclusion</div>
+          <div class="arg-conclusion-box">
+{conclusion_paras}
+          </div>
+
+          <div class="arg-section-label">Common Muslim responses · with counter-responses</div>
+{render_responses(responses)}
+
+          <nav class="arg-pager">
+            {prev_link}
+            <a href="../{slug}.html" class="next" style="flex:0 1 auto;">All cases</a>
+            {next_link}
+          </nav>
+        </article>
       </div>
     </div>
   </div>
@@ -578,7 +660,7 @@ def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) ->
   Account-only content. The texts cited above are quoted verbatim from the standard Muslim editions — verify before citing.
 </footer>
 
-{auth_scripts("../")}
+{auth_scripts("../../")}
 <script>
 (function () {{
   "use strict";
@@ -603,10 +685,6 @@ def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) ->
     }}, 1800);
   }}
 
-  function buildShareUrl(targetId) {{
-    return window.location.origin + window.location.pathname + "#" + targetId;
-  }}
-
   function copyToClipboard(text) {{
     if (navigator.clipboard && navigator.clipboard.writeText) {{
       return navigator.clipboard.writeText(text);
@@ -628,28 +706,25 @@ def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) ->
     }});
   }}
 
-  function wireShareButtons() {{
-    const buttons = document.querySelectorAll(".arg-share-btn");
-    buttons.forEach(function (btn) {{
-      if (btn.dataset.shareWired) return;
-      btn.dataset.shareWired = "1";
-      btn.addEventListener("click", function (e) {{
-        e.preventDefault();
-        const target = btn.getAttribute("data-share-target");
-        const url = buildShareUrl(target);
-        const labelEl = btn.querySelector(".arg-share-text");
-        const original = labelEl.textContent;
-        copyToClipboard(url).then(function () {{
-          btn.classList.add("is-copied");
-          labelEl.textContent = "Copied";
-          showToast("Link copied: " + url);
-          setTimeout(function () {{
-            btn.classList.remove("is-copied");
-            labelEl.textContent = original;
-          }}, 1800);
-        }}).catch(function () {{
-          window.prompt("Copy this link:", url);
-        }});
+  function wireShareButton() {{
+    const btn = document.querySelector(".arg-share-btn");
+    if (!btn || btn.dataset.shareWired) return;
+    btn.dataset.shareWired = "1";
+    btn.addEventListener("click", function (e) {{
+      e.preventDefault();
+      const url = window.location.origin + window.location.pathname;
+      const labelEl = btn.querySelector(".arg-share-text");
+      const original = labelEl.textContent;
+      copyToClipboard(url).then(function () {{
+        btn.classList.add("is-copied");
+        labelEl.textContent = "Copied";
+        showToast("Link copied: " + url);
+        setTimeout(function () {{
+          btn.classList.remove("is-copied");
+          labelEl.textContent = original;
+        }}, 1800);
+      }}).catch(function () {{
+        window.prompt("Copy this link:", url);
       }});
     }});
   }}
@@ -658,39 +733,21 @@ def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) ->
     const sess = window.__session;
     if (!sess || !sess.user) {{
       shell.style.display = "none";
-      // Preserve the visited pathname + hash so a shared deep-link still
-      // lands on the right dossier after the user signs in.
       const returnHere = location.pathname.replace(/^\\//, "") + (location.hash || "");
       const returnEnc = encodeURIComponent(returnHere);
       mount.innerHTML =
         '<div class="args-gate">' +
         '<h2>Sign in to read</h2>' +
         '<p>The Dossiers library is available to account-holders only. ' +
-        '<a href="../login.html?return=' + returnEnc + '">Sign in</a> ' +
-        'or <a href="../signup.html">create an account</a> to continue.</p>' +
+        '<a href="../../login.html?return=' + returnEnc + '">Sign in</a> ' +
+        'or <a href="../../signup.html">create an account</a> to continue.</p>' +
         '</div>';
       return;
     }}
     shell.style.display = "";
     shell.classList.remove("is-loading");
     mount.innerHTML = "";
-
-    wireShareButtons();
-
-    // Highlight TOC entry that matches the visible article (basic
-    // scrollspy: highlight the entry whose top is closest to viewport top).
-    const articles = Array.from(document.querySelectorAll(".arg-article"));
-    const tocLinks = Array.from(document.querySelectorAll(".args-toc-list a"));
-    function spy() {{
-      let activeIdx = 0;
-      const scrollY = window.scrollY + 120;
-      for (let i = 0; i < articles.length; i++) {{
-        if (articles[i].offsetTop <= scrollY) activeIdx = i;
-      }}
-      tocLinks.forEach((a, i) => a.classList.toggle("active", i === activeIdx));
-    }}
-    window.addEventListener("scroll", spy, {{ passive: true }});
-    spy();
+    wireShareButton();
   }}
 
   if (window.__authReady) {{
@@ -709,31 +766,77 @@ def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) ->
 
 # ----------------- driver -----------------
 
+# Allow only filename-safe characters in entry IDs used as URL slugs.
+_SAFE_ID_RE = re.compile(r"[^A-Za-z0-9._-]+")
+
+
+def safe_id(eid: str) -> str:
+    cleaned = _SAFE_ID_RE.sub("-", eid).strip("-")
+    return cleaned or "argument"
+
+
 def main() -> None:
     if not DATA_DIR.is_dir():
         raise SystemExit(f"Missing data dir: {DATA_DIR}")
 
     ARGS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 1. Write each source page.
     for slug, fname, name, _eyebrow, intro in SOURCES:
         json_path = DATA_DIR / fname
         if not json_path.exists():
             print(f"  skip {slug}: no JSON at {json_path}")
             continue
+
         entries = json.loads(json_path.read_text(encoding="utf-8"))
         if len(entries) != 20:
             print(f"  warn {slug}: expected 20 entries, got {len(entries)}")
-        html = render_source_page(slug, name, intro, entries)
-        out = ARGS_DIR / f"{slug}.html"
-        out.write_text(html, encoding="utf-8")
-        print(f"  wrote {out.relative_to(ROOT)} ({len(entries)} entries)")
 
-    # 2. Write landing page.
+        # Normalise IDs once so source-page links and per-arg filenames agree.
+        for e in entries:
+            e["id"] = safe_id(e["id"])
+
+        # 1. Per-source case index.
+        index_html = render_source_page(slug, name, intro, entries)
+        (ARGS_DIR / f"{slug}.html").write_text(index_html, encoding="utf-8")
+        print(f"  wrote arguments/{slug}.html ({len(entries)} cases)")
+
+        # 2. One page per argument under arguments/{slug}/{id}.html.
+        slug_dir = ARGS_DIR / slug
+        slug_dir.mkdir(parents=True, exist_ok=True)
+        existing = {p.name for p in slug_dir.glob("*.html")}
+        kept: set[str] = set()
+        total = len(entries)
+        for i, entry in enumerate(entries, start=1):
+            prev_entry = entries[i - 2] if i > 1 else None
+            next_entry = entries[i] if i < total else None
+            html = render_argument_page(
+                entry=entry,
+                idx=i,
+                total=total,
+                slug=slug,
+                source_name=name,
+                all_entries=entries,
+                prev_entry=prev_entry,
+                next_entry=next_entry,
+            )
+            out = slug_dir / f"{entry['id']}.html"
+            out.write_text(html, encoding="utf-8")
+            kept.add(out.name)
+
+        # Remove orphaned per-arg files (e.g. an entry was renamed/removed).
+        for stale in existing - kept:
+            try:
+                (slug_dir / stale).unlink()
+                print(f"  removed stale arguments/{slug}/{stale}")
+            except OSError:
+                pass
+
+        print(f"  wrote {len(kept)} per-argument pages under arguments/{slug}/")
+
+    # 3. Dossiers landing.
     landing_html = render_landing()
-    out_landing = SITE_DIR / "arguments.html"
-    out_landing.write_text(landing_html, encoding="utf-8")
-    print(f"  wrote {out_landing.relative_to(ROOT)}")
+    (SITE_DIR / "arguments.html").write_text(landing_html, encoding="utf-8")
+    print("  wrote arguments.html")
 
     print("Done.")
 
