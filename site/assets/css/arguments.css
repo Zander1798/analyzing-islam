@@ -233,51 +233,58 @@
   margin-bottom: 32px;
 }
 
-/* Share button — top right of each argument header */
+/* Share button — flush right of each dossier header.
+   Matches the .entry-share-btn style used elsewhere on the site
+   (catalog entries, detail pages): small, transparent, gray border,
+   accent on hover/copied. */
 .arg-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
+  margin-bottom: 12px;
 }
-.arg-header > div { flex: 1 1 auto; min-width: 0; }
+.arg-header > div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
 .arg-share-btn {
   flex: 0 0 auto;
+  margin-left: auto;          /* belt-and-suspenders: always sit on the right */
+  align-self: flex-start;
+  appearance: none;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  margin-top: 4px;
-  background: var(--panel);
+  gap: 6px;
+  padding: 6px 10px;
+  background: transparent;
   border: 1px solid var(--border);
   color: var(--text-muted);
   font-family: var(--sans);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
+  font-size: 10px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  border-radius: 0;
   white-space: nowrap;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 .arg-share-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
-.arg-share-btn:active {
-  background: var(--panel-2);
-}
 .arg-share-btn .arg-share-icon {
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1;
 }
-.arg-share-btn.is-copied {
-  border-color: var(--basic);
-  color: var(--basic);
+.arg-share-btn.is-copied,
+.arg-share-btn.just-copied {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 @media (max-width: 600px) {
-  .arg-header { flex-wrap: wrap; }
-  .arg-share-btn { margin-top: 0; padding: 6px 10px; font-size: 10px; }
+  .arg-share-btn { padding: 5px 8px; font-size: 9px; }
 }
 
 /* Toast notification when share-link is copied */
