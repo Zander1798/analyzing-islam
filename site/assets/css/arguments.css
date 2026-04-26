@@ -233,6 +233,77 @@
   margin-bottom: 32px;
 }
 
+/* Share button — top right of each argument header */
+.arg-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.arg-header > div { flex: 1 1 auto; min-width: 0; }
+.arg-share-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  margin-top: 4px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.arg-share-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.arg-share-btn:active {
+  background: var(--panel-2);
+}
+.arg-share-btn .arg-share-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+.arg-share-btn.is-copied {
+  border-color: var(--basic);
+  color: var(--basic);
+}
+@media (max-width: 600px) {
+  .arg-header { flex-wrap: wrap; }
+  .arg-share-btn { margin-top: 0; padding: 6px 10px; font-size: 10px; }
+}
+
+/* Toast notification when share-link is copied */
+.arg-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  padding: 12px 22px;
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: var(--shadow);
+}
+.arg-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 .arg-section-label {
   font-family: var(--sans);
   font-size: 11px;

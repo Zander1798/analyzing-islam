@@ -21,7 +21,7 @@ NAV_LINKS = [
     ("Home",      "index.html"),
     ("Catalog",   "catalog.html"),
     ("Read",      "read.html"),
-    ("Arguments", "arguments.html"),
+    ("Dossiers",  "arguments.html"),
     ("Compare",   "compare.html"),
     ("Build",     "build.html"),
     ("Stats",     "stats.html"),
@@ -61,10 +61,17 @@ def rewrite_nav(block_inner: str, indent: str) -> str | None:
     if active_raw:
         active_file = active_raw.group(1).rsplit("/", 1)[-1]
 
-    # Already the full 8-item nav? Skip.
+    # Skip only if the nav already has every wanted file AND every
+    # (file, label) pair matches what we want — so a label rename
+    # (e.g. "Arguments" -> "Dossiers") forces a rewrite.
     have_files = {href.rsplit("/", 1)[-1].lower() for href, _ in links}
     wanted_files = {f for _, f in NAV_LINKS}
-    if wanted_files <= have_files:
+    have_pairs = {
+        (href.rsplit("/", 1)[-1].lower(), label.strip())
+        for href, label in links
+    }
+    wanted_pairs = {(f.lower(), label) for label, f in NAV_LINKS}
+    if wanted_files <= have_files and wanted_pairs <= have_pairs:
         return None
 
     lines = []

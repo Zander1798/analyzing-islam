@@ -1,8 +1,10 @@
 """
-Build the Arguments tab — landing page + 7 source pages.
+Build the Dossiers tab — landing page + 7 source pages.
 
 Reads JSON from arguments-data/ and writes static HTML pages into
 site/arguments/ (per-source) and site/arguments.html (landing).
+File paths still use "arguments" for URL stability; only the visible
+tab/page label is "Dossiers".
 
 The pages are auth-gated: the rendered content is hidden until
 window.__authReady resolves and a session is detected. When signed
@@ -254,7 +256,7 @@ NAV_LINKS = [
     ("index.html", "Home", False),
     ("catalog.html", "Catalog", False),
     ("read.html", "Read", False),
-    ("arguments.html", "Arguments", True),  # this is the new tab
+    ("arguments.html", "Dossiers", True),  # this is the new tab (URL kept as arguments.html for stability)
     ("compare.html", "Compare", False),
     ("build.html", "Build", False),
     ("stats.html", "Stats", False),
@@ -334,8 +336,8 @@ def render_landing() -> str:
     cards_html = "\n".join(cards)
 
     head = head_block(
-        title="Arguments — Analyzing Islam",
-        description="Long-form arguments against Islam drawn directly from the Qur'ān and the six canonical Sunni hadith collections. Twenty arguments per source, each laid out in premise form with verse citations, common Muslim responses, and counter-responses.",
+        title="Dossiers — Analyzing Islam",
+        description="Seven dossiers compiling 140 long-form arguments against Islam, drawn directly from the Qur'ān and the six canonical Sunni hadith collections. Each argument quotes the verse or hadith verbatim, fixes the historical context, states the premises and conclusion, then walks through the most common Muslim responses with a counter-response to each.",
         prefix="",
         og_url_path="arguments.html",
     )
@@ -356,8 +358,8 @@ def render_landing() -> str:
   <div id="args-shell" class="args-shell is-loading">
 
     <section class="args-hero">
-      <h1>Arguments</h1>
-      <p>The strongest cases against Islam, drawn directly from the Qur'ān and the six canonical Sunni hadith collections. Each argument cites the verse or hadith verbatim, sets out the historical context, lays out the premises and conclusion, and works through the most common Muslim responses with counter-responses.</p>
+      <h1>Dossiers</h1>
+      <p>Seven dossiers — one for the Qur'ān and one for each of the six canonical Sunni hadith collections — compiling 140 long-form arguments against Islam directly from the source texts. Every argument quotes the verse or hadith verbatim, fixes the historical context, states the premises and conclusion, and walks through the most common Muslim responses with a counter-response to each. The cases are not summaries; they are evidence files built to be checked against the originals.</p>
     </section>
 
     <div class="args-grid">
@@ -387,7 +389,7 @@ def render_landing() -> str:
       mount.innerHTML =
         '<div class="args-gate">' +
         '<h2>Sign in to read</h2>' +
-        '<p>The Arguments library is available to account-holders only. ' +
+        '<p>The Dossiers library is available to account-holders only. ' +
         '<a href="login.html?return=arguments.html">Sign in</a> ' +
         'or <a href="signup.html">create an account</a> to continue.</p>' +
         '</div>';
@@ -476,9 +478,17 @@ def render_article(entry: dict, idx: int, total: int, source_slug: str) -> str:
         next_link = '<a class="next disabled" aria-disabled="true">Next argument →</a>'
 
     return f"""    <article class="arg-article" id="arg-{idx:02d}" data-arg-id="{escape(eid, quote=True)}">
-      <div class="arg-num">Argument {idx} of {total}</div>
-      <h2 class="arg-title">{escape(title)}</h2>
-      <div class="arg-ref">{_esc_link(ref)}</div>
+      <div class="arg-header">
+        <div>
+          <div class="arg-num">Dossier {idx} of {total}</div>
+          <h2 class="arg-title">{escape(title)}</h2>
+          <div class="arg-ref">{_esc_link(ref)}</div>
+        </div>
+        <button type="button" class="arg-share-btn" data-share-target="arg-{idx:02d}" aria-label="Copy link to this dossier">
+          <span class="arg-share-icon" aria-hidden="true">⤴</span>
+          <span class="arg-share-text">Share</span>
+        </button>
+      </div>
 
       <div class="arg-section-label">The text</div>
       <div class="arg-verse-box">{_esc_link(verse_text)}</div>
@@ -524,7 +534,7 @@ def render_toc(entries: list[dict]) -> str:
 
 def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) -> str:
     head = head_block(
-        title=f"{name} — Arguments — Analyzing Islam",
+        title=f"{name} — Dossiers — Analyzing Islam",
         description=intro,
         prefix="../",
         og_url_path=f"arguments/{slug}.html",
@@ -574,16 +584,89 @@ def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) ->
   "use strict";
   const shell = document.getElementById("args-shell");
   const mount = document.getElementById("args-gate-mount");
+  let toastEl = null;
+  let toastTimer = null;
+
+  function showToast(msg) {{
+    if (!toastEl) {{
+      toastEl = document.createElement("div");
+      toastEl.className = "arg-toast";
+      document.body.appendChild(toastEl);
+    }}
+    toastEl.textContent = msg;
+    requestAnimationFrame(function () {{
+      toastEl.classList.add("is-visible");
+    }});
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {{
+      toastEl.classList.remove("is-visible");
+    }}, 1800);
+  }}
+
+  function buildShareUrl(targetId) {{
+    return window.location.origin + window.location.pathname + "#" + targetId;
+  }}
+
+  function copyToClipboard(text) {{
+    if (navigator.clipboard && navigator.clipboard.writeText) {{
+      return navigator.clipboard.writeText(text);
+    }}
+    return new Promise(function (resolve, reject) {{
+      try {{
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        resolve();
+      }} catch (e) {{
+        reject(e);
+      }}
+    }});
+  }}
+
+  function wireShareButtons() {{
+    const buttons = document.querySelectorAll(".arg-share-btn");
+    buttons.forEach(function (btn) {{
+      if (btn.dataset.shareWired) return;
+      btn.dataset.shareWired = "1";
+      btn.addEventListener("click", function (e) {{
+        e.preventDefault();
+        const target = btn.getAttribute("data-share-target");
+        const url = buildShareUrl(target);
+        const labelEl = btn.querySelector(".arg-share-text");
+        const original = labelEl.textContent;
+        copyToClipboard(url).then(function () {{
+          btn.classList.add("is-copied");
+          labelEl.textContent = "Copied";
+          showToast("Link copied: " + url);
+          setTimeout(function () {{
+            btn.classList.remove("is-copied");
+            labelEl.textContent = original;
+          }}, 1800);
+        }}).catch(function () {{
+          window.prompt("Copy this link:", url);
+        }});
+      }});
+    }});
+  }}
 
   function render() {{
     const sess = window.__session;
     if (!sess || !sess.user) {{
       shell.style.display = "none";
+      // Preserve the visited pathname + hash so a shared deep-link still
+      // lands on the right dossier after the user signs in.
+      const returnHere = location.pathname.replace(/^\\//, "") + (location.hash || "");
+      const returnEnc = encodeURIComponent(returnHere);
       mount.innerHTML =
         '<div class="args-gate">' +
         '<h2>Sign in to read</h2>' +
-        '<p>The Arguments library is available to account-holders only. ' +
-        '<a href="../login.html?return=arguments.html">Sign in</a> ' +
+        '<p>The Dossiers library is available to account-holders only. ' +
+        '<a href="../login.html?return=' + returnEnc + '">Sign in</a> ' +
         'or <a href="../signup.html">create an account</a> to continue.</p>' +
         '</div>';
       return;
@@ -591,6 +674,8 @@ def render_source_page(slug: str, name: str, intro: str, entries: list[dict]) ->
     shell.style.display = "";
     shell.classList.remove("is-loading");
     mount.innerHTML = "";
+
+    wireShareButtons();
 
     // Highlight TOC entry that matches the visible article (basic
     // scrollspy: highlight the entry whose top is closest to viewport top).
