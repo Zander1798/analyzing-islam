@@ -14,6 +14,7 @@ Run after editing any of the JSON files.
 from __future__ import annotations
 
 import json
+import re
 from html import escape
 from pathlib import Path
 
@@ -21,6 +22,177 @@ ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "arguments-data"
 SITE_DIR = ROOT / "site"
 ARGS_DIR = SITE_DIR / "arguments"
+
+
+# ============================================================
+# Reference linking — turn "Q 4:34", "Bukhari 5134", "Bukhari 5134, 5158, 3894",
+# "Muslim 1422 / 1404-1407", etc. into anchor links pointing at the matching
+# verse/hadith inside the readable source pages.
+#
+# Anchor schemes (mirrors link-refs.py used by the catalog tab):
+#   Quran     ../read/quran.html      #s{surah}v{verse}
+#   Bukhari   ../read/bukhari.html    #h{idInBook}
+#   Muslim    ../read/muslim.html     #h{idInBook}
+#   Abu Dawud ../read/abu-dawud.html  #h{idInBook}
+#   Tirmidhi  ../read/tirmidhi.html   #h{idInBook}
+#   Nasa'i    ../read/nasai.html      #h{idInBook}
+#   Ibn Majah ../read/ibn-majah.html  #h{idInBook}
+#
+# For ranges ("4141-4146"), the whole range becomes one link to the first
+# number — same convention link-refs.py uses on the catalog pages. For
+# comma/slash lists ("Bukhari 5134, 5158, 3894"), each number is linked
+# separately so the reader can jump to any of them.
+# ============================================================
+
+DASH = r"[-–—]"
+
+# "Q 4:34" / "Q 4:11-12" — the explicit-Quran form used in our JSON.
+_QURAN_RE = re.compile(rf"(?<![A-Za-z\d])Q\s+(?P<surah>\d+):(?P<verse>\d+)(?:{DASH}\d+)?")
+
+# Bare "N:M" continuations after an explicit Q reference — only activated when
+# the surrounding text already mentioned "Q ".
+_BARE_VERSE_RE = re.compile(rf"(?<![A-Za-z\d:.])(?P<surah>\d{{1,3}}):(?P<verse>\d{{1,3}})(?:{DASH}\d{{1,3}})?(?![A-Za-z\d:#])")
+
+# Hadith collection patterns. Each captures the source name plus the FIRST
+# number; comma/slash continuations are handled by a follow-on pass on the
+# numbers immediately after the matched anchor.
+_BUKHARI_RE = re.compile(rf"(?<![A-Za-z])(?:S[aā]ḥīḥ\s+(?:al-)?|Sahih\s+(?:al-)?)?Bukh[aā]r[iī]\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
+_MUSLIM_RE = re.compile(rf"(?<![A-Za-z])(?:S[aā]ḥīḥ\s+|Sahih\s+)?Muslim\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
+_ABU_DAWUD_RE = re.compile(rf"(?<![A-Za-z])(?:Sunan\s+)?Ab[iuū]\s+D[aā]w[uū]d\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
+_TIRMIDHI_RE = re.compile(rf"(?<![A-Za-z])(?:J[aā]mi[ʿ'’`]?\s+(?:at-|al-)?)?(?:at-|al-)?Tirmidh[iī]\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
+_NASAI_RE = re.compile(rf"(?<![A-Za-z])(?:Sunan\s+(?:an-|al-)?)?Nas[aā][ʾ’‘'”]?[iī]\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
+_IBN_MAJAH_RE = re.compile(rf"(?<![A-Za-z])(?:Sunan\s+)?Ibn\s+M[aā]jah\s+#?(?P<num>\d+)(?:{DASH}#?\d+)?")
+
+# After we've placed an anchor for (e.g.) "Bukhari 5134", look at the text
+# that immediately follows. If it's a comma/slash separator followed by more
+# numbers (e.g., ", 5158, 3894" or " / 3268"), link each of those numbers
+# under the same source slug too.
+_CONTINUATION_RE = re.compile(rf"(\s*[,/]\s*)#?(\d+)(?:{DASH}#?\d+)?")
+
+# Already-linked tokens — protect them from being re-matched.
+_ALREADY_LINKED_RE = re.compile(r"<a\s[^>]*>.*?</a>", re.DOTALL)
+
+PATH_PREFIX = "../read"  # relative to site/arguments/{slug}.html
+
+
+def _q_link(m: re.Match) -> str:
+    surah = m.group("surah")
+    verse = m.group("verse")
+    return f'<a class="cite-link" href="{PATH_PREFIX}/quran.html#s{surah}v{verse}">{m.group(0)}</a>'
+
+
+def _bare_verse_link(m: re.Match) -> str:
+    surah = int(m.group("surah"))
+    verse = int(m.group("verse"))
+    if not (1 <= surah <= 114 and 1 <= verse <= 286):
+        return m.group(0)
+    return f'<a class="cite-link" href="{PATH_PREFIX}/quran.html#s{surah}v{verse}">{m.group(0)}</a>'
+
+
+def _hadith_linker(slug: str):
+    def fn(m: re.Match) -> str:
+        return f'<a class="cite-link" href="{PATH_PREFIX}/{slug}.html#h{m.group("num")}">{m.group(0)}</a>'
+    return fn
+
+
+_HADITH_PATTERNS = [
+    ("bukhari", _BUKHARI_RE),
+    ("muslim", _MUSLIM_RE),
+    ("abu-dawud", _ABU_DAWUD_RE),
+    ("tirmidhi", _TIRMIDHI_RE),
+    ("nasai", _NASAI_RE),
+    ("ibn-majah", _IBN_MAJAH_RE),
+]
+
+
+def _protected_spans(s: str) -> list[tuple[int, int]]:
+    return [(m.start(), m.end()) for m in _ALREADY_LINKED_RE.finditer(s)]
+
+
+def _overlaps(start: int, end: int, spans: list[tuple[int, int]]) -> bool:
+    for ps, pe in spans:
+        if start < pe and end > ps:
+            return True
+    return False
+
+
+def _apply_pattern(text: str, pattern: re.Pattern, repl_fn) -> str:
+    """Run pattern.sub with overlap-protection against already-linked spans
+    AND with continuation-linking: after each successful link, walk forward
+    through ", N, N" / " / N" continuations and link them under the same slug
+    (for hadith patterns only — handled by the slug captured via repl_fn)."""
+    spans = _protected_spans(text)
+    out: list[str] = []
+    last = 0
+    for m in pattern.finditer(text):
+        if _overlaps(m.start(), m.end(), spans):
+            continue
+        out.append(text[last:m.start()])
+        out.append(repl_fn(m))
+        last = m.end()
+    out.append(text[last:])
+    return "".join(out)
+
+
+def _apply_with_continuations(text: str, pattern: re.Pattern, slug: str) -> str:
+    """For hadith sources only: link the primary 'Source N' and any trailing
+    ', N, N' / ' / N' continuations to the same slug."""
+    spans = _protected_spans(text)
+    out: list[str] = []
+    last = 0
+    pos = 0
+    while pos < len(text):
+        m = pattern.search(text, pos)
+        if not m:
+            break
+        if _overlaps(m.start(), m.end(), spans):
+            pos = m.end()
+            continue
+        out.append(text[last:m.start()])
+        # Anchor the primary number.
+        href = f'{PATH_PREFIX}/{slug}.html#h{m.group("num")}'
+        out.append(f'<a class="cite-link" href="{href}">{m.group(0)}</a>')
+        cursor = m.end()
+        # Walk forward through "[, /] N(-N)?" continuations and link each.
+        while True:
+            cont = _CONTINUATION_RE.match(text, cursor)
+            if not cont:
+                break
+            sep = cont.group(1)              # ", " / " / " / etc.
+            num = cont.group(2)              # the first number — used for href
+            full = cont.group(0)             # entire matched continuation
+            link_text = full[len(sep):]      # everything after the separator
+            href = f'{PATH_PREFIX}/{slug}.html#h{num}'
+            out.append(sep)
+            out.append(f'<a class="cite-link" href="{href}">{link_text}</a>')
+            cursor += len(full)
+        last = cursor
+        pos = cursor
+    out.append(text[last:])
+    return "".join(out)
+
+
+def link_refs(escaped_text: str) -> str:
+    """Insert <a class='cite-link'> anchors over every reference token in the
+    given (already-HTML-escaped) text. Safe to call on any of the rendered
+    fields — verse_text, context, premises, conclusion, response/counter."""
+    if not escaped_text:
+        return escaped_text
+
+    text = escaped_text
+
+    # 1) Quran — explicit "Q N:M" first.
+    text = _apply_pattern(text, _QURAN_RE, _q_link)
+
+    # 2) Bare "N:M" — only meaningful when the original mentioned "Q ".
+    if "Q " in escaped_text or "Quran" in escaped_text:
+        text = _apply_pattern(text, _BARE_VERSE_RE, _bare_verse_link)
+
+    # 3) Each hadith collection, with continuation linking for ", N, N" lists.
+    for slug, pat in _HADITH_PATTERNS:
+        text = _apply_with_continuations(text, pat, slug)
+
+    return text
 
 # (slug, json filename, display name, eyebrow, intro)
 SOURCES = [
@@ -242,8 +414,15 @@ def render_landing() -> str:
 
 # ----------------- per-source page -----------------
 
+def _esc_link(text: str) -> str:
+    """Escape HTML, then insert ref-link anchors. Order matters: escape first
+    so that quotation marks and angle brackets in the source text don't break
+    the anchor tags we then add."""
+    return link_refs(escape(text))
+
+
 def render_premises(premises: list[str]) -> str:
-    items = "\n".join(f"        <li>{escape(p)}</li>" for p in premises)
+    items = "\n".join(f"        <li>{_esc_link(p)}</li>" for p in premises)
     return f"""      <ol class="arg-premises">
 {items}
       </ol>"""
@@ -254,9 +433,9 @@ def render_responses(responses: list[dict]) -> str:
     for i, item in enumerate(responses, start=1):
         items.append(f"""        <div class="arg-response-item">
           <div class="arg-response-label">Common Muslim response · {i}</div>
-          <p class="arg-response-text">{escape(item.get('response', ''))}</p>
+          <p class="arg-response-text">{_esc_link(item.get('response', ''))}</p>
           <div class="arg-counter-label">Counter-response</div>
-          <p class="arg-counter-text">{escape(item.get('counter', ''))}</p>
+          <p class="arg-counter-text">{_esc_link(item.get('counter', ''))}</p>
         </div>""")
     body = "\n".join(items)
     return f"""      <div class="arg-responses">
@@ -276,10 +455,10 @@ def render_article(entry: dict, idx: int, total: int, source_slug: str) -> str:
 
     # Context can have paragraph breaks separated by \n\n
     context_paras = "\n".join(
-        f"        <p>{escape(p)}</p>" for p in context.split("\n\n") if p.strip()
+        f"        <p>{_esc_link(p)}</p>" for p in context.split("\n\n") if p.strip()
     )
     conclusion_paras = "\n".join(
-        f"        <p>{escape(p)}</p>" for p in conclusion.split("\n\n") if p.strip()
+        f"        <p>{_esc_link(p)}</p>" for p in conclusion.split("\n\n") if p.strip()
     )
 
     prev_link = ""
@@ -299,10 +478,10 @@ def render_article(entry: dict, idx: int, total: int, source_slug: str) -> str:
     return f"""    <article class="arg-article" id="arg-{idx:02d}" data-arg-id="{escape(eid, quote=True)}">
       <div class="arg-num">Argument {idx} of {total}</div>
       <h2 class="arg-title">{escape(title)}</h2>
-      <div class="arg-ref">{escape(ref)}</div>
+      <div class="arg-ref">{_esc_link(ref)}</div>
 
       <div class="arg-section-label">The text</div>
-      <div class="arg-verse-box">{escape(verse_text)}</div>
+      <div class="arg-verse-box">{_esc_link(verse_text)}</div>
 
       <div class="arg-section-label">Context</div>
       <div class="arg-context">
