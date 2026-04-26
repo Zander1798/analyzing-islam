@@ -255,8 +255,8 @@ SOURCES = [
 NAV_LINKS = [
     ("index.html", "Home", False),
     ("catalog.html", "Catalog", False),
-    ("read.html", "Read", False),
     ("arguments.html", "Dossiers", True),  # this is the new tab (URL kept as arguments.html for stability)
+    ("read.html", "Read", False),
     ("compare.html", "Compare", False),
     ("build.html", "Build", False),
     ("stats.html", "Stats", False),
