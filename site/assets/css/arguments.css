@@ -1,0 +1,448 @@
+/* ============================================
+   Analyzing Islam — Arguments tab
+   Long-form per-argument page styles.
+   ============================================ */
+
+/* ---------- Landing page ---------- */
+.args-hero {
+  padding: 56px 0 24px;
+  text-align: left;
+}
+.args-hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin: 0 0 20px;
+  font-weight: 700;
+}
+.args-hero p {
+  color: var(--text-muted);
+  max-width: 760px;
+  font-size: 16px;
+  margin: 0;
+}
+
+.args-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin: 40px 0 64px;
+}
+.args-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 28px 28px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  min-height: 220px;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+.args-card:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+.args-card .args-eyebrow {
+  font-family: var(--sans);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--text-dim);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.args-card h2 {
+  font-family: var(--serif);
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+.args-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  max-width: 42ch;
+  line-height: 1.55;
+}
+.args-card .args-meta {
+  font-family: var(--sans);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.args-card .args-arrow {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--text-muted);
+  transition: transform 0.25s, color 0.25s;
+}
+.args-card:hover .args-arrow {
+  color: var(--accent);
+  transform: translateX(6px);
+}
+@media (max-width: 1100px) {
+  .args-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 760px) {
+  .args-grid { grid-template-columns: 1fr; gap: 14px; }
+  .args-card { padding: 28px 22px 24px; min-height: 180px; }
+}
+
+/* ---------- Source page (per-argument layout) ---------- */
+.args-source-shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+  padding: 40px 0 80px;
+}
+.args-toc {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding-right: 8px;
+  border-right: 1px solid var(--border);
+}
+.args-toc-title {
+  font-family: var(--sans);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-dim);
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+.args-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.args-toc-list li {
+  margin: 0;
+  padding: 0;
+}
+.args-toc-list a {
+  display: block;
+  padding: 6px 0;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 1.4;
+  border-left: 2px solid transparent;
+  padding-left: 10px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.args-toc-list a:hover {
+  color: var(--text);
+  border-left-color: var(--text-muted);
+  text-decoration: none;
+}
+.args-toc-list a.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+.args-toc-num {
+  display: inline-block;
+  width: 22px;
+  color: var(--text-dim);
+  font-family: var(--serif);
+  font-weight: 700;
+}
+
+.args-main {
+  max-width: 760px;
+  min-width: 0;
+}
+
+.args-back-link {
+  display: inline-block;
+  margin-bottom: 24px;
+  font-family: var(--sans);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+}
+.args-back-link:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.args-source-title {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5.5vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+.args-source-intro {
+  color: var(--text-muted);
+  font-size: 15px;
+  margin: 0 0 56px;
+  max-width: 60ch;
+}
+
+/* ---------- Per-argument article ---------- */
+.arg-article {
+  border-top: 1px solid var(--border);
+  padding-top: 56px;
+  margin-bottom: 56px;
+}
+.arg-article:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+.arg-num {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+.arg-title {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.4vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+.arg-ref {
+  font-family: var(--sans);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 32px;
+}
+
+.arg-section-label {
+  font-family: var(--sans);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--text-dim);
+  font-weight: 700;
+  margin: 32px 0 12px;
+}
+
+.arg-verse-box {
+  background: var(--panel);
+  border-left: 3px solid var(--accent);
+  padding: 20px 24px;
+  margin: 0 0 24px;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.arg-context p,
+.arg-conclusion p {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text);
+  margin: 0 0 18px;
+}
+.arg-context p:last-child,
+.arg-conclusion p:last-child {
+  margin-bottom: 0;
+}
+
+.arg-premises {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  counter-reset: premise;
+}
+.arg-premises li {
+  position: relative;
+  padding: 12px 0 12px 0;
+  border-bottom: 1px dotted var(--border);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.arg-premises li:last-child {
+  border-bottom: none;
+}
+
+.arg-conclusion-box {
+  background: var(--panel-2);
+  border-left: 3px solid var(--strong);
+  padding: 18px 22px;
+  margin: 16px 0 0;
+}
+.arg-conclusion-box p {
+  font-size: 15px;
+  line-height: 1.65;
+  margin: 0;
+  color: var(--text);
+}
+
+/* Muslim responses + counters */
+.arg-responses {
+  margin-top: 8px;
+}
+.arg-response-item {
+  border: 1px solid var(--border);
+  padding: 18px 22px;
+  margin-bottom: 14px;
+  background: var(--bg-elevated);
+}
+.arg-response-label {
+  font-family: var(--sans);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-dim);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.arg-response-text {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+  margin: 0 0 14px;
+  font-style: italic;
+}
+.arg-counter-label {
+  font-family: var(--sans);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.arg-counter-text {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Prev / next nav at the bottom of each entry */
+.arg-pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.arg-pager a {
+  flex: 1 1 0;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--sans);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  transition: border-color 0.15s, color 0.15s;
+}
+.arg-pager a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+.arg-pager a.next {
+  text-align: right;
+}
+.arg-pager a.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Top-of-source pager (jump to TOC on mobile) */
+.arg-jump-top {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.arg-jump-top:hover {
+  color: var(--accent);
+}
+
+/* Auth-gate message (shown when user is not signed in) */
+.args-gate {
+  max-width: 640px;
+  margin: 80px auto;
+  padding: 36px 32px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.args-gate h2 {
+  font-family: var(--serif);
+  font-size: 28px;
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+.args-gate p {
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.args-gate a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* While auth is checking, hide content to prevent flicker */
+.args-shell.is-loading .args-source-shell,
+.args-shell.is-loading .args-grid,
+.args-shell.is-loading .args-source-title,
+.args-shell.is-loading .args-source-intro {
+  visibility: hidden;
+}
+
+/* Responsive: stack TOC on smaller screens */
+@media (max-width: 960px) {
+  .args-source-shell {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .args-toc {
+    position: static;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+    padding-right: 0;
+  }
+  .args-toc-list {
+    columns: 2;
+    column-gap: 24px;
+  }
+}
+@media (max-width: 600px) {
+  .args-toc-list { columns: 1; }
+}

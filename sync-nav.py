@@ -21,6 +21,7 @@ NAV_LINKS = [
     ("Home",      "index.html"),
     ("Catalog",   "catalog.html"),
     ("Read",      "read.html"),
+    ("Arguments", "arguments.html"),
     ("Compare",   "compare.html"),
     ("Build",     "build.html"),
     ("Stats",     "stats.html"),
