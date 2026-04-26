@@ -28,3 +28,6 @@ ibnmajah-extract/
 nasai-extract/
 .tmp/
 scrape-data/
+
+# Supabase data dumps (contain user data — never commit)
+backups/
