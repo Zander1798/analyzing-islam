@@ -3026,3 +3026,631 @@ blockquote {
   font-size: 12px;
 }
 
+/* ============================================================
+   GOAT PAGE  (/goat.html)
+   ============================================================ */
+
+.goat-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.goat-page-back {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.goat-page-title {
+  font-family: var(--serif);
+  font-size: 38px;
+  margin: 8px 0 4px;
+}
+.goat-page-tagline {
+  color: var(--muted);
+  margin: 0 0 28px;
+}
+.goat-page-tagline a { color: var(--accent); }
+.goat-page-tagline a:hover { color: var(--accent-hover); }
+
+.goat-page-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .goat-page-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Big-goat stage ---- */
+.goat-stage {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 460px;
+}
+
+.goat-stage-inner {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+}
+
+.goat-stage-hint {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 16px 0 0;
+}
+
+.goat-big {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  width: 360px;
+  height: 300px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+.goat-big:focus { outline: none; }
+.goat-big:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+}
+
+.goat-big .goat-svg-big {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  overflow: visible;
+}
+
+/* The big goat reuses the same animation classes as the nav goat
+   (.is-screaming, .is-chewing, .is-stretching) and the same keyframes
+   already defined further up the file. */
+.goat-big .goat-mouth-open   { display: none; }
+.goat-big .goat-mouth-closed { display: block; }
+.goat-big.is-screaming .goat-mouth-open   { display: block; }
+.goat-big.is-screaming .goat-mouth-closed { display: none; }
+
+.goat-big .goat-body {
+  transform-box: fill-box;
+  transform-origin: 80% 100%;
+  transition: transform 0.2s ease-out;
+}
+.goat-big.is-screaming .goat-body {
+  animation: goat-shake 1.6s steps(48) 0s 1;
+  transform-origin: 50% 60%;
+}
+.goat-big.is-chewing .goat-body {
+  animation: goat-chew 3s ease-in-out 1;
+  transform-origin: 85% 100%;
+}
+.goat-big.is-stretching .goat-body {
+  animation: goat-stretch 3s ease-in-out 1;
+  transform-origin: 85% 100%;
+}
+
+/* Quran-eater: mouth-page (page in mouth) is hidden by default. */
+.goat-big .goat-mouth-page,
+.skin-preview .goat-mouth-page {
+  display: none;
+}
+.goat-big.qe-rise .goat-mouth-page,
+.goat-big.qe-chew .goat-mouth-page,
+.goat-big.qe-swallow .goat-mouth-page {
+  display: block;
+}
+
+/* Quran-eater: torn page on the book disappears once it's been bitten off. */
+.goat-big.qe-bite .goat-quran-page,
+.goat-big.qe-tear .goat-quran-page,
+.goat-big.qe-rise .goat-quran-page,
+.goat-big.qe-chew .goat-quran-page,
+.goat-big.qe-swallow .goat-quran-page {
+  visibility: hidden;
+}
+
+/* ============================================================
+   QURAN-EATING ANIMATION CHAIN  (slot 10 reward)
+
+   Six discrete CSS-driven phases triggered by goat-page.js adding
+   qe-* classes in order. Total chain ~2.4 seconds.
+
+   Phase 1  qe-stoop    0–400ms   anticipation tilt + dip
+   Phase 2  qe-bite     400–700ms full stoop, head touches the page
+   Phase 3  qe-tear     700–1100ms snap-back rip, page disappears from book
+   Phase 4  qe-rise     1100–1500ms upright + page appears in mouth
+   Phase 5  qe-chew     1500–2000ms cheek-bulge chewing bobs
+   Phase 6  qe-swallow  2000–2400ms vertical squash gulp, page goes
+   ============================================================ */
+
+.goat-big.is-eating-quran .goat-body {
+  transform-origin: 85% 100%;
+  animation: none;
+}
+
+.goat-big.qe-stoop .goat-body    { animation: qe-stoop 400ms ease-in-out forwards; }
+.goat-big.qe-bite  .goat-body    { animation: qe-bite  300ms ease-in-out forwards; }
+.goat-big.qe-tear  .goat-body    { animation: qe-tear  400ms ease-out    forwards; }
+.goat-big.qe-rise  .goat-body    { animation: qe-rise  400ms ease-out    forwards; }
+.goat-big.qe-chew  .goat-body    { animation: qe-chew-bulge 500ms ease-in-out forwards; }
+.goat-big.qe-swallow .goat-body  { animation: qe-swallow 400ms ease-in-out forwards; }
+
+@keyframes qe-stoop {
+  0%   { transform: rotate(0deg)   translateY(0); }
+  100% { transform: rotate(-26deg) translateY(2px); }
+}
+@keyframes qe-bite {
+  0%   { transform: rotate(-26deg) translateY(2px); }
+  60%  { transform: rotate(-38deg) translateY(4px); }
+  100% { transform: rotate(-34deg) translateY(3px); }
+}
+@keyframes qe-tear {
+  0%   { transform: rotate(-34deg) translateY(3px); }
+  35%  { transform: rotate(-44deg) translateY(2px) translateX(1px); }
+  70%  { transform: rotate(-22deg) translateY(0)   translateX(-1px); }
+  100% { transform: rotate(-12deg) translateY(0); }
+}
+@keyframes qe-rise {
+  0%   { transform: rotate(-12deg) translateY(0); }
+  100% { transform: rotate(0deg)   translateY(0); }
+}
+@keyframes qe-chew-bulge {
+  0%   { transform: rotate(0deg)   scale(1, 1); }
+  20%  { transform: rotate(-3deg)  scale(1.04, 0.98); }
+  40%  { transform: rotate(2deg)   scale(0.99, 1.02); }
+  60%  { transform: rotate(-2deg)  scale(1.04, 0.98); }
+  80%  { transform: rotate(1deg)   scale(0.99, 1.02); }
+  100% { transform: rotate(0deg)   scale(1, 1); }
+}
+@keyframes qe-swallow {
+  0%   { transform: rotate(0deg)  scale(1,    1); }
+  40%  { transform: rotate(0deg)  scale(0.94, 1.10); }
+  70%  { transform: rotate(0deg)  scale(1.04, 0.94); }
+  100% { transform: rotate(0deg)  scale(1, 1); }
+}
+
+/* ---- Skin SIDE column ---- */
+.goat-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+  text-decoration: none;
+  color: var(--text);
+  display: block;
+}
+.card-head {
+  margin-bottom: 12px;
+}
+.card-head h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+.card-sub {
+  color: var(--muted);
+  margin: 0;
+  font-size: 13px;
+}
+
+.skins-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.skin-slot {
+  position: relative;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.skin-slot.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+.skin-slot.is-highlight {
+  animation: skin-highlight 2.4s ease-out 1;
+}
+@keyframes skin-highlight {
+  0%, 30% { border-color: var(--accent); box-shadow: 0 0 14px var(--accent); }
+  100%    { border-color: var(--border); box-shadow: 0 0 0 0 transparent; }
+}
+
+.skin-preview {
+  width: 72px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.skin-preview .goat-svg {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  overflow: visible; /* hats/crowns/halos extend above the viewBox */
+}
+
+.skin-slot.is-locked .skin-preview {
+  filter: brightness(0) saturate(0) opacity(0.45);
+}
+
+.skin-name {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+.skin-blurb {
+  font-size: 11px;
+  color: var(--muted);
+  min-height: 28px;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.skin-action {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.skin-action:not(:disabled):hover {
+  border-color: var(--accent);
+}
+.skin-action:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.skin-action.is-selected {
+  border-color: var(--accent);
+  background: rgba(204,120,92,0.18);
+  color: var(--accent);
+  opacity: 1;
+}
+
+.skin-lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.skin-lock-overlay .lock-glyph {
+  font-size: 22px;
+  opacity: 0.65;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.6));
+}
+
+/* ---- Play card ---- */
+.play-card {
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.play-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.play-card-cta {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+/* ============================================================
+   PLAY PAGE  (/play.html)
+   ============================================================ */
+
+.play-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.play-page-back {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.play-page-title {
+  font-family: var(--serif);
+  font-size: 36px;
+  margin: 8px 0 4px;
+}
+.play-page-tagline {
+  color: var(--muted);
+  margin: 0 0 28px;
+  max-width: 720px;
+}
+
+.levels-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 760px) {
+  .levels-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .levels-grid { grid-template-columns: 1fr; }
+}
+
+.level-tile {
+  appearance: none;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 18px 14px;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s, opacity 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 140px;
+}
+.level-tile:not(:disabled):hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.level-tile.is-locked {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.level-num {
+  font-family: var(--serif);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.level-title {
+  font-size: 17px;
+  font-weight: 600;
+}
+.level-blurb {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  flex: 1;
+}
+.level-foot { margin-top: 6px; }
+.level-tag {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.level-tag.is-ready    { color: var(--accent); border-color: var(--accent); }
+.level-tag.is-cleared  { color: #6abf6a; border-color: #6abf6a; }
+.level-tag.is-locked   { color: var(--muted); }
+
+/* ---- Quiz card ---- */
+.quiz-view { max-width: 760px; margin: 0 auto; }
+.quiz-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.quiz-head h2 {
+  margin: 0;
+  flex: 1;
+  font-family: var(--serif);
+  font-size: 22px;
+}
+.quiz-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 180px;
+}
+.quiz-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.quiz-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.quiz-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px 28px 20px;
+}
+.quiz-question {
+  font-size: 19px;
+  line-height: 1.45;
+  margin: 0 0 20px;
+}
+.quiz-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.quiz-choice {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  color: var(--text);
+  text-align: left;
+  font-size: 15px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.quiz-choice:hover {
+  border-color: var(--accent);
+  background: rgba(204,120,92,0.08);
+}
+.quiz-choice-letter {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: var(--border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: var(--serif);
+  flex-shrink: 0;
+}
+.quiz-choice:hover .quiz-choice-letter {
+  background: var(--accent);
+  color: #fff;
+}
+
+.quiz-source {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.quiz-source a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.quiz-source a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+.quiz-error {
+  color: #f4a4a4;
+  background: rgba(220,80,80,0.12);
+  padding: 12px 14px;
+  border-radius: 6px;
+}
+
+
+/* ============================================================
+   RESULT MODAL  (pass / fail)
+   ============================================================ */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: modal-fade 0.2s ease-out;
+}
+.modal-backdrop[hidden] { display: none; }
+@keyframes modal-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px 28px 24px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  animation: modal-pop 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+@keyframes modal-pop {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.result-title {
+  font-family: var(--serif);
+  font-size: 32px;
+  letter-spacing: 0.08em;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+.result-title.is-pass { color: #6abf6a; }
+.result-title.is-fail { color: #e25555; }
+
+.result-body {
+  margin: 0 0 22px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.result-body strong { color: var(--text); }
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.result-actions .btn {
+  min-width: 140px;
+}
+
+/* Ghost button variant used in quiz header */
+.btn.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.btn.btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
