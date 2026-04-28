@@ -535,6 +535,33 @@
       else await remove(source, id);
     });
 
+    // -- Close button injected into card header -------------------------
+    if (cardEl) {
+      const hlHead = cardEl.querySelector(".hl-card-head");
+      if (hlHead && !hlHead.querySelector(".hl-card-close")) {
+        const closeBtn = cardEl.ownerDocument.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.className = "hl-card-close";
+        closeBtn.title = "Collapse highlights";
+        closeBtn.setAttribute("aria-label", "Collapse highlights");
+        closeBtn.textContent = "×";
+        closeBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          const collapsed = cardEl.classList.toggle("is-collapsed");
+          closeBtn.textContent = collapsed ? "+" : "×";
+          closeBtn.title = collapsed ? "Expand highlights" : "Collapse highlights";
+        });
+        hlHead.addEventListener("click", function () {
+          if (cardEl.classList.contains("is-collapsed")) {
+            cardEl.classList.remove("is-collapsed");
+            closeBtn.textContent = "×";
+            closeBtn.title = "Collapse highlights";
+          }
+        });
+        hlHead.appendChild(closeBtn);
+      }
+    }
+
     // -- Card actions ---------------------------------------------------
     if (cardEl) {
       cardEl.addEventListener("click", async (e) => {

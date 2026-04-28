@@ -115,6 +115,26 @@ mark.ai-hl.is-flash {
   gap: 8px;
   margin: 0 0 12px;
 }
+.hl-card-close {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--text-dim, #777);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 2px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.hl-card-close:hover { color: var(--text, #eee); }
+
+.hl-card.is-collapsed .hl-card-list,
+.hl-card.is-collapsed .hl-card-empty { display: none; }
+.hl-card.is-collapsed { height: auto; min-height: 0; }
+.hl-card.is-collapsed .hl-card-head { cursor: pointer; margin-bottom: 0; }
+
 .hl-card-head h3 {
   font-size: 11px;
   text-transform: uppercase;

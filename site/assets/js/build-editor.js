@@ -340,6 +340,11 @@
     function attach() {
       const doc = iframeDoc(frame);
       if (!doc || !doc.body) return;
+      // Guard: only attach once per document instance to prevent the load
+      // event + setTimeout race from wiring duplicate swatch click listeners
+      // (which caused one highlight click to insert two rows).
+      if (doc._hlAttached) return;
+      doc._hlAttached = true;
       const sel = document.getElementById("source-select");
       const slug = sel ? sel.value : null;
       if (!slug) return;
@@ -353,15 +358,12 @@
         anchorRe: anchorRe,
         cardEl: card,
       });
-      lastDetach = function () {
-        // No real teardown API yet; the next attach simply replaces the
-        // toolbar and listeners by overwriting them in the new doc.
-      };
+      lastDetach = function () {};
       void handle;
     }
 
     frame.addEventListener("load", attach);
-    // Cover the case where the iframe is already loaded.
+    // Cover the case where the iframe is already loaded when this runs.
     setTimeout(attach, 200);
 
     // Re-attach when the user picks a different source — handled by
