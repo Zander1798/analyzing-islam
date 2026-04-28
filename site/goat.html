@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Your mascot for the catalog. Pass quiz levels to unlock new looks.">
+<!-- Favicon + app-icon set -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png">
+<link rel="icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/assets/icons/site.webmanifest">
+<meta name="theme-color" content="#0a0a0a">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Analyzing Islam">
+<meta property="og:title" content="Goat — Analyzing Islam">
+<meta property="og:description" content="Your mascot for the catalog. Pass quiz levels to unlock new looks.">
+<meta property="og:url" content="https://analyzingislam.com/goat.html">
+<meta property="og:image" content="https://analyzingislam.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Analyzing Islam — 1,642 entries across 30 categories">
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Goat — Analyzing Islam">
+<meta name="twitter:description" content="Your mascot for the catalog. Pass quiz levels to unlock new looks.">
+<meta name="twitter:image" content="https://analyzingislam.com/assets/og-image.png">
+<title>Goat — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="arguments.html">Dossiers</a>
+      <a href="read.html">Read</a>
+      <a href="compare.html">Compare</a>
+      <a href="build.html">Build</a>
+      <a href="stats.html">Stats</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="goat-page">
+
+  <div class="goat-page-back">
+    <a href="index.html" class="btn">← Home</a>
+  </div>
+
+  <h1 class="goat-page-title">The Goat</h1>
+  <p class="goat-page-tagline">Your mascot for the catalog. Click to interact — pass <a href="play.html">quiz levels</a> to unlock new looks.</p>
+
+  <div class="goat-page-grid">
+
+    <!-- Left column: big goat stage -->
+    <div class="goat-stage">
+      <div class="goat-stage-inner" id="goat-stage-inner">
+        <!-- goat-page.js injects the interactive goat button here -->
+      </div>
+      <p class="goat-stage-hint">Click the goat to interact.</p>
+    </div>
+
+    <!-- Right column: skins + quiz card -->
+    <div class="goat-side">
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Skins</h2>
+          <p class="card-sub">Pass quiz levels to unlock new looks.</p>
+        </div>
+        <div class="skins-grid" id="skins-grid">
+          <!-- goat-page.js injects skin slots here -->
+        </div>
+      </div>
+
+      <a href="play.html" class="card play-card">
+        <div class="card-head">
+          <h2>Quiz</h2>
+          <p class="card-sub">Test your knowledge of the catalog. One wrong answer ends the run.</p>
+        </div>
+        <span class="play-card-cta">Go to quiz levels →</span>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<script src="assets/js/snap-to-hash.js" defer></script>
+<!-- goat-skins.js and goat-page.js added once skins are designed -->
+</body>
+</html>
