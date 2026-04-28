@@ -2935,6 +2935,12 @@ blockquote {
   }
 }
 
+.goat-main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
 /* ---- Big-goat stage ---- */
 .goat-stage {
   background: var(--panel);
