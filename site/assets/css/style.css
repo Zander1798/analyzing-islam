@@ -2950,7 +2950,7 @@ blockquote {
 .goat-stage-inner {
   flex: 1;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   width: 100%;
 }
