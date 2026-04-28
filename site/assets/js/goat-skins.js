@@ -52,6 +52,13 @@
       gif:   "assets/images/goat-detective.gif",
       level: null,
     },
+    {
+      id:    "glorious",
+      name:  "Glorious",
+      blurb: "Halo, wings, divine grazing.",
+      gif:   "assets/images/goat-glorious.gif",
+      level: null,
+    },
   ];
 
   var LS_SKIN    = "aig:goat-skin";
