@@ -45,6 +45,13 @@
       gif:   "assets/images/goat-royal.gif",
       level: null,
     },
+    {
+      id:    "detective",
+      name:  "Detective",
+      blurb: "The case of the missing grass.",
+      gif:   "assets/images/goat-detective.gif",
+      level: null,
+    },
   ];
 
   var LS_SKIN    = "aig:goat-skin";
