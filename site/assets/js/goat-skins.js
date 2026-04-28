@@ -8,7 +8,14 @@
       name:  "Standard",
       blurb: "The classic.",
       gif:   "assets/images/goat-standard.gif",
-      level: null,   // always unlocked
+      level: null,
+    },
+    {
+      id:    "educated",
+      name:  "Educated",
+      blurb: "Shirt, tie, big ideas.",
+      gif:   "assets/images/goat-educated.gif",
+      level: null,
     },
   ];
 

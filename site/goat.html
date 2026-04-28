@@ -111,7 +111,7 @@
         </div>
         <div class="skins-grid" id="skins-grid">
 
-          <div class="skin-slot is-selected" id="skin-slot-standard">
+          <div class="skin-slot is-selected" id="skin-slot-standard" data-skin-id="standard">
             <div class="skin-preview">
               <img src="assets/images/goat-standard.gif" class="goat-gif" alt="Standard">
             </div>
@@ -120,6 +120,14 @@
             <button class="skin-action is-selected" disabled>Selected</button>
           </div>
 
+          <div class="skin-slot" id="skin-slot-educated" data-skin-id="educated">
+            <div class="skin-preview">
+              <img src="assets/images/goat-educated.gif" class="goat-gif" alt="Educated">
+            </div>
+            <div class="skin-name">Educated</div>
+            <div class="skin-blurb">Shirt, tie, big ideas.</div>
+            <button class="skin-action">Select</button>
+          </div>
 
         </div>
       </div>
@@ -147,6 +155,59 @@
 <script src="assets/js/goat-skins.js"></script>
 <script src="assets/js/goat.js" defer></script>
 <script src="assets/js/snap-to-hash.js" defer></script>
-<!-- goat-skins.js and goat-page.js added once skins are designed -->
+<script>
+(function () {
+  function initSkinPage() {
+    var bigImg   = document.getElementById("goat-big-img");
+    var slots    = document.querySelectorAll(".skin-slot[data-skin-id]");
+    var prefix   = "assets/images/";
+
+    function selectSkin(id) {
+      var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function(s){ return s.id === id; });
+      if (!skin) return;
+
+      // Update big stage goat
+      bigImg.src = skin.gif;
+      bigImg.alt = skin.name;
+
+      // Update slot states
+      slots.forEach(function (slot) {
+        var btn = slot.querySelector(".skin-action");
+        if (slot.dataset.skinId === id) {
+          slot.classList.add("is-selected");
+          btn.textContent = "Selected";
+          btn.disabled    = true;
+          btn.classList.add("is-selected");
+        } else {
+          slot.classList.remove("is-selected");
+          btn.textContent = "Select";
+          btn.disabled    = false;
+          btn.classList.remove("is-selected");
+        }
+      });
+
+      // Persist + update nav goat
+      if (window.GoatSkins) window.GoatSkins.setSelectedId(id);
+    }
+
+    // Apply saved skin on load
+    var saved = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
+    selectSkin(saved);
+
+    // Wire up Select buttons
+    slots.forEach(function (slot) {
+      slot.querySelector(".skin-action").addEventListener("click", function () {
+        selectSkin(slot.dataset.skinId);
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initSkinPage);
+  } else {
+    initSkinPage();
+  }
+})();
+</script>
 </body>
 </html>
