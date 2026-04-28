@@ -4,8 +4,8 @@
    ============================================ */
 
 :root {
-  --bg: #0a0a0a;
-  --bg-elevated: #0f0f0f;
+  --bg: #000000;
+  --bg-elevated: #000000;
   --panel: #111111;
   --panel-2: #171717;
   --border: #1e1e1e;
@@ -112,7 +112,7 @@ body.embed-mode .reader-layout {
   top: 0;
   z-index: 100;
   backdrop-filter: blur(12px);
-  background: rgba(10, 10, 10, 0.85);
+  background: #000;
   /* Slide the whole bar out of view when the user scrolls down, back
      into view when they scroll up. Toggled by goat.js. */
   transition: transform 0.25s ease;
