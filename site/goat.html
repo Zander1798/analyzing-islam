@@ -229,21 +229,49 @@
 <script>
 (function () {
   function initSkinPage() {
-    var bigImg   = document.getElementById("goat-big-img");
-    var slots    = document.querySelectorAll(".skin-slot[data-skin-id]");
-    var prefix   = "assets/images/";
+    var bigImg = document.getElementById("goat-big-img");
+    var slots  = document.querySelectorAll(".skin-slot[data-skin-id]");
+
+    function getUnlocked() {
+      return window.GoatSkins ? window.GoatSkins.getUnlockedIds() : new Set(["standard"]);
+    }
+
+    function applyLockStates() {
+      var unlocked = getUnlocked();
+      slots.forEach(function (slot) {
+        var id  = slot.dataset.skinId;
+        var btn = slot.querySelector(".skin-action");
+        if (unlocked.has(id)) {
+          slot.classList.remove("is-locked");
+          var overlay = slot.querySelector(".skin-lock-overlay");
+          if (overlay) overlay.remove();
+        } else {
+          slot.classList.add("is-locked");
+          btn.disabled = true;
+          var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function (s) { return s.id === id; });
+          btn.textContent = skin && skin.level ? "Unlock at Level " + skin.level : "Locked";
+          if (!slot.querySelector(".skin-lock-overlay")) {
+            var ov = document.createElement("div");
+            ov.className = "skin-lock-overlay";
+            ov.innerHTML = '<span class="lock-glyph">🔒</span>';
+            slot.appendChild(ov);
+          }
+        }
+      });
+    }
 
     function selectSkin(id) {
-      var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function(s){ return s.id === id; });
+      if (!getUnlocked().has(id)) return;
+      var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function (s) { return s.id === id; });
       if (!skin) return;
 
-      // Update big stage goat
       bigImg.src = skin.gif;
       bigImg.alt = skin.name;
 
-      // Update slot states
+      var unlocked = getUnlocked();
       slots.forEach(function (slot) {
         var btn = slot.querySelector(".skin-action");
+        if (!unlocked.has(slot.dataset.skinId)) return;
         if (slot.dataset.skinId === id) {
           slot.classList.add("is-selected");
           btn.textContent = "Selected";
@@ -257,20 +285,32 @@
         }
       });
 
-      // Persist + update nav goat
       if (window.GoatSkins) window.GoatSkins.setSelectedId(id);
     }
 
-    // Apply saved skin on load
+    function highlightFromHash() {
+      var hash = window.location.hash;
+      if (!hash) return;
+      var el = document.getElementById(hash.slice(1));
+      if (el && el.classList.contains("skin-slot")) {
+        el.classList.add("is-highlight");
+        el.addEventListener("animationend", function () { el.classList.remove("is-highlight"); }, { once: true });
+      }
+    }
+
+    applyLockStates();
+
     var saved = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
+    if (!getUnlocked().has(saved)) saved = "standard";
     selectSkin(saved);
 
-    // Wire up Select buttons
     slots.forEach(function (slot) {
       slot.querySelector(".skin-action").addEventListener("click", function () {
         selectSkin(slot.dataset.skinId);
       });
     });
+
+    highlightFromHash();
   }
 
   if (document.readyState === "loading") {
