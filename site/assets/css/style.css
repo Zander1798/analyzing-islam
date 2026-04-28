@@ -111,7 +111,6 @@ body.embed-mode .reader-layout {
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(12px);
   background: #000;
   /* Slide the whole bar out of view when the user scrolls down, back
      into view when they scroll up. Toggled by goat.js. */
