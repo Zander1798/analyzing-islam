@@ -38,6 +38,13 @@
       gif:   "assets/images/goat-astronaut.gif",
       level: null,
     },
+    {
+      id:    "royal",
+      name:  "Royal",
+      blurb: "Crown, cape, absolute power.",
+      gif:   "assets/images/goat-royal.gif",
+      level: null,
+    },
   ];
 
   var LS_SKIN    = "aig:goat-skin";
