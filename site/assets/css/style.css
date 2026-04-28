@@ -1027,7 +1027,7 @@ blockquote {
     text-align: left;
   }
   .site-nav-inner .auth-button {
-    margin-left: auto;
+    margin-left: 16px;
   }
   .site-nav-inner .goat-scream {
     margin-left: 8px;
@@ -1151,7 +1151,7 @@ blockquote {
   display: inline-flex;
   align-items: center;
   order: 98; /* just before the goat (order: 99) */
-  margin-left: auto;
+  margin-left: 24px;
   margin-right: 0;
   flex-shrink: 0;
   font-family: var(--sans);
