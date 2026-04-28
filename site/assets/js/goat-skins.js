@@ -10,6 +10,13 @@
       gif:   "assets/images/goat-standard.gif",
       level: null,   // always unlocked
     },
+    {
+      id:    "educated",
+      name:  "Educated",
+      blurb: "Shirt, tie, big ideas.",
+      gif:   "assets/images/goat-educated.gif",
+      level: 1,
+    },
   ];
 
   var LS_SKIN    = "aig:goat-skin";
