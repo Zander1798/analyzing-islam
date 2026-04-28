@@ -59,6 +59,13 @@
       gif:   "assets/images/goat-glorious.gif",
       level: null,
     },
+    {
+      id:    "beard",
+      name:  "Beard of Glory",
+      blurb: "The beard demands respect.",
+      gif:   "assets/images/goat-beard.gif",
+      level: null,
+    },
   ];
 
   var LS_SKIN    = "aig:goat-skin";
