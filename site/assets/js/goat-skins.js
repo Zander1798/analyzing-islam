@@ -31,6 +31,13 @@
       gif:   "assets/images/goat-chef.gif",
       level: null,
     },
+    {
+      id:    "astronaut",
+      name:  "Astronaut",
+      blurb: "One small bleat for goat-kind.",
+      gif:   "assets/images/goat-astronaut.gif",
+      level: null,
+    },
   ];
 
   var LS_SKIN    = "aig:goat-skin";
