@@ -1,0 +1,931 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "title": "Quran basics",
+      "blurb": "Surah counts, abrogation, recitation history.",
+      "questions": [
+        {
+          "q": "How many surahs are in the standard Quran?",
+          "a": "112",
+          "b": "114",
+          "c": "120",
+          "answer": "b",
+          "source": "read/quran.html"
+        },
+        {
+          "q": "Which is the shortest surah in the Quran?",
+          "a": "Al-Ikhlas (112)",
+          "b": "Al-Kawthar (108)",
+          "c": "An-Nas (114)",
+          "answer": "b",
+          "source": "read/quran.html#surah-108"
+        },
+        {
+          "q": "Which is the only surah that does NOT begin with the Bismillah?",
+          "a": "Al-Tawbah (9)",
+          "b": "Al-Fatiha (1)",
+          "c": "Yasin (36)",
+          "answer": "a",
+          "source": "read/quran.html#surah-9"
+        },
+        {
+          "q": "Q 2:106 says Allah does what with verses he replaces?",
+          "a": "Hides them from believers",
+          "b": "Brings something better or similar",
+          "c": "Forgets them entirely",
+          "answer": "b",
+          "source": "read/quran.html#s2v106"
+        },
+        {
+          "q": "Which surah is named after a non-prophet woman?",
+          "a": "Maryam",
+          "b": "Aisha",
+          "c": "Khadija",
+          "answer": "a",
+          "source": "read/quran.html#surah-19"
+        },
+        {
+          "q": "How many verses does the longest surah, Al-Baqarah, contain?",
+          "a": "120",
+          "b": "200",
+          "c": "286",
+          "answer": "c",
+          "source": "read/quran.html#surah-2"
+        },
+        {
+          "q": "Which caliph is traditionally credited with standardising the Quranic text?",
+          "a": "Abu Bakr",
+          "b": "Umar",
+          "c": "Uthman",
+          "answer": "c",
+          "source": "read/quran.html"
+        },
+        {
+          "q": "Al-Fatiha (Surah 1) is recited in every unit of prayer — how many verses does it contain?",
+          "a": "5",
+          "b": "7",
+          "c": "9",
+          "answer": "b",
+          "source": "read/quran.html#surah-1"
+        },
+        {
+          "q": "Q 2:23 challenges those who doubt the Quran to produce what?",
+          "a": "A full book like it",
+          "b": "A single surah like it",
+          "c": "A single verse like it",
+          "answer": "b",
+          "source": "read/quran.html#s2v23"
+        },
+        {
+          "q": "Q 4:3 permits a Muslim man to have at most how many wives simultaneously?",
+          "a": "Two",
+          "b": "Three",
+          "c": "Four",
+          "answer": "c",
+          "source": "read/quran.html#s4v3"
+        },
+        {
+          "q": "Q 2:255 (Ayat al-Kursi) states Allah is never overcome by what?",
+          "a": "Temptation",
+          "b": "Doubt",
+          "c": "Slumber or sleep",
+          "answer": "c",
+          "source": "read/quran.html#s2v255"
+        },
+        {
+          "q": "Q 4:34 uses the term 'qawwamun' to describe men's role — most commonly translated as what?",
+          "a": "Servants of women",
+          "b": "Guardians / protectors over women",
+          "c": "Equal partners with women",
+          "answer": "b",
+          "source": "read/quran.html#s4v34"
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "title": "Aisha & the household",
+      "blurb": "Marriages, dolls, honey, Zaynab.",
+      "questions": [
+        {
+          "q": "According to Bukhari, at what age was Aisha married to Muhammad?",
+          "a": "Six",
+          "b": "Nine",
+          "c": "Twelve",
+          "answer": "a",
+          "source": "read/bukhari.html#h4927"
+        },
+        {
+          "q": "And at what age was the marriage consummated, per the same hadith?",
+          "a": "Nine",
+          "b": "Thirteen",
+          "c": "Sixteen",
+          "answer": "a",
+          "source": "read/bukhari.html#h4927"
+        },
+        {
+          "q": "Aisha was permitted to keep playing with what in Muhammad's house?",
+          "a": "Birds",
+          "b": "Dolls",
+          "c": "A pet goat",
+          "answer": "b",
+          "source": "read/bukhari.html#h5898"
+        },
+        {
+          "q": "Which of Muhammad's wives was originally married to his adopted son Zayd?",
+          "a": "Hafsa",
+          "b": "Zaynab bint Jahsh",
+          "c": "Umm Salama",
+          "answer": "b",
+          "source": "read/quran.html#s33v37"
+        },
+        {
+          "q": "Which surah revealed verses permitting that adopted-son marriage?",
+          "a": "Al-Ahzab (33)",
+          "b": "Al-Mumtahanah (60)",
+          "c": "An-Nur (24)",
+          "answer": "a",
+          "source": "read/quran.html#surah-33"
+        },
+        {
+          "q": "The honey incident in Surah At-Tahrim (66) involved Muhammad and which wife?",
+          "a": "Zaynab",
+          "b": "Hafsa",
+          "c": "Sawda",
+          "answer": "b",
+          "source": "read/quran.html#surah-66"
+        },
+        {
+          "q": "Aisha said one verse let her conclude Allah hastened to do what?",
+          "a": "Forgive her enemies",
+          "b": "Fulfil Muhammad's desires",
+          "c": "Punish hypocrites",
+          "answer": "b",
+          "source": "read/bukhari.html#h4582"
+        },
+        {
+          "q": "Q 33:28 offered the Prophet's wives who chose the world — what would they receive?",
+          "a": "Double the normal inheritance",
+          "b": "A provision and honourable release",
+          "c": "First rights to remarry",
+          "answer": "b",
+          "source": "read/quran.html#s33v28"
+        },
+        {
+          "q": "Per Bukhari, how many wives did Muhammad have at the time of his nightly rounds?",
+          "a": "Four",
+          "b": "Seven",
+          "c": "Nine",
+          "answer": "c",
+          "source": "read/bukhari.html#h283"
+        },
+        {
+          "q": "Per Bukhari (h297), Aisha was lying under the same sheet as the Prophet while she was in what condition?",
+          "a": "Ill with fever",
+          "b": "Fasting",
+          "c": "Menstruating",
+          "answer": "c",
+          "source": "read/bukhari.html#h297"
+        },
+        {
+          "q": "Q 33:4 clarifies that adopted sons are not real sons — partly to justify the Prophet marrying whose former wife?",
+          "a": "Umar ibn al-Khattab's daughter",
+          "b": "Zayd's ex-wife Zaynab",
+          "c": "A woman from Banu Qurayza",
+          "answer": "b",
+          "source": "read/quran.html#s33v4"
+        },
+        {
+          "q": "The 'Ifk' incident — a false accusation of adultery against Aisha — was cleared by divine revelation in which surah?",
+          "a": "Al-Ahzab (33)",
+          "b": "Al-Baqarah (2)",
+          "c": "An-Nur (24)",
+          "answer": "c",
+          "source": "read/quran.html#surah-24"
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "title": "Daily-life weirdness",
+      "blurb": "Flies, urine, lizards, beard dye.",
+      "questions": [
+        {
+          "q": "Bukhari 3320: if a fly falls in your drink, what should you do?",
+          "a": "Throw the drink away",
+          "b": "Dip the whole fly in, then drink",
+          "c": "Strain it through cloth",
+          "answer": "b",
+          "source": "read/bukhari.html#h3182"
+        },
+        {
+          "q": "Bukhari 5686: the Prophet recommended camel milk and which other camel product as medicine?",
+          "a": "Camel urine",
+          "b": "Camel hair",
+          "c": "Camel hump fat",
+          "answer": "a",
+          "source": "read/bukhari.html#h233"
+        },
+        {
+          "q": "Per Bukhari, the Prophet said grey hair should be dyed — but NOT to resemble whom?",
+          "a": "Christians",
+          "b": "Jews",
+          "c": "Persians",
+          "answer": "b",
+          "source": "read/bukhari.html#h3316"
+        },
+        {
+          "q": "What is the prescribed sunnah position for drinking water?",
+          "a": "Standing",
+          "b": "Sitting",
+          "c": "Lying down",
+          "answer": "b",
+          "source": "read/muslim.html#h5137"
+        },
+        {
+          "q": "Which side should one sleep on, according to the Prophet?",
+          "a": "Left",
+          "b": "Right",
+          "c": "Back",
+          "answer": "b",
+          "source": "read/bukhari.html#h247"
+        },
+        {
+          "q": "Per Muslim 2233, eating which animal was permitted by the Prophet for those who wished?",
+          "a": "Lizard (dabb)",
+          "b": "Frog",
+          "c": "Hyena",
+          "answer": "a",
+          "source": "read/muslim.html#h4891"
+        },
+        {
+          "q": "Bukhari describes Satan spending the night where, if you don't perform morning ablutions?",
+          "a": "On your eyelids",
+          "b": "In the upper part of your nose",
+          "c": "Under your bed",
+          "answer": "b",
+          "source": "read/bukhari.html#h3160"
+        },
+        {
+          "q": "Per Bukhari, what does the crowing of a rooster at night indicate?",
+          "a": "Rain is coming",
+          "b": "A devil is near",
+          "c": "It has seen an angel",
+          "answer": "c",
+          "source": "read/bukhari.html#h3167"
+        },
+        {
+          "q": "Bukhari records the Prophet had the physical strength of how many men, enabling him to visit all his wives in one night?",
+          "a": "Ten",
+          "b": "Twenty",
+          "c": "Thirty",
+          "answer": "c",
+          "source": "read/bukhari.html#h268"
+        },
+        {
+          "q": "Bukhari records the Prophet was successfully bewitched by Labid bin al-A'sam — what was the effect?",
+          "a": "He forgot verses of the Quran",
+          "b": "He imagined doing things he had not actually done",
+          "c": "He lost his appetite for forty days",
+          "answer": "b",
+          "source": "read/bukhari.html#h3134"
+        },
+        {
+          "q": "Per Muslim, which of the following disrupts (cuts off) a man's prayer if it passes in front of him?",
+          "a": "A cat",
+          "b": "A child under ten",
+          "c": "A black dog, a donkey, or a woman",
+          "answer": "c",
+          "source": "read/muslim.html#h1039"
+        },
+        {
+          "q": "Per Bukhari, when cleansing after using the toilet (istinja) with stones, the Prophet said their number must be what?",
+          "a": "At least two",
+          "b": "An odd number",
+          "c": "Exactly five",
+          "answer": "b",
+          "source": "read/bukhari.html#h161"
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "title": "Cosmology & nature",
+      "blurb": "Sun, heavens, mountains, stars.",
+      "questions": [
+        {
+          "q": "Q 18:86 says Dhul-Qarnayn followed the sun until he found it setting where?",
+          "a": "Behind a black mountain",
+          "b": "In a spring of murky water",
+          "c": "Beyond the ocean",
+          "answer": "b",
+          "source": "read/quran.html#s18v86"
+        },
+        {
+          "q": "How many heavens does the Quran describe Allah as creating?",
+          "a": "Three",
+          "b": "Seven",
+          "c": "Nine",
+          "answer": "b",
+          "source": "read/quran.html#s67v3"
+        },
+        {
+          "q": "Per the Quran, what role do the mountains play on the earth?",
+          "a": "Pegs / stakes",
+          "b": "Anchors at sea",
+          "c": "Storehouses of water",
+          "answer": "a",
+          "source": "read/quran.html#s78v7"
+        },
+        {
+          "q": "According to Bukhari, the sun goes and prostrates where each evening?",
+          "a": "Behind the moon",
+          "b": "Beneath the throne",
+          "c": "Inside the deepest ocean",
+          "answer": "b",
+          "source": "read/bukhari.html#h3066"
+        },
+        {
+          "q": "Q 67:5 says the lower heaven is decorated with lamps that are also used as what?",
+          "a": "Missiles for devils",
+          "b": "Beacons for angels",
+          "c": "Fuel for the sun",
+          "answer": "a",
+          "source": "read/quran.html#s67v5"
+        },
+        {
+          "q": "Q 86:6-7 says man is created from a fluid issuing from where?",
+          "a": "The brain and the heart",
+          "b": "The backbone and the ribs",
+          "c": "The lungs and the stomach",
+          "answer": "b",
+          "source": "read/quran.html#s86v6"
+        },
+        {
+          "q": "Q 65:12 — how many earths did Allah create, parallel to the heavens?",
+          "a": "One",
+          "b": "Three",
+          "c": "Seven",
+          "answer": "c",
+          "source": "read/quran.html#s65v12"
+        },
+        {
+          "q": "Q 21:30 says the heavens and earth were originally 'joined together' before Allah did what to them?",
+          "a": "Filled them with water",
+          "b": "Cleft them asunder",
+          "c": "Set them on pillars",
+          "answer": "b",
+          "source": "read/quran.html#s21v30"
+        },
+        {
+          "q": "Q 22:5 describes which stage of human creation in the womb?",
+          "a": "A clot of blood only",
+          "b": "Dust, then a drop, then a leech-like clot (alaqah)",
+          "c": "A fully formed skeleton",
+          "answer": "b",
+          "source": "read/quran.html#s22v5"
+        },
+        {
+          "q": "Q 23:14 names the embryonic stage that follows the alaqah (clot) as what?",
+          "a": "A bone (izam)",
+          "b": "A chewed lump of flesh (mudghah)",
+          "c": "A completed form (khalq)",
+          "answer": "b",
+          "source": "read/quran.html#s23v14"
+        },
+        {
+          "q": "Q 71:16 says Allah set the moon as a light — what did He make the sun?",
+          "a": "A mirror",
+          "b": "A burning lamp (siraj)",
+          "c": "A torch of fire",
+          "answer": "b",
+          "source": "read/quran.html#s71v16"
+        },
+        {
+          "q": "Q 79:30 says Allah 'spread out' (dahaha) the earth after the heavens — some scholars cite this word to argue what about Earth's shape in the Quran?",
+          "a": "That the Quran teaches a flat earth",
+          "b": "That the Quran implies an egg-like (oblate) form",
+          "c": "That the earth is a perfect sphere",
+          "answer": "b",
+          "source": "read/quran.html#s79v30"
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "title": "Warfare & conquest",
+      "blurb": "Khaybar, Banu Qurayza, ghanima, jizya.",
+      "questions": [
+        {
+          "q": "After the siege of Banu Qurayza, what fate did the adult men face?",
+          "a": "Exile to Khaybar",
+          "b": "Beheading in trenches",
+          "c": "Forced conversion",
+          "answer": "b",
+          "source": "read/bukhari.html#h2918"
+        },
+        {
+          "q": "What share of war booty (ghanima) is allocated to Allah and the Messenger per Q 8:41?",
+          "a": "One-half",
+          "b": "One-fifth",
+          "c": "One-tenth",
+          "answer": "b",
+          "source": "read/quran.html#s8v41"
+        },
+        {
+          "q": "Q 9:29 says jizya should be paid by People of the Book until they feel themselves what?",
+          "a": "Honoured",
+          "b": "Subdued / humbled",
+          "c": "Equal",
+          "answer": "b",
+          "source": "read/quran.html#s9v29"
+        },
+        {
+          "q": "Which Jewish tribe was conquered at Khaybar?",
+          "a": "Banu Nadir",
+          "b": "Banu Qaynuqa",
+          "c": "The Khaybar Jews (multiple clans incl. Banu Nadir remnants)",
+          "answer": "c",
+          "source": "read/bukhari.html#h4962"
+        },
+        {
+          "q": "Safiyya bint Huyayy was taken as a wife by Muhammad after which battle?",
+          "a": "Badr",
+          "b": "Khaybar",
+          "c": "Hunayn",
+          "answer": "b",
+          "source": "read/bukhari.html#h4962"
+        },
+        {
+          "q": "What is the Quranic term for striving in Allah's cause, often translated 'jihad'?",
+          "a": "Sabr",
+          "b": "Jihad fi sabilillah",
+          "c": "Hijra",
+          "answer": "b",
+          "source": "read/quran.html#s2v218"
+        },
+        {
+          "q": "Q 9:5, the so-called 'Sword Verse', commands believers to do what to polytheists after the sacred months?",
+          "a": "Invite them to dialogue",
+          "b": "Kill them wherever found, unless they repent",
+          "c": "Tax them double",
+          "answer": "b",
+          "source": "read/quran.html#s9v5"
+        },
+        {
+          "q": "Q 8:12 records Allah telling His angels He would cast what into the hearts of disbelievers?",
+          "a": "Doubt",
+          "b": "Despair",
+          "c": "Terror",
+          "answer": "c",
+          "source": "read/quran.html#s8v12"
+        },
+        {
+          "q": "Q 8:65 says one patient believer in battle can overcome how many disbelievers?",
+          "a": "Five",
+          "b": "Ten",
+          "c": "Twenty",
+          "answer": "b",
+          "source": "read/quran.html#s8v65"
+        },
+        {
+          "q": "Q 47:4 commands believers when they meet disbelievers in battle to do what first?",
+          "a": "Call them to Islam three times",
+          "b": "Strike at their necks",
+          "c": "Demand the jizya",
+          "answer": "b",
+          "source": "read/quran.html#s47v4"
+        },
+        {
+          "q": "Q 9:111 says Allah has 'purchased' the believers' lives and wealth in exchange for what?",
+          "a": "Land in this world",
+          "b": "Paradise",
+          "c": "Victory over all nations",
+          "answer": "b",
+          "source": "read/quran.html#s9v111"
+        },
+        {
+          "q": "Q 2:216 says fighting (qital) has been 'ordained' (kutiba) for believers even though it may be what to them?",
+          "a": "Compulsory",
+          "b": "Profitable",
+          "c": "Hateful / disliked",
+          "answer": "c",
+          "source": "read/quran.html#s2v216"
+        }
+      ]
+    },
+    {
+      "level": 6,
+      "title": "Hudud & punishment",
+      "blurb": "Stoning, apostasy, theft, lashes.",
+      "questions": [
+        {
+          "q": "Bukhari records the punishment for the married adulterer as what?",
+          "a": "100 lashes",
+          "b": "Stoning to death",
+          "c": "One year of exile",
+          "answer": "b",
+          "source": "read/bukhari.html#h2587"
+        },
+        {
+          "q": "Q 24:2 prescribes how many lashes for the unmarried fornicator?",
+          "a": "40",
+          "b": "80",
+          "c": "100",
+          "answer": "c",
+          "source": "read/quran.html#s24v2"
+        },
+        {
+          "q": "Q 5:38 prescribes what punishment for theft?",
+          "a": "Lashing",
+          "b": "Cutting off the hand",
+          "c": "Imprisonment",
+          "answer": "b",
+          "source": "read/quran.html#s5v38"
+        },
+        {
+          "q": "Bukhari records the Prophet's command on apostates as: 'Whoever changes his religion, ___'.",
+          "a": "...exile him",
+          "b": "...kill him",
+          "c": "...debate him",
+          "answer": "b",
+          "source": "read/bukhari.html#h6666"
+        },
+        {
+          "q": "How many witnesses does Q 24:4 require to convict someone of zina (fornication)?",
+          "a": "Two",
+          "b": "Three",
+          "c": "Four",
+          "answer": "c",
+          "source": "read/quran.html#s24v4"
+        },
+        {
+          "q": "Q 24:4 — failing to produce those witnesses, the accuser receives how many lashes?",
+          "a": "20",
+          "b": "80",
+          "c": "100",
+          "answer": "b",
+          "source": "read/quran.html#s24v4"
+        },
+        {
+          "q": "Abu Dawud 4395 records this as a hadd punishment exclusively for what?",
+          "a": "Drinking wine repeatedly",
+          "b": "Sodomy (luwat)",
+          "c": "Both partners executed",
+          "answer": "c",
+          "source": "read/abu-dawud.html#h4465"
+        },
+        {
+          "q": "Q 5:33 lists punishments for 'waging war against Allah and His Messenger' — which of these is explicitly included?",
+          "a": "Crucifixion",
+          "b": "Deportation to a non-Muslim land",
+          "c": "Lifelong imprisonment",
+          "answer": "a",
+          "source": "read/quran.html#s5v33"
+        },
+        {
+          "q": "Q 4:15-16 prescribes an early Quranic punishment for women proven guilty of lewdness — what is it?",
+          "a": "100 lashes and public shaming",
+          "b": "Confinement in their houses until death or until Allah provides another way",
+          "c": "Banishment from the city for a year",
+          "answer": "b",
+          "source": "read/quran.html#s4v15"
+        },
+        {
+          "q": "Q 4:89 says if hypocrites refuse to migrate and fight with the believers, what should be done with them?",
+          "a": "They should be shunned but not harmed",
+          "b": "They should be imprisoned and re-educated",
+          "c": "Take them and kill them wherever you find them",
+          "answer": "c",
+          "source": "read/quran.html#s4v89"
+        },
+        {
+          "q": "Q 5:45 states that Allah prescribed which legal principle in the Torah?",
+          "a": "Turn the other cheek",
+          "b": "Forgiveness is always preferred",
+          "c": "A life for a life, eye for eye, nose for nose",
+          "answer": "c",
+          "source": "read/quran.html#s5v45"
+        },
+        {
+          "q": "Q 4:56 says those who reject faith will have their skin replaced in Hell — for what reason?",
+          "a": "To humiliate them before other sinners",
+          "b": "So they may taste the punishment again and again",
+          "c": "To make them unrecognisable to their families",
+          "answer": "b",
+          "source": "read/quran.html#s4v56"
+        }
+      ]
+    },
+    {
+      "level": 7,
+      "title": "Privileges of the Prophet",
+      "blurb": "Wives, booty, exemptions.",
+      "questions": [
+        {
+          "q": "Q 33:50 grants Muhammad the right to take women in what additional category, beyond his wives?",
+          "a": "Captives whom his right hand possesses",
+          "b": "Non-Arab queens",
+          "c": "Daughters of allied chiefs",
+          "answer": "a",
+          "source": "read/quran.html#s33v50"
+        },
+        {
+          "q": "Q 33:53 forbids believers from doing what after his death?",
+          "a": "Living in Medina",
+          "b": "Marrying his wives",
+          "c": "Reciting his hadiths",
+          "answer": "b",
+          "source": "read/quran.html#s33v53"
+        },
+        {
+          "q": "How many simultaneous wives could Muhammad keep, per the standard Sunni accounting (vs. four for ordinary believers)?",
+          "a": "Four",
+          "b": "Seven",
+          "c": "Nine or more",
+          "answer": "c",
+          "source": "read/bukhari.html#h283"
+        },
+        {
+          "q": "What share of war booty was personally allocated to Muhammad as 'his portion'?",
+          "a": "One-quarter",
+          "b": "Part of the one-fifth khums",
+          "c": "Nothing — he refused all booty",
+          "answer": "b",
+          "source": "read/quran.html#s8v41"
+        },
+        {
+          "q": "Q 33:56 commands believers to do what concerning Muhammad?",
+          "a": "Send blessings upon him",
+          "b": "Match his prayers in number",
+          "c": "Recite his name before Allah's",
+          "answer": "a",
+          "source": "read/quran.html#s33v56"
+        },
+        {
+          "q": "Tahajjud (the night vigil) was made obligatory on whom alone, per the standard ruling on Q 17:79?",
+          "a": "All believers",
+          "b": "Muhammad alone",
+          "c": "Only the imams",
+          "answer": "b",
+          "source": "read/quran.html#s17v79"
+        },
+        {
+          "q": "Q 33:51 lets Muhammad do what with the rotation among his wives?",
+          "a": "Defer or take whichever he wishes",
+          "b": "Marry no more after Aisha",
+          "c": "Treat them strictly equally only",
+          "answer": "a",
+          "source": "read/quran.html#s33v51"
+        },
+        {
+          "q": "Q 33:40 describes Muhammad as the 'Seal' (Khatam) of what?",
+          "a": "The Companions",
+          "b": "The Prophets",
+          "c": "The Revelation",
+          "answer": "b",
+          "source": "read/quran.html#s33v40"
+        },
+        {
+          "q": "Q 33:6 says the Prophet is closer to the believers than what?",
+          "a": "Their fathers",
+          "b": "Their own selves",
+          "c": "Their scholars",
+          "answer": "b",
+          "source": "read/quran.html#s33v6"
+        },
+        {
+          "q": "Q 33:21 identifies the Prophet as a 'beautiful pattern of conduct' (uswa hasana) — for whom?",
+          "a": "For scholars and judges only",
+          "b": "For Arabs of the Quraysh tribe",
+          "c": "For those who hope in Allah and the Last Day",
+          "answer": "c",
+          "source": "read/quran.html#s33v21"
+        },
+        {
+          "q": "Per Bukhari (h268), the Prophet had the physical strength of how many men, allowing him to visit all his wives in one night?",
+          "a": "Ten",
+          "b": "Twenty",
+          "c": "Thirty",
+          "answer": "c",
+          "source": "read/bukhari.html#h268"
+        },
+        {
+          "q": "Q 4:65 says believers cannot truly have faith until they submit to the Prophet's judgment — and accept it without what?",
+          "a": "Prior consultation",
+          "b": "Any resentment or resistance",
+          "c": "A Quranic precedent",
+          "answer": "b",
+          "source": "read/quran.html#s4v65"
+        }
+      ]
+    },
+    {
+      "level": 8,
+      "title": "Logical & textual contradictions",
+      "blurb": "Abrogation, mutually-exclusive hadith.",
+      "questions": [
+        {
+          "q": "Q 2:256 says 'no compulsion in religion' — but is widely held to be abrogated by which verse?",
+          "a": "Q 9:5 (the Sword Verse)",
+          "b": "Q 5:32",
+          "c": "Q 109:6",
+          "answer": "a",
+          "source": "read/quran.html#s2v256"
+        },
+        {
+          "q": "Q 4:82 claims the Quran contains how many discrepancies, if from Allah?",
+          "a": "Many",
+          "b": "None",
+          "c": "Only seven",
+          "answer": "b",
+          "source": "read/quran.html#s4v82"
+        },
+        {
+          "q": "How long did Allah take to create the heavens and earth, per Q 7:54 / Q 41:9-12 (the famous tension)?",
+          "a": "Six days",
+          "b": "Eight days (when 41:9-12 are summed literally)",
+          "c": "Both answers appear in the text",
+          "answer": "c",
+          "source": "read/quran.html#s41v9"
+        },
+        {
+          "q": "Q 19:67 says man was created from nothing. Q 19:11 (and 38:71) says Adam was created from what?",
+          "a": "Water",
+          "b": "Clay",
+          "c": "Fire",
+          "answer": "b",
+          "source": "read/quran.html#s38v71"
+        },
+        {
+          "q": "Q 96:2 says man was created from a clinging clot. Q 25:54 says from what?",
+          "a": "Water",
+          "b": "Sperm only",
+          "c": "Dust",
+          "answer": "a",
+          "source": "read/quran.html#s25v54"
+        },
+        {
+          "q": "Bukhari + Muslim record Muhammad's age at death as 63, but other reports give what?",
+          "a": "60 lunar / 65 lunar",
+          "b": "70 lunar",
+          "c": "55 lunar",
+          "answer": "a",
+          "source": "read/bukhari.html#h3386"
+        },
+        {
+          "q": "Q 5:6 commands wudu before prayer. Q 4:43 forbids approaching prayer when in what state, before naming wudu?",
+          "a": "Drunken",
+          "b": "Hungry",
+          "c": "Asleep",
+          "answer": "a",
+          "source": "read/quran.html#s4v43"
+        },
+        {
+          "q": "Q 4:157 says the Jews did not crucify Jesus and did not kill him — what does the verse say happened instead?",
+          "a": "He ascended directly to heaven before they reached him",
+          "b": "It was made to appear that way to them (a likeness was shown)",
+          "c": "Another prophet died in his place voluntarily",
+          "answer": "b",
+          "source": "read/quran.html#s4v157"
+        },
+        {
+          "q": "Q 4:171 describes Jesus as a Word from Allah and a Spirit from Him — yet it strongly forbids calling Allah what?",
+          "a": "The Father",
+          "b": "One of Three (a Trinity)",
+          "c": "The Creator of Jesus",
+          "answer": "b",
+          "source": "read/quran.html#s4v171"
+        },
+        {
+          "q": "Q 3:59 says the likeness of Jesus with Allah is as the likeness of whom?",
+          "a": "Ibrahim",
+          "b": "Adam",
+          "c": "Musa",
+          "answer": "b",
+          "source": "read/quran.html#s3v59"
+        },
+        {
+          "q": "Q 5:3 declares 'this day I have perfected your religion' — scholars note this was revealed shortly before what event?",
+          "a": "The conquest of Mecca",
+          "b": "The battle of Badr",
+          "c": "The Prophet's death (Farewell Pilgrimage)",
+          "answer": "c",
+          "source": "read/quran.html#s5v3"
+        },
+        {
+          "q": "Bukhari (h3134) records the Prophet was successfully bewitched so that he imagined doing things he had not done. What does this tension most directly challenge?",
+          "a": "The reliability of the Quran's preservation",
+          "b": "The doctrine of prophetic immunity from magic",
+          "c": "The authority of the Sunnah over the Quran",
+          "answer": "b",
+          "source": "read/bukhari.html#h3134"
+        }
+      ]
+    },
+    {
+      "level": 9,
+      "title": "The deep cuts",
+      "blurb": "Satanic Verses, sheep-eats-Quran, lost surahs, Mi'raj.",
+      "questions": [
+        {
+          "q": "The 'Satanic Verses' incident concerns praise of which three goddesses being briefly recited?",
+          "a": "Al-Lat, Al-Uzza, Manat",
+          "b": "Hubal, Wadd, Suwa",
+          "c": "Isaf, Naila, Nasr",
+          "answer": "a",
+          "source": "read/quran.html#s53v19"
+        },
+        {
+          "q": "Per Ibn Majah, after Muhammad's death, the verses on stoning and adult-suckling were lost because what happened?",
+          "a": "A sheep ate the page they were written on",
+          "b": "They were burned in a fire",
+          "c": "They were never written down",
+          "answer": "a",
+          "source": "read/ibn-majah.html#h1678"
+        },
+        {
+          "q": "On the Mi'raj (night journey) the prayers were originally how many a day, before Moses negotiated them down?",
+          "a": "10",
+          "b": "20",
+          "c": "50",
+          "answer": "c",
+          "source": "read/bukhari.html#h345"
+        },
+        {
+          "q": "After how many rounds of negotiation with Moses was the count finally fixed at 5?",
+          "a": "Four",
+          "b": "Nine",
+          "c": "Around half a dozen",
+          "answer": "c",
+          "source": "read/bukhari.html#h3724"
+        },
+        {
+          "q": "On the Mi'raj, which prophet did Muhammad meet in the seventh heaven (Bukhari 3207)?",
+          "a": "Adam",
+          "b": "Moses",
+          "c": "Abraham",
+          "answer": "c",
+          "source": "read/bukhari.html#h3074"
+        },
+        {
+          "q": "Aisha is reported (Muslim 1452) to have said the verse on adult breastfeeding (rida' al-kabir) made which relationships unmarriageable?",
+          "a": "Ten sucklings",
+          "b": "Five known sucklings",
+          "c": "Three sucklings",
+          "answer": "b",
+          "source": "read/muslim.html#h3474"
+        },
+        {
+          "q": "The Black Stone of the Kaaba (Tirmidhi 877) is said to have descended from Paradise originally what colour, before sins blackened it?",
+          "a": "Whiter than milk",
+          "b": "Red as ruby",
+          "c": "Green as emerald",
+          "answer": "a",
+          "source": "read/tirmidhi.html#h878"
+        },
+        {
+          "q": "Per Muslim (h3477), a grown man named Salim was instructed to suckle from a woman's breast — what did this create?",
+          "a": "A legal guardianship bond",
+          "b": "A foster-mother (mahram) relationship making him permanently unmarriageable to her",
+          "c": "A debt obligation to her husband",
+          "answer": "b",
+          "source": "read/muslim.html#h3477"
+        },
+        {
+          "q": "Q 56:35-36 says the female companions of Paradise were 'created anew' — as what?",
+          "a": "Translucent beings made of light",
+          "b": "Immortal guardians without gender",
+          "c": "Virgins, lovers of equal age",
+          "answer": "c",
+          "source": "read/quran.html#s56v35"
+        },
+        {
+          "q": "Q 78:33 describes one of the rewards of Paradise using the word 'kawa'ib' — typically translated as what?",
+          "a": "Flowing rivers of milk",
+          "b": "Full-breasted maidens",
+          "c": "Palaces of pearl",
+          "answer": "b",
+          "source": "read/quran.html#s78v33"
+        },
+        {
+          "q": "Q 44:54 says the righteous in Paradise will be given as companions 'hur 'in' — this phrase typically means what?",
+          "a": "Faithful servants of any gender",
+          "b": "Reunited with their earthly spouses",
+          "c": "Wide-eyed, pure (celestial) companions",
+          "answer": "c",
+          "source": "read/quran.html#s44v54"
+        },
+        {
+          "q": "Bukhari (h7231) gives an account of the Mi'raj night journey — where did it physically begin?",
+          "a": "The Prophet's house in Medina",
+          "b": "The Sacred Mosque (al-Masjid al-Haram) in Mecca",
+          "c": "The Cave of Hira",
+          "answer": "b",
+          "source": "read/bukhari.html#h7231"
+        }
+      ]
+    }
+  ]
+}
