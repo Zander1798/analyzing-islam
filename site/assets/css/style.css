@@ -142,28 +142,7 @@ body.embed-mode .reader-layout {
 }
 
 .site-nav-inner .goat-scream {
-  /* Auth button already takes margin-left: auto to push itself to the
-     right edge; goat follows right after. A negative margin-left cancels
-     the parent's 24px flex-gap so the goat sits almost flush against
-     the Account chip. */
-  margin-left: -18px;
-}
-
-/* Desktop: park the goat on its own row below the main nav line, centered.
-   A flex-basis:100% pseudo-element acts as a forced line break, and flex
-   order places the goat after it so the auth button / nav links stay on
-   the first line. The mobile rules further down keep the goat inline. */
-@media (min-width: 769px) {
-  .site-nav-inner::after {
-    content: "";
-    flex-basis: 100%;
-    height: 0;
-    order: 99;
-  }
-  .site-nav-inner .goat-scream {
-    order: 100;
-    margin: 2px auto 0;
-  }
+  margin-left: 8px;
 }
 
 .site-brand {
@@ -882,8 +861,8 @@ blockquote {
   padding: 0;
   margin: 0;
   cursor: pointer;
-  width: 60px;
-  height: 50px;
+  width: 90px;
+  height: 90px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1058,8 +1037,8 @@ blockquote {
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .goat-scream {
-    width: 44px;
-    height: 38px;
+    width: 60px;
+    height: 60px;
   }
 
   .hero {
@@ -1169,11 +1148,8 @@ blockquote {
   display: inline-flex;
   align-items: center;
   order: 98; /* just before the goat (order: 99) */
-  /* Sit immediately after the last nav link (FAQ) rather than being
-     shoved to the right edge. The parent's 24px column-gap gives the
-     visual separation from FAQ. */
-  margin-left: 0;
-  margin-right: 22px;
+  margin-left: auto;
+  margin-right: 0;
   flex-shrink: 0;
   font-family: var(--sans);
 }
