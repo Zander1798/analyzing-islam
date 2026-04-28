@@ -128,7 +128,7 @@ body.embed-mode .reader-layout {
   padding: 16px 32px 12px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   column-gap: 24px;
   row-gap: 8px;
   flex-wrap: wrap;
