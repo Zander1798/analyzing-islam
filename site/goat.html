@@ -32,6 +32,33 @@
   .site-nav          { background: #000; }
   .goat-stage        { background: #000; }
   .goat-side > .card:not(.play-card) { background: #000; }
+
+  /* GIF skin images */
+  .goat-gif {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  /* Nav button: fill the button area */
+  .goat-scream .goat-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  /* Big goat on the stage */
+  .goat-gif-big {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  /* Skin preview thumbnail */
+  .skin-preview .goat-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 </style>
 </head>
 <body>
@@ -67,7 +94,9 @@
     <!-- Left column: big goat stage -->
     <div class="goat-stage">
       <div class="goat-stage-inner" id="goat-stage-inner">
-        <!-- goat-page.js injects the interactive goat button here -->
+        <button class="goat-big" id="goat-big" type="button" aria-label="Goat">
+          <img src="assets/images/goat-standard.gif" id="goat-big-img" class="goat-gif-big" alt="Goat">
+        </button>
       </div>
       <p class="goat-stage-hint">Click the goat to interact.</p>
     </div>
@@ -81,7 +110,16 @@
           <p class="card-sub">Pass quiz levels to unlock new looks.</p>
         </div>
         <div class="skins-grid" id="skins-grid">
-          <!-- goat-page.js injects skin slots here -->
+
+          <div class="skin-slot is-selected" id="skin-slot-standard">
+            <div class="skin-preview">
+              <img src="assets/images/goat-standard.gif" class="goat-gif" alt="Standard">
+            </div>
+            <div class="skin-name">Standard</div>
+            <div class="skin-blurb">The classic.</div>
+            <button class="skin-action is-selected" disabled>Selected</button>
+          </div>
+
         </div>
       </div>
 
@@ -105,6 +143,7 @@
 <script src="assets/js/config.js"></script>
 <script src="assets/js/auth.js" defer></script>
 <script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/goat-skins.js"></script>
 <script src="assets/js/goat.js" defer></script>
 <script src="assets/js/snap-to-hash.js" defer></script>
 <!-- goat-skins.js and goat-page.js added once skins are designed -->
