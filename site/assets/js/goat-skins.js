@@ -24,6 +24,13 @@
       gif:   "assets/images/goat-hijab.gif",
       level: null,
     },
+    {
+      id:    "chef",
+      name:  "Chef",
+      blurb: "Head chef, head horns.",
+      gif:   "assets/images/goat-chef.gif",
+      level: null,
+    },
   ];
 
   var LS_SKIN    = "aig:goat-skin";
