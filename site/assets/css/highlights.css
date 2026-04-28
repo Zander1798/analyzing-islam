@@ -132,8 +132,33 @@ mark.ai-hl.is-flash {
 
 .hl-card.is-collapsed .hl-card-list,
 .hl-card.is-collapsed .hl-card-empty { display: none; }
-.hl-card.is-collapsed { height: auto; min-height: 0; }
-.hl-card.is-collapsed .hl-card-head { cursor: pointer; margin-bottom: 0; }
+.hl-card.is-collapsed {
+  height: auto;
+  min-height: 0;
+  overflow: hidden;
+}
+.hl-card.is-collapsed .hl-card-head {
+  cursor: pointer;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+/* Reader / bible layout: collapse grid column to header width when card closes */
+.reader-layout.has-hl-card:has(> .hl-card.is-collapsed) {
+  grid-template-columns:
+    var(--reader-toc-w, 260px)
+    10px
+    minmax(0, 1fr)
+    10px
+    max-content;
+}
+.bible-layout.has-hl-card:has(> .hl-card.is-collapsed) {
+  grid-template-columns: 240px minmax(0, 1fr) 10px max-content;
+}
+.reader-layout.has-hl-card:has(> .hl-card.is-collapsed) > .splitter[data-splitter-key="reader-hl"],
+.bible-layout.has-hl-card:has(> .hl-card.is-collapsed) > .splitter[data-splitter-key="reader-hl"] {
+  display: none;
+}
 
 .hl-card-head h3 {
   font-size: 11px;
