@@ -17,6 +17,13 @@
       gif:   "assets/images/goat-educated.gif",
       level: null,
     },
+    {
+      id:    "hijab",
+      name:  "Hijab",
+      blurb: "Modest and magnificent.",
+      gif:   "assets/images/goat-hijab.gif",
+      level: null,
+    },
   ];
 
   var LS_SKIN    = "aig:goat-skin";
