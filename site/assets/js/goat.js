@@ -57,62 +57,6 @@
     window.addEventListener("storage", function (e) {
       if (e.key === "aig:goat-skin") repaintNavGoat(btn);
     });
-
-    // --- Speech bubble ---------------------------------------------------
-    const PHRASES = [
-      "Such powerful Dawha",
-      "Screams in Hadith",
-      "Much Knowledge",
-      "Alhamdulillah!",
-      "Nibbling Quran bits...",
-      "What's the Injeel?",
-    ];
-
-    let phraseIndex = 0;
-    function pickPhrase() {
-      const next = PHRASES[phraseIndex];
-      phraseIndex = (phraseIndex + 1) % PHRASES.length;
-      return next;
-    }
-
-    const bubble = document.createElement("span");
-    bubble.className = "goat-bubble";
-    bubble.setAttribute("aria-live", "polite");
-    bubble.innerHTML =
-      '<span class="goat-bubble-spinner" aria-hidden="true">' +
-        '<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>' +
-      '</span>' +
-      '<span class="goat-bubble-text"></span>';
-    const bubbleText = bubble.querySelector(".goat-bubble-text");
-
-    function setPhrase(text) {
-      bubbleText.textContent = "";
-      let visibleIndex = 0;
-      for (const ch of text) {
-        if (ch === " ") { bubbleText.appendChild(document.createTextNode(" ")); continue; }
-        const span = document.createElement("span");
-        span.className = "ch";
-        span.style.animationDelay = (visibleIndex * 0.07) + "s";
-        span.textContent = ch;
-        bubbleText.appendChild(span);
-        visibleIndex++;
-      }
-    }
-
-    function replayPop() {
-      bubble.classList.remove("is-pop");
-      void bubble.offsetWidth;
-      bubble.classList.add("is-pop");
-    }
-
-    setPhrase(pickPhrase());
-    btn.appendChild(bubble);
-    replayPop();
-
-    setInterval(function () {
-      setPhrase(pickPhrase());
-      replayPop();
-    }, 45 * 1000);
   }
 
   if (document.readyState === "loading") {

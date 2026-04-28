@@ -893,7 +893,7 @@ blockquote {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
-  position: relative; /* anchor for the goat-bubble floating above */
+  position: relative;
   overflow: visible;
 }
 
@@ -1043,124 +1043,11 @@ blockquote {
   100% { transform: translate(0, 0)    rotate(0deg); }
 }
 
-/* ===== Goat speech bubble =====
-   Claude Code-style status text: no box, italic serif, orange shimmer that
-   sweeps left-to-right across the glyphs. Floats above the goat (top-right
-   corner of the nav). */
-.goat-bubble {
-  /* Float just to the RIGHT of the goat, up near the top of the nav bar
-     so the bottom of the text sits right above the goat's back.
-     Goat button is 50px tall; the back (top of body) sits ~15–17px down
-     from the button's top, so we pin the bubble's top slightly above the
-     button and let the text drop to about that line. */
-  position: absolute;
-  left: 100%;
-  top: -4px;
-  margin-left: 2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 13px;
-  line-height: 1.2;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  /* No background, border, padding — the text stands alone. */
-}
-
-/* Starburst "generating" indicator: 8 short lines radiating from a single
-   centre point, all bursting outward together like a tiny firework, then
-   fading at their tips before the next burst. No rotation — each spoke
-   only grows/fades along its own fixed axis. */
-.goat-bubble .goat-bubble-spinner {
-  position: relative;
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-}
-
-.goat-bubble .goat-bubble-spinner > i {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 1.2px;
-  height: 5px;
-  background: #cc785c;
-  border-radius: 1px;
-  /* Base transform: place the spoke's bottom-centre at the container's
-     centre, then rotate to its assigned angle. scaleY is animated below
-     so the spoke appears to shoot outward from the centre. */
-  transform-origin: 50% 100%;
-  transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(0);
-  animation: goat-spoke-burst 1.4s ease-out infinite;
-}
-
-.goat-bubble .goat-bubble-spinner > i:nth-child(1) { --a:   0deg; }
-.goat-bubble .goat-bubble-spinner > i:nth-child(2) { --a:  45deg; }
-.goat-bubble .goat-bubble-spinner > i:nth-child(3) { --a:  90deg; }
-.goat-bubble .goat-bubble-spinner > i:nth-child(4) { --a: 135deg; }
-.goat-bubble .goat-bubble-spinner > i:nth-child(5) { --a: 180deg; }
-.goat-bubble .goat-bubble-spinner > i:nth-child(6) { --a: 225deg; }
-.goat-bubble .goat-bubble-spinner > i:nth-child(7) { --a: 270deg; }
-.goat-bubble .goat-bubble-spinner > i:nth-child(8) { --a: 315deg; }
-
-@keyframes goat-spoke-burst {
-  0%   { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(0);   opacity: 0; }
-  15%  { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(0.3); opacity: 1; }
-  60%  { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(1);   opacity: 0.85; }
-  80%  { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(1.4); opacity: 0; }
-  100% { transform: translate(-50%, -100%) rotate(var(--a, 0deg)) scaleY(0);   opacity: 0; }
-}
-
-.goat-bubble.is-pop {
-  animation: goat-bubble-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
-}
-
-/* Solid terracotta text — no background-clip gloss. Each character is
-   wrapped in a <span class="ch"> by goat.js and scales up briefly on a
-   staggered delay to produce a wave rolling across the phrase. */
-.goat-bubble .goat-bubble-text {
-  color: #cc785c;
-}
-
-.goat-bubble .goat-bubble-text .ch {
-  display: inline-block;
-  transform-origin: 50% 100%; /* grow from the baseline so letters bob up */
-  animation: goat-letter-wave 1.4s ease-in-out infinite;
-  will-change: transform;
-}
-
-@keyframes goat-bubble-pop {
-  0%   { opacity: 0; transform: translateX(-6px); }
-  100% { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes goat-letter-wave {
-  0%, 100% { transform: scale(1); }
-  12%      { transform: scale(1.18); }
-  24%      { transform: scale(1); }
-  /* 24%–100%: hold at scale(1) while the wave moves on to later letters. */
-}
-
-/* On mobile: keep the caption visible and flush the Account + goat
-   pair to the LEFT of their wrapped row so the caption has the entire
-   right side of the viewport to extend into without clipping. */
 @media (max-width: 768px) {
-  .goat-bubble {
-    font-size: 11px;
-  }
-  /* Kill the desktop `margin-left: auto` that normally pushes the
-     Account chip to the right edge; on mobile we want the pair on
-     the left of its row. */
   .site-nav-inner .auth-button {
     margin-left: 0;
   }
   .site-nav-inner .goat-scream {
-    /* Desktop sets -18px to sit flush against the Account chip; on
-       mobile restore a small positive gap and absorb the remaining
-       slack on the right so the pair stays left-aligned. */
     margin-left: 8px;
     margin-right: auto;
   }
