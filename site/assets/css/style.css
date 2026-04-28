@@ -125,20 +125,17 @@ body.embed-mode .reader-layout {
 .site-nav-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px 32px;
+  padding: 16px 32px 12px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   column-gap: 24px;
-  row-gap: 0;
+  row-gap: 8px;
   flex-wrap: wrap;
 }
 
 .site-nav-inner .site-nav-links {
-  /* Place the nav links about 1/4 of the way between the brand and the goat.
-     Tightened from 80 → 48px to make room for an 8th link (Build) without
-     wrapping the auth button / goat onto a new row. */
-  margin-left: 48px;
+  margin-left: 0;
 }
 
 .site-nav-inner .goat-scream {
@@ -154,6 +151,9 @@ body.embed-mode .reader-layout {
   letter-spacing: -0.02em;
   white-space: nowrap;
   flex-shrink: 0;
+  flex-basis: 100%;
+  text-align: center;
+  order: 0;
 }
 
 .site-brand:hover {
@@ -1022,12 +1022,15 @@ blockquote {
 }
 
 @media (max-width: 768px) {
+  .site-brand {
+    flex-basis: auto;
+    text-align: left;
+  }
   .site-nav-inner .auth-button {
-    margin-left: 0;
+    margin-left: auto;
   }
   .site-nav-inner .goat-scream {
     margin-left: 8px;
-    margin-right: auto;
   }
 }
 
