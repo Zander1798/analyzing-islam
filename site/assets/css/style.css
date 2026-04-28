@@ -3133,7 +3133,7 @@ blockquote {
 
 .skin-slot {
   position: relative;
-  background: rgba(255,255,255,0.03);
+  background: #000;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 12px 10px 10px;
