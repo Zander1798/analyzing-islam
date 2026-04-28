@@ -221,5 +221,10 @@
       });
 
     $("#quiz-quit").addEventListener("click", quitToLevels);
+
+    // Re-render the levels grid when progress syncs from Supabase.
+    window.addEventListener("aig:progress-loaded", function () {
+      if (state.levels && !state.currentLevel) renderLevelsGrid();
+    });
   });
 })();

@@ -315,6 +315,14 @@
     });
 
     highlightFromHash();
+
+    // Re-apply lock states when progress syncs from Supabase.
+    window.addEventListener("aig:progress-loaded", function () {
+      applyLockStates();
+      var s = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
+      if (!getUnlocked().has(s)) s = "standard";
+      selectSkin(s);
+    });
   }
 
   if (document.readyState === "loading") {
