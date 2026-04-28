@@ -66,6 +66,13 @@
       gif:   "assets/images/goat-beard.gif",
       level: null,
     },
+    {
+      id:    "quran",
+      name:  "Quran Goat",
+      blurb: "Reads the book, eats the grass.",
+      gif:   "assets/images/goat-quran.gif",
+      level: null,
+    },
   ];
 
   var LS_SKIN    = "aig:goat-skin";
