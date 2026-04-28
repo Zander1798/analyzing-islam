@@ -3274,6 +3274,19 @@ blockquote {
   font-size: 36px;
   margin: 8px 0 4px;
 }
+.play-auth-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 32px 0 0;
+}
+.play-auth-message {
+  color: var(--text-muted);
+  font-size: 16px;
+  margin: 0;
+}
+
 .play-page-tagline {
   color: var(--muted);
   margin: 0 0 28px;

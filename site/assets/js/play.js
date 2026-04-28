@@ -206,21 +206,71 @@
       .replace(/'/g, "&#39;");
   }
 
+  // --- Auth gate -----------------------------------------------------------
+  function isSignedIn() {
+    return !!(window.__session && window.__session.user);
+  }
+
+  function renderAuthGate() {
+    const view = $("#levels-view");
+    if (!view) return;
+    view.innerHTML =
+      '<div class="play-page-back"><a href="index.html" class="btn">← Home</a></div>' +
+      '<h1 class="play-page-title">Quiz Levels</h1>' +
+      '<div class="play-auth-gate">' +
+        '<p class="play-auth-message">Sign in to play and save your progress across all your devices.</p>' +
+        '<a href="login.html" class="btn btn-primary">Sign in</a>' +
+      '</div>';
+  }
+
+  function initPlay() {
+    if (!window.GoatSkins) return;
+
+    if (!isSignedIn()) {
+      renderAuthGate();
+      return;
+    }
+
+    // Restore the levels-view HTML if we previously showed the auth gate.
+    const view = $("#levels-view");
+    if (view && !view.querySelector(".play-page-title")) {
+      view.innerHTML =
+        '<div class="play-page-back">' +
+          '<a href="index.html" class="btn">← Home</a>' +
+          '<a href="goat.html" class="btn">Goat →</a>' +
+        '</div>' +
+        '<h1 class="play-page-title">Quiz Levels</h1>' +
+        '<p class="play-page-tagline">One wrong answer ends the level. Pass each level to unlock a new goat skin. 7 questions drawn from a pool of 12 — the order changes every run.</p>' +
+        '<div class="levels-grid" id="levels-grid"><p style="color:var(--text-muted)">Loading levels…</p></div>';
+    }
+
+    if (!state.levels) {
+      fetch("assets/data/quiz-levels.json", { cache: "no-cache" })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          state.levels = data.levels;
+          renderLevelsGrid();
+        })
+        .catch(function (err) {
+          const grid = $("#levels-grid");
+          if (grid) grid.innerHTML = '<p class="quiz-error">Could not load levels: ' + escapeHtml(String(err)) + '</p>';
+        });
+    } else {
+      renderLevelsGrid();
+    }
+
+    if (!$("#quiz-quit")._quitBound) {
+      $("#quiz-quit").addEventListener("click", quitToLevels);
+      $("#quiz-quit")._quitBound = true;
+    }
+  }
+
   // --- Boot ----------------------------------------------------------------
   ready(function () {
-    if (!window.GoatSkins) return;
-    fetch("assets/data/quiz-levels.json", { cache: "no-cache" })
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        state.levels = data.levels;
-        renderLevelsGrid();
-      })
-      .catch(function (err) {
-        const grid = $("#levels-grid");
-        if (grid) grid.innerHTML = '<p class="quiz-error">Could not load levels: ' + escapeHtml(String(err)) + '</p>';
-      });
+    initPlay();
 
-    $("#quiz-quit").addEventListener("click", quitToLevels);
+    // Re-run gate check whenever auth state changes.
+    window.addEventListener("auth-state", function () { initPlay(); });
 
     // Re-render the levels grid when progress syncs from Supabase.
     window.addEventListener("aig:progress-loaded", function () {
