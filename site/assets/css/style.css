@@ -3181,6 +3181,10 @@ blockquote {
 .skin-slot.is-locked .skin-preview {
   filter: brightness(0) saturate(0) opacity(0.45);
 }
+.skin-slot.is-locked .skin-name,
+.skin-slot.is-locked .skin-blurb {
+  visibility: hidden;
+}
 
 .skin-name {
   font-weight: 600;
