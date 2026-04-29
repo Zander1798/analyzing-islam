@@ -510,55 +510,85 @@
       }));
     }
 
-    bar.querySelectorAll(".ai-hl-swatch").forEach((sw) => {
-      sw.addEventListener("mousedown", (e) => { e.preventDefault(); });
-      sw.addEventListener("click", (e) => {
-        e.preventDefault();
-        saveCurrent(sw.getAttribute("data-color"));
+    // Bind toolbar buttons only once per toolbar element — if attach() is
+    // called multiple times on the same document (reader page + build-editor
+    // parent), this prevents a second set of click listeners that would cause
+    // one colour-swatch click to trigger two inserts (duplicate highlights).
+    if (!bar._hlBound) {
+      bar._hlBound = true;
+      bar.querySelectorAll(".ai-hl-swatch").forEach((sw) => {
+        sw.addEventListener("mousedown", (e) => { e.preventDefault(); });
+        sw.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (bar._hlSave) bar._hlSave(sw.getAttribute("data-color"));
+        });
       });
-    });
-    const colorInput = bar.querySelector(".ai-hl-color-input");
-    colorInput.addEventListener("input", () => {
-      // Live preview not needed — commit on change.
-    });
-    colorInput.addEventListener("change", () => {
-      saveCurrent(colorInput.value || DEFAULT_COLOR);
-    });
-    bar.querySelector(".ai-hl-remove").addEventListener("click", async () => {
+      const colorInput = bar.querySelector(".ai-hl-color-input");
+      colorInput.addEventListener("change", () => {
+        if (bar._hlSave) bar._hlSave(colorInput.value || DEFAULT_COLOR);
+      });
+      bar.querySelector(".ai-hl-remove").addEventListener("click", async () => {
+        if (bar._hlRemove) await bar._hlRemove();
+      });
+    }
+    // Update the active save/remove handlers for this attach scope.
+    bar._hlSave = saveCurrent;
+    bar._hlRemove = async function () {
       if (!pendingMarkId) return;
       const id = isNaN(Number(pendingMarkId)) ? pendingMarkId : Number(pendingMarkId);
       hideToolbar(bar);
-      // If the row has a group, remove the whole group.
       const rows = await list(source);
       const row = rows.find((r) => String(r.id) === String(pendingMarkId));
       if (row && row.group_id) await removeGroup(source, row.group_id);
       else await remove(source, id);
-    });
+    };
 
     // -- Close button injected into card header -------------------------
     if (cardEl) {
       const hlHead = cardEl.querySelector(".hl-card-head");
       if (hlHead && !hlHead.querySelector(".hl-card-close")) {
-        const closeBtn = cardEl.ownerDocument.createElement("button");
+        const cardDoc = cardEl.ownerDocument;
+        const closeBtn = cardDoc.createElement("button");
         closeBtn.type = "button";
         closeBtn.className = "hl-card-close";
-        closeBtn.title = "Collapse highlights";
-        closeBtn.setAttribute("aria-label", "Collapse highlights");
+        closeBtn.title = "Close highlights";
+        closeBtn.setAttribute("aria-label", "Close highlights");
         closeBtn.textContent = "×";
         closeBtn.addEventListener("click", function (e) {
           e.stopPropagation();
-          const collapsed = cardEl.classList.toggle("is-collapsed");
-          closeBtn.textContent = collapsed ? "+" : "×";
-          closeBtn.title = collapsed ? "Expand highlights" : "Collapse highlights";
-        });
-        hlHead.addEventListener("click", function () {
-          if (cardEl.classList.contains("is-collapsed")) {
-            cardEl.classList.remove("is-collapsed");
-            closeBtn.textContent = "×";
-            closeBtn.title = "Collapse highlights";
+          // Grid-layout readers: collapse the right-side splitter so its
+          // expand arrow becomes the re-open control and the card fully hides.
+          const layout = cardEl.closest
+            ? cardEl.closest(".reader-layout, .bible-layout")
+            : null;
+          const splitter = layout
+            ? layout.querySelector('.splitter[data-splitter-key="reader-hl"]')
+            : null;
+          if (splitter) {
+            const cssVar = splitter.getAttribute("data-splitter-var") || "--reader-hl-w";
+            const key    = "splitter:" + (splitter.getAttribute("data-splitter-key") || cssVar);
+            cardDoc.documentElement.style.setProperty(cssVar, "0px");
+            splitter.classList.add("is-collapsed");
+            splitter.setAttribute("aria-expanded", "false");
+            try { localStorage.setItem(key, "0"); } catch (_) {}
+            return;
           }
+          // Floating / static cards (Ibn Kathīr, build editor): fully hide.
+          cardEl.classList.add("is-dismissed");
+          const toggleBtn = cardDoc.querySelector(".hl-card-toggle");
+          if (toggleBtn) toggleBtn.style.display = "flex";
         });
         hlHead.appendChild(closeBtn);
+        // Allow the toggle button to re-open the card after dismissal.
+        const toggleBtn = cardDoc.querySelector(".hl-card-toggle");
+        if (toggleBtn) {
+          toggleBtn.addEventListener("click", function () {
+            if (cardEl.classList.contains("is-dismissed")) {
+              cardEl.classList.remove("is-dismissed");
+              toggleBtn.style.display = "";
+            }
+          });
+        }
       }
     }
 

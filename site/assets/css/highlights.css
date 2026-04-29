@@ -130,6 +130,8 @@ mark.ai-hl.is-flash {
 }
 .hl-card-close:hover { color: var(--text, #eee); }
 
+.hl-card.is-dismissed { display: none; }
+
 .hl-card.is-collapsed .hl-card-list,
 .hl-card.is-collapsed .hl-card-empty { display: none; }
 .hl-card.is-collapsed {
