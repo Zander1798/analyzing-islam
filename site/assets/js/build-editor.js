@@ -357,6 +357,7 @@
         scope: doc.body,
         anchorRe: anchorRe,
         cardEl: card,
+        forceCard: true,  // bypass embed-mode suppression; host manages the card
       });
       lastDetach = function () {};
       void handle;

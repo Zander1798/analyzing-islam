@@ -406,6 +406,22 @@ mark.ai-hl.is-flash {
   .hl-card-toggle { display: none; }
 }
 
+/* ---------- Embed mode (compare / build iframes): hide reader's own panel ---------- */
+html.embed-mode .hl-card,
+body.embed-mode .hl-card,
+html.embed-mode .hl-card-toggle,
+body.embed-mode .hl-card-toggle,
+html.embed-mode .splitter[data-splitter-key="reader-hl"],
+body.embed-mode .splitter[data-splitter-key="reader-hl"] { display: none !important; }
+html.embed-mode .reader-layout.has-hl-card,
+body.embed-mode .reader-layout.has-hl-card {
+  grid-template-columns: var(--reader-toc-w, 260px) 10px minmax(0, 1fr) !important;
+}
+html.embed-mode .bible-layout.has-hl-card,
+body.embed-mode .bible-layout.has-hl-card {
+  grid-template-columns: 240px minmax(0, 1fr) !important;
+}
+
 /* ---------- Build editor: card lives inside .build-pane-source ---------- */
 .build-pane-source .hl-card {
   position: static;

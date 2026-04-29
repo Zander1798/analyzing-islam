@@ -457,6 +457,18 @@
     const doc      = scope.ownerDocument || scope;
     const win      = doc.defaultView || window;
 
+    // In embed mode (compare / build iframes): paint existing highlights
+    // passively but skip toolbar wiring and card setup. The host page's
+    // attach() call with forceCard:true handles interaction and the card.
+    const isEmbedMode = !opts.forceCard && (
+      (doc.documentElement && doc.documentElement.classList.contains("embed-mode")) ||
+      (doc.body && doc.body.classList.contains("embed-mode"))
+    );
+    if (isEmbedMode) {
+      repaint(scope, source);
+      return { refresh: function () { repaint(scope, source); } };
+    }
+
     const bar = ensureToolbar(doc);
     let pendingRange = null;
     let pendingMarkId = null; // when selection lands inside an existing <mark>
@@ -504,6 +516,9 @@
       // Clear selection so the toolbar dismisses cleanly.
       try { doc.getSelection().removeAllRanges(); } catch (_) {}
       hideToolbar(bar);
+      // Paint immediately for instant visual feedback before the async DB save.
+      const tempBase = "opt-" + Date.now() + "-";
+      rows.forEach((r, i) => paintRow(scope, Object.assign({ id: tempBase + i, color, source }, r)));
       await insertMany(source, rows);
       window.dispatchEvent(new CustomEvent("highlights-changed", {
         detail: { source, action: "added" },
@@ -573,13 +588,20 @@
             try { localStorage.setItem(key, "0"); } catch (_) {}
             return;
           }
-          // Floating / static cards (Ibn Kathīr, build editor): fully hide.
-          cardEl.classList.add("is-dismissed");
+          // Floating / static cards (Ibn Kathīr, build editor).
           const toggleBtn = cardDoc.querySelector(".hl-card-toggle");
-          if (toggleBtn) toggleBtn.style.display = "flex";
+          if (toggleBtn) {
+            // Mobile drawer has a toggle: fully hide and let it re-open.
+            cardEl.classList.add("is-dismissed");
+            toggleBtn.style.display = "flex";
+          } else {
+            // No toggle (build editor): collapse to header strip so the user
+            // can click the header to expand again.
+            cardEl.classList.toggle("is-collapsed");
+          }
         });
         hlHead.appendChild(closeBtn);
-        // Allow the toggle button to re-open the card after dismissal.
+        // Allow the toggle button to re-open a dismissed card.
         const toggleBtn = cardDoc.querySelector(".hl-card-toggle");
         if (toggleBtn) {
           toggleBtn.addEventListener("click", function () {
@@ -589,6 +611,11 @@
             }
           });
         }
+        // Clicking the header expands a collapsed card (build editor).
+        hlHead.addEventListener("click", function (e) {
+          if (e.target.closest("button")) return;
+          if (cardEl.classList.contains("is-collapsed")) cardEl.classList.remove("is-collapsed");
+        });
       }
     }
 
@@ -606,7 +633,11 @@
           return;
         }
         if (e.target.closest(".hl-snippet")) {
-          // Let the anchor href navigate, then scroll to the actual mark.
+          // When the card is in a different document from the scope (e.g. build
+          // editor: card in parent, scope in iframe), prevent the anchor from
+          // navigating the wrong document's hash.
+          const scopeDoc = scope.ownerDocument || scope;
+          if (cardEl && cardEl.ownerDocument !== scopeDoc) e.preventDefault();
           setTimeout(() => {
             const target = scope.querySelector('mark.ai-hl[data-hl-id="' + id + '"]');
             if (target) {
