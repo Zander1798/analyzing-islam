@@ -225,6 +225,23 @@
       return skin ? skin.id : null;
     },
 
+    resetProgress: function () {
+      _cache.unlockedLevel = 1;
+      _cache.unlockedSkins = new Set(["standard"]);
+      var selectedId = localStorage.getItem(LS_SKIN);
+      if (selectedId && selectedId !== "standard") {
+        localStorage.setItem(LS_SKIN, "standard");
+        window.dispatchEvent(new Event("aig:skin-changed"));
+      }
+      if (uid()) {
+        serverSave();
+      } else {
+        localStorage.setItem(LS_LEVEL, "1");
+        localStorage.setItem(LS_UNLOCKED, JSON.stringify(["standard"]));
+      }
+      window.dispatchEvent(new Event("aig:progress-loaded"));
+    },
+
     buildSvg: function (id) {
       var skin   = getSkin(id || this.getSelectedId());
       var prefix = assetPrefix();

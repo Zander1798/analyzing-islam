@@ -28,7 +28,8 @@
     grid.innerHTML = "";
     const progress = window.GoatSkins.getProgress();
     const unlocked = window.GoatSkins.getUnlockedIds();
-    state.levels.forEach(function (lvl) {
+
+    const tiles = state.levels.map(function (lvl) {
       const isUnlocked = lvl.level <= progress.unlockedLevel;
       const tile = document.createElement("button");
       tile.type = "button";
@@ -53,8 +54,30 @@
       if (isUnlocked) {
         tile.addEventListener("click", function () { startLevel(lvl.level); });
       }
-      grid.appendChild(tile);
+      return tile;
     });
+
+    // Desktop: insert reset tile before level 3 (index 2).
+    // Mobile (≤480 px): CSS order: 10 moves it after all level cards.
+    tiles.splice(2, 0, buildResetTile());
+    tiles.forEach(function (t) { grid.appendChild(t); });
+  }
+
+  function buildResetTile() {
+    const tile = document.createElement("button");
+    tile.type = "button";
+    tile.className = "reset-tile";
+    tile.innerHTML =
+      '<div class="reset-tile-label">Reset</div>'
+      + '<div class="reset-tile-title">Reset Levels</div>'
+      + '<div class="reset-tile-blurb">Lock all levels and skins — play again to unlock them.</div>'
+      + '<div class="reset-tile-foot"><span class="reset-tile-warn">⚠ Cannot be undone</span></div>';
+    tile.addEventListener("click", function () {
+      if (!window.confirm("Reset all levels and lock all goat skins?")) return;
+      window.GoatSkins.resetProgress();
+      renderLevelsGrid();
+    });
+    return tile;
   }
 
   // --- Quiz runner ---------------------------------------------------------

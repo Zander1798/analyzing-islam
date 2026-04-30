@@ -3301,6 +3301,57 @@ blockquote {
 .level-tag.is-cleared  { color: #6abf6a; border-color: #6abf6a; }
 .level-tag.is-locked   { color: var(--muted); }
 
+/* ---- Reset tile ---- */
+.reset-tile {
+  appearance: none;
+  background: #000;
+  border: 1px solid #3a1a1a;
+  border-radius: 8px;
+  padding: 18px 18px 14px;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 140px;
+}
+.reset-tile:hover {
+  border-color: #c0392b;
+  transform: translateY(-2px);
+}
+.reset-tile-label {
+  font-family: var(--serif);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #c0392b;
+}
+.reset-tile-title {
+  font-size: 17px;
+  font-weight: 600;
+}
+.reset-tile-blurb {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  flex: 1;
+}
+.reset-tile-foot { margin-top: 6px; }
+.reset-tile-warn {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid #3a1a1a;
+  border-radius: 999px;
+  color: #c0392b;
+}
+@media (max-width: 480px) {
+  .reset-tile { order: 10; }
+}
+
 /* ---- Quiz card ---- */
 .quiz-view { max-width: 760px; margin: 0 auto; }
 .quiz-head {
