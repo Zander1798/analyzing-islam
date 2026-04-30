@@ -568,6 +568,55 @@
     });
   }
 
+  // -- Highlights integration -------------------------------------------
+  // Maps a source slug to the anchor-id regex used by that reader.
+  // Mirrors anchorReFor() in build-editor.js so both pages use the same keys.
+  function anchorReForSlug(slug) {
+    if (slug === "quran" || slug === "cat-quran") return /^s\d+v\d+$|^entry-/;
+    if (/^cat-|^ct-/.test(slug)) return /^entry-/;
+    if (/^bible/.test(slug)) return /^[a-z0-9]+-\d+-\d+$/;
+    if (slug === "tanakh" || slug === "new-testament" || slug === "apocryphal-gospels" || slug === "book-of-enoch")
+      return /^[a-z0-9-]+-\d+-\d+$/;
+    if (slug === "mishnah") return /^[a-z-]+-\d+(?:-\d+)?$/;
+    if (/^talmud/.test(slug)) return /^[a-z0-9-]+$/;
+    if (slug === "josephus") return /^[a-z0-9-]+$/;
+    if (/^ibn-kathir/.test(slug)) return /^ibnk-\d+-\d+$|^a\d+$/;
+    return /^h\d+$/;
+  }
+
+  // Attach AI_HIGHLIGHTS to a pane's iframe each time it (re-)loads.
+  // Shares the same source key as the standalone reader so highlights
+  // saved on read/quran.html are visible here and vice-versa.
+  function watchHighlights(side) {
+    const els = getPaneEls(side);
+    const card = document.getElementById("hl-card-" + side);
+    if (!card) return;
+
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) return;
+      const doc = iframeDoc(els.frame);
+      if (!doc || !doc.body) return;
+      if (doc._hlCmpAttached) return;
+      doc._hlCmpAttached = true;
+      const slug = els.select.value;
+      window.AI_HIGHLIGHTS.attach({
+        source: slug,
+        scope: doc.body,
+        anchorRe: anchorReForSlug(slug),
+        cardEl: card,
+        forceCard: true,
+      });
+    }
+
+    els.frame.addEventListener("load", function () {
+      const doc = iframeDoc(els.frame);
+      if (doc) doc._hlCmpAttached = false; // reset guard on each page load
+      setTimeout(tryAttach, 150);
+    });
+    // Cover the case where the iframe is already loaded when this runs.
+    setTimeout(tryAttach, 400);
+  }
+
   // -- Init --------------------------------------------------------------
   function debounce(fn, ms) {
     let t = null;
@@ -646,6 +695,8 @@
     }
     watchFrameHash("left");
     watchFrameHash("right");
+    watchHighlights("left");
+    watchHighlights("right");
 
     // Initial load from URL params.
     const state = readParams();

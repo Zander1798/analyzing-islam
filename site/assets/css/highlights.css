@@ -443,6 +443,21 @@ body.embed-mode .bible-layout.has-hl-card {
   grid-template-columns: 240px minmax(0, 1fr) !important;
 }
 
+/* ---------- Mobile: fix embed-mode reader layout inside iframes ---------- */
+/* The embed-mode !important rule above forces 3-column layout even on phones.
+   Override at ≤900px so content inside compare/build iframes flows single-column. */
+@media (max-width: 900px) {
+  html.embed-mode .reader-layout.has-hl-card,
+  body.embed-mode .reader-layout.has-hl-card {
+    grid-template-columns: 1fr !important;
+    padding: 0 20px !important;
+  }
+  html.embed-mode .bible-layout.has-hl-card,
+  body.embed-mode .bible-layout.has-hl-card {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* ---------- Build editor: card lives inside .build-pane-source ---------- */
 .build-pane-source .hl-card {
   position: static;
@@ -454,4 +469,24 @@ body.embed-mode .bible-layout.has-hl-card {
 }
 .build-pane-source .hl-card-list {
   max-height: 200px;
+}
+
+/* ---------- Compare page: compact highlights panel per pane ---------- */
+.compare-pane .hl-card {
+  position: static;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  border-left: 0;
+  border-top: 1px solid var(--border, #2a2a2a);
+  padding: 8px 12px;
+}
+.compare-pane .hl-card.is-collapsed {
+  overflow: hidden;
+}
+.compare-pane .hl-card-list {
+  max-height: 160px;
+}
+.compare-pane .hl-card-head {
+  cursor: pointer;
 }
