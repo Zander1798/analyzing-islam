@@ -80,17 +80,29 @@ mark.ai-hl.is-flash {
 }
 .ai-hl-remove {
   margin-left: 4px;
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--border, #2a2a2a);
-  background: transparent;
-  color: var(--text-muted, #999);
-  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1e1e1e;
+  border: 1.5px solid #666;
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
+  padding: 0;
+  font-size: 0;
+  flex-shrink: 0;
 }
-.ai-hl-remove:hover { color: #ff6b6b; border-color: #ff6b6b; }
+.ai-hl-remove::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: calc(50% - 1.5px);
+  height: 3px;
+  background: #c0392b;
+  transform: rotate(-45deg);
+}
+.ai-hl-remove:hover { border-color: #c0392b; }
 
 /* ---------- Side card on reader pages ---------- */
 .hl-card {
@@ -377,48 +389,12 @@ mark.ai-hl.is-flash {
     grid-template-columns: 240px minmax(0, 1fr);
   }
   .bible-layout.has-hl-card > .splitter[data-splitter-key="reader-hl"] { display: none; }
-  .hl-card {
-    /* display:none removes the card from the stacking context entirely so
-       it can never intercept taps on the toggle button (iOS Safari hit-tests
-       position:fixed elements at their pre-transform layout position, so the
-       old transform:translateX(100%) approach still blocked the toggle). */
-    display: none;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: min(320px, 92vw);
-    background: var(--bg, #000);
-    border-left: 1px solid var(--border, #1e1e1e);
-    z-index: 200;
-    height: 100%;
-    overflow-y: auto;
-    flex-direction: column;
-  }
-  .hl-card.is-open {
-    display: flex;
-    animation: hl-card-slide-in 0.22s ease-out;
-  }
-  @keyframes hl-card-slide-in {
-    from { transform: translateX(100%); }
-    to   { transform: translateX(0); }
-  }
-  /* Ensure dismissed always wins over is-open if both coexist. */
-  .hl-card.is-dismissed { display: none; }
-  .hl-card-toggle {
-    position: fixed;
-    top: 90px;
-    right: 12px;
-    z-index: 49;
-    background: var(--panel, #1a1a1a);
-    border: 1px solid var(--border, #2a2a2a);
-    color: var(--text, #eee);
-    padding: 8px 12px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-family: var(--sans, system-ui);
-    font-size: 12px;
-  }
+  /* Highlights card and toggle are hidden on mobile — use the selection
+     toolbar (with the red-stripe remove circle) to manage highlights instead. */
+  .hl-card,
+  .hl-card.is-open,
+  .hl-card.is-dismissed { display: none !important; }
+  .hl-card-toggle { display: none !important; }
 }
 @media (min-width: 1101px) {
   .hl-card-toggle { display: none; }
@@ -496,18 +472,14 @@ html.embed-mode.hl-in-compare .splitter[data-splitter-key="reader-toc"],
 body.embed-mode.hl-in-compare .splitter[data-splitter-key="reader-toc"] {
   display: none !important;
 }
-/* Mobile (≤1100px): single-column content, HL as slide-in drawer, toggle visible. */
+/* Mobile (≤1100px): hide card and toggle everywhere including compare/build iframes. */
 @media (max-width: 1100px) {
   html.embed-mode.hl-in-compare .hl-card,
-  body.embed-mode.hl-in-compare .hl-card {
-    position: fixed;
-    top: 0;
-  }
+  body.embed-mode.hl-in-compare .hl-card,
+  html.embed-mode.hl-in-compare .hl-card.is-open,
+  body.embed-mode.hl-in-compare .hl-card.is-open { display: none !important; }
   html.embed-mode.hl-in-compare .hl-card-toggle,
-  body.embed-mode.hl-in-compare .hl-card-toggle {
-    display: flex !important;
-    top: 12px;
-  }
+  body.embed-mode.hl-in-compare .hl-card-toggle { display: none !important; }
   html.embed-mode.hl-in-compare .reader-layout.has-hl-card,
   body.embed-mode.hl-in-compare .reader-layout.has-hl-card {
     grid-template-columns: 1fr !important;
