@@ -314,14 +314,6 @@
             '<div class="build-source-hint">Highlight text → drag into the editor on the left.</div>' +
           '</div>' +
           '<iframe class="compare-frame" id="source-frame" title="Source browser" loading="lazy"></iframe>' +
-          '<aside class="hl-card" id="build-hl-card" aria-label="Highlights">' +
-            '<header class="hl-card-head">' +
-              '<h3>Highlights</h3>' +
-              '<span class="hl-card-count">0</span>' +
-            '</header>' +
-            '<ol class="hl-card-list" id="build-hl-card-list"></ol>' +
-            '<p class="hl-card-empty">Highlight text in the source on the right to save it here.</p>' +
-          '</aside>' +
         '</section>' +
       '</div>';
   }
@@ -333,8 +325,7 @@
   // (under the iframe) so it survives iframe reloads.
   function attachIframeHighlights() {
     const frame = document.getElementById("source-frame");
-    const card  = document.getElementById("build-hl-card");
-    if (!frame || !card || !window.AI_HIGHLIGHTS) return;
+    if (!frame || !window.AI_HIGHLIGHTS) return;
 
     let lastDetach = null;
     function attach() {
@@ -348,16 +339,17 @@
       const sel = document.getElementById("source-select");
       const slug = sel ? sel.value : null;
       if (!slug) return;
-      // Pick an anchor regex per source family. Catalog/category pages
-      // use entry-NNN ids; readers use s/v, h, gen-c-v, etc.
+      // Mark the iframe doc so highlights.css un-suppresses the native
+      // ★ toggle button and slide-in card on mobile.
+      doc.documentElement.classList.add("hl-in-compare");
       const anchorRe = anchorReFor(slug);
       try { if (lastDetach) lastDetach(); } catch (_) {}
       const handle = window.AI_HIGHLIGHTS.attach({
         source: slug,
         scope: doc.body,
         anchorRe: anchorRe,
-        cardEl: card,
-        forceCard: true,  // bypass embed-mode suppression; host manages the card
+        cardEl: doc.querySelector(".hl-card"),
+        forceCard: true,
       });
       lastDetach = function () {};
       void handle;

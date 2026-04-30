@@ -434,6 +434,20 @@ html.embed-mode .hl-card-toggle,
 body.embed-mode .hl-card-toggle,
 html.embed-mode .splitter[data-splitter-key="reader-hl"],
 body.embed-mode .splitter[data-splitter-key="reader-hl"] { display: none !important; }
+
+/* On mobile: when compare/build activates the native highlights UI inside
+   the iframe (via the hl-in-compare class), un-suppress the ★ toggle button
+   and the slide-in card so they work exactly as they do on the read tab. */
+@media (max-width: 1100px) {
+  html.embed-mode.hl-in-compare .hl-card,
+  body.embed-mode.hl-in-compare .hl-card {
+    display: flex !important;
+  }
+  html.embed-mode.hl-in-compare .hl-card-toggle,
+  body.embed-mode.hl-in-compare .hl-card-toggle {
+    display: flex !important;
+  }
+}
 html.embed-mode .reader-layout.has-hl-card,
 body.embed-mode .reader-layout.has-hl-card {
   grid-template-columns: var(--reader-toc-w, 260px) 10px minmax(0, 1fr) !important;
@@ -458,35 +472,3 @@ body.embed-mode .bible-layout.has-hl-card {
   }
 }
 
-/* ---------- Build editor: card lives inside .build-pane-source ---------- */
-.build-pane-source .hl-card {
-  position: static;
-  height: auto;
-  max-height: 280px;
-  border-left: 0;
-  border-top: 1px solid var(--border, #2a2a2a);
-  padding: 14px 12px;
-}
-.build-pane-source .hl-card-list {
-  max-height: 200px;
-}
-
-/* ---------- Compare page: compact highlights panel per pane ---------- */
-.compare-pane .hl-card {
-  position: static;
-  height: auto;
-  max-height: none;
-  overflow: visible;
-  border-left: 0;
-  border-top: 1px solid var(--border, #2a2a2a);
-  padding: 8px 12px;
-}
-.compare-pane .hl-card.is-collapsed {
-  overflow: hidden;
-}
-.compare-pane .hl-card-list {
-  max-height: 160px;
-}
-.compare-pane .hl-card-head {
-  cursor: pointer;
-}

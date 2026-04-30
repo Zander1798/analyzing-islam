@@ -589,8 +589,6 @@
   // saved on read/quran.html are visible here and vice-versa.
   function watchHighlights(side) {
     const els = getPaneEls(side);
-    const card = document.getElementById("hl-card-" + side);
-    if (!card) return;
 
     function tryAttach() {
       if (!window.AI_HIGHLIGHTS) return;
@@ -599,21 +597,23 @@
       if (doc._hlCmpAttached) return;
       doc._hlCmpAttached = true;
       const slug = els.select.value;
+      // Mark the iframe doc so highlights.css un-suppresses the native
+      // ★ toggle button and slide-in card on mobile.
+      doc.documentElement.classList.add("hl-in-compare");
       window.AI_HIGHLIGHTS.attach({
         source: slug,
         scope: doc.body,
         anchorRe: anchorReForSlug(slug),
-        cardEl: card,
+        cardEl: doc.querySelector(".hl-card"),
         forceCard: true,
       });
     }
 
     els.frame.addEventListener("load", function () {
       const doc = iframeDoc(els.frame);
-      if (doc) doc._hlCmpAttached = false; // reset guard on each page load
+      if (doc) doc._hlCmpAttached = false;
       setTimeout(tryAttach, 150);
     });
-    // Cover the case where the iframe is already loaded when this runs.
     setTimeout(tryAttach, 400);
   }
 
