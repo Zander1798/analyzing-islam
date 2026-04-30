@@ -276,6 +276,17 @@
   }
 
   // ---------------- Painter -------------------------------------------
+  // Returns true if a text node lives inside a user-select:none helper
+  // element (e.g. .verse-number) relative to a given root ancestor.
+  function isInNonSelectableEl(textNode, root) {
+    let el = textNode.parentElement;
+    while (el && el !== root) {
+      if (el.classList && el.classList.contains("verse-number")) return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
   // Wrap (start_off, end_off) inside `anchor` with a <mark> carrying
   // data-hl-id and the highlight colour. Skips silently if the anchor
   // can't accommodate the offsets (content changed since save).
@@ -290,9 +301,15 @@
     while (n) {
       const len = n.nodeValue.length;
       if (!startNode && pos + len > row.start_off) {
-        startNode = n; startOffset = row.start_off - pos;
+        // Skip text nodes inside non-selectable helpers (e.g. .verse-number).
+        // On iOS the selection can accidentally include the verse-number column,
+        // causing the mark to render inside the narrow grid cell.
+        if (!isInNonSelectableEl(n, anchor)) {
+          startNode = n;
+          startOffset = Math.max(0, row.start_off - pos);
+        }
       }
-      if (pos + len >= row.end_off) {
+      if (startNode && pos + len >= row.end_off) {
         endNode = n; endOffset = row.end_off - pos; break;
       }
       pos += len;
@@ -579,13 +596,19 @@
           const splitter = layout
             ? layout.querySelector('.splitter[data-splitter-key="reader-hl"]')
             : null;
-          if (splitter) {
+          const win = cardDoc.defaultView || window;
+          if (splitter && win.innerWidth > 1100) {
             const cssVar = splitter.getAttribute("data-splitter-var") || "--reader-hl-w";
             const key    = "splitter:" + (splitter.getAttribute("data-splitter-key") || cssVar);
             cardDoc.documentElement.style.setProperty(cssVar, "0px");
             splitter.classList.add("is-collapsed");
             splitter.setAttribute("aria-expanded", "false");
             try { localStorage.setItem(key, "0"); } catch (_) {}
+            return;
+          }
+          // Mobile drawer (≤1100px): close via is-open so the toggle can reopen it.
+          if (cardEl.classList.contains("is-open")) {
+            cardEl.classList.remove("is-open");
             return;
           }
           // Floating / static cards (Ibn Kathīr, build editor).
