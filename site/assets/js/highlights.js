@@ -702,6 +702,11 @@
           // navigating the wrong document's hash.
           const scopeDoc = scope.ownerDocument || scope;
           if (cardEl && cardEl.ownerDocument !== scopeDoc) e.preventDefault();
+          // On mobile the card is a fixed drawer — close it so the reader is
+          // visible when we scroll to the highlight.
+          if (cardEl.classList.contains("is-open")) {
+            cardEl.classList.remove("is-open");
+          }
           setTimeout(() => {
             const target = scope.querySelector('mark.ai-hl[data-hl-id="' + id + '"]');
             if (target) {
