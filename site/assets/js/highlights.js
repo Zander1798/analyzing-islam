@@ -639,16 +639,17 @@
           }
         });
         hlHead.appendChild(closeBtn);
-        // Allow the toggle button to re-open a dismissed card.
+        // Allow the toggle button to open / re-open the card.
         const toggleBtn = cardDoc.querySelector(".hl-card-toggle");
         if (toggleBtn) {
           toggleBtn.addEventListener("click", function () {
-            if (cardEl.classList.contains("is-dismissed")) {
-              cardEl.classList.remove("is-dismissed");
-              toggleBtn.style.display = "";
-            }
-            // Re-fetch whenever the drawer opens so the list is never stale.
-            if (cardEl.classList.contains("is-open")) refresh();
+            // Remove any dismissed flag, make sure the card is open, then
+            // refresh the list.  This handles: first open, reopen after X,
+            // and reopen after swipe-dismiss.
+            cardEl.classList.remove("is-dismissed");
+            toggleBtn.style.display = "";
+            cardEl.classList.add("is-open");
+            refresh();
           });
 
           // Keep toggle below the site nav on mobile so it never overlaps nav links.
