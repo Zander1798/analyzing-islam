@@ -378,21 +378,33 @@ mark.ai-hl.is-flash {
   }
   .bible-layout.has-hl-card > .splitter[data-splitter-key="reader-hl"] { display: none; }
   .hl-card {
+    /* display:none removes the card from the stacking context entirely so
+       it can never intercept taps on the toggle button (iOS Safari hit-tests
+       position:fixed elements at their pre-transform layout position, so the
+       old transform:translateX(100%) approach still blocked the toggle). */
+    display: none;
     position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
-    width: 280px;
-    background: var(--bg, #0a0a0a);
-    border-left: 1px solid var(--border, #2a2a2a);
-    z-index: 110;
-    transform: translateX(100%);
-    transition: transform 0.18s ease-out;
-    height: auto;
-    max-height: none;
+    width: min(320px, 92vw);
+    background: var(--bg, #000);
+    border-left: 1px solid var(--border, #1e1e1e);
+    z-index: 200;
+    height: 100%;
     overflow-y: auto;
+    flex-direction: column;
   }
-  .hl-card.is-open { transform: translateX(0); }
+  .hl-card.is-open {
+    display: flex;
+    animation: hl-card-slide-in 0.22s ease-out;
+  }
+  @keyframes hl-card-slide-in {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(0); }
+  }
+  /* Ensure dismissed always wins over is-open if both coexist. */
+  .hl-card.is-dismissed { display: none; }
   .hl-card-toggle {
     position: fixed;
     top: 90px;
