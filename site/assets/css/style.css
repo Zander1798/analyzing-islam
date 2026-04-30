@@ -863,8 +863,8 @@ blockquote {
   padding: 0;
   margin: 0;
   cursor: pointer;
-  width: 90px;
-  height: 90px;
+  width: 110px;
+  height: 110px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1042,8 +1042,8 @@ blockquote {
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .goat-scream {
-    width: 60px;
-    height: 60px;
+    width: 74px;
+    height: 74px;
   }
 
   .hero {
@@ -1188,7 +1188,7 @@ blockquote {
   padding: 6px 12px 6px 6px;
   border: 1px solid var(--border);
   border-radius: 2px;
-  background: var(--panel);
+  background: transparent;
   color: var(--text);
   cursor: pointer;
   font-family: inherit;
