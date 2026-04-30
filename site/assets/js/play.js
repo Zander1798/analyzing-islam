@@ -233,7 +233,7 @@
 
     // Restore the levels-view HTML if we previously showed the auth gate.
     const view = $("#levels-view");
-    if (view && !view.querySelector(".play-page-title")) {
+    if (view && view.querySelector(".play-auth-gate")) {
       view.innerHTML =
         '<div class="play-page-back">' +
           '<a href="index.html" class="btn">← Home</a>' +
@@ -267,7 +267,9 @@
 
   // --- Boot ----------------------------------------------------------------
   ready(function () {
-    initPlay();
+    // Wait for the first auth check to complete before rendering so we don't
+    // flash the sign-in gate for users who are already logged in.
+    (window.__authReady || Promise.resolve()).then(function () { initPlay(); });
 
     // Re-run gate check whenever auth state changes.
     window.addEventListener("auth-state", function () { initPlay(); });

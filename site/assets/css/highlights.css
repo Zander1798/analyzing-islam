@@ -406,6 +406,27 @@ mark.ai-hl.is-flash {
   .hl-card-toggle { display: none; }
 }
 
+/* ===== Mobile reader: single-column, full-width content ===== */
+@media (max-width: 900px) {
+  /* Override the 1100px rule above — has-hl-card must not force 3 columns
+     on phones where reader.css collapses the grid to a single column. */
+  .reader-layout.has-hl-card {
+    grid-template-columns: 1fr;
+    padding: 0 16px;
+  }
+  /* TOC sits above the content as a compact scrollable strip */
+  .reader-layout.has-hl-card .reader-toc {
+    overflow-y: auto;
+  }
+  /* Highlights toggle stays fixed top-right while the user scrolls */
+  .hl-card-toggle {
+    position: fixed;
+    top: 72px;
+    right: 12px;
+    z-index: 49;
+  }
+}
+
 /* ---------- Embed mode (compare / build iframes): hide reader's own panel ---------- */
 html.embed-mode .hl-card,
 body.embed-mode .hl-card,
