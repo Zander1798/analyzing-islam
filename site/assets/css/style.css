@@ -126,12 +126,12 @@ body.embed-mode .reader-layout {
 .site-nav-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px 32px 12px;
+  padding: 10px 32px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   column-gap: 24px;
-  row-gap: 8px;
+  row-gap: 4px;
   flex-wrap: wrap;
 }
 
@@ -147,7 +147,7 @@ body.embed-mode .reader-layout {
   font-family: var(--serif);
   font-weight: 700;
   font-style: normal;
-  font-size: 28px;
+  font-size: 33px;
   color: var(--text);
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -1063,7 +1063,7 @@ blockquote {
   h2 { font-size: 24px; margin: 48px 0 16px; }
 
   .site-nav-inner {
-    padding: 14px 20px;
+    padding: 8px 20px;
     /* Squeeze the right side by ~15vw so the Account chip + goat pair
        (and the goat's speech caption that extends to the right of him)
        all shift leftward and stay inside the viewport on narrow phones. */
