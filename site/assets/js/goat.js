@@ -81,7 +81,10 @@
       requestAnimationFrame(function () {
         const y = window.scrollY || 0;
         const delta = y - lastY;
-        if (y < REVEAL_NEAR_TOP) {
+        // On mobile always keep the nav visible — only auto-hide on desktop.
+        if (window.innerWidth <= 768) {
+          nav.classList.remove("is-hidden");
+        } else if (y < REVEAL_NEAR_TOP) {
           nav.classList.remove("is-hidden");
         } else if (delta > DELTA) {
           nav.classList.add("is-hidden");
