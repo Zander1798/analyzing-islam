@@ -640,39 +640,40 @@
         });
         hlHead.appendChild(closeBtn);
         // Allow the toggle button to open / re-open the card.
-        // Clone the element first to strip any existing inline listeners (the
-        // read-page inline script also attached a toggle("is-open") handler
-        // that conflicts — cloning removes it so we're the sole handler).
-        let toggleBtn = cardDoc.querySelector(".hl-card-toggle");
-        if (toggleBtn) {
-          const _fresh = toggleBtn.cloneNode(true);
-          toggleBtn.parentNode.replaceChild(_fresh, toggleBtn);
-          toggleBtn = _fresh;
+        // We defer with setTimeout(0) so the rest of the DOMContentLoaded
+        // callback — including the read-page inline toggle("is-open") handler —
+        // finishes first.  Then we clone the button to strip all existing
+        // listeners and become the sole handler.
+        if (cardDoc.querySelector(".hl-card-toggle")) {
+          var _cardElRef = cardEl;
+          var _cardDocRef = cardDoc;
+          var _refreshRef = refresh;
+          var _embedMode = !!(cardDoc.documentElement && cardDoc.documentElement.classList.contains("embed-mode"));
+          setTimeout(function () {
+            var tb = _cardDocRef.querySelector(".hl-card-toggle");
+            if (!tb) return;
+            var fresh = tb.cloneNode(true);
+            tb.parentNode.replaceChild(fresh, tb);
 
-          function _openCard(e) {
-            if (e && e.type === "touchend") e.preventDefault(); // suppress follow-up click
-            cardEl.classList.remove("is-dismissed");
-            toggleBtn.style.display = "";
-            cardEl.classList.add("is-open");
-            refresh();
-          }
-          toggleBtn.addEventListener("touchend", _openCard, { passive: false });
-          toggleBtn.addEventListener("click", _openCard);
-
-          // Keep toggle below the site nav on mobile so it never overlaps nav links.
-          // Embed-mode iframes have no site-nav; skip there.
-          // We set top once (and on resize) — no scroll-based changes to avoid
-          // iOS Safari's known touch-target desync on animated fixed elements.
-          if (!(cardDoc.documentElement && cardDoc.documentElement.classList.contains("embed-mode"))) {
-            var _navEl = cardDoc.querySelector(".site-nav");
-            if (_navEl) {
-              var _setToggleTop = function () {
-                toggleBtn.style.top = _navEl.offsetHeight + "px";
-              };
-              _setToggleTop();
-              (cardDoc.defaultView || window).addEventListener("resize", _setToggleTop, { passive: true });
+            function _openCard(e) {
+              if (e && e.type === "touchend") e.preventDefault();
+              _cardElRef.classList.remove("is-dismissed");
+              fresh.style.display = "";
+              _cardElRef.classList.add("is-open");
+              _refreshRef();
             }
-          }
+            fresh.addEventListener("touchend", _openCard, { passive: false });
+            fresh.addEventListener("click", _openCard);
+
+            if (!_embedMode) {
+              var _navEl = _cardDocRef.querySelector(".site-nav");
+              if (_navEl) {
+                var _setTop = function () { fresh.style.top = _navEl.offsetHeight + "px"; };
+                _setTop();
+                (_cardDocRef.defaultView || window).addEventListener("resize", _setTop, { passive: true });
+              }
+            }
+          }, 0);
         }
         // Clicking the header expands a collapsed card (build editor).
         hlHead.addEventListener("click", function (e) {
