@@ -1023,7 +1023,7 @@ blockquote {
 @media (max-width: 768px) {
   .site-brand {
     flex-basis: auto;
-    text-align: left;
+    text-align: center;
   }
   .site-nav-inner .auth-button {
     margin-left: 16px;
@@ -1061,10 +1061,6 @@ blockquote {
 
   .site-nav-inner {
     padding: 8px 20px;
-    /* Squeeze the right side by ~15vw so the Account chip + goat pair
-       (and the goat's speech caption that extends to the right of him)
-       all shift leftward and stay inside the viewport on narrow phones. */
-    padding-right: 15vw;
   }
 
   .site-nav-links {
