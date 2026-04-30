@@ -390,6 +390,7 @@ mark.ai-hl.is-flash {
     transition: transform 0.18s ease-out;
     height: auto;
     max-height: none;
+    overflow-y: auto;
   }
   .hl-card.is-open { transform: translateX(0); }
   .hl-card-toggle {

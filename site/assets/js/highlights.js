@@ -647,6 +647,8 @@
               cardEl.classList.remove("is-dismissed");
               toggleBtn.style.display = "";
             }
+            // Re-fetch whenever the drawer opens so the list is never stale.
+            if (cardEl.classList.contains("is-open")) refresh();
           });
         }
         // Clicking the header expands a collapsed card (build editor).
