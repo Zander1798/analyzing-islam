@@ -653,17 +653,16 @@
 
           // Keep toggle below the site nav on mobile so it never overlaps nav links.
           // Embed-mode iframes have no site-nav; skip there.
+          // We set top once (and on resize) — no scroll-based changes to avoid
+          // iOS Safari's known touch-target desync on animated fixed elements.
           if (!(cardDoc.documentElement && cardDoc.documentElement.classList.contains("embed-mode"))) {
-            const siteNav = cardDoc.querySelector(".site-nav");
-            if (siteNav) {
-              var syncToggleTop = function () {
-                toggleBtn.style.top = siteNav.classList.contains("is-hidden")
-                  ? "12px"
-                  : siteNav.offsetHeight + "px";
+            var _navEl = cardDoc.querySelector(".site-nav");
+            if (_navEl) {
+              var _setToggleTop = function () {
+                toggleBtn.style.top = _navEl.offsetHeight + "px";
               };
-              syncToggleTop();
-              (cardDoc.defaultView || window).addEventListener("resize", syncToggleTop, { passive: true });
-              new MutationObserver(syncToggleTop).observe(siteNav, { attributes: true, attributeFilter: ["class"] });
+              _setToggleTop();
+              (cardDoc.defaultView || window).addEventListener("resize", _setToggleTop, { passive: true });
             }
           }
         }

@@ -406,7 +406,6 @@ mark.ai-hl.is-flash {
     cursor: pointer;
     font-family: var(--sans, system-ui);
     font-size: 12px;
-    transition: top 0.18s ease-out;
   }
 }
 @media (min-width: 1101px) {
@@ -440,7 +439,6 @@ mark.ai-hl.is-flash {
     top: 115px;
     right: 12px;
     z-index: 105;
-    transition: top 0.18s ease-out;
   }
 }
 
