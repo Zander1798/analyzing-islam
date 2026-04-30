@@ -640,17 +640,24 @@
         });
         hlHead.appendChild(closeBtn);
         // Allow the toggle button to open / re-open the card.
-        const toggleBtn = cardDoc.querySelector(".hl-card-toggle");
+        // Clone the element first to strip any existing inline listeners (the
+        // read-page inline script also attached a toggle("is-open") handler
+        // that conflicts — cloning removes it so we're the sole handler).
+        let toggleBtn = cardDoc.querySelector(".hl-card-toggle");
         if (toggleBtn) {
-          toggleBtn.addEventListener("click", function () {
-            // Remove any dismissed flag, make sure the card is open, then
-            // refresh the list.  This handles: first open, reopen after X,
-            // and reopen after swipe-dismiss.
+          const _fresh = toggleBtn.cloneNode(true);
+          toggleBtn.parentNode.replaceChild(_fresh, toggleBtn);
+          toggleBtn = _fresh;
+
+          function _openCard(e) {
+            if (e && e.type === "touchend") e.preventDefault(); // suppress follow-up click
             cardEl.classList.remove("is-dismissed");
             toggleBtn.style.display = "";
             cardEl.classList.add("is-open");
             refresh();
-          });
+          }
+          toggleBtn.addEventListener("touchend", _openCard, { passive: false });
+          toggleBtn.addEventListener("click", _openCard);
 
           // Keep toggle below the site nav on mobile so it never overlaps nav links.
           // Embed-mode iframes have no site-nav; skip there.
