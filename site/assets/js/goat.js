@@ -65,46 +65,6 @@
     init();
   }
 
-  // --- Hide nav on scroll-down, reveal on scroll-up ---------------------
-  function initNavAutoHide() {
-    const nav = document.querySelector(".site-nav");
-    if (!nav) return;
-
-    const DELTA = 8;
-    const REVEAL_NEAR_TOP = 80;
-    let lastY = window.scrollY || 0;
-    let ticking = false;
-
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () {
-        const y = window.scrollY || 0;
-        const delta = y - lastY;
-        // On mobile always keep the nav visible — only auto-hide on desktop.
-        if (window.innerWidth <= 768) {
-          nav.classList.remove("is-hidden");
-        } else if (y < REVEAL_NEAR_TOP) {
-          nav.classList.remove("is-hidden");
-        } else if (delta > DELTA) {
-          nav.classList.add("is-hidden");
-        } else if (delta < -DELTA) {
-          nav.classList.remove("is-hidden");
-        }
-        if (Math.abs(delta) > DELTA || y < REVEAL_NEAR_TOP) lastY = y;
-        ticking = false;
-      });
-    }
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initNavAutoHide);
-  } else {
-    initNavAutoHide();
-  }
-
   // --- Embed mode (for iframes on the Compare page) ---------------------
   function applyEmbedMode() {
     try {

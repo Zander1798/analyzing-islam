@@ -578,7 +578,13 @@
     // -- Close button injected into card header -------------------------
     if (cardEl) {
       const hlHead = cardEl.querySelector(".hl-card-head");
-      if (hlHead && !hlHead.querySelector(".hl-card-close")) {
+      const _cardDoc0 = cardEl.ownerDocument;
+      const _cardWin0 = (_cardDoc0 && _cardDoc0.defaultView) || window;
+      const _hlLayout0 = cardEl.closest ? cardEl.closest(".reader-layout, .bible-layout") : null;
+      const _hlSplitter0 = _hlLayout0 ? _hlLayout0.querySelector('.splitter[data-splitter-key="reader-hl"]') : null;
+      const _isHlInCompare0 = !!(_cardDoc0 && _cardDoc0.documentElement && _cardDoc0.documentElement.classList.contains("hl-in-compare"));
+      const _skipX = _isHlInCompare0 || !!(_hlSplitter0 && _cardWin0.innerWidth > 1100);
+      if (hlHead && !hlHead.querySelector(".hl-card-close") && !_skipX) {
         const cardDoc = cardEl.ownerDocument;
         const closeBtn = cardDoc.createElement("button");
         closeBtn.type = "button";

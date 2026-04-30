@@ -55,7 +55,8 @@
     // list" button for immersive reading.
     const collapsible =
       el.getAttribute("data-splitter-collapsible") === "true" ||
-      (el.getAttribute("data-splitter-key") || "") === "reader-toc";
+      (el.getAttribute("data-splitter-key") || "") === "reader-toc" ||
+      (el.getAttribute("data-splitter-key") || "") === "reader-hl";
     const collapseThreshold = parseInt(
       el.getAttribute("data-splitter-collapse-threshold") || "90", 10
     );

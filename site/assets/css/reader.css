@@ -94,7 +94,7 @@
    grid column is 0 px but the sidebar's horizontal padding still paints
    a ~40 px ghost strip where the chapter list used to be. :has() lets
    the TOC react to its sibling splitter's state without any JS. */
-.reader-layout:has(> .splitter.is-collapsed) > .reader-toc {
+.reader-layout:has(> .splitter[data-splitter-key="reader-toc"].is-collapsed) > .reader-toc {
   padding-left: 0;
   padding-right: 0;
   visibility: hidden;

@@ -119,9 +119,6 @@ body.embed-mode .reader-layout {
   will-change: transform;
 }
 
-.site-nav.is-hidden {
-  transform: translateY(-100%);
-}
 
 .site-nav-inner {
   max-width: 1200px;
