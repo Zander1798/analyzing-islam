@@ -516,7 +516,9 @@
         : null;
       pendingMarkId = mark ? mark.getAttribute("data-hl-id") : null;
       bar.querySelector(".ai-hl-remove").hidden = !pendingMarkId;
-      pendingRange = range;
+      // Clone so the snapshot is stable even when the browser collapses
+      // the live Selection (e.g. on mobile when the user taps a swatch).
+      pendingRange = range.cloneRange();
       placeToolbar(bar, range);
     }
     doc.addEventListener("selectionchange", onSelectionChange);
@@ -549,7 +551,11 @@
     if (!bar._hlBound) {
       bar._hlBound = true;
       bar.querySelectorAll(".ai-hl-swatch").forEach((sw) => {
+        // mousedown: prevent selection collapse on desktop.
         sw.addEventListener("mousedown", (e) => { e.preventDefault(); });
+        // touchstart (passive:false): prevent selection collapse on mobile.
+        // Without this the browser collapses the selection before click fires.
+        sw.addEventListener("touchstart", (e) => { e.preventDefault(); }, { passive: false });
         sw.addEventListener("click", (e) => {
           e.preventDefault();
           if (bar._hlSave) bar._hlSave(sw.getAttribute("data-color"));
@@ -559,7 +565,10 @@
       colorInput.addEventListener("change", () => {
         if (bar._hlSave) bar._hlSave(colorInput.value || DEFAULT_COLOR);
       });
-      bar.querySelector(".ai-hl-remove").addEventListener("click", async () => {
+      const removeBtn = bar.querySelector(".ai-hl-remove");
+      removeBtn.addEventListener("mousedown", (e) => { e.preventDefault(); });
+      removeBtn.addEventListener("touchstart", (e) => { e.preventDefault(); }, { passive: false });
+      removeBtn.addEventListener("click", async () => {
         if (bar._hlRemove) await bar._hlRemove();
       });
     }
