@@ -14,7 +14,7 @@
 /* ===== TOC sidebar ===== */
 .bible-toc {
   position: sticky;
-  top: 72px;
+  top: 90px;
   align-self: start;
   height: calc(100vh - 90px);
   overflow-y: auto;
@@ -181,7 +181,7 @@
 /* ===== Side panel — lexical card ===== */
 .bible-panel {
   position: fixed;
-  top: 72px;
+  top: 90px;
   right: 0;
   bottom: 0;
   width: min(440px, 100vw);

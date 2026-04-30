@@ -583,7 +583,7 @@
       const _hlLayout0 = cardEl.closest ? cardEl.closest(".reader-layout, .bible-layout") : null;
       const _hlSplitter0 = _hlLayout0 ? _hlLayout0.querySelector('.splitter[data-splitter-key="reader-hl"]') : null;
       const _isHlInCompare0 = !!(_cardDoc0 && _cardDoc0.documentElement && _cardDoc0.documentElement.classList.contains("hl-in-compare"));
-      const _skipX = _isHlInCompare0 || !!(_hlSplitter0 && _cardWin0.innerWidth > 1100);
+      const _skipX = !_isHlInCompare0 && !!(_hlSplitter0 && _cardWin0.innerWidth > 1100);
       if (hlHead && !hlHead.querySelector(".hl-card-close") && !_skipX) {
         const cardDoc = cardEl.ownerDocument;
         const closeBtn = cardDoc.createElement("button");
@@ -715,6 +715,12 @@
     window.addEventListener("highlights-changed", (e) => {
       if (!e.detail || e.detail.source === source) refresh();
     });
+    if (win !== window) {
+      win.addEventListener("highlights-changed", (e) => {
+        if (!e.detail || e.detail.source === source) refresh();
+      });
+      win.addEventListener("auth-state", refresh);
+    }
     window.addEventListener("auth-state", refresh);
 
     refresh();

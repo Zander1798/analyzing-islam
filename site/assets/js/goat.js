@@ -65,6 +65,34 @@
     init();
   }
 
+  // --- Nav auto-hide: slide nav off-screen on scroll-down, back on scroll-up ---
+  function initNavAutoHide() {
+    const nav = document.querySelector(".site-nav");
+    if (!nav) return;
+    let lastY = window.scrollY;
+    let ticking = false;
+    window.addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        const y = window.scrollY;
+        if (y > lastY && y > 60) {
+          nav.classList.add("is-hidden");
+        } else {
+          nav.classList.remove("is-hidden");
+        }
+        lastY = y;
+        ticking = false;
+      });
+    }, { passive: true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initNavAutoHide);
+  } else {
+    initNavAutoHide();
+  }
+
   // --- Embed mode (for iframes on the Compare page) ---------------------
   function applyEmbedMode() {
     try {

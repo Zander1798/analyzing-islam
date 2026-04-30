@@ -20,7 +20,7 @@
    misses still grab the handle. */
 .reader-layout > .splitter {
   position: sticky;
-  top: 72px;
+  top: 90px;
   align-self: start;
   height: calc(100vh - 90px);
   cursor: col-resize;
@@ -107,7 +107,7 @@
 /* ===== Table of Contents (sticky sidebar) ===== */
 .reader-toc {
   position: sticky;
-  top: 72px;
+  top: 90px;
   align-self: start;
   height: calc(100vh - 90px);
   overflow-y: auto;
