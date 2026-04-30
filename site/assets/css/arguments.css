@@ -34,8 +34,8 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 32px 28px 28px;
-  background: var(--panel);
-  border: 1px solid var(--border);
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--text);
   text-decoration: none;
   min-height: 220px;
@@ -380,10 +380,10 @@
   margin-top: 8px;
 }
 .arg-response-item {
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 18px 22px;
   margin-bottom: 14px;
-  background: var(--bg-elevated);
+  background: #000000;
 }
 .arg-response-label {
   font-family: var(--sans);
@@ -430,8 +430,8 @@
 .arg-pager a {
   flex: 1 1 0;
   padding: 14px 18px;
-  border: 1px solid var(--border);
-  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #000000;
   color: var(--text);
   text-decoration: none;
   font-family: var(--sans);
@@ -473,8 +473,8 @@
   max-width: 640px;
   margin: 80px auto;
   padding: 36px 32px;
-  background: var(--panel);
-  border: 1px solid var(--border);
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
 }
 .args-gate h2 {
