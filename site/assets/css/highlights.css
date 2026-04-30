@@ -429,12 +429,15 @@ mark.ai-hl.is-flash {
   .reader-layout.has-hl-card .reader-toc {
     overflow-y: auto;
   }
-  /* Highlights toggle stays fixed top-right while the user scrolls */
+  /* Highlights toggle stays fixed top-right while the user scrolls.
+     Mobile nav wraps to ~109px on narrow phones; 115px clears it.
+     z-index 105 (> nav's 100) ensures it's tappable even if the nav
+     is slightly taller (e.g. when the auth button adds another row). */
   .hl-card-toggle {
     position: fixed;
-    top: 90px;
+    top: 115px;
     right: 12px;
-    z-index: 49;
+    z-index: 105;
   }
 }
 

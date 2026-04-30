@@ -122,7 +122,7 @@
       "questions": [
         {
           "q": "Bukhari records the age at which Muhammad married Aisha. What age does it give?",
-          "ref": "Bukhari · Book 67",
+          "ref": "Bukhari · Book 67 · Hadith 4927",
           "a": "Eight",
           "b": "Ten",
           "c": "Six",
@@ -131,7 +131,7 @@
         },
         {
           "q": "Bukhari records the age at which Aisha's marriage to the Prophet was consummated. What age does it give?",
-          "ref": "Bukhari · Book 67",
+          "ref": "Bukhari · Book 67 · Hadith 4928",
           "a": "Seven",
           "b": "Nine",
           "c": "Twelve",
@@ -185,7 +185,7 @@
         },
         {
           "q": "Aisha describes in Bukhari what she was playing with when the Prophet would come and join her. What was she playing with?",
-          "ref": "Bukhari · Book 78",
+          "ref": "Bukhari · Book 78 · Hadith 5898",
           "a": "Birds",
           "b": "Dolls",
           "c": "Clay figures",
@@ -237,7 +237,7 @@
       "questions": [
         {
           "q": "Bukhari says if a fly falls in your drink you should dip the whole fly in before removing it. What reason does the hadith give?",
-          "ref": "Bukhari · Book 76",
+          "ref": "Bukhari · Book 76 · Hadith 5556",
           "a": "One wing carries disease and the other carries the cure",
           "b": "The fly neutralises any impurity when fully submerged",
           "c": "Wasting food is forbidden and the drink remains pure regardless",
@@ -246,7 +246,7 @@
         },
         {
           "q": "Bukhari records a prescription the Prophet gave to ill people involving camels. What was it?",
-          "ref": "Bukhari · Book 4",
+          "ref": "Bukhari · Book 4 · Hadith 233",
           "a": "Camel blood mixed with milk",
           "b": "Camel urine mixed with camel milk",
           "c": "Rendered camel fat applied to the skin",
@@ -255,7 +255,7 @@
         },
         {
           "q": "Bukhari records that Satan 'spends the night in the ___ part of your nose' if you do not rinse at dawn",
-          "ref": "Bukhari · Book 59",
+          "ref": "Bukhari · Book 59 · Hadith 3160",
           "a": "bridge",
           "b": "tip",
           "c": "upper",
@@ -264,7 +264,7 @@
         },
         {
           "q": "Muslim records that a black dog, a donkey, or a woman passing in front of a praying man cuts off his prayer — TRUE or FALSE",
-          "ref": "Muslim · Book 4",
+          "ref": "Muslim · Book 4 · Hadith 1039",
           "a": "True",
           "b": "False",
           "c": null,
@@ -273,7 +273,7 @@
         },
         {
           "q": "Bukhari says the rooster crows at night because it has seen something. What has it seen?",
-          "ref": "Bukhari · Book 59",
+          "ref": "Bukhari · Book 59 · Hadith 3167",
           "a": "An evil spirit",
           "b": "A vision of the dawn",
           "c": "An angel",
@@ -282,7 +282,7 @@
         },
         {
           "q": "Bukhari records that the Prophet was bewitched. What was the specific effect of the bewitchment on him?",
-          "ref": "Bukhari · Book 59",
+          "ref": "Bukhari · Book 59 · Hadith 3134",
           "a": "He forgot entire passages of the Quran for a period",
           "b": "He imagined he had done things he had not actually done",
           "c": "He was unable to speak for several days",
@@ -291,7 +291,7 @@
         },
         {
           "q": "According to Bukhari, the Prophet had the physical strength of ___ men, which allowed him to visit all his wives in one night",
-          "ref": "Bukhari · Book 5",
+          "ref": "Bukhari · Book 5 · Hadith 268",
           "a": "twenty",
           "b": "forty",
           "c": "thirty",
@@ -300,7 +300,7 @@
         },
         {
           "q": "Bukhari records a rule about the number of stones used when cleansing after the toilet. What is the rule?",
-          "ref": "Bukhari · Book 4",
+          "ref": "Bukhari · Book 4 · Hadith 161",
           "a": "There must be at least five stones",
           "b": "The number must be odd",
           "c": "The number must be even",
@@ -309,7 +309,7 @@
         },
         {
           "q": "Muslim records the Prophet's instruction on drinking water. In what position should a person drink?",
-          "ref": "Muslim · Book 36",
+          "ref": "Muslim · Book 36 · Hadith 5137",
           "a": "Standing",
           "b": "Lying on the side",
           "c": "Sitting",
@@ -318,25 +318,25 @@
         },
         {
           "q": "Bukhari records that the Prophet's recommended sleeping position is on the right side — TRUE or FALSE",
-          "ref": "Bukhari · Book 75",
+          "ref": "Bukhari · Book 4 · Hadith 247",
           "a": "True",
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/bukhari.html#book-75"
+          "source": "read/bukhari.html#book-4"
         },
         {
           "q": "Bukhari records the Prophet's instruction on dyeing grey hair. Whose appearance must the dyeing not imitate?",
-          "ref": "Bukhari · Book 77",
+          "ref": "Bukhari · Book 60 · Hadith 3316",
           "a": "The Persians",
           "b": "The Jews and Christians",
           "c": "The pagans",
           "answer": "b",
-          "source": "read/bukhari.html#book-77"
+          "source": "read/bukhari.html#book-60"
         },
         {
           "q": "Muslim records what the Prophet said about eating the monitor lizard (dabb). What was his position?",
-          "ref": "Muslim · Book 34",
+          "ref": "Muslim · Book 34 · Hadith 4891",
           "a": "It is forbidden to eat under all circumstances",
           "b": "It must be slaughtered like other animals to be lawful",
           "c": "He neither ate it himself nor prohibited others from eating it",
@@ -388,7 +388,7 @@
         },
         {
           "q": "A Bukhari hadith says the sun prostrates under Allah's Throne each evening and asks permission before it is allowed to rise again — TRUE or FALSE",
-          "ref": "Bukhari · Book 59",
+          "ref": "Bukhari · Book 59 · Hadith 3066",
           "a": "True",
           "b": "False",
           "c": null,
@@ -602,7 +602,7 @@
         },
         {
           "q": "Bukhari records the Prophet's ruling on apostasy — leaving Islam. What does he command be done to the apostate?",
-          "ref": "Bukhari · Book 88",
+          "ref": "Bukhari · Book 88 · Hadith 6666",
           "a": "Debate them and give them three days to repent",
           "b": "Exile them permanently from Muslim territory",
           "c": "Kill them",
@@ -665,7 +665,7 @@
         },
         {
           "q": "Q 24:2 prescribes 100 lashes for the unmarried fornicator. Open both sources — what does Bukhari record as the punishment for a married person who commits adultery?",
-          "ref": "Q 24:2 & Bukhari · Book 86",
+          "ref": "Q 24:2 & Bukhari · Book 86 · Hadith 6568",
           "a": "Two hundred lashes plus exile",
           "b": "Stoning to death",
           "c": "One hundred lashes plus a year of exile",
@@ -764,7 +764,7 @@
         },
         {
           "q": "Bukhari records that the Prophet had the physical strength of thirty men — TRUE or FALSE",
-          "ref": "Bukhari · Book 5",
+          "ref": "Bukhari · Book 5 · Hadith 268",
           "a": "True",
           "b": "False",
           "c": null,
@@ -873,7 +873,7 @@
         },
         {
           "q": "Bukhari records that the Prophet was successfully bewitched and began imagining things he had not done. This sits in tension with the doctrine that prophets are divinely protected from the effects of magic — TRUE or FALSE",
-          "ref": "Bukhari · Book 59",
+          "ref": "Bukhari · Book 59 · Hadith 3134",
           "a": "True",
           "b": "False",
           "c": null,
@@ -937,7 +937,7 @@
       "questions": [
         {
           "q": "Tirmidhi records the original condition of the Black Stone and what changed it. What does the hadith say?",
-          "ref": "Tirmidhi · Book 9",
+          "ref": "Tirmidhi · Book 9 · Hadith 878",
           "a": "It was grey and rough — pilgrims' hands polished it dark over centuries",
           "b": "It was whiter than milk — the sins of the children of Adam blackened it",
           "c": "It was red like a ruby — exposure to the elements darkened it",
@@ -946,7 +946,7 @@
         },
         {
           "q": "Bukhari's Mi'raj account says daily prayers were originally commanded at a number far above five. What was the original number, and who negotiated them down?",
-          "ref": "Bukhari · Book 8",
+          "ref": "Bukhari · Book 8 · Hadith 345",
           "a": "Thirty prayers — the Prophet himself asked Allah to reduce them",
           "b": "Fifty prayers — Moses told Muhammad to keep going back and asking for reductions",
           "c": "Forty prayers — the angels interceded on behalf of humanity",
@@ -955,7 +955,7 @@
         },
         {
           "q": "During the Mi'raj, Muhammad encountered the prophets in the heavens. In which heaven did he meet Ibrahim (Abraham)?",
-          "ref": "Bukhari · Book 59",
+          "ref": "Bukhari · Book 59 · Hadith 3074",
           "a": "The sixth",
           "b": "The fifth",
           "c": "The seventh",
@@ -964,7 +964,7 @@
         },
         {
           "q": "Ibn Majah records what happened to the Quranic verse on stoning adulterers after the Prophet's death. What does the hadith say occurred?",
-          "ref": "Ibn Majah · Book 9",
+          "ref": "Ibn Majah · Book 9 · Hadith 1678",
           "a": "Early caliphs deliberately removed it as inconsistent with Q 24:2",
           "b": "A domesticated animal came in and ate the parchment it was written on",
           "c": "It was set aside because its chain of narration was found to be weak",
@@ -973,7 +973,7 @@
         },
         {
           "q": "Aisha narrates in Muslim that a Quranic ruling established how many sucklings create a permanent marriage prohibition. What was the final number?",
-          "ref": "Muslim · Book 17",
+          "ref": "Muslim · Book 17 · Hadith 3474",
           "a": "Three",
           "b": "Ten",
           "c": "Five",
@@ -1000,7 +1000,7 @@
         },
         {
           "q": "In the Mi'raj hadith in Bukhari, who did Muhammad encounter in the first heaven — sitting while souls passed on his right and left, laughing at those on the right and weeping at those on the left?",
-          "ref": "Bukhari · Book 59",
+          "ref": "Bukhari · Book 59 · Hadith 3074",
           "a": "Musa (Moses)",
           "b": "Jibril (Gabriel)",
           "c": "Adam",
@@ -1018,7 +1018,7 @@
         },
         {
           "q": "Muslim records that the Prophet instructed Sahla bint Suhail to breastfeed the adult man Salim. What was the Islamic legal purpose stated in the hadith?",
-          "ref": "Muslim · Book 17",
+          "ref": "Muslim · Book 17 · Hadith 3481",
           "a": "To make him a mahram so he could remain in the household without restriction",
           "b": "To grant him citizenship rights within the Muslim community",
           "c": "To fulfil a religious obligation Salim had been unable to complete in infancy",
@@ -1036,7 +1036,7 @@
         },
         {
           "q": "In Bukhari's Mi'raj account, Moses tells Muhammad to keep returning to Allah to ask for fewer daily prayers — and Allah reduces the number each time. Open both sources. What does this imply about Moses' knowledge versus Allah's initial command of 50 prayers?",
-          "ref": "Bukhari · Book 8 & Book 59",
+          "ref": "Bukhari · Book 8 · Hadith 345 & Book 59 · Hadith 3074",
           "a": "Moses had greater practical knowledge of human capacity than Allah's initial command reflected",
           "b": "Allah was testing Moses to see if he would dare speak up on behalf of the believers",
           "c": "Moses was overstepping — the Prophet should have accepted 50 prayers without negotiation",
