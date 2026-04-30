@@ -76,11 +76,17 @@
       ticking = true;
       requestAnimationFrame(function () {
         const y = window.scrollY;
-        if (y > lastY && y > 60) {
+        if (y <= 60) {
+          // Always show nav near the top of the page.
+          nav.classList.remove("is-hidden");
+        } else if (y > lastY) {
+          // Scrolling down: hide nav.
           nav.classList.add("is-hidden");
-        } else {
+        } else if (window.innerWidth > 900) {
+          // Scrolling up on desktop: reveal nav.
           nav.classList.remove("is-hidden");
         }
+        // Scrolling up on mobile while past the top: nav stays hidden.
         lastY = y;
         ticking = false;
       });

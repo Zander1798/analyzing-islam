@@ -372,15 +372,20 @@ mark.ai-hl.is-flash {
       10px
       minmax(0, 1fr);
   }
+  /* Bible layout: drop the hl-card column; card becomes a fixed drawer. */
+  .bible-layout.has-hl-card {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+  .bible-layout.has-hl-card > .splitter[data-splitter-key="reader-hl"] { display: none; }
   .hl-card {
     position: fixed;
-    top: 60px;
+    top: 0;
     right: 0;
     bottom: 0;
     width: 280px;
     background: var(--bg, #0a0a0a);
     border-left: 1px solid var(--border, #2a2a2a);
-    z-index: 50;
+    z-index: 110;
     transform: translateX(100%);
     transition: transform 0.18s ease-out;
     height: auto;
@@ -407,6 +412,12 @@ mark.ai-hl.is-flash {
 }
 
 /* ===== Mobile reader: single-column, full-width content ===== */
+@media (max-width: 960px) {
+  /* Bible layout: collapse to single column on phones. */
+  .bible-layout.has-hl-card {
+    grid-template-columns: 1fr;
+  }
+}
 @media (max-width: 900px) {
   /* Override the 1100px rule above — has-hl-card must not force 3 columns
      on phones where reader.css collapses the grid to a single column. */

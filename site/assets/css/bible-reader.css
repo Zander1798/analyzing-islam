@@ -334,7 +334,8 @@
   .ilt-words { gap: 12px 12px; }
   .w-orig { font-size: 20px; }
   .bible-panel {
-    top: 64px;
+    top: 0;
     width: 100vw;
+    z-index: 110;
   }
 }
