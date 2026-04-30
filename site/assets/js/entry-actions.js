@@ -1,4 +1,4 @@
-// Entry actions — injects a Save button and Note toggle into every
+// Entry actions — injects a Save button and Share button into every
 // <div class="entry"> on catalog and category pages. Only visible when
 // the user is signed in.
 (function () {
@@ -74,80 +74,6 @@
     btn.setAttribute("aria-pressed", isSaved ? "true" : "false");
   }
 
-  function renderNoteToggle(entryEl) {
-    if (entryEl.querySelector(".entry-note-toggle")) return;
-
-    const header = entryEl.querySelector(".entry-header");
-    if (!header) return;
-
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "entry-note-toggle";
-    toggle.textContent = "✎ Note";
-    toggle.setAttribute("aria-expanded", "false");
-    header.appendChild(toggle);
-
-    // Panel hidden by default, appears after the <section>
-    const panel = document.createElement("div");
-    panel.className = "entry-note-panel";
-    panel.hidden = true;
-    panel.innerHTML =
-      '<textarea placeholder="Your private notes about this entry — only you can see them."></textarea>' +
-      '<div class="entry-note-actions">' +
-      '  <button type="button" class="entry-note-save">Save note</button>' +
-      '  <button type="button" class="entry-note-delete">Delete</button>' +
-      '  <span class="entry-note-status"></span>' +
-      "</div>";
-    entryEl.appendChild(panel);
-
-    const textarea = panel.querySelector("textarea");
-    const saveBtn = panel.querySelector(".entry-note-save");
-    const deleteBtn = panel.querySelector(".entry-note-delete");
-    const status = panel.querySelector(".entry-note-status");
-    let loaded = false;
-
-    toggle.addEventListener("click", async function () {
-      const opening = panel.hidden;
-      panel.hidden = !opening;
-      toggle.setAttribute("aria-expanded", opening ? "true" : "false");
-
-      if (opening && !loaded && window.AI_BOOKMARKS) {
-        loaded = true;
-        status.textContent = "Loading…";
-        const note = await window.AI_BOOKMARKS.getNote(entryEl.id);
-        if (note && note.content) {
-          textarea.value = note.content;
-          status.textContent = "Last saved " + new Date(note.updated_at).toLocaleString();
-        } else {
-          status.textContent = "";
-        }
-      }
-    });
-
-    saveBtn.addEventListener("click", async function () {
-      if (!window.AI_BOOKMARKS) return;
-      saveBtn.disabled = true;
-      status.textContent = "Saving…";
-      const saved = await window.AI_BOOKMARKS.saveNote(entryEl.id, textarea.value);
-      saveBtn.disabled = false;
-      if (saved) {
-        status.textContent = "Saved " + new Date(saved.updated_at).toLocaleString();
-      } else {
-        status.textContent = "Save failed.";
-      }
-    });
-
-    deleteBtn.addEventListener("click", async function () {
-      if (!window.AI_BOOKMARKS) return;
-      if (!confirm("Delete this note?")) return;
-      deleteBtn.disabled = true;
-      await window.AI_BOOKMARKS.deleteNote(entryEl.id);
-      textarea.value = "";
-      status.textContent = "Deleted.";
-      deleteBtn.disabled = false;
-    });
-  }
-
   function renderShareButton(entryEl) {
     if (!entryEl.id) return;
     if (entryEl.querySelector(".entry-share-btn")) return;
@@ -209,7 +135,7 @@
     if (!signedIn) {
       // Remove stale signed-in-only widgets if the user signed out mid-session.
       entries.forEach((e) => {
-        e.querySelectorAll(".entry-save-btn, .entry-note-toggle, .entry-note-panel")
+        e.querySelectorAll(".entry-save-btn")
           .forEach((el) => el.remove());
       });
       return;
@@ -221,7 +147,6 @@
     entries.forEach((entryEl) => {
       if (!entryEl.id) return;
       renderSaveButton(entryEl, set.has(entryEl.id));
-      renderNoteToggle(entryEl);
     });
   }
 

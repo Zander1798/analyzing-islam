@@ -1470,9 +1470,8 @@ blockquote {
   color: var(--text-muted);
 }
 
-/* ===== Per-entry Save + Note + Share actions ===== */
+/* ===== Per-entry Save + Share actions ===== */
 .entry-save-btn,
-.entry-note-toggle,
 .entry-share-btn {
   appearance: none;
   margin-left: 12px;
@@ -1492,7 +1491,6 @@ blockquote {
 }
 
 .entry-save-btn:hover,
-.entry-note-toggle:hover,
 .entry-share-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
@@ -1510,84 +1508,9 @@ blockquote {
 }
 
 .entry-save-btn:disabled,
-.entry-note-toggle:disabled,
 .entry-share-btn:disabled {
   opacity: 0.5;
   cursor: default;
-}
-
-.entry-note-panel {
-  margin-top: 16px;
-  padding: 16px;
-  border: 1px dashed var(--border);
-  background: var(--panel);
-}
-
-.entry-note-panel[hidden] {
-  display: none;
-}
-
-.entry-note-panel textarea {
-  width: 100%;
-  min-height: 96px;
-  padding: 10px 12px;
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  font-family: var(--sans);
-  font-size: 14px;
-  line-height: 1.55;
-  resize: vertical;
-}
-
-.entry-note-panel textarea:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.entry-note-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-}
-
-.entry-note-actions button {
-  appearance: none;
-  padding: 8px 14px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text-muted);
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.entry-note-actions .entry-note-save {
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-.entry-note-actions .entry-note-save:hover {
-  background: rgba(122, 162, 247, 0.1);
-}
-
-.entry-note-actions .entry-note-delete:hover {
-  color: #f4a4a4;
-  border-color: #f4a4a4;
-}
-
-.entry-note-status {
-  font-size: 11px;
-  color: var(--text-dim);
-  font-family: var(--sans);
-  letter-spacing: 0;
-  text-transform: none;
 }
 
 /* ===== Saved-entries page ===== */
