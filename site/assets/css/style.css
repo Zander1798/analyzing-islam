@@ -2872,13 +2872,25 @@ blockquote {
     aspect-ratio: 6 / 5;
   }
 }
+@media (max-width: 480px) {
+  .goat-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .goat-page-grid {
+    gap: 16px;
+  }
+  .skins-grid {
+    gap: 8px;
+  }
+}
 
 .goat-main {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  min-width: 0;
 }
-
 /* ---- Big-goat stage ---- */
 .goat-stage {
   background: #000000;
@@ -3046,6 +3058,7 @@ blockquote {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
 }
 
 .goat-page .card {
