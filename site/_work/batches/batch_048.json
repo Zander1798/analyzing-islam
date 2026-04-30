@@ -1,0 +1,107 @@
+[
+  {
+    "id": "rain-fresh-from-allah-dawud",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"rain-fresh-from-allah-dawud\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Rain is \"fresh from Allah\" — uncover your head</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h5100\">Abu Dawud #5100</a></span>\n  </div>\n  <section>\n    <blockquote>\"It is only newly created by Allah; it has just come from Allah.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Rain treated as directly-created divine water.</p>\n    <h4>Why this is a problem</h4>\n    <p>Water has cycled for billions of years. Claim fails meteorology.</p>\n    <p>Philosophical polemic: pre-modern meteorology as piety.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "sneeze-alhamdulillah-first",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"sneeze-alhamdulillah-first\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Sneeze-blessing is conditional on saying alhamdulillah first</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h5033\">Abu Dawud #5033</a></span>\n  </div>\n  <section>\n    <blockquote>\"If he sneezed and did not say alhamdulillah, do not respond.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Three-step sneeze protocol; opening formula required.</p>\n    <h4>Why this is a problem</h4>\n    <p>Mercy gated by Arabic vocabulary on autonomic reflex. Non-Arabic speakers forfeit.</p>\n    <p>Philosophical polemic: signature of ritual-detail culture.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "milk-unique-food-drink-dawud",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"milk-unique-food-drink-dawud\" data-category=\"strange prophet\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">\"Nothing suffices as food and drink except milk\"</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag\">Prophetic Character</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h3730\">Abu Dawud #3730</a></span>\n  </div>\n  <section>\n    <blockquote>\"For nothing suffices as both food and drink except milk.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Milk uniquely combines food and drink.</p>\n    <h4>Why this is a problem</h4>\n    <p>Empirically false. Arabian herding diet elevated to revelation.</p>\n    <p>Philosophical polemic: cultural list dressed as universal rule.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "muhammad-gold-ring-thrown",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"muhammad-gold-ring-thrown\" data-category=\"strange logic\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Muhammad discarded his gold ring — community imitated</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag\">Logical Inconsistency</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h4218\">Abu Dawud #4218</a></span>\n  </div>\n  <section>\n    <blockquote>\"He threw it away and said: 'Never will I wear it.' So the people threw away their rings.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Muhammad reversed his own ornament without stated reason; ummah imitated.</p>\n    <h4>Why this is a problem</h4>\n    <p>Authority personal rather than principled. Paradise rewards gold — earth-heaven contradiction.</p>\n    <p>Philosophical polemic: uncritical imitation pattern.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "cupping-specific-lunar-days",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"cupping-specific-lunar-days\" data-category=\"science strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Cupping on the 17th, 19th, and 21st lunar days — prophetic astrology</span>\n    <span class=\"tag\">Science Claims</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h3857\">Abu Dawud #3857</a></span>\n  </div>\n  <section>\n    <blockquote>\"Cupping is preferred on the 17th, 19th, and 21st of the lunar month.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Bloodletting effectiveness tied to specific lunar dates.</p>\n    <h4>Why this is a problem</h4>\n    <p>Astrology's structure. No medical basis for lunar-date cognitive benefits.</p>\n    <p>Philosophical polemic: astro-magical medicine preserved as sahih.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "right-foot-first-dawud",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"right-foot-first-dawud\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Right foot first — sandals, mosques, every direction</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h4140\">Abu Dawud #4140</a></span>\n  </div>\n  <section>\n    <blockquote>\"Let him start with the right. When he takes them off, let him start with the left.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Right-foot-first protocol for every directional act.</p>\n    <h4>Why this is a problem</h4>\n    <p>Arbitrary handedness. Disadvantages left-handed Muslims.</p>\n    <p>Philosophical polemic: cultural arbitrariness as divine law.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "first-glance-rule",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"first-glance-rule\" data-category=\"women logic\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">First glance forgiven; second is sin</span>\n    <span class=\"tag\">Women</span>\n    <span class=\"tag\">Logical Inconsistency</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h2149\">Abu Dawud #2149</a></span>\n  </div>\n  <section>\n    <blockquote>\"Do not follow a glance with another glance. The first is allowed; the second is not.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Gaze-policing rule.</p>\n    <h4>Why this is a problem</h4>\n    <p>Modern media makes it unenforceable. Places responsibility on looker.</p>\n    <p>Philosophical polemic: assumes women are rarely visible.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "rapid-burial-arabian",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"rapid-burial-arabian\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Rapid burial — climate-optimized Arabian practice made universal</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h3158\">Abu Dawud #3158</a></span>\n  </div>\n  <section>\n    <blockquote>\"The Messenger ordered that the dead be buried quickly.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Same-day burials are Islamic norm.</p>\n    <h4>Why this is a problem</h4>\n    <p>Truncates grieving. Prevents post-mortem examination. Desert routine became universal.</p>\n    <p>Philosophical polemic: 7th-century desert practice translated into religion.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "moon-addressed-by-muhammad",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"moon-addressed-by-muhammad\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Muhammad addressed the new moon: \"My Lord and your Lord is Allah\"</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h5092\">Abu Dawud #5092</a></span>\n  </div>\n  <section>\n    <blockquote>\"My Lord and your Lord is Allah.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>A du'a addressed to the moon as a conscious entity.</p>\n    <h4>Why this is a problem</h4>\n    <p>Preserves pre-Islamic Arabian moon-personification. Modern astronomy obsoletes the sighting ritual.</p>\n    <p>Philosophical polemic: cultural continuity in theological dress.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "dates-pair-permission",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"dates-pair-permission\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Eating two dates at once requires permission</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h3834\">Abu Dawud #3834</a></span>\n  </div>\n  <section>\n    <blockquote>\"The Messenger forbade eating dates in pairs except by permission.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Paired-date consumption etiquette — preserved as sahih jurisprudence.</p>\n    <h4>Why this is a problem</h4>\n    <p>A window into fiqh's micro-scale. From genocide to date-pairs; uneven ethical weight.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "women-wet-dream-ghusl",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"women-wet-dream-ghusl\" data-category=\"women science gross-vile\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Women's wet dreams — 7th-century physiology preserved in law</span>\n    <span class=\"tag\">Women</span>\n    <span class=\"tag\">Science Claims</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h236\">Abu Dawud #236</a></span>\n  </div>\n  <section>\n    <blockquote>\"Does a woman have to do ghusl if she has a wet dream?\" — \"Yes, if she sees the fluid.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Women have wet dreams per female-water-equivalent-semen theory.</p>\n    <h4>Why this is a problem</h4>\n    <p>Pre-modern physiology still operates as ritual law.</p>\n    <p>Philosophical polemic: ritual purity built on superseded biology.</p>\n    <h4>The Muslim response</h4>\n  <p>Apologists frame the hadith as evidence of Islamic juridical thoroughness — addressing even private biological matters with specific ritual guidance, demonstrating that Islamic law covers all domains of life. The ruling (yes, she must perform <em>ghusl</em>) is cited as treating male and female bodies with equivalent ritual seriousness, an anti-misogynist gesture in the cultural context. The specific biology invoked (women's arousal producing fluid) reflects the 7th-century understanding and does not claim medical originality.</p>\n  <h4>Why it fails</h4>\n  <p>The \"equivalent ritual seriousness\" is available as a framing but the content reveals something more problematic: pre-modern physiology continues to operate as eternal ritual law. The hadith's biology is wrong — female orgasmic or arousal-related fluid production is not parallel to male ejaculation in the generative sense the hadith implies, and modern medicine does not support the specific physiological picture the ruling presumes. A scriptural ritual system built on 7th-century reproductive-biology assumptions carries those assumptions forward permanently as religious law. If the biology is superseded, the ritual rule is operating on superseded grounds — which is exactly the kind of cultural-historical contingency the Quran is supposed to transcend.</p>\n</section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "hell-seven-gates-dawud",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"hell-seven-gates-dawud\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Hell has seven gates</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\">Abu Dawud afterlife corpus; <a class=\"cite-link\" href=\"../read/quran.html#s15v44\">Q 15:44</a></span>\n  </div>\n  <section>\n    <blockquote>\"Hell has seven gates; for each gate is a class of sinners assigned.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Architectural hell with seven class-specific gates.</p>\n    <h4>Why this is a problem</h4>\n    <p>Zoroastrian-Jewish-Christian inheritance. Formulaic assignment.</p>\n    <p>Philosophical polemic: hell imagined by jurists, not revealed.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "breastfeeding-emotion-transfer",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"breastfeeding-emotion-transfer\" data-category=\"women strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Breastfeeding emotion transfers to the child</span>\n    <span class=\"tag\">Women</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\">Abu Dawud breastfeeding commentary</span>\n  </div>\n  <section>\n    <blockquote>\"Milk carries the temperament of the mother.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Maternal emotions transfer through milk to child's character.</p>\n    <h4>Why this is a problem</h4>\n    <p>Biologically false. Blames mothers for children's temperament.</p>\n    <p>Philosophical polemic: jurisprudence without biology fitting patriarchal expectations.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "non-muslim-funeral-attendance",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"non-muslim-funeral-attendance\" data-category=\"disbelievers logic\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Visit a sick non-Muslim — do not attend their funeral</span>\n    <span class=\"tag\">Treatment of Disbelievers</span>\n    <span class=\"tag\">Logical Inconsistency</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\">Abu Dawud Book 20</span>\n  </div>\n  <section>\n    <blockquote>[Juristic rule:] Muslims may visit a sick dhimmi but may not pray at a non-Muslim's funeral.</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Ritual exclusivism at death — the dying visited, the dead abandoned.</p>\n    <h4>Why this is a problem</h4>\n    <p>Constrains grief. Alienates Muslims from non-Muslim friends at the moment connection most matters.</p>\n    <p>Philosophical polemic: sharp jurisprudential line where humans typically cross together.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "silk-for-itching-exception",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"silk-for-itching-exception\" data-category=\"strange logic\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Silk permitted for men with itching — revealing medical exception</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag\">Logical Inconsistency</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h4057\">Abu Dawud #4057</a></span>\n  </div>\n  <section>\n    <blockquote>\"The Messenger allowed silk because he had itching.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Medical exception to silk prohibition.</p>\n    <h4>Why this is a problem</h4>\n    <p>Exceptions reveal the rule's actual content — cultural function, not material harm.</p>\n    <p>Philosophical polemic: the exception diagnoses the rule.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  }
+]

@@ -1,0 +1,107 @@
+[
+  {
+    "id": "jinn-marry-human-offspring",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"jinn-marry-human-offspring\" data-category=\"strange women\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Jinn marry humans — offspring walk among us</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag\">Women</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\">Abu Dawud jinn corpus</span>\n  </div>\n  <section>\n    <blockquote>[Classical:] \"Their offspring could be seen walking among men.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Jinn-human marriage produces offspring.</p>\n    <h4>Why this is a problem</h4>\n    <p>Biologically impossible. Enables child-of-jinn stigma. Modern Muslim psychiatry still contends with jinn-possession diagnoses.</p>\n    <p>Philosophical polemic: magic-realist biology.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "hell-70-year-rock",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"hell-70-year-rock\" data-category=\"strange science\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">A rock falls 70 years into hell</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag\">Science Claims</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\">Abu Dawud afterlife corpus</span>\n  </div>\n  <section>\n    <blockquote>\"A rock thrown from the brink of Hell would continue falling for seventy years.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Hell's depth measured in rock-fall time: 70 years.</p>\n    <h4>Why this is a problem</h4>\n    <p>Physical-measurement claim mapping to no cosmic structure. \"Seventy\" is rhetorical cliché.</p>\n    <p>Philosophical polemic: quantified hell commits to physics that fails.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "convert-circumcision-hair",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"convert-circumcision-hair\" data-category=\"prophet strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Adult converts circumcised and shave body hair</span>\n    <span class=\"tag\">Prophetic Character</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h356\">Abu Dawud #356</a></span>\n  </div>\n  <section>\n    <blockquote>\"Remove from yourself the hair of disbelief, and get yourself circumcised.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Adult male converts must circumcise and shave body hair.</p>\n    <h4>Why this is a problem</h4>\n    <p>Pre-anesthesia adult circumcision is painful/risky. \"Hair of disbelief\" classifies body hair as spiritual taint.</p>\n    <p>Philosophical polemic: adult-conversion threshold includes genital surgery — marking bodies, not persuading minds.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "well-water-miracle-dawud",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"well-water-miracle-dawud\" data-category=\"prophet contradiction\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Muhammad stuck his finger in the well — water multiplied</span>\n    <span class=\"tag\">Prophetic Character</span>\n    <span class=\"tag\">Contradiction</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\">Abu Dawud miracle narrations</span>\n  </div>\n  <section>\n    <blockquote>\"Water began to flow between his fingers.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Water-multiplication miracle through physical contact.</p>\n    <h4>Why this is a problem</h4>\n    <p>Quran says Muhammad's only miracle is the book (<a class=\"cite-link\" href=\"../read/quran.html#s17v59\">17:59</a>). Hadith corpus contradicts with routine water-miracles. Parallels Elisha, Moses stories.</p>\n    <p>Philosophical polemic: hadith tradition exceeded Quranic constraints.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "wet-nurse-milk-character",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"wet-nurse-milk-character\" data-category=\"women strange incest\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Wet-nurse milk quality determines child's character</span>\n    <span class=\"tag\">Women</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\">Abu Dawud classical breastfeeding commentary</span>\n  </div>\n  <section>\n    <blockquote>[Classical:] \"Bad milk produces bad character.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Wet-nurse quality determines the child's future character.</p>\n    <h4>Why this is a problem</h4>\n    <p>No biological basis. Enables stigma against nursing arrangements.</p>\n    <p>Philosophical polemic: cultural preferences sanctified as pediatric law.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "riba-ten-parties-cursed",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"riba-ten-parties-cursed\" data-category=\"strange logic\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Ten parties cursed for riba — borrower, lender, witness, recorder</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag\">Logical Inconsistency</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h3333\">Abu Dawud #3333</a></span>\n  </div>\n  <section>\n    <blockquote>\"Allah's Messenger cursed the one who consumes riba, the one who feeds it, the one who records it, and the two witnesses — they are all equal.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Ten parties to interest contracts cursed equally.</p>\n    <h4>Why this is a problem</h4>\n    <p>Equal curse on borrower (often poor) and lender (often rich). Modern Muslim bank employees categorically cursed.</p>\n    <p>Philosophical polemic: a curse universally defied is a curse that has failed to function.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "prayer-invalidate-dog-woman",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"prayer-invalidate-dog-woman\" data-category=\"women strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">A donkey, a black dog, or a woman invalidates prayer</span>\n    <span class=\"tag\">Women</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h703\">Abu Dawud #703</a></span>\n  </div>\n  <section>\n    <blockquote>\"The prayer is invalidated by a donkey, a black dog, or a woman passing in front of the worshipper.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Three items invalidate prayer: donkey, black dog, woman.</p>\n    <h4>Why this is a problem</h4>\n    <p>Women grammatically equated with two animals. Aisha explicitly objected.</p>\n    <p>Philosophical polemic: the grammar — women listed with dogs and donkeys — is the critique the tradition never answered.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "toilet-exit-forgiveness",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"toilet-exit-forgiveness\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">A specific du'a for leaving the bathroom — asking forgiveness</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h30\">Abu Dawud #30</a></span>\n  </div>\n  <section>\n    <blockquote>\"When the Messenger would exit the toilet, he would say: 'Ghufrānak' (Your forgiveness).\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Specific Arabic formula on leaving the bathroom — asking forgiveness.</p>\n    <h4>Why this is a problem</h4>\n    <p>Why \"forgiveness\" for a biological function? Generates ritual-anxiety over micro-observances.</p>\n    <p>Philosophical polemic: micro-protocols for bodily acts produce ritual-observance stress.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "bad-dream-spit-three-left",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"bad-dream-spit-three-left\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Bad dreams — spit three times to the left</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h5019\">Abu Dawud #5019</a></span>\n  </div>\n  <section>\n    <blockquote>\"A good dream is from Allah and a bad dream is from Satan. Spit three times to your left and seek refuge.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Dreams classified by supernatural origin; left-spitting as countermeasure.</p>\n    <h4>Why this is a problem</h4>\n    <p>Left-spitting is pre-Islamic apotropaic magic. Dreams attributed to Satan rather than neural processes.</p>\n    <p>Philosophical polemic: folk magic with Islamic sponsors.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "yemen-fire-end-times",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"yemen-fire-end-times\" data-category=\"strange contradiction\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">A fire will emerge from Yemen driving people to the gathering</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag\">Contradiction</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h4311\">Abu Dawud #4311</a></span>\n  </div>\n  <section>\n    <blockquote>\"The last [sign] is a fire that will come out of Yemen.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>A fire from Yemen drives humanity to the final gathering.</p>\n    <h4>Why this is a problem</h4>\n    <p>Geographic specificity invites falsification. 1,400 years and no such fire from Yemen.</p>\n    <p>Philosophical polemic: specific prophecies become falsification risks.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "beast-of-earth-talks",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"beast-of-earth-talks\" data-category=\"strange contradiction\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">A talking beast will emerge from the earth — end-times sign</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag\">Contradiction</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/abu-dawud.html#h4311\">Abu Dawud #4311</a></span>\n  </div>\n  <section>\n    <blockquote>[<a class=\"cite-link\" href=\"../read/quran.html#s27v82\">Q 27:82</a>:] \"We will bring forth for them a beast from the earth, speaking to them...\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>A miraculous talking earth-beast will be an end-times sign.</p>\n    <h4>Why this is a problem</h4>\n    <p>Folk-apocalyptic imagery paralleling Jewish-Christian traditions.</p>\n    <p>Philosophical polemic: inherited apocalyptic preserved as specific prophecy.</p>\n  </section>\n</div>",
+    "file": "abu-dawud.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "ibnmajah-satan-nose-sleep",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"ibnmajah-satan-nose-sleep\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Satan spends the night in your nose — wash three times on waking</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/ibn-majah.html#h408\">Ibn Majah #408</a></span>\n  </div>\n  <section>\n    <blockquote>\"When any of you wakes from sleep, let him perform Istinthar three times, for the Shaitan spends the night inside his nose.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Satan physically inhabits the sleeper's nose; triple nose-wash on waking.</p>\n    <h4>Why this is a problem</h4>\n    <ol>\n      <li><strong>Satan's physical location specified.</strong></li>\n      <li><strong>Demonological-hygienic practice.</strong></li>\n      <li><strong>Cross-collection (Bukhari, Muslim, Ibn Majah).</strong></li>\n    </ol>\n    <p>Philosophical polemic: a theology where Satan sleeps in noses and is displaced by water is a theology whose demonology is anatomical.</p>\n    <h4>The Muslim response</h4>\n  <p>Classical apologetics treats the \"Satan spends the night in your nose\" line as symbolic rather than physical: the morning nasal cleansing is hygienic (removing accumulated mucus), and the Satan-reference frames the cleansing as spiritually meaningful. The hadith is practical hygiene advice given in the theological vocabulary of the 7th century, not a claim about Satan's anatomical location.</p>\n  <h4>Why it fails</h4>\n  <p>The \"symbolic\" reading cannot absorb classical tafsir and hadith commentary (al-Nawawi, Ibn Hajar) which treated the Satan-in-nose localisation literally. Cross-collection preservation (Bukhari, Muslim, Ibn Majah) at <em>sahih</em> grade establishes the claim as authoritative teaching, not folk aside. The hygiene-advice framing is retrofitted — if the hadith were simply hygiene, it would not need demonology. A revelation that locates Satan's overnight residence in the sleeper's nose and prescribes water to displace him has communicated folk demonology under a hygiene banner.</p>\n</section>\n</div>",
+    "file": "ibn-majah.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "ibnmajah-beautify-your-prayers",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"ibnmajah-beautify-your-prayers\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Black-dog Satan — the color-coded demonology</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/ibn-majah.html#h952\">Ibn Majah #952</a></span>\n  </div>\n  <section>\n    <blockquote>\"The black dog is a devil.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Specifically black dogs are Satan; red, yellow, or white dogs are not.</p>\n    <h4>Why this is a problem</h4>\n    <ol>\n      <li><strong>Color-coded demonology.</strong></li>\n      <li><strong>A creator would not grade creatures by coat color for metaphysical status.</strong></li>\n    </ol>\n    <p>Philosophical polemic: a supernatural classification based on canine coat color is folk magic, not theology.</p>\n  </section>\n</div>",
+    "file": "ibn-majah.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "ibnmajah-satan-urinate-ear",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"ibnmajah-satan-urinate-ear\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Satan urinated in the ear of the sleeper who missed dawn prayer</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/ibn-majah.html#h1330\">Ibn Majah #1330</a></span>\n  </div>\n  <section>\n    <blockquote>\"That is a man in whose ear Satan has urinated.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Oversleeping dawn prayer = Satan's urinary aggression.</p>\n    <h4>Why this is a problem</h4>\n    <ol>\n      <li><strong>Satan has a urinary tract.</strong></li>\n      <li><strong>Ordinary biology replaced with demonic explanation.</strong></li>\n      <li><strong>Cross-collection across Bukhari, Abu Dawud, Ibn Majah.</strong></li>\n    </ol>\n    <p>Philosophical polemic: a theology where Satan urinates in ears is a theology of folk demonology preserved at sahih grade.</p>\n  </section>\n</div>",
+    "file": "ibn-majah.html",
+    "task": "add-why-fails"
+  },
+  {
+    "id": "ibnmajah-satan-farts-flees-adhan",
+    "strength": "basic",
+    "html": "<div class=\"entry\" id=\"ibnmajah-satan-farts-flees-adhan\" data-category=\"strange\" data-strength=\"basic\">\n  <div class=\"entry-header\">\n    <span class=\"entry-title\">Satan passes wind and flees at the adhan</span>\n    <span class=\"tag\">Strange / Obscure</span>\n    <span class=\"tag strength-basic\">Basic</span>\n    <span class=\"ref\"><a href=\"../read/ibn-majah.html#h706\">Ibn Majah #706</a></span>\n  </div>\n  <section>\n    <blockquote>\"When the call to prayer is made, Satan takes to his heels passing wind loudly so as not to hear it.\"</blockquote>\n    <h4>What the hadith says</h4>\n    <p>Satan runs away flatulating when adhan is called.</p>\n    <h4>Why this is a problem</h4>\n    <ol>\n      <li><strong>Satan has a digestive system.</strong></li>\n      <li><strong>Cosmic enemy depicted as flatulent coward.</strong></li>\n      <li><strong>Cross-collection preservation.</strong></li>\n    </ol>\n    <p>Philosophical polemic: a Satan whose primary defense mechanism is audible flatulence is a Satan whose seriousness as a cosmic adversary is compromised.</p>\n  </section>\n</div>",
+    "file": "ibn-majah.html",
+    "task": "add-why-fails"
+  }
+]
