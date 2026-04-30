@@ -1857,12 +1857,17 @@ blockquote {
   .compare-panes {
     grid-template-columns: 1fr;
     gap: 20px;
+    /* Break out of .compare-main's side padding so panes fill the screen. */
+    margin-left: -24px;
+    margin-right: -24px;
   }
   .compare-panes > .splitter {
     display: none;
   }
   .compare-pane {
     min-height: 55vh;
+    border-left: none;
+    border-right: none;
   }
 }
 
@@ -2508,12 +2513,17 @@ blockquote {
   .build-panes {
     grid-template-columns: 1fr;
     gap: 14px;
+    /* Break out of .build-editor-main's side padding so panes fill the screen. */
+    margin-left: -16px;
+    margin-right: -16px;
   }
   .build-panes > .splitter {
     display: none;
   }
   .build-pane {
     min-height: 60vh;
+    border-left: none;
+    border-right: none;
   }
   .build-pane-editor .ql-editor,
   .build-pane-editor .ql-container.ql-snow,
