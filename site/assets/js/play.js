@@ -77,10 +77,13 @@
     $("#quiz-progress-label").textContent = "Question " + (i + 1) + " / " + total;
     $("#quiz-progress-fill").style.width = ((i / total) * 100) + "%";
     $("#quiz-question").textContent = q.q;
+    const refEl = $("#quiz-ref");
+    if (refEl) refEl.textContent = q.ref || "";
     const choicesEl = $("#quiz-choices");
     choicesEl.innerHTML = "";
     [["a", q.a], ["b", q.b], ["c", q.c]].forEach(function (pair) {
       const key = pair[0], text = pair[1];
+      if (text == null) return;
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "quiz-choice";
@@ -93,6 +96,15 @@
     const link = $("#quiz-source-link");
     link.href = q.source || "read.html";
     link.textContent = "Read source ↗";
+    const link2 = $("#quiz-source-link-2");
+    if (link2) {
+      if (q.source2) {
+        link2.href = q.source2;
+        link2.hidden = false;
+      } else {
+        link2.hidden = true;
+      }
+    }
   }
 
   function submitAnswer(key) {

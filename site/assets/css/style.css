@@ -3410,7 +3410,14 @@ blockquote {
 .quiz-question {
   font-size: 19px;
   line-height: 1.45;
-  margin: 0 0 20px;
+  margin: 0 0 6px;
+}
+.quiz-ref {
+  font-size: 11px;
+  color: var(--text-dim, #777);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 16px;
 }
 .quiz-choices {
   display: flex;
@@ -3457,6 +3464,9 @@ blockquote {
 .quiz-source {
   margin-top: 14px;
   font-size: 13px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 .quiz-source a {
   color: var(--accent);
