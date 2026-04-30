@@ -264,7 +264,10 @@
       });
     }
 
-    function selectSkin(id) {
+    // persist=true only when the user explicitly clicks Select; never on
+    // auto-init calls so we don't overwrite the stored preference with a
+    // temporary fallback before Supabase has loaded the unlock list.
+    function selectSkin(id, persist) {
       if (!getUnlocked().has(id)) return;
       var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function (s) { return s.id === id; });
       if (!skin) return;
@@ -289,7 +292,7 @@
         }
       });
 
-      if (window.GoatSkins) window.GoatSkins.setSelectedId(id);
+      if (persist && window.GoatSkins) window.GoatSkins.setSelectedId(id);
     }
 
     function highlightFromHash() {
@@ -304,13 +307,21 @@
 
     applyLockStates();
 
+    // Show the saved skin's GIF in the big display immediately, even before
+    // Supabase confirms the unlock list, so there's no flash of the default.
+    (function () {
+      var id = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
+      var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function (s) { return s.id === id; });
+      if (skin && bigImg) { bigImg.src = skin.gif; bigImg.alt = skin.name; }
+    }());
+
     var saved = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
     if (!getUnlocked().has(saved)) saved = "standard";
-    selectSkin(saved);
+    selectSkin(saved, false);
 
     slots.forEach(function (slot) {
       slot.querySelector(".skin-action").addEventListener("click", function () {
-        selectSkin(slot.dataset.skinId);
+        selectSkin(slot.dataset.skinId, true);
       });
     });
 
@@ -321,7 +332,7 @@
       applyLockStates();
       var s = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
       if (!getUnlocked().has(s)) s = "standard";
-      selectSkin(s);
+      selectSkin(s, false);
     });
   }
 
