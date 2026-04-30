@@ -650,6 +650,22 @@
             // Re-fetch whenever the drawer opens so the list is never stale.
             if (cardEl.classList.contains("is-open")) refresh();
           });
+
+          // Keep toggle below the site nav on mobile so it never overlaps nav links.
+          // Embed-mode iframes have no site-nav; skip there.
+          if (!(cardDoc.documentElement && cardDoc.documentElement.classList.contains("embed-mode"))) {
+            const siteNav = cardDoc.querySelector(".site-nav");
+            if (siteNav) {
+              var syncToggleTop = function () {
+                toggleBtn.style.top = siteNav.classList.contains("is-hidden")
+                  ? "12px"
+                  : siteNav.offsetHeight + "px";
+              };
+              syncToggleTop();
+              (cardDoc.defaultView || window).addEventListener("resize", syncToggleTop, { passive: true });
+              new MutationObserver(syncToggleTop).observe(siteNav, { attributes: true, attributeFilter: ["class"] });
+            }
+          }
         }
         // Clicking the header expands a collapsed card (build editor).
         hlHead.addEventListener("click", function (e) {
