@@ -181,10 +181,11 @@
     if (!slug) return; // not a recognised reader page
 
     // Choose a parent to drop the search into. Prefer the TOC so the
-    // search sits alongside chapter navigation; fall back to the start
-    // of the reading column if there's no TOC.
+    // search sits alongside chapter navigation; fall back to the first
+    // non-splitter child of the reader layout. If neither exists (index /
+    // landing pages with no reader layout), skip mounting entirely.
     const toc = document.querySelector(".reader-toc");
-    const target = toc || document.querySelector(".reader-layout > *:not(.splitter)") || document.body;
+    const target = toc || document.querySelector(".reader-layout > *:not(.splitter)");
     if (!target) return;
 
     const onIndexPage = isIndexLandingPage(slug);
