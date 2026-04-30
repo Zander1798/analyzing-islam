@@ -68,10 +68,9 @@
     tile.type = "button";
     tile.className = "reset-tile";
     tile.innerHTML =
-      '<div class="reset-tile-label">Reset</div>'
-      + '<div class="reset-tile-title">Reset Levels</div>'
-      + '<div class="reset-tile-blurb">Lock all levels and skins — play again to unlock them.</div>'
-      + '<div class="reset-tile-foot"><span class="reset-tile-warn">⚠ Cannot be undone</span></div>';
+      '<span class="reset-tile-title">↺ Reset Levels</span>'
+      + '<span class="reset-tile-sub">Locks all levels &amp; skins</span>'
+      + '<span class="reset-tile-warn">⚠</span>';
     tile.addEventListener("click", function () {
       if (!window.confirm("Reset all levels and lock all goat skins?")) return;
       window.GoatSkins.resetProgress();

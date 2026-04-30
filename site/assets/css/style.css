@@ -3314,55 +3314,53 @@ blockquote {
 .level-tag.is-cleared  { color: #6abf6a; border-color: #6abf6a; }
 .level-tag.is-locked   { color: var(--muted); }
 
-/* ---- Reset tile ---- */
+/* ---- Reset tile (compact bar, visually distinct from level cards) ---- */
 .reset-tile {
   appearance: none;
   background: #000;
   border: 1px solid #3a1a1a;
-  border-radius: 8px;
-  padding: 18px 18px 14px;
-  text-align: left;
+  border-radius: 6px;
+  padding: 9px 14px;
   color: var(--text);
   cursor: pointer;
-  transition: border-color 0.15s, transform 0.15s;
+  transition: border-color 0.15s, opacity 0.15s;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-height: 140px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  align-self: end;   /* float to bottom of the grid row, close to level 3 */
 }
 .reset-tile:hover {
   border-color: #c0392b;
-  transform: translateY(-2px);
-}
-.reset-tile-label {
-  font-family: var(--serif);
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #c0392b;
+  opacity: 0.85;
 }
 .reset-tile-title {
-  font-size: 17px;
+  font-size: 12px;
   font-weight: 600;
-}
-.reset-tile-blurb {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.4;
-  flex: 1;
-}
-.reset-tile-foot { margin-top: 6px; }
-.reset-tile-warn {
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border: 1px solid #3a1a1a;
-  border-radius: 999px;
   color: #c0392b;
+  white-space: nowrap;
+}
+.reset-tile-sub {
+  font-size: 11px;
+  color: var(--muted);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.reset-tile-warn {
+  font-size: 13px;
+  color: #c0392b;
+  opacity: 0.6;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 @media (max-width: 480px) {
-  .reset-tile { order: 10; }
+  .reset-tile {
+    order: 10;
+    margin-top: 28px;
+    align-self: auto;
+  }
 }
 
 /* ---- Quiz card ---- */
