@@ -3328,7 +3328,7 @@ blockquote {
   flex-direction: row;
   align-items: center;
   gap: 8px;
-  align-self: end;   /* float to bottom of the grid row, close to level 3 */
+  align-self: start;
 }
 .reset-tile:hover {
   border-color: #c0392b;
@@ -3357,9 +3357,7 @@ blockquote {
 }
 @media (max-width: 480px) {
   .reset-tile {
-    order: 10;
-    margin-top: 28px;
-    align-self: auto;
+    margin-top: 12px;
   }
 }
 

@@ -57,9 +57,7 @@
       return tile;
     });
 
-    // Desktop: insert reset tile before level 3 (index 2).
-    // Mobile (≤480 px): CSS order: 10 moves it after all level cards.
-    tiles.splice(2, 0, buildResetTile());
+    tiles.push(buildResetTile());
     tiles.forEach(function (t) { grid.appendChild(t); });
   }
 
