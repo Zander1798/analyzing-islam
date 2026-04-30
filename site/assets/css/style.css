@@ -1182,6 +1182,7 @@ blockquote {
 
 .auth-trigger {
   appearance: none;
+  -webkit-appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1300,6 +1301,7 @@ blockquote {
   .auth-trigger {
     padding: 4px 10px 4px 4px;
     font-size: 11px;
+    background: #000;
   }
   .auth-avatar {
     width: 22px;
