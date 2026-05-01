@@ -3436,6 +3436,7 @@ blockquote {
   text-align: left;
   font-size: 15px;
   transition: border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .quiz-choice:hover {
   border-color: var(--accent);
@@ -3443,6 +3444,11 @@ blockquote {
 }
 .quiz-choice:focus {
   outline: none;
+  border-color: var(--border);
+}
+.quiz-choice:focus .quiz-choice-letter {
+  background: var(--border);
+  color: var(--text);
 }
 .quiz-choice-letter {
   width: 28px;

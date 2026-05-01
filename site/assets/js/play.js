@@ -91,6 +91,9 @@
   }
 
   function renderQuestion() {
+    if (document.activeElement && document.activeElement.blur) {
+      document.activeElement.blur();
+    }
     const i = state.currentQ;
     const total = state.questions.length;
     const q = state.questions[i];
