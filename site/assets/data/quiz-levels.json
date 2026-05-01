@@ -12,7 +12,7 @@
           "b": "worlds",
           "c": "believers",
           "answer": "b",
-          "source": "read/quran.html#s1"
+          "source": "read/quran.html#s1v2"
         },
         {
           "q": "Ayat al-Kursi says Allah is never overtaken by 'drowsiness or ___'",
@@ -21,7 +21,7 @@
           "b": "sleep",
           "c": "forgetfulness",
           "answer": "b",
-          "source": "read/quran.html#s2"
+          "source": "read/quran.html#s2v255"
         },
         {
           "q": "Q 2:256 says 'there shall be no ___ in [acceptance of] the religion'",
@@ -30,7 +30,7 @@
           "b": "choice",
           "c": "compulsion",
           "answer": "c",
-          "source": "read/quran.html#s2"
+          "source": "read/quran.html#s2v256"
         },
         {
           "q": "Q 33:40 gives Muhammad a unique title among all the prophets. What is it?",
@@ -39,7 +39,7 @@
           "b": "The last prophet",
           "c": "The seal of the prophets",
           "answer": "c",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v40"
         },
         {
           "q": "The very first word of the first revelation to Muhammad was '___  in the name of your Lord who created'",
@@ -48,7 +48,7 @@
           "b": "Write",
           "c": "Recite",
           "answer": "c",
-          "source": "read/quran.html#s96"
+          "source": "read/quran.html#s96v1"
         },
         {
           "q": "Q 112:3 says Allah 'neither begets nor ___'",
@@ -57,7 +57,7 @@
           "b": "sleeps",
           "c": "is begotten",
           "answer": "c",
-          "source": "read/quran.html#s112"
+          "source": "read/quran.html#s112v3"
         },
         {
           "q": "Q 4:3 sets a maximum on the number of wives a Muslim man may have. What is it?",
@@ -66,7 +66,7 @@
           "b": "Five",
           "c": "Four",
           "answer": "c",
-          "source": "read/quran.html#s4"
+          "source": "read/quran.html#s4v3"
         },
         {
           "q": "Q 18:86 says Dhul-Qarnayn followed the sun until he found it setting in a spring of dark mud — TRUE or FALSE",
@@ -75,7 +75,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/quran.html#s18"
+          "source": "read/quran.html#s18v86"
         },
         {
           "q": "Q 4:34 opens with a statement about authority in the household. What does it say men are over women?",
@@ -84,7 +84,7 @@
           "b": "In charge, by right of what Allah has given one over the other",
           "c": "Brothers and protectors in the faith",
           "answer": "b",
-          "source": "read/quran.html#s4"
+          "source": "read/quran.html#s4v34"
         },
         {
           "q": "Q 67:5 says the stars of the nearest heaven were also made 'missiles against the ___'",
@@ -93,7 +93,7 @@
           "b": "devils",
           "c": "hypocrites",
           "answer": "b",
-          "source": "read/quran.html#s67"
+          "source": "read/quran.html#s67v5"
         },
         {
           "q": "Q 2:106 explains abrogation. When Allah causes a verse to be forgotten or replaces it, what does He bring instead?",
@@ -102,7 +102,7 @@
           "b": "One better than it or similar to it",
           "c": "Silence, as a test for believers",
           "answer": "b",
-          "source": "read/quran.html#s2"
+          "source": "read/quran.html#s2v106"
         },
         {
           "q": "Q 2:23 challenges doubters of the Quran. What does it dare them to produce?",
@@ -111,7 +111,7 @@
           "b": "A surah like it",
           "c": "A single perfect verse",
           "answer": "b",
-          "source": "read/quran.html#s2"
+          "source": "read/quran.html#s2v23"
         }
       ]
     },
@@ -127,7 +127,7 @@
           "b": "Ten",
           "c": "Six",
           "answer": "c",
-          "source": "read/bukhari.html#book-67"
+          "source": "read/bukhari.html#h4927"
         },
         {
           "q": "Bukhari records the age at which Aisha's marriage to the Prophet was consummated. What age does it give?",
@@ -136,7 +136,7 @@
           "b": "Nine",
           "c": "Twelve",
           "answer": "b",
-          "source": "read/bukhari.html#book-67"
+          "source": "read/bukhari.html#h4928"
         },
         {
           "q": "Q 33:37 describes how Zaynab came to be married to the Prophet after her husband Zayd divorced her. Who does the verse say arranged the marriage?",
@@ -145,7 +145,7 @@
           "b": "Allah — the verse says 'We married her to you'",
           "c": "The Prophet himself, after Zayd gave his blessing",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v37"
         },
         {
           "q": "Q 33:53 places a permanent prohibition on all believers regarding the Prophet's wives. What is it?",
@@ -154,7 +154,7 @@
           "b": "Marrying any of his wives after him, ever",
           "c": "Speaking to his wives without a screen between",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v53"
         },
         {
           "q": "'The Prophet is more worthy of the believers than their own ___'",
@@ -163,7 +163,7 @@
           "b": "selves",
           "c": "families",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v6"
         },
         {
           "q": "Q 33:50 grants the Prophet the right to marry women who offer themselves to him without a dowry, and explicitly states this allowance is only for him, not other believers — TRUE or FALSE",
@@ -172,7 +172,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v50"
         },
         {
           "q": "Q 66:1 opens with Allah rebuking the Prophet. What had the Prophet done to prompt the rebuke?",
@@ -181,7 +181,7 @@
           "b": "Prohibited something Allah had made lawful for him",
           "c": "Shown clear favouritism to one wife over the others",
           "answer": "b",
-          "source": "read/quran.html#s66"
+          "source": "read/quran.html#s66v1"
         },
         {
           "q": "Aisha describes in Bukhari what she was playing with when the Prophet would come and join her. What was she playing with?",
@@ -190,7 +190,7 @@
           "b": "Dolls",
           "c": "Clay figures",
           "answer": "b",
-          "source": "read/bukhari.html#book-78"
+          "source": "read/bukhari.html#h5898"
         },
         {
           "q": "Q 24:11 opens the passage defending Aisha's honour with the words: 'Indeed, those who came with the ___'",
@@ -199,7 +199,7 @@
           "b": "lie",
           "c": "accusation",
           "answer": "b",
-          "source": "read/quran.html#s24"
+          "source": "read/quran.html#s24v11"
         },
         {
           "q": "Q 33:28 describes what the Prophet must give to any wife who chooses this world over him. What does she receive?",
@@ -208,7 +208,7 @@
           "b": "A gracious release from the marriage",
           "c": "Her freedom but no financial support",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v28"
         },
         {
           "q": "Q 33:4 states that Allah has NOT made the Prophet's adopted son Zayd his true son — TRUE or FALSE",
@@ -217,7 +217,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v4"
         },
         {
           "q": "Q 33:56 commands believers to do something specific regarding the Prophet. What does it command?",
@@ -226,7 +226,7 @@
           "b": "Ask Allah to confer blessing on him and salute him with respect",
           "c": "Follow his example in all private and public matters",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v56"
         }
       ]
     },
@@ -242,7 +242,7 @@
           "b": "The fly neutralises any impurity when fully submerged",
           "c": "Wasting food is forbidden and the drink remains pure regardless",
           "answer": "a",
-          "source": "read/bukhari.html#book-76"
+          "source": "read/bukhari.html#h5556"
         },
         {
           "q": "Bukhari records a prescription the Prophet gave to ill people involving camels. What was it?",
@@ -251,7 +251,7 @@
           "b": "Camel urine mixed with camel milk",
           "c": "Rendered camel fat applied to the skin",
           "answer": "b",
-          "source": "read/bukhari.html#book-4"
+          "source": "read/bukhari.html#h233"
         },
         {
           "q": "Bukhari records that Satan 'spends the night in the ___ part of your nose' if you do not rinse at dawn",
@@ -260,7 +260,7 @@
           "b": "tip",
           "c": "upper",
           "answer": "c",
-          "source": "read/bukhari.html#book-59"
+          "source": "read/bukhari.html#h3160"
         },
         {
           "q": "Muslim records that a black dog, a donkey, or a woman passing in front of a praying man cuts off his prayer — TRUE or FALSE",
@@ -269,7 +269,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/muslim.html#book-4"
+          "source": "read/muslim.html#h1039"
         },
         {
           "q": "Bukhari says the rooster crows at night because it has seen something. What has it seen?",
@@ -278,7 +278,7 @@
           "b": "A vision of the dawn",
           "c": "An angel",
           "answer": "c",
-          "source": "read/bukhari.html#book-59"
+          "source": "read/bukhari.html#h3167"
         },
         {
           "q": "Bukhari records that the Prophet was bewitched. What was the specific effect of the bewitchment on him?",
@@ -287,7 +287,7 @@
           "b": "He imagined he had done things he had not actually done",
           "c": "He was unable to speak for several days",
           "answer": "b",
-          "source": "read/bukhari.html#book-59"
+          "source": "read/bukhari.html#h3134"
         },
         {
           "q": "According to Bukhari, the Prophet had the physical strength of ___ men, which allowed him to visit all his wives in one night",
@@ -296,7 +296,7 @@
           "b": "forty",
           "c": "thirty",
           "answer": "c",
-          "source": "read/bukhari.html#book-5"
+          "source": "read/bukhari.html#h268"
         },
         {
           "q": "Bukhari records a rule about the number of stones used when cleansing after the toilet. What is the rule?",
@@ -305,7 +305,7 @@
           "b": "The number must be odd",
           "c": "The number must be even",
           "answer": "b",
-          "source": "read/bukhari.html#book-4"
+          "source": "read/bukhari.html#h161"
         },
         {
           "q": "Muslim records the Prophet's instruction on drinking water. In what position should a person drink?",
@@ -314,7 +314,7 @@
           "b": "Lying on the side",
           "c": "Sitting",
           "answer": "c",
-          "source": "read/muslim.html#book-36"
+          "source": "read/muslim.html#h5137"
         },
         {
           "q": "Bukhari records that the Prophet's recommended sleeping position is on the right side — TRUE or FALSE",
@@ -323,7 +323,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/bukhari.html#book-4"
+          "source": "read/bukhari.html#h247"
         },
         {
           "q": "Bukhari records the Prophet's instruction on dyeing grey hair. Whose appearance must the dyeing not imitate?",
@@ -332,7 +332,7 @@
           "b": "The Jews and Christians",
           "c": "The pagans",
           "answer": "b",
-          "source": "read/bukhari.html#book-60"
+          "source": "read/bukhari.html#h3316"
         },
         {
           "q": "Muslim records what the Prophet said about eating the monitor lizard (dabb). What was his position?",
@@ -341,7 +341,7 @@
           "b": "It must be slaughtered like other animals to be lawful",
           "c": "He neither ate it himself nor prohibited others from eating it",
           "answer": "c",
-          "source": "read/muslim.html#book-34"
+          "source": "read/muslim.html#h4891"
         }
       ]
     },
@@ -357,7 +357,7 @@
           "b": "A joined entity",
           "c": "Floating in a vast ocean",
           "answer": "b",
-          "source": "read/quran.html#s21"
+          "source": "read/quran.html#s21v30"
         },
         {
           "q": "How many heavens does Q 65:12 say Allah created?",
@@ -366,7 +366,7 @@
           "b": "Nine",
           "c": "Seven",
           "answer": "c",
-          "source": "read/quran.html#s65"
+          "source": "read/quran.html#s65v12"
         },
         {
           "q": "Q 78:7 uses a single word to describe what mountains do for the earth. What is it?",
@@ -375,7 +375,7 @@
           "b": "Pegs",
           "c": "Anchors",
           "answer": "b",
-          "source": "read/quran.html#s78"
+          "source": "read/quran.html#s78v7"
         },
         {
           "q": "Q 86:6-7 describes where human seed originates in the male body. Where does the verse place its origin?",
@@ -384,7 +384,7 @@
           "b": "Between the backbone and the ribs",
           "c": "From the loins near the heart",
           "answer": "b",
-          "source": "read/quran.html#s86"
+          "source": "read/quran.html#s86v6"
         },
         {
           "q": "A Bukhari hadith says the sun prostrates under Allah's Throne each evening and asks permission before it is allowed to rise again — TRUE or FALSE",
@@ -393,7 +393,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/bukhari.html#book-59"
+          "source": "read/bukhari.html#h3066"
         },
         {
           "q": "Q 22:5 describes embryonic development. Which sequence of stages does the verse actually list?",
@@ -402,7 +402,7 @@
           "b": "Dust, then a clinging clot, then bones, then flesh",
           "c": "A drop of fluid, a clinging clot, a clump of flesh formed and unformed, then bones clothed with flesh",
           "answer": "c",
-          "source": "read/quran.html#s22"
+          "source": "read/quran.html#s22v5"
         },
         {
           "q": "Q 71:16 describes what the sun is. What term does the verse use for it?",
@@ -411,7 +411,7 @@
           "b": "A blazing disc",
           "c": "A burning lamp",
           "answer": "c",
-          "source": "read/quran.html#s71"
+          "source": "read/quran.html#s71v16"
         },
         {
           "q": "Q 79:30 — 'And after that He ___ the earth'",
@@ -420,7 +420,7 @@
           "b": "spread",
           "c": "formed",
           "answer": "b",
-          "source": "read/quran.html#s79"
+          "source": "read/quran.html#s79v30"
         },
         {
           "q": "Q 25:54 names a specific substance from which man was created. What is it?",
@@ -429,7 +429,7 @@
           "b": "Water",
           "c": "Dust",
           "answer": "b",
-          "source": "read/quran.html#s25"
+          "source": "read/quran.html#s25v54"
         },
         {
           "q": "Q 38:71 records Allah telling the angels what He is about to create man from. What is the substance?",
@@ -438,7 +438,7 @@
           "b": "Nothing — He creates by His word alone",
           "c": "Clay",
           "answer": "c",
-          "source": "read/quran.html#s38"
+          "source": "read/quran.html#s38v71"
         },
         {
           "q": "Q 23:14 describes what happens after the bones form in the womb. What does the verse say happens to the bones at that stage?",
@@ -447,7 +447,7 @@
           "b": "They are covered with flesh",
           "c": "The limbs are extended and completed",
           "answer": "b",
-          "source": "read/quran.html#s23"
+          "source": "read/quran.html#s23v14"
         },
         {
           "q": "Q 25:54 says man was created from water. Q 38:71 says from clay. Open both — which answer does Q 96:2 give as a third account of man's origin?",
@@ -456,8 +456,8 @@
           "b": "A clinging clot",
           "c": "The same as Q 38:71 — clay",
           "answer": "b",
-          "source": "read/quran.html#s25",
-          "source2": "read/quran.html#s96"
+          "source": "read/quran.html#s25v54",
+          "source2": "read/quran.html#s96v2"
         }
       ]
     },
@@ -473,7 +473,7 @@
           "b": "Kill them wherever found",
           "c": "Give them a final chance to pay the jizyah",
           "answer": "b",
-          "source": "read/quran.html#s9"
+          "source": "read/quran.html#s9v5"
         },
         {
           "q": "Q 9:29 commands believers to fight a specific group until they pay the jizyah 'while they are humbled.' Who are they?",
@@ -482,7 +482,7 @@
           "b": "Those among the People of the Book who do not forbid what Allah and His Messenger have forbidden",
           "c": "Only those who have actively attacked Muslim lands",
           "answer": "b",
-          "source": "read/quran.html#s9"
+          "source": "read/quran.html#s9v29"
         },
         {
           "q": "Q 8:41 divides war booty, reserving 'one ___ of it for Allah and for the Messenger'",
@@ -491,7 +491,7 @@
           "b": "third",
           "c": "fifth",
           "answer": "c",
-          "source": "read/quran.html#s8"
+          "source": "read/quran.html#s8v41"
         },
         {
           "q": "Q 8:12 records what Allah said He would cast into the hearts of the disbelievers. What was it?",
@@ -500,7 +500,7 @@
           "b": "Terror",
           "c": "Despair",
           "answer": "b",
-          "source": "read/quran.html#s8"
+          "source": "read/quran.html#s8v12"
         },
         {
           "q": "Q 47:4 instructs believers on what to do when they meet disbelievers in battle. What does the verse say to do first?",
@@ -509,7 +509,7 @@
           "b": "Strike their necks, then bind them — and afterwards either ransom or free them",
           "c": "Drive them from their lands without bloodshed where possible",
           "answer": "b",
-          "source": "read/quran.html#s47"
+          "source": "read/quran.html#s47v4"
         },
         {
           "q": "Q 2:216 says fighting has been 'enjoined upon you while it is hateful to you' — TRUE or FALSE",
@@ -518,7 +518,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/quran.html#s2"
+          "source": "read/quran.html#s2v216"
         },
         {
           "q": "Q 9:111 describes a transaction between Allah and the believers. What does Allah say He has purchased from them in exchange for Paradise?",
@@ -527,7 +527,7 @@
           "b": "Their lives and their properties",
           "c": "Their time, devotion, and sincerity",
           "answer": "b",
-          "source": "read/quran.html#s9"
+          "source": "read/quran.html#s9v111"
         },
         {
           "q": "Q 8:65 gives a ratio: one steadfast believer can overcome how many disbelievers?",
@@ -536,7 +536,7 @@
           "b": "Ten",
           "c": "Five",
           "answer": "b",
-          "source": "read/quran.html#s8"
+          "source": "read/quran.html#s8v65"
         },
         {
           "q": "Q 5:33 lists the punishments for those who wage war against Allah and His Messenger. Which of these is the complete list given in the verse?",
@@ -545,7 +545,7 @@
           "b": "Death, crucifixion, cutting of opposite hands and feet, or exile from the land",
           "c": "Flogging, exile, or execution by any means",
           "answer": "b",
-          "source": "read/quran.html#s5"
+          "source": "read/quran.html#s5v33"
         },
         {
           "q": "Q 9:14 describes the role of Muslim fighters in relation to Allah's punishment. How does the verse frame it?",
@@ -554,7 +554,7 @@
           "b": "Allah punishes the disbelievers by the hands of the believers",
           "c": "Believers earn a double reward for their sacrifice in battle",
           "answer": "b",
-          "source": "read/quran.html#s9"
+          "source": "read/quran.html#s9v14"
         },
         {
           "q": "Open both sources. Q 3:151 and Q 8:12 both contain Allah's promise to cast terror into the hearts of disbelievers — TRUE or FALSE",
@@ -563,8 +563,8 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/quran.html#s3",
-          "source2": "read/quran.html#s8"
+          "source": "read/quran.html#s3v151",
+          "source2": "read/quran.html#s8v12"
         },
         {
           "q": "Q 4:89 addresses hypocrites who refuse to emigrate and fight alongside believers. What does the verse say to do with them?",
@@ -573,7 +573,7 @@
           "b": "Take them and kill them wherever found",
           "c": "Banish them from the Muslim community",
           "answer": "b",
-          "source": "read/quran.html#s4"
+          "source": "read/quran.html#s4v89"
         }
       ]
     },
@@ -589,7 +589,7 @@
           "b": "One hundred lashes before believers — pity must not interfere",
           "c": "Eighty lashes by the ruler — family must not be present",
           "answer": "b",
-          "source": "read/quran.html#s24"
+          "source": "read/quran.html#s24v2"
         },
         {
           "q": "Q 5:38 prescribes a specific punishment for theft. What is it?",
@@ -598,7 +598,7 @@
           "b": "Public flogging and repayment of double the value",
           "c": "Cutting off the hand",
           "answer": "c",
-          "source": "read/quran.html#s5"
+          "source": "read/quran.html#s5v38"
         },
         {
           "q": "Bukhari records the Prophet's ruling on apostasy — leaving Islam. What does he command be done to the apostate?",
@@ -607,7 +607,7 @@
           "b": "Exile them permanently from Muslim territory",
           "c": "Kill them",
           "answer": "c",
-          "source": "read/bukhari.html#book-88"
+          "source": "read/bukhari.html#h6666"
         },
         {
           "q": "Q 24:4 — the false accuser who cannot produce four witnesses 'shall be flogged with ___ lashes'",
@@ -616,7 +616,7 @@
           "b": "eighty",
           "c": "a hundred",
           "answer": "b",
-          "source": "read/quran.html#s24"
+          "source": "read/quran.html#s24v4"
         },
         {
           "q": "Q 4:56 describes what happens to disbelievers' skin in Hell. What happens, and why?",
@@ -625,7 +625,7 @@
           "b": "It is replaced with new skin so they keep tasting the punishment",
           "c": "It turns black permanently as a mark of their sin",
           "answer": "b",
-          "source": "read/quran.html#s4"
+          "source": "read/quran.html#s4v56"
         },
         {
           "q": "Q 4:15 describes the punishment for women proven guilty of lewdness before a definitive ruling was established. What was it?",
@@ -634,7 +634,7 @@
           "b": "House confinement until death or until Allah ordains another way",
           "c": "Permanent banishment from the community",
           "answer": "b",
-          "source": "read/quran.html#s4"
+          "source": "read/quran.html#s4v15"
         },
         {
           "q": "Q 5:45 quotes the law of equal retaliation. Complete the sequence: 'a life for a life, an eye for an eye, and a nose for a ___'",
@@ -643,7 +643,7 @@
           "b": "nose",
           "c": "ear",
           "answer": "b",
-          "source": "read/quran.html#s5"
+          "source": "read/quran.html#s5v45"
         },
         {
           "q": "Q 5:33 lists punishments for those who wage war on Allah. Besides death, what other punishments does the verse name?",
@@ -652,7 +652,7 @@
           "b": "Crucifixion, cutting of opposite hands and feet, and exile",
           "c": "Flogging, exile, and confiscation of property",
           "answer": "b",
-          "source": "read/quran.html#s5"
+          "source": "read/quran.html#s5v33"
         },
         {
           "q": "Q 24:2 states that the flogging punishment must be witnessed by a group of believers — TRUE or FALSE",
@@ -661,7 +661,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/quran.html#s24"
+          "source": "read/quran.html#s24v2"
         },
         {
           "q": "Q 24:2 prescribes 100 lashes for the unmarried fornicator. Open both sources — what does Bukhari record as the punishment for a married person who commits adultery?",
@@ -670,8 +670,8 @@
           "b": "Stoning to death",
           "c": "One hundred lashes plus a year of exile",
           "answer": "b",
-          "source": "read/quran.html#s24",
-          "source2": "read/bukhari.html#book-86"
+          "source": "read/quran.html#s24v2",
+          "source2": "read/bukhari.html#h6568"
         },
         {
           "q": "Q 5:38 describes the cutting of the hand as 'an exemplary punishment from Allah' — TRUE or FALSE",
@@ -680,7 +680,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/quran.html#s5"
+          "source": "read/quran.html#s5v38"
         },
         {
           "q": "Q 33:57 addresses those who harm or annoy Allah and His Messenger. What does the verse say Allah has done to them?",
@@ -689,7 +689,7 @@
           "b": "Cursed them in this world and the hereafter and prepared for them a humiliating punishment",
           "c": "Commanded that they be expelled from the community of believers",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v57"
         }
       ]
     },
@@ -705,7 +705,7 @@
           "b": "Women who offer themselves to him, female captives from war, and his cousins — without the dowry requirements that bind other believers",
           "c": "Unlimited wives with no restrictions",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v50"
         },
         {
           "q": "Q 33:51 gives the Prophet special authority over his wives' rotation. What does it permit him to do?",
@@ -714,7 +714,7 @@
           "b": "Put aside whom he will or take to himself whom he will",
           "c": "Dismiss a wife permanently if she causes distress",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v51"
         },
         {
           "q": "Q 33:50 explicitly states that the special marriage allowances granted to the Prophet are only for him, not for other believers — TRUE or FALSE",
@@ -723,7 +723,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v50"
         },
         {
           "q": "Q 33:21 gives the Prophet a title that frames him as the standard for Muslim behaviour. What does it call him?",
@@ -732,7 +732,7 @@
           "b": "A mercy to all the worlds",
           "c": "An excellent example of conduct",
           "answer": "c",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v21"
         },
         {
           "q": "Q 4:65 sets a condition for having true faith. What must believers do specifically regarding the Prophet?",
@@ -741,7 +741,7 @@
           "b": "Make him judge in all their disputes and find no discomfort in his rulings",
           "c": "Obey him exactly as they obey Allah without any questioning",
           "answer": "b",
-          "source": "read/quran.html#s4"
+          "source": "read/quran.html#s4v65"
         },
         {
           "q": "Q 33:4 says Allah has NOT made Zayd the Prophet's true son. Q 33:37 then says Allah married Zayd's ex-wife Zaynab to the Prophet. Open both — how do these two verses work together in the Quran's logic?",
@@ -750,8 +750,8 @@
           "b": "By declaring Zayd not a true son, the verse removes the normal prohibition on marrying a son's ex-wife, making the Zaynab marriage lawful",
           "c": "They demonstrate that Zayd voluntarily stepped aside and requested the marriage",
           "answer": "b",
-          "source": "read/quran.html#s33",
-          "source2": "read/quran.html#s33"
+          "source": "read/quran.html#s33v4",
+          "source2": "read/quran.html#s33v37"
         },
         {
           "q": "Q 8:41 divides war spoils. What share does the verse say belongs to Allah and the Prophet?",
@@ -760,7 +760,7 @@
           "b": "One third",
           "c": "One fifth",
           "answer": "c",
-          "source": "read/quran.html#s8"
+          "source": "read/quran.html#s8v41"
         },
         {
           "q": "Bukhari records that the Prophet had the physical strength of thirty men — TRUE or FALSE",
@@ -769,7 +769,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/bukhari.html#book-5"
+          "source": "read/bukhari.html#h268"
         },
         {
           "q": "Q 33:53 says something is 'not lawful' regarding the Prophet. What is it?",
@@ -778,7 +778,7 @@
           "b": "Annoying the Messenger of Allah",
           "c": "Entering his presence without an explicit invitation",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v53"
         },
         {
           "q": "Q 66:1 opens with Allah questioning the Prophet about something he had done. What had he done?",
@@ -787,7 +787,7 @@
           "b": "Prohibited something Allah had made lawful for him",
           "c": "Favoured one wife so consistently that others complained",
           "answer": "b",
-          "source": "read/quran.html#s66"
+          "source": "read/quran.html#s66v1"
         },
         {
           "q": "Q 33:6 states that the Prophet holds a unique rank over believers. What exactly does the verse say?",
@@ -796,7 +796,7 @@
           "b": "He is more worthy of the believers than their own selves, and his wives are their mothers",
           "c": "He is owed the same obedience that is owed to Allah",
           "answer": "b",
-          "source": "read/quran.html#s33"
+          "source": "read/quran.html#s33v6"
         },
         {
           "q": "Q 53:3-4 makes a claim about the nature of the Prophet's speech. What does it say?",
@@ -805,7 +805,7 @@
           "b": "He does not speak from his own inclination — it is nothing but a revelation revealed to him",
           "c": "His judgments carry the combined weight of all the angels",
           "answer": "b",
-          "source": "read/quran.html#s53"
+          "source": "read/quran.html#s53v3"
         }
       ]
     },
@@ -821,8 +821,8 @@
           "b": "Q 2:256 forbids forced conversion in principle, but Q 9:5 mandates killing those who refuse to convert — the ultimate form of compulsion",
           "c": "Q 9:5 was revealed before Q 2:256 and was fully abrogated by it",
           "answer": "b",
-          "source": "read/quran.html#s2",
-          "source2": "read/quran.html#s9"
+          "source": "read/quran.html#s2v256",
+          "source2": "read/quran.html#s9v5"
         },
         {
           "q": "Q 4:82 says if the Quran were from other than Allah there would be 'much contradiction' in it. What does this verse use as proof of divine authorship?",
@@ -831,7 +831,7 @@
           "b": "The claimed absence of contradiction is itself the proof",
           "c": "The Quran's grammatical consistency proves a single author",
           "answer": "b",
-          "source": "read/quran.html#s4"
+          "source": "read/quran.html#s4v82"
         },
         {
           "q": "Q 7:54 says creation took six days. Open Q 41:9-12 and add up the days listed: two for the earth, four for its provisions, two for the seven heavens. What is the total?",
@@ -840,8 +840,8 @@
           "b": "Seven days",
           "c": "Eight days",
           "answer": "c",
-          "source": "read/quran.html#s7",
-          "source2": "read/quran.html#s41"
+          "source": "read/quran.html#s7v54",
+          "source2": "read/quran.html#s41v9"
         },
         {
           "q": "Q 4:157 addresses the Christian claim that Jesus was crucified. What does the verse say actually happened?",
@@ -850,7 +850,7 @@
           "b": "Jesus was not killed or crucified — it only appeared so because another was made to resemble him",
           "c": "Jesus ascended to heaven moments before the crucifixion could occur",
           "answer": "b",
-          "source": "read/quran.html#s4"
+          "source": "read/quran.html#s4v157"
         },
         {
           "q": "Q 25:54 says man was created from water. Q 38:71 says clay. Open Q 96:2 — what third substance does it give as the origin of man?",
@@ -859,8 +859,8 @@
           "b": "A clinging clot",
           "c": "The same as Q 38:71 — clay",
           "answer": "b",
-          "source": "read/quran.html#s25",
-          "source2": "read/quran.html#s96"
+          "source": "read/quran.html#s25v54",
+          "source2": "read/quran.html#s96v2"
         },
         {
           "q": "Q 4:171 calls Jesus 'a word from Allah' and 'a spirit from Him,' then immediately gives a prohibition. What does it forbid saying?",
@@ -869,7 +869,7 @@
           "b": "'Three'",
           "c": "'A god besides Allah'",
           "answer": "b",
-          "source": "read/quran.html#s4"
+          "source": "read/quran.html#s4v171"
         },
         {
           "q": "Bukhari records that the Prophet was successfully bewitched and began imagining things he had not done. This sits in tension with the doctrine that prophets are divinely protected from the effects of magic — TRUE or FALSE",
@@ -878,7 +878,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/bukhari.html#book-59"
+          "source": "read/bukhari.html#h3134"
         },
         {
           "q": "Q 5:3 says 'This day I have perfected your religion for you.' Q 2:106 says Allah abrogates verses and replaces them with better ones. Open both — why do these create a tension?",
@@ -887,8 +887,8 @@
           "b": "Q 5:3 was revealed first and Q 2:106 was meant to explain it",
           "c": "Abrogation only applies to earlier scriptures like the Torah, not the Quran itself",
           "answer": "a",
-          "source": "read/quran.html#s5",
-          "source2": "read/quran.html#s2"
+          "source": "read/quran.html#s5v3",
+          "source2": "read/quran.html#s2v106"
         },
         {
           "q": "Q 4:43 says 'do not approach prayer while you are intoxicated.' Open Q 5:90 — what does that later verse declare about intoxicants?",
@@ -897,8 +897,8 @@
           "b": "Q 5:90 calls them an abomination and the work of Satan, and commands avoidance",
           "c": "Q 5:90 restricts them to specific times but does not ban them outright",
           "answer": "b",
-          "source": "read/quran.html#s4",
-          "source2": "read/quran.html#s5"
+          "source": "read/quran.html#s4v43",
+          "source2": "read/quran.html#s5v90"
         },
         {
           "q": "Q 3:85 says whoever desires a religion other than Islam will never have it accepted. What does the verse say their fate in the hereafter will be?",
@@ -907,7 +907,7 @@
           "b": "It will never be accepted and they will be among the losers",
           "c": "They have until the Day of Judgment to reconsider",
           "answer": "b",
-          "source": "read/quran.html#s3"
+          "source": "read/quran.html#s3v85"
         },
         {
           "q": "Q 2:62 says Jews, Christians, and Sabeans who believe in Allah and do good will have their reward. Q 3:85 says no religion other than Islam is accepted. Open both — what is the apparent conflict?",
@@ -916,8 +916,8 @@
           "b": "Q 2:62 appears to promise salvation to practising Jews and Christians, while Q 3:85 flatly denies that any non-Islamic faith will be accepted",
           "c": "Q 3:85 applies only to those who explicitly rejected Islam after being exposed to it",
           "answer": "b",
-          "source": "read/quran.html#s2",
-          "source2": "read/quran.html#s3"
+          "source": "read/quran.html#s2v62",
+          "source2": "read/quran.html#s3v85"
         },
         {
           "q": "Q 3:59 compares the creation of Jesus to the creation of Adam — both created without human fathers — TRUE or FALSE",
@@ -926,7 +926,7 @@
           "b": "False",
           "c": null,
           "answer": "a",
-          "source": "read/quran.html#s3"
+          "source": "read/quran.html#s3v59"
         }
       ]
     },
@@ -942,7 +942,7 @@
           "b": "It was whiter than milk — the sins of the children of Adam blackened it",
           "c": "It was red like a ruby — exposure to the elements darkened it",
           "answer": "b",
-          "source": "read/tirmidhi.html#book-9"
+          "source": "read/tirmidhi.html#h878"
         },
         {
           "q": "Bukhari's Mi'raj account says daily prayers were originally commanded at a number far above five. What was the original number, and who negotiated them down?",
@@ -951,7 +951,7 @@
           "b": "Fifty prayers — Moses told Muhammad to keep going back and asking for reductions",
           "c": "Forty prayers — the angels interceded on behalf of humanity",
           "answer": "b",
-          "source": "read/bukhari.html#book-8"
+          "source": "read/bukhari.html#h345"
         },
         {
           "q": "During the Mi'raj, Muhammad encountered the prophets in the heavens. In which heaven did he meet Ibrahim (Abraham)?",
@@ -960,7 +960,7 @@
           "b": "The fifth",
           "c": "The seventh",
           "answer": "c",
-          "source": "read/bukhari.html#book-59"
+          "source": "read/bukhari.html#h3074"
         },
         {
           "q": "Ibn Majah records what happened to the Quranic verse on stoning adulterers after the Prophet's death. What does the hadith say occurred?",
@@ -969,7 +969,7 @@
           "b": "A domesticated animal came in and ate the parchment it was written on",
           "c": "It was set aside because its chain of narration was found to be weak",
           "answer": "b",
-          "source": "read/ibn-majah.html#book-9"
+          "source": "read/ibn-majah.html#h1678"
         },
         {
           "q": "Aisha narrates in Muslim that a Quranic ruling established how many sucklings create a permanent marriage prohibition. What was the final number?",
@@ -978,7 +978,7 @@
           "b": "Ten",
           "c": "Five",
           "answer": "c",
-          "source": "read/muslim.html#book-17"
+          "source": "read/muslim.html#h3474"
         },
         {
           "q": "Q 56:35-37 describes the female companions of Paradise. How does the verse characterise them?",
@@ -987,7 +987,7 @@
           "b": "Created entirely anew as devoted virgins of equal age",
           "c": "Angels transformed into human form to serve the believers",
           "answer": "b",
-          "source": "read/quran.html#s56"
+          "source": "read/quran.html#s56v35"
         },
         {
           "q": "Q 78:33 describes one of the rewards awaiting believers in Paradise. What term does the Saheeh International translation use for these female companions?",
@@ -996,7 +996,7 @@
           "b": "Full-breasted companions of equal age",
           "c": "Devoted companions of matching beauty",
           "answer": "b",
-          "source": "read/quran.html#s78"
+          "source": "read/quran.html#s78v33"
         },
         {
           "q": "In the Mi'raj hadith in Bukhari, who did Muhammad encounter in the first heaven — sitting while souls passed on his right and left, laughing at those on the right and weeping at those on the left?",
@@ -1005,7 +1005,7 @@
           "b": "Jibril (Gabriel)",
           "c": "Adam",
           "answer": "c",
-          "source": "read/bukhari.html#book-59"
+          "source": "read/bukhari.html#h3074"
         },
         {
           "q": "Q 17:1 describes the night journey. From al-Masjid al-Haram, where did Allah take His servant in a single night?",
@@ -1014,7 +1014,7 @@
           "b": "Al-Masjid al-Quba",
           "c": "Al-Masjid al-Aqsa",
           "answer": "c",
-          "source": "read/quran.html#s17"
+          "source": "read/quran.html#s17v1"
         },
         {
           "q": "Muslim records that the Prophet instructed Sahla bint Suhail to breastfeed the adult man Salim. What was the Islamic legal purpose stated in the hadith?",
@@ -1023,7 +1023,7 @@
           "b": "To grant him citizenship rights within the Muslim community",
           "c": "To fulfil a religious obligation Salim had been unable to complete in infancy",
           "answer": "a",
-          "source": "read/muslim.html#book-17"
+          "source": "read/muslim.html#h3481"
         },
         {
           "q": "Q 53:19-20 names three pre-Islamic Arab goddesses. What is the name of the third one — 'the other one'?",
@@ -1032,7 +1032,7 @@
           "b": "Nasr",
           "c": "Manat",
           "answer": "c",
-          "source": "read/quran.html#s53"
+          "source": "read/quran.html#s53v19"
         },
         {
           "q": "In Bukhari's Mi'raj account, Moses tells Muhammad to keep returning to Allah to ask for fewer daily prayers — and Allah reduces the number each time. Open both sources. What does this imply about Moses' knowledge versus Allah's initial command of 50 prayers?",
@@ -1041,8 +1041,8 @@
           "b": "Allah was testing Moses to see if he would dare speak up on behalf of the believers",
           "c": "Moses was overstepping — the Prophet should have accepted 50 prayers without negotiation",
           "answer": "a",
-          "source": "read/bukhari.html#book-8",
-          "source2": "read/bukhari.html#book-59"
+          "source": "read/bukhari.html#h345",
+          "source2": "read/bukhari.html#h3074"
         }
       ]
     }

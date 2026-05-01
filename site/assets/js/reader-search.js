@@ -196,9 +196,16 @@
     const wrap = document.createElement("div");
     wrap.className = "reader-search-wrap";
     wrap.innerHTML =
+      '<div class="reader-search-bar">' +
       '<input type="search" class="reader-search-input" ' +
-      'placeholder="Jump to verse (e.g. ' + escapeHtml(placeholder) + ')" ' +
+      'placeholder="' + escapeHtml(placeholder) + '" ' +
       'autocomplete="off" spellcheck="false" />' +
+      '<button type="button" class="reader-search-btn" aria-label="Search">' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>' +
+      '</svg>' +
+      '</button>' +
+      '</div>' +
       '<div class="reader-search-hint" hidden></div>' +
       '<div class="reader-search-results" hidden></div>';
 
@@ -207,6 +214,7 @@
     else target.appendChild(wrap);
 
     const input   = wrap.querySelector(".reader-search-input");
+    const btn     = wrap.querySelector(".reader-search-btn");
     const hint    = wrap.querySelector(".reader-search-hint");
     const results = wrap.querySelector(".reader-search-results");
 
@@ -275,7 +283,6 @@
       results.hidden = false;
     }
 
-    let typingTimer = null;
     function tryJump() {
       const q = (input.value || "").trim();
       if (!q) { clearHint(); clearResults(); return; }
@@ -320,17 +327,6 @@
             showHint("No match for “" + q + "”", "miss");
             return;
           }
-          // Single exact ref-tail match → auto-navigate (e.g. "John
-          // 3:16" uniquely identifies one entry).
-          if (res.refExact.length === 1) {
-            navigateToEntry(res.refExact[0]);
-            return;
-          }
-          // Single fuzzy match across all buckets → auto-navigate too.
-          if (total === 1) {
-            navigateToEntry(res.refExact[0] || res.refMatches[0] || res.textMatches[0]);
-            return;
-          }
           clearHint();
           renderResultList(
             res.refExact.concat(res.refMatches).concat(res.textMatches), q
@@ -347,19 +343,18 @@
       showHint("No match for “" + q + "”", "miss");
     }
 
-    input.addEventListener("input", function () {
-      clearTimeout(typingTimer);
-      typingTimer = setTimeout(tryJump, 220);
+    btn.addEventListener("click", function () {
+      tryJump();
     });
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         e.preventDefault();
-        clearTimeout(typingTimer);
         tryJump();
       }
       if (e.key === "Escape") {
         input.value = "";
         clearHint();
+        clearResults();
       }
     });
   }

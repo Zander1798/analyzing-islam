@@ -148,12 +148,17 @@
   border-bottom: 1px solid var(--border);
 }
 
+.reader-search-bar {
+  position: relative;
+  display: flex;
+}
+
 .reader-search-input {
   width: 100%;
   background: var(--panel-2);
   color: var(--text);
   border: 1px solid var(--border);
-  padding: 8px 10px;
+  padding: 8px 36px 8px 10px;
   font-size: 12px;
   font-family: var(--sans);
   border-radius: var(--radius-lg);
@@ -166,6 +171,27 @@
 .reader-search-input::placeholder {
   color: var(--text-dim);
 }
+
+.reader-search-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 34px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.reader-search-btn:hover,
+.reader-search-btn:focus { color: var(--accent); outline: none; }
 
 .reader-search-hint {
   margin-top: 6px;

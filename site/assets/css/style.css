@@ -3441,6 +3441,9 @@ blockquote {
   border-color: var(--accent);
   background: rgba(204,120,92,0.08);
 }
+.quiz-choice:focus {
+  outline: none;
+}
 .quiz-choice-letter {
   width: 28px;
   height: 28px;
