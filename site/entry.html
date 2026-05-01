@@ -153,9 +153,22 @@
   }
 
   function catalogUrlFor(source) {
-    // returns the absolute URL of the catalog HTML that contains this entry
     if (!source) return null;
     return new URL("catalog/" + source + ".html", location.href).toString();
+  }
+
+  // For bookmarks saved before the source-detection fix (e.g. from category
+  // pages), entry_url often contains a /read/<source>.html link that lets us
+  // recover the source slug without re-fetching anything.
+  function inferSource(bookmark) {
+    if (bookmark.source) return bookmark.source;
+    if (bookmark.entry_url) {
+      try {
+        const rm = new URL(bookmark.entry_url).pathname.match(/\/read\/([^/.]+)\.html/);
+        if (rm) return rm[1];
+      } catch (_) {}
+    }
+    return null;
   }
 
   async function fetchEntryHtml(source, entryId) {
@@ -212,13 +225,14 @@
       return;
     }
 
+    const effectiveSource = inferSource(bookmark);
     const [entryHtml, note, share] = await Promise.all([
-      fetchEntryHtml(bookmark.source, entryId),
+      fetchEntryHtml(effectiveSource, entryId),
       window.AI_BOOKMARKS.getNote(entryId),
       window.AI_BOOKMARKS.getActiveShare(entryId),
     ]);
 
-    const fallbackUrl = bookmark.entry_url || (bookmark.source ? `catalog/${bookmark.source}.html#${entryId}` : null);
+    const fallbackUrl = bookmark.entry_url || (effectiveSource ? `catalog/${effectiveSource}.html#${entryId}` : null);
 
     shell.className = "";
     shell.innerHTML = `

@@ -29,10 +29,19 @@
     const categories = (entryEl.getAttribute("data-category") || "").split(/\s+/).filter(Boolean);
     const strength = entryEl.getAttribute("data-strength") || "";
     // Source = the current catalog slug (e.g., "quran", "bukhari").
-    // Fall back to "catalog" on category pages.
+    // Primary: extract from the catalog page URL (/catalog/<source>.html).
+    // Fallback: infer from the entry's ref link URL (/read/<source>.html),
+    // which is present on category pages and other non-catalog views.
     let source = null;
     const m = location.pathname.match(/\/catalog\/([^/.]+)\.html/);
-    if (m) source = m[1];
+    if (m) {
+      source = m[1];
+    } else if (url) {
+      try {
+        const rm = new URL(url, location.href).pathname.match(/\/read\/([^/.]+)\.html/);
+        if (rm) source = rm[1];
+      } catch (_) {}
+    }
     return {
       entry_id: id,
       entry_title: title,
