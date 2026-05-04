@@ -130,7 +130,7 @@
           <h2>Skins</h2>
           <p class="card-sub">Pass quiz levels to unlock new looks.</p>
         </div>
-        <div class="skins-grid" id="skins-grid">
+        <div class="skins-grid" id="skins-grid" hidden>
 
           <div class="skin-slot is-selected" id="skin-slot-standard" data-skin-id="standard">
             <div class="skin-preview">
@@ -384,11 +384,8 @@
     });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+  // Script is at the bottom of <body> — DOM is already parsed, call immediately.
+  init();
 })();
 </script>
 </body>
