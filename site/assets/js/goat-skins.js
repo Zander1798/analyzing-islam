@@ -153,13 +153,11 @@
         await migrateLocal();
       }
     } else {
-      // Signed out: read from localStorage.
-      var lvl    = parseInt(localStorage.getItem(LS_LEVEL) || "1", 10);
-      var stored = localStorage.getItem(LS_UNLOCKED);
-      var ids    = stored ? JSON.parse(stored) : ["standard"];
-      if (ids.indexOf("standard") === -1) ids.push("standard");
-      _cache.unlockedLevel = lvl;
-      _cache.unlockedSkins = new Set(ids);
+      // Signed out: always use defaults — skins are locked behind auth.
+      _cache.unlockedLevel = 1;
+      _cache.unlockedSkins = new Set(["standard"]);
+      // Reset the nav goat to standard whenever the user is signed out.
+      window.dispatchEvent(new Event("aig:skin-changed"));
     }
     window.dispatchEvent(new Event("aig:progress-loaded"));
   }
@@ -186,11 +184,13 @@
   window.GoatSkins = {
     SKINS: SKINS,
 
-    // Skin selection — always localStorage (no need to sync per-device).
+    // Skin selection — per-device localStorage, gated behind auth.
     getSelectedId: function () {
+      if (!uid()) return "standard";
       return localStorage.getItem(LS_SKIN) || "standard";
     },
     setSelectedId: function (id) {
+      if (!uid()) return;
       localStorage.setItem(LS_SKIN, id);
       window.dispatchEvent(new Event("aig:skin-changed"));
     },
@@ -211,12 +211,9 @@
       var skinId = this.levelToSkinId(level);
       if (skinId) _cache.unlockedSkins.add(skinId);
 
-      // Persist: server if signed in, localStorage otherwise.
+      // Persist: server only (quiz is gated behind auth, so uid() must be set).
       if (uid()) {
         serverSave();
-      } else {
-        localStorage.setItem(LS_LEVEL, String(_cache.unlockedLevel));
-        localStorage.setItem(LS_UNLOCKED, JSON.stringify(Array.from(_cache.unlockedSkins)));
       }
     },
 
@@ -228,16 +225,13 @@
     resetProgress: function () {
       _cache.unlockedLevel = 1;
       _cache.unlockedSkins = new Set(["standard"]);
-      var selectedId = localStorage.getItem(LS_SKIN);
-      if (selectedId && selectedId !== "standard") {
-        localStorage.setItem(LS_SKIN, "standard");
-        window.dispatchEvent(new Event("aig:skin-changed"));
-      }
       if (uid()) {
+        var selectedId = localStorage.getItem(LS_SKIN);
+        if (selectedId && selectedId !== "standard") {
+          localStorage.setItem(LS_SKIN, "standard");
+          window.dispatchEvent(new Event("aig:skin-changed"));
+        }
         serverSave();
-      } else {
-        localStorage.setItem(LS_LEVEL, "1");
-        localStorage.setItem(LS_UNLOCKED, JSON.stringify(["standard"]));
       }
       window.dispatchEvent(new Event("aig:progress-loaded"));
     },

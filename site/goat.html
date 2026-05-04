@@ -33,6 +33,16 @@
   .goat-stage        { background: #000; }
   .goat-side > .card:not(.play-card) { background: #000; }
 
+  /* Auth gate shown inside the skins card when not signed in */
+  .skins-auth-gate {
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .skins-auth-gate p {
+    color: var(--text-muted, #888);
+    margin-bottom: 16px;
+  }
+
   /* GIF skin images */
   .goat-gif {
     display: block;
@@ -232,114 +242,152 @@
 <script src="assets/js/snap-to-hash.js" defer></script>
 <script>
 (function () {
-  function initSkinPage() {
-    var bigImg = document.getElementById("goat-big-img");
-    var slots  = document.querySelectorAll(".skin-slot[data-skin-id]");
+  var bigImg   = null;
+  var slots    = [];
+  var gridEl   = null;
+  var sideCard = null;
+  var wired    = false;
 
-    function getUnlocked() {
-      return window.GoatSkins ? window.GoatSkins.getUnlockedIds() : new Set(["standard"]);
-    }
+  function isSignedIn() {
+    return !!(window.__session && window.__session.user);
+  }
 
-    function applyLockStates() {
-      var unlocked = getUnlocked();
-      slots.forEach(function (slot) {
-        var id  = slot.dataset.skinId;
-        var btn = slot.querySelector(".skin-action");
-        if (unlocked.has(id)) {
-          slot.classList.remove("is-locked");
-          var overlay = slot.querySelector(".skin-lock-overlay");
-          if (overlay) overlay.remove();
-        } else {
-          slot.classList.add("is-locked");
-          btn.disabled = true;
-          var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function (s) { return s.id === id; });
-          btn.textContent = skin && skin.level ? "Unlock at Level " + skin.level : "Locked";
-          if (!slot.querySelector(".skin-lock-overlay")) {
-            var ov = document.createElement("div");
-            ov.className = "skin-lock-overlay";
-            ov.innerHTML = '<span class="lock-glyph">🔒</span>';
-            slot.appendChild(ov);
-          }
+  function getUnlocked() {
+    return window.GoatSkins ? window.GoatSkins.getUnlockedIds() : new Set(["standard"]);
+  }
+
+  function renderAuthGate() {
+    if (gridEl) gridEl.hidden = true;
+    if (!sideCard || sideCard.querySelector(".skins-auth-gate")) return;
+    var gate = document.createElement("div");
+    gate.className = "skins-auth-gate";
+    gate.innerHTML =
+      "<p>Sign in to unlock and select goat skins.</p>" +
+      '<a href="login.html" class="btn btn-primary">Sign in</a>';
+    sideCard.appendChild(gate);
+  }
+
+  function clearAuthGate() {
+    var gate = sideCard && sideCard.querySelector(".skins-auth-gate");
+    if (gate) gate.remove();
+    if (gridEl) gridEl.hidden = false;
+  }
+
+  function applyLockStates() {
+    var unlocked = getUnlocked();
+    slots.forEach(function (slot) {
+      var id  = slot.dataset.skinId;
+      var btn = slot.querySelector(".skin-action");
+      if (unlocked.has(id)) {
+        slot.classList.remove("is-locked");
+        var overlay = slot.querySelector(".skin-lock-overlay");
+        if (overlay) overlay.remove();
+      } else {
+        slot.classList.add("is-locked");
+        btn.disabled = true;
+        var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function (s) { return s.id === id; });
+        btn.textContent = skin && skin.level ? "Unlock at Level " + skin.level : "Locked";
+        if (!slot.querySelector(".skin-lock-overlay")) {
+          var ov = document.createElement("div");
+          ov.className = "skin-lock-overlay";
+          ov.innerHTML = '<span class="lock-glyph">🔒</span>';
+          slot.appendChild(ov);
         }
-      });
-    }
-
-    // persist=true only when the user explicitly clicks Select; never on
-    // auto-init calls so we don't overwrite the stored preference with a
-    // temporary fallback before Supabase has loaded the unlock list.
-    function selectSkin(id, persist) {
-      if (!getUnlocked().has(id)) return;
-      var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function (s) { return s.id === id; });
-      if (!skin) return;
-
-      bigImg.src = skin.gif;
-      bigImg.alt = skin.name;
-
-      var unlocked = getUnlocked();
-      slots.forEach(function (slot) {
-        var btn = slot.querySelector(".skin-action");
-        if (!unlocked.has(slot.dataset.skinId)) return;
-        if (slot.dataset.skinId === id) {
-          slot.classList.add("is-selected");
-          btn.textContent = "Selected";
-          btn.disabled    = true;
-          btn.classList.add("is-selected");
-        } else {
-          slot.classList.remove("is-selected");
-          btn.textContent = "Select";
-          btn.disabled    = false;
-          btn.classList.remove("is-selected");
-        }
-      });
-
-      if (persist && window.GoatSkins) window.GoatSkins.setSelectedId(id);
-    }
-
-    function highlightFromHash() {
-      var hash = window.location.hash;
-      if (!hash) return;
-      var el = document.getElementById(hash.slice(1));
-      if (el && el.classList.contains("skin-slot")) {
-        el.classList.add("is-highlight");
-        el.addEventListener("animationend", function () { el.classList.remove("is-highlight"); }, { once: true });
       }
-    }
+    });
+  }
 
-    applyLockStates();
+  // persist=true only when the user explicitly clicks Select.
+  function selectSkin(id, persist) {
+    if (!getUnlocked().has(id)) return;
+    var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function (s) { return s.id === id; });
+    if (!skin) return;
 
-    // Show the saved skin's GIF in the big display immediately, even before
-    // Supabase confirms the unlock list, so there's no flash of the default.
-    (function () {
-      var id = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
-      var skin = window.GoatSkins && window.GoatSkins.SKINS.find(function (s) { return s.id === id; });
-      if (skin && bigImg) { bigImg.src = skin.gif; bigImg.alt = skin.name; }
-    }());
+    if (bigImg) { bigImg.src = skin.gif; bigImg.alt = skin.name; }
 
-    var saved = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
-    if (!getUnlocked().has(saved)) saved = "standard";
-    selectSkin(saved, false);
+    var unlocked = getUnlocked();
+    slots.forEach(function (slot) {
+      var btn = slot.querySelector(".skin-action");
+      if (!unlocked.has(slot.dataset.skinId)) return;
+      if (slot.dataset.skinId === id) {
+        slot.classList.add("is-selected");
+        btn.textContent = "Selected";
+        btn.disabled    = true;
+        btn.classList.add("is-selected");
+      } else {
+        slot.classList.remove("is-selected");
+        btn.textContent = "Select";
+        btn.disabled    = false;
+        btn.classList.remove("is-selected");
+      }
+    });
 
+    if (persist && window.GoatSkins) window.GoatSkins.setSelectedId(id);
+  }
+
+  function wireButtons() {
+    if (wired) return;
+    wired = true;
     slots.forEach(function (slot) {
       slot.querySelector(".skin-action").addEventListener("click", function () {
         selectSkin(slot.dataset.skinId, true);
       });
     });
+  }
 
+  function highlightFromHash() {
+    var hash = window.location.hash;
+    if (!hash) return;
+    var el = document.getElementById(hash.slice(1));
+    if (el && el.classList.contains("skin-slot")) {
+      el.classList.add("is-highlight");
+      el.addEventListener("animationend", function () { el.classList.remove("is-highlight"); }, { once: true });
+    }
+  }
+
+  function paint() {
+    if (!isSignedIn()) {
+      renderAuthGate();
+      return;
+    }
+
+    clearAuthGate();
+    applyLockStates();
+
+    var savedId = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
+    if (!getUnlocked().has(savedId)) savedId = "standard";
+    selectSkin(savedId, false);
+
+    wireButtons();
     highlightFromHash();
+  }
 
-    // Re-apply lock states when progress syncs from Supabase.
+  function init() {
+    bigImg   = document.getElementById("goat-big-img");
+    slots    = Array.from(document.querySelectorAll(".skin-slot[data-skin-id]"));
+    gridEl   = document.getElementById("skins-grid");
+    sideCard = document.querySelector(".goat-side > .card");
+
+    // Hide the skins grid immediately — don't show skin previews before auth confirms.
+    if (gridEl) gridEl.hidden = true;
+
+    (window.__authReady || Promise.resolve()).then(paint);
+    window.addEventListener("auth-state", paint);
+
     window.addEventListener("aig:progress-loaded", function () {
-      applyLockStates();
-      var s = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
-      if (!getUnlocked().has(s)) s = "standard";
-      selectSkin(s, false);
+      if (isSignedIn()) {
+        applyLockStates();
+        var s = window.GoatSkins ? window.GoatSkins.getSelectedId() : "standard";
+        if (!getUnlocked().has(s)) s = "standard";
+        selectSkin(s, false);
+      }
     });
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initSkinPage);
+    document.addEventListener("DOMContentLoaded", init);
   } else {
-    initSkinPage();
+    init();
   }
 })();
 </script>
