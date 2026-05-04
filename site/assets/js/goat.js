@@ -49,6 +49,8 @@
 
     btn.addEventListener("pointerdown", function (e) {
       if (e.button !== 0) return;
+      var session = window.__session;
+      if (!session || !session.user) return;
       e.preventDefault();
       window.location.href = (assetPrefix() || "") + "goat.html";
     });
