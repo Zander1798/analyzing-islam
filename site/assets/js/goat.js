@@ -56,6 +56,7 @@
     });
 
     window.addEventListener("aig:skin-changed", function () { repaintNavGoat(btn); });
+    window.addEventListener("aig:progress-loaded", function () { repaintNavGoat(btn); });
     window.addEventListener("storage", function (e) {
       if (e.key === "aig:goat-skin") repaintNavGoat(btn);
     });
