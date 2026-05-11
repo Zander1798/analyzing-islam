@@ -646,6 +646,8 @@ input[type="file"]::file-selector-button:focus {
   scroll-margin-top: 110px;
   transition: border-color 0.2s;
   border-radius: 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
 }
 
 .entry:target {

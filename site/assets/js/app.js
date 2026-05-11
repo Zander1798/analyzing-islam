@@ -24,6 +24,15 @@
 
   if (totalCountEl) totalCountEl.textContent = entries.length;
 
+  // Lazy textContent cache — built per-entry on first search, reused after.
+  const textCache = new WeakMap();
+  function getEntryText(entry) {
+    if (!textCache.has(entry)) {
+      textCache.set(entry, entry.textContent.toLowerCase());
+    }
+    return textCache.get(entry);
+  }
+
   // --- Filter application ---
   function applyFilters() {
     const query = state.search.toLowerCase().trim();
@@ -32,12 +41,11 @@
     entries.forEach((entry) => {
       const cats = (entry.dataset.category || "").split(" ");
       const strengths = (entry.dataset.strength || "").split(" ");
-      const text = entry.textContent.toLowerCase();
 
       const catOk = state.category === "all" || cats.includes(state.category);
       const strengthOk =
         state.strength === "all" || strengths.includes(state.strength);
-      const searchOk = !query || text.includes(query);
+      const searchOk = !query || getEntryText(entry).includes(query);
 
       if (catOk && strengthOk && searchOk) {
         entry.classList.remove("hidden");
