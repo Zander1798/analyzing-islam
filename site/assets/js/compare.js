@@ -16,7 +16,9 @@
   // group: optgroup label in the dropdown.
   const SOURCES = [
     // --- Qur'an ---
-    { slug: "quran",       title: "The Qurʾān (Saheeh International)", path: "read/quran.html",       group: "Qurʾān" },
+    { slug: "quran",              title: "The Qurʾān (Saheeh International)",              path: "read/quran.html",          group: "Qurʾān" },
+    { slug: "quran-interlinear",  title: "Interlinear Qurʾān (Arabic · Roots · Lane's)",  path: "read-external/quran.html", group: "Qurʾān",
+      indexUrl: "assets/compare-index/quran.json", indexBase: "read-external/quran/" },
 
     // --- Six canonical Sunni hadith collections ---
     { slug: "bukhari",   title: "Ṣaḥīḥ al-Bukhārī",   path: "read/bukhari.html",   group: "Hadith · the Six" },

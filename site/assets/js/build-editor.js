@@ -20,7 +20,9 @@
   // content from the curated catalog pages (by source and by category).
   const SOURCES = [
     // Qur'an
-    { slug: "quran", title: "The Qurʾān (Saheeh International)", path: "read/quran.html", group: "Qurʾān" },
+    { slug: "quran",             title: "The Qurʾān (Saheeh International)",             path: "read/quran.html",          group: "Qurʾān" },
+    { slug: "quran-interlinear", title: "Interlinear Qurʾān (Arabic · Roots · Lane's)", path: "read-external/quran.html", group: "Qurʾān",
+      indexUrl: "assets/compare-index/quran.json", indexBase: "read-external/quran/" },
 
     // Hadith — the Six
     { slug: "bukhari",   title: "Ṣaḥīḥ al-Bukhārī",   path: "read/bukhari.html",   group: "Hadith · the Six" },
@@ -366,7 +368,7 @@
   // Map a source slug to an id-anchor regex. Mirrors what
   // inject-highlights.py emits per reader; kept here for the iframe.
   function anchorReFor(slug) {
-    if (slug === "quran" || slug === "cat-quran") return /^s\d+v\d+$|^entry-/;
+    if (slug === "quran" || slug === "quran-interlinear" || slug === "cat-quran") return /^s\d+v\d+$|^entry-/;
     if (/^cat-|^ct-/.test(slug)) return /^entry-/;
     if (/^bible/.test(slug))     return /^[a-z0-9]+-\d+-\d+$/;
     if (slug === "tanakh" || slug === "new-testament" || slug === "apocryphal-gospels" || slug === "book-of-enoch")
