@@ -87,6 +87,16 @@
       return ids;
     }
 
+    // Qur'an interlinear sub-pages (same anchor format as quran) ------
+    if (sourceSlug === "quran-interlinear") {
+      if (two) addQuranId(ids, two[1], two[2]);
+      if (onlyNum) addQuranId(ids, q, "1");
+      if (prefixed && QURAN_PREFIX_RE.test(prefixed[1])) {
+        addQuranId(ids, prefixed[2], prefixed[3] || "1");
+      }
+      return ids;
+    }
+
     // Hadith collections ---------------------------------------------
     if (HADITH_SOURCES.has(sourceSlug)) {
       if (onlyNum) addHadithId(ids, q);
@@ -191,6 +201,9 @@
     // Interlinear Bible sub-pages live one level deeper:
     // /read-external/bible/<book>.html
     if (/\/read-external\/bible\//.test(path)) return "bible-interlinear";
+    // Quran interlinear sub-pages:
+    // /read-external/quran/surah-NNN.html
+    if (/\/read-external\/quran\//.test(path)) return "quran-interlinear";
     // /read-external/tanakh.html etc.
     const extMatch = path.match(/\/read-external\/([^\/]+?)(?:-\d+)?\.html$/);
     if (extMatch) {

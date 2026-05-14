@@ -1,0 +1,66 @@
+/* ============================================
+   Quran interlinear reader — additions to bible-reader.css
+   ============================================ */
+
+/* RTL word flow for Arabic: the words wrap right-to-left,
+   but each individual word's internal stack stays LTR. */
+.quran-lang-ar .ilt-words {
+  direction: rtl;
+}
+.quran-lang-ar .ilt-words .w {
+  direction: ltr;
+}
+
+/* Arabic text needs a larger, heavier Arabic font */
+.quran-lang-ar .w-orig {
+  font-family: "Scheherazade New", "Amiri", "Noto Naskh Arabic", serif;
+  font-size: 28px;
+  line-height: 1.4;
+  direction: rtl;
+  display: block;
+  text-align: center;
+}
+
+/* Transliteration and gloss stay LTR */
+.quran-lang-ar .w-trans,
+.quran-lang-ar .w-gloss {
+  direction: ltr;
+  text-align: center;
+  display: block;
+}
+
+/* Bismillah header before each surah (surahs 2–114 except 9) */
+.quran-bismillah {
+  text-align: center;
+  font-family: "Scheherazade New", "Amiri", "Noto Naskh Arabic", serif;
+  font-size: 26px;
+  color: var(--text-dim);
+  padding: 16px 0 8px;
+  direction: rtl;
+  margin-bottom: 8px;
+}
+
+/* Panel root display — Arabic root shown large like Strong's lemma */
+.quran-panel-root {
+  font-family: "Scheherazade New", "Amiri", "Noto Naskh Arabic", serif;
+  font-size: 24px;
+  direction: rtl;
+  display: inline-block;
+}
+
+/* Make words slightly larger to accommodate Arabic glyphs */
+.quran-lang-ar .w {
+  min-width: 56px;
+  padding: 4px 6px;
+}
+
+/* Active/highlighted word state — inherits from bible-reader.css
+   but we nudge the border radius for a nicer look */
+.quran-lang-ar .w.is-active {
+  background: var(--accent-dim, rgba(124,58,237,0.15));
+  border-radius: 4px;
+}
+.quran-lang-ar .w.is-highlight {
+  background: var(--accent-dim, rgba(124,58,237,0.10));
+  border-radius: 4px;
+}

@@ -34,6 +34,10 @@
       indexPath: "assets/compare-index/bible.json",
       contentBase: "read-external/bible/",
     },
+    "quran-interlinear": {
+      indexPath: "assets/compare-index/quran.json",
+      contentBase: "read-external/quran/",
+    },
     "ibn-kathir": {
       indexPath: "assets/compare-index/ibn-kathir.json",
       contentBase: "read-external/",
@@ -99,7 +103,8 @@
     // /read-external/bible.html, /read-external/ibn-kathir.html,
     // /read-external/talmud.html — the LANDING pages have no per-verse
     // anchors, so we always route through the JSON index there.
-    if (slug === "bible-interlinear") return /\/bible\.html$/.test(path);
+    if (slug === "bible-interlinear")  return /\/bible\.html$/.test(path);
+    if (slug === "quran-interlinear") return /\/quran\.html$/.test(path);
     if (slug === "ibn-kathir")        return /\/ibn-kathir\.html$/.test(path);
     if (slug === "talmud")            return /\/talmud\.html$/.test(path);
     return false;
@@ -360,7 +365,7 @@
   }
 
   function placeholderFor(slug) {
-    if (slug === "quran") return "2:23 or Surah 2 23";
+    if (slug === "quran" || slug === "quran-interlinear") return "2:23 or Surah 2";
     if (slug === "ibn-kathir") return "a23 or ayah 23";
     if (slug === "mishnah") return "Sanhedrin 4:5";
     if (slug === "tanakh" || slug === "new-testament" ||

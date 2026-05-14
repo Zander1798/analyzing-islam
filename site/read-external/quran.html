@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Quran Interlinear — full Arabic text word-by-word with root, lemma, morphology, and English glosses. Click any word for its root entry and concordance.">
+<!-- Favicon + app-icon set (browser tab, iOS home-screen, Android manifest) -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png">
+<link rel="icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/assets/icons/site.webmanifest">
+<meta name="theme-color" content="#0a0a0a">
+<title>Quran Interlinear — Analyzing Islam</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  .book-group { margin: 48px 0 8px; }
+  .book-group-label {
+    font-family: var(--sans);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--text-dim);
+    font-weight: 700;
+    padding: 0 0 12px;
+    display: block;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+  .book-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    min-height: 130px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .book-card:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+  .book-card h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    margin: 0 0 4px;
+    letter-spacing: -0.015em;
+  }
+  .book-card .book-sub {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 0 0 8px;
+  }
+  .book-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 10px;
+  }
+  .book-card .book-meta {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-top: auto;
+  }
+  .back-link {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+  .back-link:hover { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="../index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../catalog.html">Catalog</a>
+      <a href="../arguments.html">Dossiers</a>
+      <a href="../read.html" class="active">Read</a>
+      <a href="../compare.html">Compare</a>
+      <a href="../build.html">Build</a>
+      <a href="../stats.html">Stats</a>
+      <a href="../about.html">About</a>
+      <a href="../faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <section class="hero" style="padding: 40px 0 8px; text-align:left;">
+    <a href="../read-external.html" class="back-link">← External Sources</a>
+    <h1 style="font-size:clamp(48px, 7vw, 88px); margin-bottom:20px;">Quran Interlinear</h1>
+    <p class="hero-tagline" style="margin-left:0; max-width:760px;">The full 114-surah Quran — Arabic word-by-word, with root, lemma, morphological analysis, and English glosses under each word. Click any Arabic token to open its root entry, part of speech, and every other verse in the Quran where the same root appears. 6,236 verses · 77,431 Arabic words · 1,651 unique roots.</p>
+  </section>
+
+  <section style="padding:20px; background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--accent); margin-top: 24px; max-width: 72ch;">
+    <h3 style="margin-top:0; font-size: 15px;">About this interlinear</h3>
+    <p style="color:var(--text-muted); font-size:13px; line-height: 1.6; margin: 0;">Word-by-word Arabic text, transliteration, and English glosses from <a href="https://github.com/qazasaz/quranwbw" target="_blank" rel="noopener">qazasaz/quranwbw</a>. Morphological analysis (root, lemma, part of speech, case, number, gender) from <a href="https://github.com/mustafa0x/quran-morphology" target="_blank" rel="noopener">mustafa0x/quran-morphology</a>, derived from the <a href="https://corpus.quran.com" target="_blank" rel="noopener">Quranic Arabic Corpus</a>. Verse translations (Sahih International) from the word-by-word dataset. All data CC-BY.</p>
+  </section>
+
+<div class="book-group"><span class="book-group-label">All 114 Surahs</span><div class="book-grid">
+<a href="quran/surah-001.html" class="book-card">
+  <div>
+    <h3>Al-Faatiha</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْفَاتِحَةِ</p>
+    <p>The Opening — Mecca · 7 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-002.html" class="book-card">
+  <div>
+    <h3>Al-Baqara</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ البَقَرَةِ</p>
+    <p>The Cow — Madina · 286 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-003.html" class="book-card">
+  <div>
+    <h3>Aal-i-Imraan</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ اٰلِ عِمْرٰنَ</p>
+    <p>The Family of Imraan — Madina · 200 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-004.html" class="book-card">
+  <div>
+    <h3>An-Nisaa</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ النِّسَآءِ</p>
+    <p>The Women — Madina · 176 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-005.html" class="book-card">
+  <div>
+    <h3>Al-Maaida</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ المَآئِدَةِ</p>
+    <p>The Table — Madina · 120 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-006.html" class="book-card">
+  <div>
+    <h3>Al-An&#39;aam</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْاَنْعَامِ</p>
+    <p>The Cattle — Mecca · 165 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-007.html" class="book-card">
+  <div>
+    <h3>Al-A&#39;raaf</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْاَعْرَافِ</p>
+    <p>The Heights — Mecca · 206 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-008.html" class="book-card">
+  <div>
+    <h3>Al-Anfaal</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْاَنْفَالِ</p>
+    <p>The Spoils of War — Madina · 75 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-009.html" class="book-card">
+  <div>
+    <h3>At-Tawba</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ التَّوْبَةِ</p>
+    <p>The Repentance — Madina · 129 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-010.html" class="book-card">
+  <div>
+    <h3>Yunus</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ يُوْنُسَ</p>
+    <p>Jonas — Mecca · 109 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-011.html" class="book-card">
+  <div>
+    <h3>Hud</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ هُوْدٍ</p>
+    <p>Hud — Mecca · 123 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-012.html" class="book-card">
+  <div>
+    <h3>Yusuf</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ يُوسُفَ</p>
+    <p>Joseph — Mecca · 111 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-013.html" class="book-card">
+  <div>
+    <h3>Ar-Ra&#39;d</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الرَّعْدِ</p>
+    <p>The Thunder — Madina · 43 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-014.html" class="book-card">
+  <div>
+    <h3>Ibrahim</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ اِبْرَاهِيْمَ</p>
+    <p>Abraham — Mecca · 52 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-015.html" class="book-card">
+  <div>
+    <h3>Al-Hijr</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْحِجْرِ</p>
+    <p>The Rock — Mecca · 99 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-016.html" class="book-card">
+  <div>
+    <h3>An-Nahl</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ النَّحْلِ</p>
+    <p>The Bee — Mecca · 128 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-017.html" class="book-card">
+  <div>
+    <h3>Al-Israa</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الإِسۡرَاءِ</p>
+    <p>The Night Journey — Mecca · 111 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-018.html" class="book-card">
+  <div>
+    <h3>Al-Kahf</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْكَهْفِ</p>
+    <p>The Cave — Mecca · 110 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-019.html" class="book-card">
+  <div>
+    <h3>Maryam</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ مَرْيَمَ</p>
+    <p>Mary — Mecca · 98 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-020.html" class="book-card">
+  <div>
+    <h3>Taa-Haa</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ طٰهٰ</p>
+    <p>Taa-Haa — Mecca · 135 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-021.html" class="book-card">
+  <div>
+    <h3>Al-Anbiyaa</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْاَنْۣبِيَآءِ</p>
+    <p>The Prophets — Mecca · 112 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-022.html" class="book-card">
+  <div>
+    <h3>Al-Hajj</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْحَجِّ</p>
+    <p>The Pilgrimage — Madina · 78 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-023.html" class="book-card">
+  <div>
+    <h3>Al-Muminoon</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمُؤْمِنُوْنَ</p>
+    <p>The Believers — Mecca · 118 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-024.html" class="book-card">
+  <div>
+    <h3>An-Noor</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ النُّوْرِ</p>
+    <p>The Light — Madina · 64 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-025.html" class="book-card">
+  <div>
+    <h3>Al-Furqaan</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْفُرْقَانِ</p>
+    <p>The Criterion — Mecca · 77 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-026.html" class="book-card">
+  <div>
+    <h3>Ash-Shu&#39;araa</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الشُّعَرَآءِ</p>
+    <p>The Poets — Mecca · 227 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-027.html" class="book-card">
+  <div>
+    <h3>An-Naml</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ النَّمْلِ</p>
+    <p>The Ant — Mecca · 93 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-028.html" class="book-card">
+  <div>
+    <h3>Al-Qasas</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْقَصَصِ</p>
+    <p>The Stories — Mecca · 88 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-029.html" class="book-card">
+  <div>
+    <h3>Al-Ankaboot</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْعَنْكَبُوْتِ</p>
+    <p>The Spider — Mecca · 69 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-030.html" class="book-card">
+  <div>
+    <h3>Ar-Room</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الرُّوْمِ</p>
+    <p>The Romans — Mecca · 60 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-031.html" class="book-card">
+  <div>
+    <h3>Luqman</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ لُقْمَانَ</p>
+    <p>Luqman — Mecca · 34 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-032.html" class="book-card">
+  <div>
+    <h3>As-Sajda</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ السَّجْدَةِ</p>
+    <p>The Prostration — Mecca · 30 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-033.html" class="book-card">
+  <div>
+    <h3>Al-Ahzaab</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْاَحْزَابِ</p>
+    <p>The Clans — Madina · 73 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-034.html" class="book-card">
+  <div>
+    <h3>Saba</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ سَبَاٍ</p>
+    <p>Sheba — Mecca · 54 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-035.html" class="book-card">
+  <div>
+    <h3>Faatir</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ فَاطِرٍ</p>
+    <p>The Originator — Mecca · 45 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-036.html" class="book-card">
+  <div>
+    <h3>Yaseen</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ يٰسٓ</p>
+    <p>Yaseen — Mecca · 83 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-037.html" class="book-card">
+  <div>
+    <h3>As-Saaffaat</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الصَّافَّاتِ</p>
+    <p>Those drawn up in Ranks — Mecca · 182 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-038.html" class="book-card">
+  <div>
+    <h3>Saad</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ صٓ</p>
+    <p>The letter Saad — Mecca · 88 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-039.html" class="book-card">
+  <div>
+    <h3>Az-Zumar</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الزُّمَرِ</p>
+    <p>The Groups — Mecca · 75 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-040.html" class="book-card">
+  <div>
+    <h3>Ghafir</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمُؤْمِنِ</p>
+    <p>The Forgiver — Mecca · 85 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-041.html" class="book-card">
+  <div>
+    <h3>Fussilat</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ فُصِّلَتۡ</p>
+    <p>Explained in detail — Mecca · 54 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-042.html" class="book-card">
+  <div>
+    <h3>Ash-Shura</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الشُّوْرٰي</p>
+    <p>Consultation — Mecca · 53 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-043.html" class="book-card">
+  <div>
+    <h3>Az-Zukhruf</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الزُّخْرُفِ</p>
+    <p>Ornaments of gold — Mecca · 89 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-044.html" class="book-card">
+  <div>
+    <h3>Ad-Dukhaan</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الدُّخَانِ</p>
+    <p>The Smoke — Mecca · 59 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-045.html" class="book-card">
+  <div>
+    <h3>Al-Jaathiya</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْجَاثِيَةِ</p>
+    <p>Crouching — Mecca · 37 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-046.html" class="book-card">
+  <div>
+    <h3>Al-Ahqaf</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْاَحْقَافِ</p>
+    <p>The Dunes — Mecca · 35 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-047.html" class="book-card">
+  <div>
+    <h3>Muhammad</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ مُحَمَّدٍ</p>
+    <p>Muhammad — Madina · 38 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-048.html" class="book-card">
+  <div>
+    <h3>Al-Fath</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْفَتْحِ</p>
+    <p>The Victory — Madina · 29 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-049.html" class="book-card">
+  <div>
+    <h3>Al-Hujuraat</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْحُجُراتِ</p>
+    <p>The Inner Apartments — Madina · 18 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-050.html" class="book-card">
+  <div>
+    <h3>Qaaf</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ قٓ</p>
+    <p>The letter Qaaf — Mecca · 45 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-051.html" class="book-card">
+  <div>
+    <h3>Adh-Dhaariyat</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الذَّارِياتِ</p>
+    <p>The Winnowing Winds — Mecca · 60 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-052.html" class="book-card">
+  <div>
+    <h3>At-Tur</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الطُّوْرِ</p>
+    <p>The Mount — Mecca · 49 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-053.html" class="book-card">
+  <div>
+    <h3>An-Najm</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ النَّجْمِ</p>
+    <p>The Star — Mecca · 62 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-054.html" class="book-card">
+  <div>
+    <h3>Al-Qamar</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْقَمَرِ</p>
+    <p>The Moon — Mecca · 55 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-055.html" class="book-card">
+  <div>
+    <h3>Ar-Rahmaan</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الرَّحْمٰنِ</p>
+    <p>The Beneficent — Madina · 78 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-056.html" class="book-card">
+  <div>
+    <h3>Al-Waaqia</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْوَاقِعَةِ</p>
+    <p>The Inevitable — Mecca · 96 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-057.html" class="book-card">
+  <div>
+    <h3>Al-Hadid</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْحَدِيْدِ</p>
+    <p>The Iron — Madina · 29 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-058.html" class="book-card">
+  <div>
+    <h3>Al-Mujaadila</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمُجَادَلَةِ</p>
+    <p>The Pleading Woman — Madina · 22 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-059.html" class="book-card">
+  <div>
+    <h3>Al-Hashr</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْحَشْرِ</p>
+    <p>The Exile — Madina · 24 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-060.html" class="book-card">
+  <div>
+    <h3>Al-Mumtahana</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمُمْتَحِنَةِ</p>
+    <p>She that is to be examined — Madina · 13 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-061.html" class="book-card">
+  <div>
+    <h3>As-Saff</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الصَّفِّ</p>
+    <p>The Ranks — Madina · 14 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-062.html" class="book-card">
+  <div>
+    <h3>Al-Jumu&#39;a</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْجُمُعَةِ</p>
+    <p>Friday — Madina · 11 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-063.html" class="book-card">
+  <div>
+    <h3>Al-Munaafiqoon</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمُنَافِقُوْنَ</p>
+    <p>The Hypocrites — Madina · 11 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-064.html" class="book-card">
+  <div>
+    <h3>At-Taghaabun</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ التَّغَابُنِ</p>
+    <p>Mutual Disillusion — Madina · 18 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-065.html" class="book-card">
+  <div>
+    <h3>At-Talaaq</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الطَّلَاقِ</p>
+    <p>Divorce — Madina · 12 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-066.html" class="book-card">
+  <div>
+    <h3>At-Tahrim</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ التَّحْرِيْمِ</p>
+    <p>The Prohibition — Madina · 12 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-067.html" class="book-card">
+  <div>
+    <h3>Al-Mulk</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمُلْكِ</p>
+    <p>The Sovereignty — Mecca · 30 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-068.html" class="book-card">
+  <div>
+    <h3>Al-Qalam</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْقَلَمِ</p>
+    <p>The Pen — Mecca · 52 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-069.html" class="book-card">
+  <div>
+    <h3>Al-Haaqqa</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْحَآقَّةِ</p>
+    <p>The Reality — Mecca · 52 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-070.html" class="book-card">
+  <div>
+    <h3>Al-Ma&#39;aarij</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمَعَارِجِ</p>
+    <p>The Ascending Stairways — Mecca · 44 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-071.html" class="book-card">
+  <div>
+    <h3>Nooh</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ نُوْحٍ</p>
+    <p>Noah — Mecca · 28 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-072.html" class="book-card">
+  <div>
+    <h3>Al-Jinn</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْجِنِّ</p>
+    <p>The Jinn — Mecca · 28 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-073.html" class="book-card">
+  <div>
+    <h3>Al-Muzzammil</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمُزَّمِّلِ</p>
+    <p>The Enshrouded One — Mecca · 20 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-074.html" class="book-card">
+  <div>
+    <h3>Al-Muddaththir</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمُدَّثِّرِ</p>
+    <p>The Cloaked One — Mecca · 56 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-075.html" class="book-card">
+  <div>
+    <h3>Al-Qiyaama</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْقِيَامَةِ</p>
+    <p>The Resurrection — Mecca · 40 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-076.html" class="book-card">
+  <div>
+    <h3>Al-Insaan</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الدَّهْرِ</p>
+    <p>Man — Madina · 31 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-077.html" class="book-card">
+  <div>
+    <h3>Al-Mursalaat</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمُرْسَلَاتِ</p>
+    <p>The Emissaries — Mecca · 50 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-078.html" class="book-card">
+  <div>
+    <h3>An-Naba</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ النَّبَاِ</p>
+    <p>The Announcement — Mecca · 40 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-079.html" class="book-card">
+  <div>
+    <h3>An-Naazi&#39;aat</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ النَّازِعَاتِ</p>
+    <p>Those who drag forth — Mecca · 46 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-080.html" class="book-card">
+  <div>
+    <h3>Abasa</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ عَبَسَ</p>
+    <p>He frowned — Mecca · 42 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-081.html" class="book-card">
+  <div>
+    <h3>At-Takwir</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ التَّكْوِيْرِ</p>
+    <p>The Overthrowing — Mecca · 29 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-082.html" class="book-card">
+  <div>
+    <h3>Al-Infitaar</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْاِنْفِطَارِ</p>
+    <p>The Cleaving — Mecca · 19 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-083.html" class="book-card">
+  <div>
+    <h3>Al-Mutaffifin</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ المُطَفِّفِيْنَ</p>
+    <p>Defrauding — Mecca · 36 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-084.html" class="book-card">
+  <div>
+    <h3>Al-Inshiqaaq</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الاِنْشِقَاقِ</p>
+    <p>The Splitting Open — Mecca · 25 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-085.html" class="book-card">
+  <div>
+    <h3>Al-Burooj</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْبُرُوْجِ</p>
+    <p>The Constellations — Mecca · 22 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-086.html" class="book-card">
+  <div>
+    <h3>At-Taariq</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الطَّارِقِ</p>
+    <p>The Morning Star — Mecca · 17 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-087.html" class="book-card">
+  <div>
+    <h3>Al-A&#39;laa</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْاَعْلٰي</p>
+    <p>The Most High — Mecca · 19 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-088.html" class="book-card">
+  <div>
+    <h3>Al-Ghaashiya</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْغَاشِيَةِ</p>
+    <p>The Overwhelming — Mecca · 26 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-089.html" class="book-card">
+  <div>
+    <h3>Al-Fajr</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْفَجْرِ</p>
+    <p>The Dawn — Mecca · 30 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-090.html" class="book-card">
+  <div>
+    <h3>Al-Balad</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْبَلَدِ</p>
+    <p>The City — Mecca · 20 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-091.html" class="book-card">
+  <div>
+    <h3>Ash-Shams</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الشَّمْسِ</p>
+    <p>The Sun — Mecca · 15 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-092.html" class="book-card">
+  <div>
+    <h3>Al-Lail</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الَّيْلِ</p>
+    <p>The Night — Mecca · 21 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-093.html" class="book-card">
+  <div>
+    <h3>Ad-Dhuhaa</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الضُّحٰي</p>
+    <p>The Morning Hours — Mecca · 11 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-094.html" class="book-card">
+  <div>
+    <h3>Ash-Sharh</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الشَّرْحِ</p>
+    <p>The Consolation — Mecca · 8 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-095.html" class="book-card">
+  <div>
+    <h3>At-Tin</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ التِّيْنِ</p>
+    <p>The Fig — Mecca · 8 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-096.html" class="book-card">
+  <div>
+    <h3>Al-Alaq</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْعَلَقِ</p>
+    <p>The Clot — Mecca · 19 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-097.html" class="book-card">
+  <div>
+    <h3>Al-Qadr</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْقَدْرِ</p>
+    <p>The Power, Fate — Mecca · 5 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-098.html" class="book-card">
+  <div>
+    <h3>Al-Bayyina</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْبَيِّنَةِ</p>
+    <p>The Evidence — Madina · 8 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-099.html" class="book-card">
+  <div>
+    <h3>Az-Zalzala</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الزِّلْزَالِ</p>
+    <p>The Earthquake — Madina · 8 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-100.html" class="book-card">
+  <div>
+    <h3>Al-Aadiyaat</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ العٰدِيٰتِ</p>
+    <p>The Chargers — Mecca · 11 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-101.html" class="book-card">
+  <div>
+    <h3>Al-Qaari&#39;a</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْقَارِعَةِ</p>
+    <p>The Calamity — Mecca · 11 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-102.html" class="book-card">
+  <div>
+    <h3>At-Takaathur</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ التَّكَاثُرِ</p>
+    <p>Competition — Mecca · 8 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-103.html" class="book-card">
+  <div>
+    <h3>Al-Asr</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْعَصْرِ</p>
+    <p>The Declining Day, Epoch — Mecca · 3 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-104.html" class="book-card">
+  <div>
+    <h3>Al-Humaza</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْهُمَزَةِ</p>
+    <p>The Traducer — Mecca · 9 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-105.html" class="book-card">
+  <div>
+    <h3>Al-Fil</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْفِيْلِ</p>
+    <p>The Elephant — Mecca · 5 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-106.html" class="book-card">
+  <div>
+    <h3>Quraish</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ قُرَيْشٍ</p>
+    <p>Quraysh — Mecca · 4 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-107.html" class="book-card">
+  <div>
+    <h3>Al-Maa&#39;un</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْمَاعُوْنِ</p>
+    <p>Almsgiving — Mecca · 7 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-108.html" class="book-card">
+  <div>
+    <h3>Al-Kawthar</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْكَوْثَرِ</p>
+    <p>Abundance — Mecca · 3 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-109.html" class="book-card">
+  <div>
+    <h3>Al-Kaafiroon</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْكَافِرُوْنَ</p>
+    <p>The Disbelievers — Mecca · 6 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-110.html" class="book-card">
+  <div>
+    <h3>An-Nasr</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ النَّصْرِ</p>
+    <p>Divine Support — Madina · 3 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-111.html" class="book-card">
+  <div>
+    <h3>Al-Masad</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ المَسَدِ</p>
+    <p>The Palm Fibre — Mecca · 5 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-112.html" class="book-card">
+  <div>
+    <h3>Al-Ikhlaas</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْاِخْلَاصِ</p>
+    <p>Sincerity — Mecca · 4 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-113.html" class="book-card">
+  <div>
+    <h3>Al-Falaq</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ الْفَلَقِ</p>
+    <p>The Dawn — Mecca · 5 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+<a href="quran/surah-114.html" class="book-card">
+  <div>
+    <h3>An-Naas</h3>
+    <p class="book-sub" dir="rtl" style="font-family:'Scheherazade New',serif;font-size:15px;">سُوْرَةُ النَّاسِ</p>
+    <p>Mankind — Mecca · 6 verses</p>
+  </div>
+  <div class="book-meta">Open interlinear ›</div>
+</a>
+
+</div></div>
+
+</main>
+
+<footer class="site-footer">
+  Quran interlinear reader. Arabic word-by-word with root, lemma, morphology, and English glosses. Data from qazasaz/quranwbw and mustafa0x/quran-morphology.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/auth.js" defer></script>
+<script src="../assets/js/auth-ui.js" defer></script>
+<script src="../assets/js/goat-skins.js"></script>
+<script src="../assets/js/goat.js" defer></script>
+<script src="../assets/js/verse-parser.js" defer></script>
+<script src="../assets/js/reader-search.js" defer></script>
+<script src="../assets/js/snap-to-hash.js" defer></script>
+</body>
+</html>
