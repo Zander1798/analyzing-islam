@@ -10,12 +10,12 @@
 // Depends on window.VERSE_PARSER (loaded from verse-parser.js).
 // Skips itself when the page is loaded in embed mode (?embed=1), so
 // the floating search doesn't double-up inside Compare/Build iframes.
-(function init() {
+(function init(attempt) {
   "use strict";
 
   if (!window.VERSE_PARSER) {
     // verse-parser.js may still be loading (defer); retry shortly.
-    setTimeout(init, 50);
+    if ((attempt || 0) < 20) setTimeout(function () { init((attempt || 0) + 1); }, 50);
     return;
   }
 

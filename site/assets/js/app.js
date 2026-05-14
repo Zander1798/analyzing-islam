@@ -81,10 +81,11 @@
 
   // --- Search input ---
   if (searchInput) {
+    let searchTimer = null;
     searchInput.addEventListener("input", (e) => {
       state.search = e.target.value;
-      applyFilters();
-      updateURL();
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => { applyFilters(); updateURL(); }, 100);
     });
   }
 

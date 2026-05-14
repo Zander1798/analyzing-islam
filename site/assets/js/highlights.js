@@ -249,7 +249,8 @@
     // order; for each, intersect the selection with that anchor's text
     // and emit a part. group_id ties them together at the call site.
     const doc = startAnchor.ownerDocument;
-    const all = Array.from(doc.querySelectorAll("[id]")).filter((el) => anchorRe.test(el.id));
+    const container = startAnchor.closest("main, .reader-body, .bible-main, .surah-list, .hadith-content") || doc;
+    const all = Array.from(container.querySelectorAll("[id]")).filter((el) => anchorRe.test(el.id));
     const startIdx = all.indexOf(startAnchor);
     const endIdx   = all.indexOf(endAnchor);
     if (startIdx < 0 || endIdx < 0 || endIdx < startIdx) return null;

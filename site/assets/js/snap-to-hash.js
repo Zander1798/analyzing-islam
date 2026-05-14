@@ -22,14 +22,14 @@
     return nav ? nav.getBoundingClientRect().height : 70;
   }
 
-  function snap() {
+  function snap(navH) {
     const hash = window.location.hash;
     if (!hash || hash.length < 2) return;
     let id;
     try { id = decodeURIComponent(hash.slice(1)); } catch (_) { id = hash.slice(1); }
     const target = document.getElementById(id);
     if (!target) return;
-    const offset = getNavHeight() + 16;
+    const offset = (navH !== undefined ? navH : getNavHeight()) + 16;
     const rect = target.getBoundingClientRect();
     const top = rect.top + window.pageYOffset - offset;
     window.scrollTo({ top: top, left: 0, behavior: "instant" });
@@ -40,12 +40,13 @@
   window.__snapToHash = snap;
 
   function schedule() {
-    snap();
+    const navH = getNavHeight();
+    snap(navH);
     if (typeof requestAnimationFrame === "function") {
-      requestAnimationFrame(snap);
+      requestAnimationFrame(function () { snap(navH); });
     }
-    setTimeout(snap, 150);
-    setTimeout(snap, 400);
+    setTimeout(function () { snap(navH); }, 150);
+    setTimeout(function () { snap(navH); }, 400);
   }
 
   if (document.readyState === "complete") {

@@ -93,7 +93,7 @@
 }
 
 /* ===== Chapter block ===== */
-.bible-chapter { margin-bottom: 64px; scroll-margin-top: 80px; }
+.bible-chapter { margin-bottom: 64px; scroll-margin-top: 80px; content-visibility: auto; contain-intrinsic-size: 1px 2400px; }
 .bible-chapter h2 {
   font-family: var(--serif);
   font-size: clamp(28px, 3vw, 40px);
