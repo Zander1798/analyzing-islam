@@ -5,6 +5,7 @@
 // Data sources (all under data/ relative to each surah page):
 //   concordance.json   Loaded once, at first panel open.
 //   lexicon.json       Loaded once, at first panel open.
+//   definitions.json   Lane's Lexicon definitions, loaded once at first panel open.
 (function () {
   "use strict";
 
@@ -50,6 +51,106 @@
     });
   }
 
+  // --- Morphology expansion ---
+  // Maps every QAC feature tag to its full English label.
+  const MORPH_MAP = {
+    // Verb tense / aspect
+    "PERF":      "Perfect",
+    "IMPF":      "Imperfect",
+    "IMPV":      "Imperative",
+    "VN":        "Verbal noun",
+    // Participles
+    "ACT_PCPL":  "Active participle",
+    "PASS_PCPL": "Passive participle",
+    // Voice
+    "PASS":      "Passive",
+    // Verb forms (Arabic measures I–XI)
+    "VF:1":  "Form I",  "VF:2":  "Form II",  "VF:3":  "Form III",
+    "VF:4":  "Form IV", "VF:5":  "Form V",   "VF:6":  "Form VI",
+    "VF:7":  "Form VII","VF:8":  "Form VIII","VF:9":  "Form IX",
+    "VF:10": "Form X",  "VF:11": "Form XI",
+    // Mood
+    "MOOD:IND":  "Indicative",
+    "MOOD:JUS":  "Jussive",
+    "MOOD:SUBJ": "Subjunctive",
+    // Case
+    "NOM": "Nominative",
+    "ACC": "Accusative",
+    "GEN": "Genitive",
+    // Gender (standalone, for nominals)
+    "M": "Masculine",
+    "F": "Feminine",
+    // Number (standalone)
+    "P": "Plural",
+    "D": "Dual",
+    // Combined gender + number (nominals without person)
+    "MS": "Masculine singular",
+    "MP": "Masculine plural",
+    "MD": "Masculine dual",
+    "FS": "Feminine singular",
+    "FP": "Feminine plural",
+    "FD": "Feminine dual",
+    // Person + gender + number (verbs)
+    "1S":  "1st singular",        "1P":  "1st plural",
+    "2MS": "2nd masculine singular","2MP": "2nd masculine plural",
+    "2FS": "2nd feminine singular", "2FP": "2nd feminine plural",
+    "2MD": "2nd masculine dual",    "2FD": "2nd feminine dual",
+    "2D":  "2nd dual",
+    "3MS": "3rd masculine singular","3MP": "3rd masculine plural",
+    "3FS": "3rd feminine singular", "3FP": "3rd feminine plural",
+    "3MD": "3rd masculine dual",    "3FD": "3rd feminine dual",
+    "3D":  "3rd dual",
+    // Definiteness
+    "INDEF": "Indefinite",
+    // Part-of-speech qualifiers
+    "ADJ":  "Adjective",
+    "PN":   "Proper noun",
+    "DEM":  "Demonstrative",
+    "REL":  "Relative",
+    "PRON": "Pronoun",
+    "PRO":  "Pronoun",
+    // Particle / conjunction subtypes
+    "CONJ": "Conjunction",
+    "PREV": "Preventive",
+    "NEG":  "Negative",
+    "COND": "Conditional",
+    "FUT":  "Future",
+    "CERT": "Certainty",
+    "EXH":  "Exhortative",
+    "EXL":  "Exclamative",
+    "EXP":  "Exceptive",
+    "INT":  "Initiating",
+    "INTG": "Interrogative",
+    "INC":  "Inceptive",
+    "INL":  "Insoluble",
+    "LOC":  "Locative",
+    "SUB":  "Subordinating",
+    "AMD":  "Amendment",
+    "ANS":  "Answering",
+    "ATT":  "Attention",
+    "AVR":  "Aversion",
+    "RES":  "Restrictive",
+    "RET":  "Retribution",
+    "SUP":  "Supplemental",
+    "SUR":  "Surprise",
+    "NV":   "Non-verbal",
+    "T":    "Time",
+  };
+
+  // Expand a pipe-separated QAC feature string to full English labels.
+  // FAM:xxx tags (word-family cross-refs) are silently skipped.
+  function expandMorphFeats(featsStr) {
+    if (!featsStr) return [];
+    return featsStr.split("|").reduce(function (acc, tok) {
+      tok = tok.trim();
+      if (!tok || tok.startsWith("FAM:")) return acc;
+      const label = MORPH_MAP[tok];
+      if (label) acc.push(label);
+      else acc.push(tok); // fall back to raw if unknown
+      return acc;
+    }, []);
+  }
+
   // --- Side panel DOM ---
   const panel = document.createElement("aside");
   panel.className = "bible-panel";
@@ -75,9 +176,7 @@
     if (e.key === "Escape") closePanel();
   });
 
-  function openPanel() {
-    panel.classList.add("is-open");
-  }
+  function openPanel() { panel.classList.add("is-open"); }
   function closePanel() {
     panel.classList.remove("is-open");
     if (activeWord) { activeWord.classList.remove("is-active"); activeWord = null; }
@@ -85,23 +184,17 @@
 
   // --- Ensure data loaded ---
   async function ensureData() {
-    if (!concordance) {
-      concordance = await fetchJson(DATA_BASE + "concordance.json");
-    }
-    if (!lexicon) {
-      lexicon = await fetchJson(DATA_BASE + "lexicon.json");
-    }
-    if (!definitions) {
-      definitions = await fetchJson(DATA_BASE + "definitions.json").catch(() => ({}));
-    }
+    if (!concordance) concordance = await fetchJson(DATA_BASE + "concordance.json");
+    if (!lexicon)     lexicon     = await fetchJson(DATA_BASE + "lexicon.json");
+    if (!definitions) definitions = await fetchJson(DATA_BASE + "definitions.json").catch(() => ({}));
   }
 
-  // Expand POS abbreviation
+  // Expand top-level POS code to English label
   function expandPos(pos) {
     const posMap = {
       N: "Noun", V: "Verb", ADJ: "Adjective", ADV: "Adverb",
-      PRON: "Pronoun", PREP: "Preposition", CONJ: "Conjunction",
-      PART: "Particle", PN: "Proper noun", INTJ: "Interjection",
+      P: "Preposition", CONJ: "Conjunction", PART: "Particle",
+      PRON: "Pronoun", PN: "Proper noun", INTJ: "Interjection",
       REL: "Relative pronoun", DEM: "Demonstrative pronoun",
       DET: "Definite article",
     };
@@ -111,24 +204,27 @@
 
   // --- Render panel ---
   function renderPanel(meta) {
-    // meta: {root, lem, pos, feats, orig, trans, gloss, verseRef, surahNum}
     const root  = meta.root || "";
     const lem   = meta.lem  || "";
+    const trans = meta.trans || "";
     const entry = root ? (lexicon && lexicon[root]) : null;
 
-    // Header: lemma (Arabic lemma or root if no lemma)
+    // Header — Arabic lemma (large) + subtitle line
     const displayLemma = lem || root;
     panelLemma.innerHTML = displayLemma
       ? '<span class="quran-panel-root">' + escapeHtml(displayLemma) + '</span>'
       : '—';
+
+    // Subtitle: root · POS · transliteration
     const metaParts = [];
     if (root && root !== displayLemma) metaParts.push("root: " + root);
     if (meta.pos) metaParts.push(expandPos(meta.pos));
+    if (trans) metaParts.push(trans);
     panelMeta.textContent = metaParts.filter(Boolean).join(" · ");
 
     let html = "";
 
-    // Gloss at this position
+    // IN THIS VERSE
     html += '<div class="panel-section">' +
       '<div class="panel-section-label">In this verse</div>' +
       '<div class="panel-section-content">' +
@@ -136,44 +232,83 @@
       '"' + escapeHtml(meta.gloss || "(no gloss)") + '"' +
       '</div></div>';
 
-    // Morphology
-    if (meta.feats) {
-      const featList = meta.feats.split("|").filter(Boolean);
-      if (featList.length) {
-        html += '<div class="panel-section">' +
-          '<div class="panel-section-label">Morphology</div>' +
-          '<div class="panel-section-content">' +
-          escapeHtml(featList.join(" · ")) +
-          '</div></div>';
-      }
+    // MORPHOLOGY — fully expanded labels
+    const morphLabels = expandMorphFeats(meta.feats);
+    if (morphLabels.length) {
+      html += '<div class="panel-section">' +
+        '<div class="panel-section-label">Morphology</div>' +
+        '<div class="panel-section-content">' +
+        escapeHtml(morphLabels.join(" · ")) +
+        '</div></div>';
     }
 
-    // Lexicon entry
+    // LEXICON ENTRY (root words)
     const defn = root && definitions ? (definitions[root] || null) : null;
+
     if (entry) {
       html += '<div class="panel-section">' +
         '<div class="panel-section-label">Root: ' + escapeHtml(root) + '</div>' +
         '<dl class="panel-grid">' +
-        (entry.lem ? '<dt>Lemma</dt><dd><span dir="rtl" style="font-family:\'Scheherazade New\',serif;">' + escapeHtml(entry.lem) + '</span></dd>' : '') +
-        (entry.pos ? '<dt>Part of speech</dt><dd>' + escapeHtml(expandPos(entry.pos) || entry.pos) + '</dd>' : '') +
-        (entry.gloss ? '<dt>Gloss</dt><dd>' + escapeHtml(entry.gloss) + '</dd>' : '') +
-        (defn ? '<dt>Definition</dt><dd class="panel-definition">' + escapeHtml(defn) + '</dd>' : '') +
-        (entry.count ? '<dt>Occurrences</dt><dd>' + entry.count + ' in Quran</dd>' : '') +
+        (entry.lem
+          ? '<dt>Lemma</dt><dd><span dir="rtl" style="font-family:\'Scheherazade New\',serif;">' +
+            escapeHtml(entry.lem) + '</span></dd>'
+          : '') +
+        (trans
+          ? '<dt>Pronunciation</dt><dd>' + escapeHtml(trans) + '</dd>'
+          : '') +
+        (entry.pos
+          ? '<dt>Part of speech</dt><dd>' + escapeHtml(expandPos(entry.pos) || entry.pos) + '</dd>'
+          : '') +
+        (entry.gloss
+          ? '<dt>Gloss</dt><dd>' + escapeHtml(entry.gloss) + '</dd>'
+          : '') +
+        (defn
+          ? '<dt>Definition</dt><dd class="panel-definition">' + escapeHtml(defn) + '</dd>'
+          : '') +
+        (entry.count
+          ? '<dt>Occurrences</dt><dd>' + entry.count + ' in Quran</dd>'
+          : '') +
         '</dl>' +
         (defn ? '<div class="panel-attrib">Lane\'s Arabic-English Lexicon, 1863</div>' : '') +
         '</div>';
+
     } else if (!root) {
-      html += '<div class="panel-section"><div class="panel-section-content">Grammatical particle — no root entry.</div></div>';
+      // Grammatical particle / function word — no root, but show what we have
+      const posLabel = meta.pos ? expandPos(meta.pos) : "";
+      html += '<div class="panel-section">' +
+        '<div class="panel-section-label">' +
+        (posLabel ? escapeHtml(posLabel) : "Particle") +
+        '</div>' +
+        '<dl class="panel-grid">' +
+        (lem
+          ? '<dt>Lemma</dt><dd><span dir="rtl" style="font-family:\'Scheherazade New\',serif;">' +
+            escapeHtml(lem) + '</span></dd>'
+          : '') +
+        (trans
+          ? '<dt>Pronunciation</dt><dd>' + escapeHtml(trans) + '</dd>'
+          : '') +
+        '</dl>' +
+        '</div>';
+
     } else {
-      html += '<div class="panel-section"><div class="panel-section-label">Root: ' + escapeHtml(root) + '</div>' +
-        '<div class="panel-section-content">No lexicon entry available.</div></div>';
+      // Root known but no lexicon entry
+      html += '<div class="panel-section">' +
+        '<div class="panel-section-label">Root: ' + escapeHtml(root) + '</div>' +
+        '<dl class="panel-grid">' +
+        (trans
+          ? '<dt>Pronunciation</dt><dd>' + escapeHtml(trans) + '</dd>'
+          : '') +
+        '</dl>' +
+        '</div>';
     }
 
-    // Concordance
+    // OTHER OCCURRENCES
     html += '<div class="panel-section">' +
       '<div class="panel-section-label">Other occurrences</div>' +
       '<div id="panel-concordance">' +
-      (root ? '<div class="bible-loading">Loading concordance…</div>' : '<div class="panel-section-content">No root — no concordance.</div>') +
+      (root
+        ? '<div class="bible-loading">Loading concordance…</div>'
+        : '<div class="panel-section-content">Function word — no root concordance.</div>') +
       '</div>' +
       '</div>';
 
@@ -194,7 +329,6 @@
         return;
       }
 
-      // Sort by surah, verse, word position
       const sorted = hits.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
 
       let html = '<div class="concordance-count">' + sorted.length + ' occurrence' +
@@ -221,7 +355,6 @@
       html += '</ol>';
       target.innerHTML = html;
 
-      // Wire up click → highlight target verse on same-page jumps
       target.querySelectorAll("a").forEach((a) => {
         a.addEventListener("click", function () {
           const tgt = a.getAttribute("data-target");
