@@ -156,8 +156,6 @@
       // Signed out: always use defaults — skins are locked behind auth.
       _cache.unlockedLevel = 1;
       _cache.unlockedSkins = new Set(["standard"]);
-      // Reset the nav goat to standard whenever the user is signed out.
-      window.dispatchEvent(new Event("aig:skin-changed"));
     }
     window.dispatchEvent(new Event("aig:progress-loaded"));
   }
@@ -185,8 +183,10 @@
     SKINS: SKINS,
 
     // Skin selection — per-device localStorage, gated behind auth.
+    // Read optimistically from localStorage so the nav goat renders the
+    // correct skin immediately before auth resolves; the signed-out branch
+    // of loadProgress() resets to "standard" if auth comes back unsigned.
     getSelectedId: function () {
-      if (!uid()) return "standard";
       return localStorage.getItem(LS_SKIN) || "standard";
     },
     setSelectedId: function (id) {

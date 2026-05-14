@@ -27,11 +27,17 @@
     return svg;
   }
 
+  let repaintPending = false;
   function repaintNavGoat(btn) {
-    const old = btn.querySelector(".goat-svg");
-    const next = buildNavGoatSvg();
-    if (old) old.replaceWith(next);
-    else btn.insertBefore(next, btn.firstChild);
+    if (repaintPending) return;
+    repaintPending = true;
+    requestAnimationFrame(function () {
+      repaintPending = false;
+      const old = btn.querySelector(".goat-svg");
+      const next = buildNavGoatSvg();
+      if (old) old.replaceWith(next);
+      else btn.insertBefore(next, btn.firstChild);
+    });
   }
 
   function init() {
