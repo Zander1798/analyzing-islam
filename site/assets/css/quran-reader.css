@@ -54,6 +54,22 @@
   padding: 4px 6px;
 }
 
+/* Lane's Lexicon definition — slightly smaller, italic, like Strong's def */
+.panel-definition {
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* Source attribution below lexicon entry */
+.panel-attrib {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--sans);
+}
+
 /* Active/highlighted word state — inherits from bible-reader.css
    but we nudge the border radius for a nicer look */
 .quran-lang-ar .w.is-active {

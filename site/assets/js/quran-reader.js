@@ -27,6 +27,7 @@
   // --- Lazy caches ---
   let concordance = null;
   let lexicon = null;
+  let definitions = null;
   const fetchCache = new Map();
   let activeWord = null;
 
@@ -45,6 +46,7 @@
     requestIdleCallback(function () {
       fetchJson(DATA_BASE + "concordance.json");
       fetchJson(DATA_BASE + "lexicon.json");
+      fetchJson(DATA_BASE + "definitions.json");
     });
   }
 
@@ -88,6 +90,9 @@
     }
     if (!lexicon) {
       lexicon = await fetchJson(DATA_BASE + "lexicon.json");
+    }
+    if (!definitions) {
+      definitions = await fetchJson(DATA_BASE + "definitions.json").catch(() => ({}));
     }
   }
 
@@ -144,15 +149,18 @@
     }
 
     // Lexicon entry
+    const defn = root && definitions ? (definitions[root] || null) : null;
     if (entry) {
       html += '<div class="panel-section">' +
         '<div class="panel-section-label">Root: ' + escapeHtml(root) + '</div>' +
         '<dl class="panel-grid">' +
         (entry.lem ? '<dt>Lemma</dt><dd><span dir="rtl" style="font-family:\'Scheherazade New\',serif;">' + escapeHtml(entry.lem) + '</span></dd>' : '') +
         (entry.pos ? '<dt>Part of speech</dt><dd>' + escapeHtml(expandPos(entry.pos) || entry.pos) + '</dd>' : '') +
-        (entry.gloss ? '<dt>Primary gloss</dt><dd>' + escapeHtml(entry.gloss) + '</dd>' : '') +
+        (entry.gloss ? '<dt>Gloss</dt><dd>' + escapeHtml(entry.gloss) + '</dd>' : '') +
+        (defn ? '<dt>Definition</dt><dd class="panel-definition">' + escapeHtml(defn) + '</dd>' : '') +
         (entry.count ? '<dt>Occurrences</dt><dd>' + entry.count + ' in Quran</dd>' : '') +
         '</dl>' +
+        (defn ? '<div class="panel-attrib">Lane\'s Arabic-English Lexicon, 1863</div>' : '') +
         '</div>';
     } else if (!root) {
       html += '<div class="panel-section"><div class="panel-section-content">Grammatical particle — no root entry.</div></div>';
