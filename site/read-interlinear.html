@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Read the sources — the primary Islamic corpus (Quran + six canonical hadith collections) plus the external classical, comparative, and modern works cited throughout the analysis.">
+<meta name="description" content="Interlinear sources — the full Quran in Arabic and the full Bible in Hebrew/Greek, word by word with roots, morphology, and English glosses.">
 <!-- Favicon + app-icon set (browser tab, iOS home-screen, Android manifest) -->
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png">
@@ -11,28 +11,25 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/assets/icons/site.webmanifest">
 <meta name="theme-color" content="#0a0a0a">
-<!-- Open Graph (link preview on WhatsApp, Facebook, LinkedIn, Slack, Discord, etc.) -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Analyzing Islam">
-<meta property="og:title" content="Read — Analyzing Islam">
-<meta property="og:description" content="Read the Quran, the six canonical Sunni hadith collections, the Tanakh, the New Testament, the Mishnah, the Talmud, Ibn Kathir, Josephus, and more.">
-<meta property="og:url" content="https://analyzingislam.com/read.html">
+<meta property="og:title" content="Interlinear Sources — Analyzing Islam">
+<meta property="og:description" content="The full Quran in Arabic and the full Bible in Hebrew/Greek, word by word with roots, morphology, and English glosses.">
+<meta property="og:url" content="https://analyzingislam.com/read-interlinear.html">
 <meta property="og:image" content="https://analyzingislam.com/assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Analyzing Islam — 1,642 entries across 30 categories">
-<!-- Twitter / X card -->
+<meta property="og:image:alt" content="Analyzing Islam — Interlinear Sources">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Read — Analyzing Islam">
-<meta name="twitter:description" content="Read the Quran, the six canonical Sunni hadith collections, the Tanakh, the New Testament, the Mishnah, the Talmud, Ibn Kathir, Josephus, and more.">
+<meta name="twitter:title" content="Interlinear Sources — Analyzing Islam">
+<meta name="twitter:description" content="The full Quran in Arabic and the full Bible in Hebrew/Greek, word by word with roots, morphology, and English glosses.">
 <meta name="twitter:image" content="https://analyzingislam.com/assets/og-image.png">
-<title>Read — Analyzing Islam</title>
+<title>Interlinear Sources — Analyzing Islam</title>
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-  /* Three-card chooser — large, book-cover feel. */
   .read-chooser {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     margin: 48px 0 64px;
   }
@@ -107,20 +104,21 @@
     transform: translateX(6px);
   }
 
-  @media (max-width: 1100px) {
-    .read-chooser {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .back-link {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-bottom: 24px;
+    letter-spacing: 0.01em;
   }
+
+  .back-link:hover { color: var(--accent); text-decoration: none; }
+
   @media (max-width: 760px) {
-    .read-chooser {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    .read-chooser-card {
-      padding: 40px 28px 32px;
-      min-height: 240px;
-    }
+    .read-chooser { grid-template-columns: 1fr; gap: 16px; }
+    .read-chooser-card { padding: 40px 28px 32px; min-height: 240px; }
   }
 </style>
 </head>
@@ -146,44 +144,33 @@
 <main>
 
   <section class="hero" style="padding: 40px 0 8px; text-align:left;">
-    <h1 style="font-size:clamp(48px, 7vw, 88px); margin-bottom:20px;">Read the sources</h1>
-    <p class="hero-tagline" style="margin-left:0; max-width:720px;">Two libraries. The primary Islamic corpus this project analyses, and the external works — classical commentary, comparative scripture, and modern scholarship — referenced throughout the entries.</p>
+    <a href="read.html" class="back-link">← Read</a>
+    <h1 style="font-size:clamp(48px, 7vw, 88px); margin-bottom:20px;">Interlinear Sources</h1>
+    <p class="hero-tagline" style="margin-left:0; max-width:720px;">The full Quran in Arabic and the full Bible in Hebrew and Greek — word by word, with roots, morphology, and English glosses. Click any word to open its lexicon entry and every other verse where that word-root appears.</p>
   </section>
 
   <div class="read-chooser">
 
-    <a href="read-islamic.html" class="read-chooser-card">
+    <a href="read-external/quran.html" class="read-chooser-card">
       <div>
-        <div class="chooser-eyebrow">Primary corpus</div>
-        <h2>Islamic Sources</h2>
-        <p>The full Saheeh International Quran and the six canonical Sunni hadith collections — Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasa'i, and Ibn Majah. Every entry in the catalog cites one of these.</p>
+        <div class="chooser-eyebrow">Arabic · Roots · Morphology</div>
+        <h2>Quran</h2>
+        <p>All 114 surahs word by word, with triconsonantal roots, parsed morphology, and Sahih International English glosses. Click any word to see its root entry and every other verse in the Quran where that root appears.</p>
       </div>
       <div class="chooser-meta">
-        <span>7 primary works</span>
+        <span>114 surahs · 6,236 verses · 77,431 words</span>
         <span class="chooser-arrow" aria-hidden="true">→</span>
       </div>
     </a>
 
-    <a href="read-external.html" class="read-chooser-card">
+    <a href="read-external/bible.html" class="read-chooser-card">
       <div>
-        <div class="chooser-eyebrow">Cited throughout</div>
-        <h2>External Sources</h2>
-        <p>Comparative Jewish and Christian scripture cited throughout the catalog — the Hebrew Bible, New Testament, apocryphal infancy gospels, 1 Enoch, the Mishnah, the Babylonian Talmud, and Josephus. Classical Islamic works and modern Western scholarship are cited in the entries but not rehosted here.</p>
+        <div class="chooser-eyebrow">Hebrew &amp; Greek · Strong's · Morphology</div>
+        <h2>Bible</h2>
+        <p>Full 66-book Protestant canon — Hebrew Old Testament and Greek New Testament — word by word, with Strong's numbers, parsed morphology, and English glosses. Click any word to open its Strong's entry and concordance.</p>
       </div>
       <div class="chooser-meta">
-        <span>7 works</span>
-        <span class="chooser-arrow" aria-hidden="true">→</span>
-      </div>
-    </a>
-
-    <a href="read-interlinear.html" class="read-chooser-card">
-      <div>
-        <div class="chooser-eyebrow">Word by word</div>
-        <h2>Interlinear Sources</h2>
-        <p>The full Quran in Arabic and the full Bible in Hebrew and Greek — word by word, with roots, morphology, and English glosses. Click any word to open its lexicon entry and every other verse where that root appears.</p>
-      </div>
-      <div class="chooser-meta">
-        <span>Quran · Bible</span>
+        <span>66 books · 31,203 verses</span>
         <span class="chooser-arrow" aria-hidden="true">→</span>
       </div>
     </a>
@@ -193,14 +180,13 @@
 </main>
 
 <footer class="site-footer">
-  Read the text, then read the catalog. Every entry references a specific passage — verify before citing.
+  Word-by-word interlinear readers. Quran data: QAC morphology (CC BY 3.0). Bible data: STEPBible TAHOT/TAGNT (CC BY) and OpenScriptures Strong's dictionaries (CC BY-SA).
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/config.js"></script>
 <script src="assets/js/auth.js" defer></script>
 <script src="assets/js/auth-ui.js" defer></script>
-
 <script src="assets/js/goat-skins.js"></script>
 <script src="assets/js/goat.js" defer></script>
 <script src="assets/js/snap-to-hash.js" defer></script>
