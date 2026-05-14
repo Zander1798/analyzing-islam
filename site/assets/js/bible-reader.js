@@ -44,6 +44,7 @@
   let strongsGrk = null;
   let concordance = null;
   const fetchCache = new Map();
+  let activeWord = null;
 
   function fetchJson(url) {
     if (fetchCache.has(url)) return fetchCache.get(url);
@@ -75,6 +76,16 @@
   const panelBody = panel.querySelector("#panel-body");
   panel.querySelector(".bible-panel-close").addEventListener("click", closePanel);
 
+  // Kick off all three JSON data files during idle time so first word-click
+  // doesn't stall waiting for a cold 6-10 MB fetch.
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(function () {
+      fetchJson(DATA_BASE + "concordance.json");
+      fetchJson(DATA_BASE + "strongs-hebrew.json");
+      fetchJson(DATA_BASE + "strongs-greek.json");
+    });
+  }
+
   // Close on Esc
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closePanel();
@@ -85,7 +96,7 @@
   }
   function closePanel() {
     panel.classList.remove("is-open");
-    document.querySelectorAll(".w.is-active").forEach((el) => el.classList.remove("is-active"));
+    if (activeWord) { activeWord.classList.remove("is-active"); activeWord = null; }
   }
 
   // --- Load dictionaries on demand ---
@@ -177,7 +188,6 @@
         (entry.pron ? '<dt>Pronunciation</dt><dd>' + escapeHtml(entry.pron) + '</dd>' : '') +
         (entry.derivation ? '<dt>Derivation</dt><dd>' + escapeHtml(entry.derivation) + '</dd>' : '') +
         (entry.strongs_def ? '<dt>Definition</dt><dd>' + escapeHtml(entry.strongs_def) + '</dd>' : '') +
-        (entry.kjv_def ? '<dt>KJV uses</dt><dd>' + escapeHtml(entry.kjv_def) + '</dd>' : '') +
         '</dl>' +
         '</div>';
     } else if (sid) {
@@ -316,7 +326,8 @@
     const glossEl = w.querySelector(".w-gloss");
     const bookName = BOOK_NAMES[CURRENT_BOOK] || CURRENT_BOOK;
 
-    document.querySelectorAll(".w.is-active").forEach((el) => el.classList.remove("is-active"));
+    if (activeWord) activeWord.classList.remove("is-active");
+    activeWord = w;
     w.classList.add("is-active");
 
     openPanel();
