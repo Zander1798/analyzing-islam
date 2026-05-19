@@ -186,6 +186,7 @@
         (entry.lemma ? '<dt>Lemma</dt><dd>' + escapeHtml(entry.lemma) + '</dd>' : '') +
         (entry.translit ? '<dt>Translit.</dt><dd>' + escapeHtml(entry.translit) + '</dd>' : '') +
         (entry.pron ? '<dt>Pronunciation</dt><dd>' + escapeHtml(entry.pron) + '</dd>' : '') +
+        (entry.gloss ? '<dt>Translation</dt><dd>' + escapeHtml(entry.gloss) + '</dd>' : '') +
         (entry.derivation ? '<dt>Derivation</dt><dd>' + escapeHtml(entry.derivation) + '</dd>' : '') +
         (entry.strongs_def ? '<dt>Definition</dt><dd>' + escapeHtml(entry.strongs_def) + '</dd>' : '') +
         '</dl>' +
