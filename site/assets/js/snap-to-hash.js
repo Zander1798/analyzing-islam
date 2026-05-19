@@ -27,6 +27,8 @@
     if (!hash || hash.length < 2) return;
     let id;
     try { id = decodeURIComponent(hash.slice(1)); } catch (_) { id = hash.slice(1); }
+    // Word-level hashes (s4v34w7) are handled entirely by quran-reader.js — skip here
+    if (/^s\d+v\d+w\d+$/.test(id)) return;
     const target = document.getElementById(id);
     if (!target) return;
     const offset = (navH !== undefined ? navH : getNavHeight()) + 16;

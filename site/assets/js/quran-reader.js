@@ -440,11 +440,11 @@
     if (!/^s\d+v\d+w\d+$/.test(id)) return; // only act on word-level hashes
     const el = document.getElementById(id);
     if (!el) return;
-    // Delay slightly so snap-to-hash finishes scrolling the verse into view first
+    // Delay so page layout settles (fonts, images) before scrolling to the word
     setTimeout(function () {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
       openWordPanel(el);
-    }, 450);
+    }, 600);
   }
 
   window.addEventListener("load", handleHashWord);
