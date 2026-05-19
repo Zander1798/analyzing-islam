@@ -229,7 +229,7 @@ function buildSurahHtml(opts) {
       const feats    = morph.feats.join("|");
 
       wordsHtml +=
-        `<span class="w" data-root="${esc(root)}" data-lem="${esc(lem)}" data-pos="${esc(pos)}" data-m="${esc(feats)}">` +
+        `<span class="w" id="s${surahNum}v${vNum}w${wordIdx}" data-root="${esc(root)}" data-lem="${esc(lem)}" data-pos="${esc(pos)}" data-m="${esc(feats)}">` +
         `<span class="w-orig">${esc(arabic)}</span>` +
         `<span class="w-trans">${esc(trans)}</span>` +
         `<span class="w-gloss">${esc(gloss)}</span>` +

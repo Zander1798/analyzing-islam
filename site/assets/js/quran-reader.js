@@ -376,11 +376,8 @@
     }
   }
 
-  // --- Word click handler ---
-  document.addEventListener("click", async function (e) {
-    const w = e.target.closest(".w");
-    if (!w) return;
-
+  // --- Core panel-open logic (used by click handler and hash auto-open) ---
+  async function openWordPanel(w) {
     const root  = w.getAttribute("data-root") || "";
     const lem   = w.getAttribute("data-lem")  || "";
     const pos   = w.getAttribute("data-pos")  || "";
@@ -424,7 +421,34 @@
       verseRef: surahLabel + " " + sNum + ":" + vNum,
       surahNum: parseInt(sNum, 10) || 1,
     });
+  }
+
+  // --- Word click handler ---
+  document.addEventListener("click", function (e) {
+    const w = e.target.closest(".w");
+    if (!w) return;
+    openWordPanel(w);
   });
+
+  // --- Hash-based word auto-open ---
+  // Handles URLs like surah-004.html#s4v34w7 — scrolls to the word and opens its panel.
+  function handleHashWord() {
+    const hash = window.location.hash;
+    if (!hash || hash.length < 2) return;
+    let id;
+    try { id = decodeURIComponent(hash.slice(1)); } catch (_) { id = hash.slice(1); }
+    if (!/^s\d+v\d+w\d+$/.test(id)) return; // only act on word-level hashes
+    const el = document.getElementById(id);
+    if (!el) return;
+    // Delay slightly so snap-to-hash finishes scrolling the verse into view first
+    setTimeout(function () {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      openWordPanel(el);
+    }, 450);
+  }
+
+  window.addEventListener("load", handleHashWord);
+  window.addEventListener("hashchange", handleHashWord);
 
   function escapeHtml(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
