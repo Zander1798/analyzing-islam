@@ -56,6 +56,10 @@ TAGNT_FILES = [
 STRONGS_HEBREW_JS = SRC / "strongs" / "hebrew" / "strongs-hebrew-dictionary.js"
 STRONGS_GREEK_JS = SRC / "strongs" / "greek" / "strongs-greek-dictionary.js"
 
+LEX_DIR = SRC / "STEPBible-Data" / "Lexicons"
+TBESH_FILE = LEX_DIR / "TBESH - Translators Brief lexicon of Extended Strongs for Hebrew - STEPBible.org CC BY.txt"
+TBESG_FILE = LEX_DIR / "TBESG - Translators Brief lexicon of Extended Strongs for Greek - STEPBible.org CC BY.txt"
+
 # STEPBible uses its own book-code convention in the line refs — "Gen.1.1".
 # Map to our slug + display name + section.
 BOOK_META = [
@@ -175,8 +179,46 @@ def load_strongs(js_path: Path, prefix: str) -> dict:
             return {}
 
 
-def normalize_strongs(raw: dict, prefix: str) -> dict:
+def load_tbex_glosses(path: Path, prefix: str) -> dict:
+    """Parse TBESH (Hebrew) or TBESG (Greek) to extract eStrong# → Gloss.
+    Returns a dict keyed by normalized Strong's number (H0001, G0026, etc.).
+    Only the first Gloss per key is kept; sub-variants (H0001G, H0001H) are
+    stored under their own key so resolving can try exact-then-base.
+    """
+    glosses = {}
+    if not path.exists():
+        print(f"  WARN: TBEX file missing — {path.name}", file=sys.stderr)
+        return glosses
+    with path.open(encoding="utf-8", errors="replace") as f:
+        for line in f:
+            line = line.rstrip("\n\r")
+            if not line:
+                continue
+            cols = line.split("\t")
+            if len(cols) < 7:
+                continue
+            raw_key = cols[0].strip()
+            if not re.match(rf"^{prefix}\d+[A-Za-z]*$", raw_key):
+                continue
+            gloss = cols[6].strip()
+            if not gloss:
+                continue
+            m = re.match(rf"^{prefix}(\d+)([A-Za-z]?)$", raw_key)
+            if m:
+                raw_key = f"{prefix}{int(m.group(1)):04d}{m.group(2)}"
+            if raw_key not in glosses:
+                glosses[raw_key] = gloss
+            # Also store under the bare base number (no suffix) so strongs
+            # keys like H2617 can match TBESH entries like H2617a or H2617A.
+            base = re.sub(r"[A-Za-z]+$", "", raw_key)
+            if base not in glosses and base != raw_key:
+                glosses[base] = gloss
+    return glosses
+
+
+def normalize_strongs(raw: dict, prefix: str, tbex_glosses: dict | None = None) -> dict:
     """Normalize to a compact shape we care about."""
+    tbex = tbex_glosses or {}
     out = {}
     for k, v in raw.items():
         # Keys are "H1", "H10", "G1", "G4999" — ensure prefix
@@ -185,13 +227,18 @@ def normalize_strongs(raw: dict, prefix: str) -> dict:
         m = re.match(rf"^{prefix}(\d+)([A-Za-z]?)$", key)
         if m:
             key = f"{prefix}{int(m.group(1)):04d}{m.group(2)}"
+        # Resolve TBESH/TBESG gloss: try exact key, then strip trailing suffix
+        gloss = tbex.get(key, "")
+        if not gloss:
+            base = re.sub(r"[A-Za-z]+$", "", key)
+            gloss = tbex.get(base, "")
         out[key] = {
             "lemma": v.get("lemma", "") or v.get("xlit", ""),
             "translit": v.get("xlit", "") or v.get("translit", ""),
             "pron": v.get("pron", ""),
             "derivation": v.get("derivation", ""),
+            "gloss": gloss,
             "strongs_def": v.get("strongs_def", "") or v.get("strongsdef", ""),
-            "kjv_def": v.get("kjv_def", "") or v.get("kjv", ""),
         }
     return out
 
@@ -525,12 +572,16 @@ def build():
     OUT.mkdir(parents=True, exist_ok=True)
     OUT_BOOKS.mkdir(parents=True, exist_ok=True)
 
-    # 1. Load Strong's dictionaries
+    # 1. Load Strong's dictionaries + TBESH/TBESG glosses
     print("Loading Strong's dictionaries…")
     heb_raw = load_strongs(STRONGS_HEBREW_JS, "H")
     grk_raw = load_strongs(STRONGS_GREEK_JS, "G")
-    heb_dict = normalize_strongs(heb_raw, "H")
-    grk_dict = normalize_strongs(grk_raw, "G")
+    print("Loading TBESH/TBESG glosses…")
+    heb_glosses = load_tbex_glosses(TBESH_FILE, "H")
+    grk_glosses = load_tbex_glosses(TBESG_FILE, "G")
+    print(f"  Hebrew glosses: {len(heb_glosses)}, Greek glosses: {len(grk_glosses)}")
+    heb_dict = normalize_strongs(heb_raw, "H", heb_glosses)
+    grk_dict = normalize_strongs(grk_raw, "G", grk_glosses)
     (OUT / "strongs-hebrew.json").write_text(json.dumps(heb_dict, ensure_ascii=False), encoding="utf-8")
     (OUT / "strongs-greek.json").write_text(json.dumps(grk_dict, ensure_ascii=False), encoding="utf-8")
     print(f"  Hebrew: {len(heb_dict)} entries, Greek: {len(grk_dict)} entries")
