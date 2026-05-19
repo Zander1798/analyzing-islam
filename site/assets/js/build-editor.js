@@ -1025,6 +1025,156 @@
   const TRANSLATE_CHUNK_MAX = 450; // leave headroom under MyMemory's 500
   const TRANSLATE_TOTAL_MAX = 10000; // guard against runaway selections
 
+  // ---- Lexicon-first translation layer --------------------------------
+  // Lazily loaded caches. Populated on first translateSmart() call for
+  // the relevant language. Keys are stripped (no diacritics) word forms;
+  // values are the scholarly one-word gloss from TBESH/TBESG/Quran data.
+  const _lexCache = { ar: null, he: null, el: null };
+  const _lexPromise = { ar: null, he: null, el: null };
+
+  // Paths are relative to site/build-editor.html.
+  const _lexPaths = {
+    ar: "read-external/quran/data/lexicon.json",
+    he: "read-external/bible/data/strongs-hebrew.json",
+    el: "read-external/bible/data/strongs-greek.json",
+  };
+
+  // Build a Map<strippedForm → gloss> from a raw lexicon JSON object.
+  // Bible Strong's dicts: { "H0001": { lemma, gloss?, strongs_def, … }, … }
+  // Quran lexicon:        { "root":  { lem, gloss, pos, count }, … }
+  function _buildIndex(raw, lang) {
+    const idx = new Map();
+    for (const [key, val] of Object.entries(raw || {})) {
+      if (!val || typeof val !== "object") continue;
+
+      if (lang === "ar") {
+        // Quran lexicon structure: { lem, pos, gloss, count }
+        const gloss = (val.gloss || "").trim();
+        if (!gloss) continue;
+        // Index by stripped root key (consonantal form).
+        const strippedRoot = stripMarksForTranslate(key).trim();
+        if (strippedRoot) idx.set(strippedRoot, gloss);
+        // Also index by stripped lemma — significantly improves hit rate
+        // for common words (e.g. root أله → lem اللَّه → stripped الله
+        // matches the standalone token الله in selected text).
+        if (val.lem) {
+          const strippedLem = stripMarksForTranslate(String(val.lem)).trim();
+          if (strippedLem && !idx.has(strippedLem)) idx.set(strippedLem, gloss);
+        }
+      } else {
+        // Bible Strong's: { lemma, translit, gloss?, strongs_def, kjv_def, … }
+        // `gloss` is added by the TBESH/TBESG rebuild (PR #1). Fall back to
+        // extracting the first phrase of strongs_def so this still produces
+        // results before that PR is merged, and keeps working after.
+        let gloss = (val.gloss || "").trim();
+        if (!gloss && val.strongs_def) {
+          gloss = val.strongs_def
+            .replace(/^\{|\}$/g, "")   // strip surrounding braces: "{father}" → "father"
+            .split(";")[0]             // take only text before the first semicolon
+            .split(",")[0]             // and before the first comma
+            .trim();
+        }
+        if (!gloss) continue;
+        // Index by stripped lemma (original-script word with vowels/accents
+        // removed) — matches surface words that happen to be the base form.
+        // First definition wins: multiple Strong's entries can share the same
+        // consonantal lemma (e.g. H0001 אָב and H0003 אֵב both strip to אב).
+        if (val.lemma) {
+          const sl = stripMarksForTranslate(String(val.lemma)).trim();
+          if (sl && !idx.has(sl)) idx.set(sl, gloss);
+        }
+      }
+    }
+    return idx;
+  }
+
+  async function _ensureLex(lang) {
+    if (_lexCache[lang]) return _lexCache[lang];
+    if (_lexPromise[lang]) return _lexPromise[lang];
+    const path = _lexPaths[lang];
+    if (!path) { _lexCache[lang] = new Map(); return _lexCache[lang]; }
+    _lexPromise[lang] = fetch(path)
+      .then(function (r) { return r.ok ? r.json() : {}; })
+      .catch(function () { return {}; })
+      .then(function (raw) {
+        _lexCache[lang] = _buildIndex(raw, lang);
+        return _lexCache[lang];
+      });
+    return _lexPromise[lang];
+  }
+
+  // Tokenise source text into words (strip punctuation, split on spaces).
+  // Returns array of { orig, stripped } pairs so we can rebuild the order.
+  function _tokenise(text) {
+    // Split on whitespace and common punctuation boundaries.
+    return text.split(/[\s ​‌‍]+/).filter(Boolean).map(function (tok) {
+      // Remove surrounding punctuation (not internal — "it's" stays).
+      const clean = tok.replace(/^[\p{P}\p{S}]+|[\p{P}\p{S}]+$/gu, "");
+      return { orig: tok, stripped: stripMarksForTranslate(clean).trim() };
+    });
+  }
+
+  // Two-layer translation:
+  //   1. Try each word against the local lexicon index (no network).
+  //   2. Batch all unmatched words to MyMemory in chunks.
+  // The result preserves source-word order.
+  async function translateSmart(text, lang, onProgress) {
+    const idx = await _ensureLex(lang);
+    const tokens = _tokenise(text);
+    const results = new Array(tokens.length).fill(null);
+
+    // Pass 1: local lookup.
+    const unmatchedIdxs = [];
+    const localSet = new Set();
+    for (let i = 0; i < tokens.length; i++) {
+      const { stripped } = tokens[i];
+      if (!stripped) { results[i] = ""; continue; }
+      const hit = idx.get(stripped);
+      if (hit) {
+        results[i] = hit;
+        localSet.add(i);
+      } else {
+        unmatchedIdxs.push(i);
+      }
+    }
+
+    if (typeof onProgress === "function") onProgress(0, unmatchedIdxs.length || 1);
+
+    // Pass 2: MyMemory for the words the lexicon didn't cover.
+    if (unmatchedIdxs.length) {
+      // Reconstruct the unmatched tokens as text to send to translate().
+      const unmatchedText = unmatchedIdxs.map(function (i) { return tokens[i].orig; }).join(" ");
+      const mmOut = await translate(unmatchedText, lang, function (done, total) {
+        if (typeof onProgress === "function") onProgress(done, total + 1);
+      }).catch(function () { return ""; });
+
+      // The MyMemory response is a translated sentence; map words back by
+      // position (best effort — MT may change word count).
+      const mmWords = (mmOut || "").split(/\s+/).filter(Boolean);
+      for (let j = 0; j < unmatchedIdxs.length; j++) {
+        results[unmatchedIdxs[j]] = mmWords[j] || "";
+      }
+    }
+
+    if (typeof onProgress === "function") onProgress(1, 1);
+
+    // Stitch: for words with a local gloss, show "stripped [gloss]" to
+    // distinguish the scholarly source. MyMemory-translated words appear plain.
+    const parts = [];
+    for (let i = 0; i < tokens.length; i++) {
+      const { orig } = tokens[i];
+      const gloss = results[i];
+      if (localSet.has(i) && gloss) {
+        parts.push(stripMarksForTranslate(orig) + " [" + gloss + "]");
+      } else if (gloss) {
+        parts.push(gloss);
+      } else {
+        parts.push(orig);
+      }
+    }
+    return parts.join(" ").replace(/\s+/g, " ").trim();
+  }
+
   // Split `text` into ≤TRANSLATE_CHUNK_MAX chunks. Prefer breaks at
   // sentence terminators (Latin . ! ? · Arabic ؟ · Urdu/Persian ۔ ·
   // CJK 。 · Greek ; (U+037E) which is the Greek question mark), then
@@ -1413,11 +1563,10 @@
       resultTxt.textContent = "Translating…";
       copyBtn.hidden = true;
       try {
-        // MyMemory caps each request at 500 chars. translate() splits
-        // long selections into sentence-boundary chunks and makes one
-        // request per chunk; surface progress so the user knows a big
-        // passage is actively translating, not stuck.
-        const out = await translate(text, lang, function (done, total) {
+        // translateSmart: lexicon-first lookup (TBESH/TBESG/Quran data),
+        // then MyMemory for any words not found locally. Progress is
+        // surfaced per-chunk so the user sees activity on long passages.
+        const out = await translateSmart(text, lang, function (done, total) {
           if (total > 1) {
             resultTxt.textContent = "Translating " + done + " / " + total + "…";
           }
