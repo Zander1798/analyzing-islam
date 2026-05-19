@@ -1040,38 +1040,49 @@
   };
 
   // Build a Map<strippedForm → gloss> from a raw lexicon JSON object.
-  // For Bible Strong's dicts the JSON is { "H0001": { gloss, lemma, … }, … }.
-  // For the Quran lexicon the JSON is { "root": { gloss, … }, … }.
+  // Bible Strong's dicts: { "H0001": { lemma, gloss?, strongs_def, … }, … }
+  // Quran lexicon:        { "root":  { lem, gloss, pos, count }, … }
   function _buildIndex(raw, lang) {
     const idx = new Map();
     for (const [key, val] of Object.entries(raw || {})) {
       if (!val || typeof val !== "object") continue;
-      const gloss = (val.gloss || "").trim();
-      if (!gloss) continue;
 
       if (lang === "ar") {
-        // Quran lexicon: key is the Arabic root. Strip marks and index it.
-        const stripped = stripMarksForTranslate(key).trim();
-        if (stripped) idx.set(stripped, gloss);
-        // Also index the `forms` array when present — each form is a
-        // surface spelling that maps back to this root's gloss.
-        if (Array.isArray(val.forms)) {
-          for (const f of val.forms) {
-            const sf = stripMarksForTranslate(String(f)).trim();
-            if (sf && !idx.has(sf)) idx.set(sf, gloss);
-          }
+        // Quran lexicon structure: { lem, pos, gloss, count }
+        const gloss = (val.gloss || "").trim();
+        if (!gloss) continue;
+        // Index by stripped root key (consonantal form).
+        const strippedRoot = stripMarksForTranslate(key).trim();
+        if (strippedRoot) idx.set(strippedRoot, gloss);
+        // Also index by stripped lemma — significantly improves hit rate
+        // for common words (e.g. root أله → lem اللَّه → stripped الله
+        // matches the standalone token الله in selected text).
+        if (val.lem) {
+          const strippedLem = stripMarksForTranslate(String(val.lem)).trim();
+          if (strippedLem && !idx.has(strippedLem)) idx.set(strippedLem, gloss);
         }
       } else {
-        // Bible Strong's dict: key is like H0001. Index the lemma value
-        // (original script), stripped, so lookups by surface word work.
-        const lemma = (val.lemma || "").trim();
-        if (lemma) {
-          const sl = stripMarksForTranslate(lemma).trim();
-          if (sl) idx.set(sl, gloss);
+        // Bible Strong's: { lemma, translit, gloss?, strongs_def, kjv_def, … }
+        // `gloss` is added by the TBESH/TBESG rebuild (PR #1). Fall back to
+        // extracting the first phrase of strongs_def so this still produces
+        // results before that PR is merged, and keeps working after.
+        let gloss = (val.gloss || "").trim();
+        if (!gloss && val.strongs_def) {
+          gloss = val.strongs_def
+            .replace(/^\{|\}$/g, "")   // strip surrounding braces: "{father}" → "father"
+            .split(";")[0]             // take only text before the first semicolon
+            .split(",")[0]             // and before the first comma
+            .trim();
         }
-        // Also index the key itself (normalised) — useful for direct
-        // Strong's lookup if the caller ever passes the tag.
-        idx.set(key, gloss);
+        if (!gloss) continue;
+        // Index by stripped lemma (original-script word with vowels/accents
+        // removed) — matches surface words that happen to be the base form.
+        // First definition wins: multiple Strong's entries can share the same
+        // consonantal lemma (e.g. H0001 אָב and H0003 אֵב both strip to אב).
+        if (val.lemma) {
+          const sl = stripMarksForTranslate(String(val.lemma)).trim();
+          if (sl && !idx.has(sl)) idx.set(sl, gloss);
+        }
       }
     }
     return idx;
