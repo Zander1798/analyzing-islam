@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watch — Analyzing Islam (Mockup)</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+
+/* ─── Watch-page layout ─────────────────────────────── */
+
+.watch-hero {
+  padding: 4.5rem 2rem 3.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+.watch-hero-eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.9rem;
+}
+.watch-hero-title {
+  font-family: var(--serif);
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 1.0;
+  margin: 0 0 1.1rem;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.watch-hero-sub {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  max-width: 520px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ─── Section wrapper ───────────────────────────────── */
+
+.watch-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem;
+}
+.watch-section + .watch-section {
+  border-top: 1px solid var(--border);
+}
+.watch-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin-bottom: 1.6rem;
+}
+.watch-section-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.watch-section-count {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+/* ─── Channel cards ─────────────────────────────────── */
+
+.watch-channel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+  gap: 1px;
+  border: 1px solid var(--border);
+}
+.watch-channel-card {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 1.75rem 1.5rem;
+  background: var(--bg);
+  cursor: pointer;
+  transition: background 0.12s;
+  border: none;
+  text-align: left;
+  color: var(--text);
+  width: 100%;
+  font-family: var(--sans);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.watch-channel-card:hover {
+  background: var(--panel-2);
+}
+.watch-channel-avatar {
+  flex-shrink: 0;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.watch-channel-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.watch-channel-info { flex: 1; min-width: 0; }
+.watch-channel-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.watch-channel-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.watch-channel-arrow {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  transition: color 0.12s, transform 0.12s;
+}
+.watch-channel-card:hover .watch-channel-arrow {
+  color: var(--accent);
+  transform: translateX(3px);
+}
+
+/* ─── Video grid ────────────────────────────────────── */
+
+.watch-video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px;
+  border: 1px solid var(--border);
+}
+.watch-video-card {
+  cursor: pointer;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.watch-video-card:hover { background: var(--panel-2); }
+
+.watch-video-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0d0d0d;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.watch-video-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.watch-thumb-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #0d0d0d 0%, #111 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.watch-play-icon {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: rgba(122,162,247,0.15);
+  border: 1px solid rgba(122,162,247,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  color: var(--accent);
+  padding-left: 3px;
+}
+.watch-video-card:hover .watch-play-icon {
+  background: rgba(122,162,247,0.25);
+}
+.watch-video-info { padding: 0.9rem 1rem; }
+.watch-video-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.3rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.watch-video-meta {
+  font-size: 0.71rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+/* ─── Filter bar ────────────────────────────────────── */
+
+.watch-filter-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.watch-filter-btn {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.1rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-bottom: -1px;
+  font-family: var(--sans);
+  transition: color 0.12s, border-color 0.12s;
+}
+.watch-filter-btn.is-active,
+.watch-filter-btn:hover {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* ─── Channel detail page ───────────────────────────── */
+
+.watch-back-bar {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem 2rem 0;
+}
+.watch-back-btn {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--sans);
+  padding: 0;
+  transition: color 0.12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.watch-back-btn:hover { color: var(--text); }
+
+.watch-channel-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 2rem 2rem;
+  border-bottom: 1px solid var(--border);
+}
+.watch-channel-header-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.watch-channel-header-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.watch-channel-header-name {
+  font-family: var(--serif);
+  font-size: 1.9rem;
+  font-weight: 400;
+  margin: 0 0 0.3rem;
+  letter-spacing: -0.01em;
+}
+.watch-channel-header-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ─── Page visibility ───────────────────────────────── */
+
+#page-landing { display: block; }
+#page-channel  { display: none; }
+
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="arguments.html">Dossiers</a>
+      <a href="read.html">Read</a>
+      <a href="compare.html">Compare</a>
+      <a href="build.html">Build</a>
+      <a href="#" style="color:var(--accent);">Watch</a>
+      <a href="stats.html">Stats</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════
+     LANDING PAGE
+════════════════════════════════════════════════════ -->
+<div id="page-landing">
+
+  <div class="watch-hero">
+    <p class="watch-hero-eyebrow">Curated Content</p>
+    <h1 class="watch-hero-title">Watch &amp; Learn</h1>
+    <p class="watch-hero-sub">Recommended YouTube channels tackling Islamic claims, apologetics, scholarly critique, and live debates.</p>
+  </div>
+
+  <!-- Channels -->
+  <div class="watch-section">
+    <div class="watch-section-header">
+      <span class="watch-section-label">Channels</span>
+      <span class="watch-section-count">6 channels</span>
+    </div>
+    <div class="watch-channel-grid">
+
+      <button class="watch-channel-card" onclick="showChannel('apologetics-roadshow')">
+        <div class="watch-channel-avatar">
+          <img src="https://yt3.googleusercontent.com/j_M5sYeCPmq365u80wODYWhSMDaUkA312Tk6YQwHU8gzy1mxZx-Op2Zk-6ElSMeo3EhT2-ig4w=s160-c-k-c0x00ffffff-no-rj" alt="Apologetics Roadshow">
+        </div>
+        <div class="watch-channel-info">
+          <p class="watch-channel-name">Apologetics Roadshow</p>
+          <p class="watch-channel-desc">Christian apologetics engaging Islamic claims and theology</p>
+        </div>
+        <span class="watch-channel-arrow">→</span>
+      </button>
+
+      <button class="watch-channel-card" onclick="showChannel('apostate-prophet')">
+        <div class="watch-channel-avatar">
+          <img src="https://yt3.googleusercontent.com/CZBxdqCOAKwMLkmIFYZ5b03EMXp11GuI6izqled-kHcS1mc3TMAsHrAUDBEotOtiB0Nhz_T0=s160-c-k-c0x00ffffff-no-rj" alt="Apostate Prophet">
+        </div>
+        <div class="watch-channel-info">
+          <p class="watch-channel-name">Apostate Prophet</p>
+          <p class="watch-channel-desc">Concise, critical, often satirical videos on Islam and its texts</p>
+        </div>
+        <span class="watch-channel-arrow">→</span>
+      </button>
+
+      <button class="watch-channel-card" onclick="showChannel('godlogic-apologetics')">
+        <div class="watch-channel-avatar">
+          <img src="https://yt3.googleusercontent.com/RW7ys_686G5Fsu-QGUAF38WUrvJ2lZ1HtZGQsqaYeCkg5TZAXvcnU26JXJbDW3fjNp-QLP9qbFE=s160-c-k-c0x00ffffff-no-rj" alt="GodLogic Apologetics">
+        </div>
+        <div class="watch-channel-info">
+          <p class="watch-channel-name">GodLogic Apologetics</p>
+          <p class="watch-channel-desc">Debates and discussions on Islamic and Christian truth claims</p>
+        </div>
+        <span class="watch-channel-arrow">→</span>
+      </button>
+
+      <button class="watch-channel-card" onclick="showChannel('inspiring-philosophy')">
+        <div class="watch-channel-avatar">
+          <img src="https://yt3.googleusercontent.com/PbJXbRMCaB5wq-PCYIo2F1DQGtC1N2D6x8-aSKby3kDEn7-h-SyoqVgq8GgNWPLg_c8olTsSyw=s160-c-k-c0x00ffffff-no-rj" alt="InspiringPhilosophy">
+        </div>
+        <div class="watch-channel-info">
+          <p class="watch-channel-name">InspiringPhilosophy</p>
+          <p class="watch-channel-desc">Philosophy, theology, and the intersection of faith and reason</p>
+        </div>
+        <span class="watch-channel-arrow">→</span>
+      </button>
+
+      <button class="watch-channel-card" onclick="showChannel('islam-critiqued')">
+        <div class="watch-channel-avatar">
+          <img src="https://yt3.googleusercontent.com/ytc/AIdro_ki3p-Lwn0Dn9I4DE1C8yPzhUPv5CgTA1mFfA0E_EAITs8=s160-c-k-c0x00ffffff-no-rj" alt="Islam Critiqued">
+        </div>
+        <div class="watch-channel-info">
+          <p class="watch-channel-name">Islam Critiqued</p>
+          <p class="watch-channel-desc">A Christian studying Sunni Islam and critiquing it in depth</p>
+        </div>
+        <span class="watch-channel-arrow">→</span>
+      </button>
+
+      <button class="watch-channel-card" onclick="showChannel('testify')">
+        <div class="watch-channel-avatar">
+          <img src="https://yt3.googleusercontent.com/VQcWHewWwG5bFsNZA8KwYOtxVAWbMbMrSOC1NMOaQ2E-d_f1gNEcFJM2q1tRE_eSv3PxzyLk=s160-c-k-c0x00ffffff-no-rj" alt="Testify">
+        </div>
+        <div class="watch-channel-info">
+          <p class="watch-channel-name">Testify</p>
+          <p class="watch-channel-desc">Reasons to trust the New Testament; engaging Islamic objections</p>
+        </div>
+        <span class="watch-channel-arrow">→</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Debates -->
+  <div class="watch-section">
+    <div class="watch-section-header">
+      <span class="watch-section-label">Debates</span>
+      <span class="watch-section-count">Featured</span>
+    </div>
+    <div class="watch-video-grid">
+
+      <div class="watch-video-card">
+        <div class="watch-video-thumb">
+          <div class="watch-thumb-placeholder"><div class="watch-play-icon">▶</div></div>
+        </div>
+        <div class="watch-video-info">
+          <p class="watch-video-title">Is Muhammad a True Prophet? A Formal Debate</p>
+          <p class="watch-video-meta">GodLogic Apologetics · Debate</p>
+        </div>
+      </div>
+
+      <div class="watch-video-card">
+        <div class="watch-video-thumb">
+          <div class="watch-thumb-placeholder"><div class="watch-play-icon">▶</div></div>
+        </div>
+        <div class="watch-video-info">
+          <p class="watch-video-title">Quran or Bible: Which Is the Word of God?</p>
+          <p class="watch-video-meta">Apologetics Roadshow · Debate</p>
+        </div>
+      </div>
+
+      <div class="watch-video-card">
+        <div class="watch-video-thumb">
+          <div class="watch-thumb-placeholder"><div class="watch-play-icon">▶</div></div>
+        </div>
+        <div class="watch-video-info">
+          <p class="watch-video-title">Is Islam True? A Two-Hour Formal Exchange</p>
+          <p class="watch-video-meta">Apostate Prophet · Debate</p>
+        </div>
+      </div>
+
+      <div class="watch-video-card">
+        <div class="watch-video-thumb">
+          <div class="watch-thumb-placeholder"><div class="watch-play-icon">▶</div></div>
+        </div>
+        <div class="watch-video-info">
+          <p class="watch-video-title">The Trinity vs. Tawhid — A Philosophical Exchange</p>
+          <p class="watch-video-meta">InspiringPhilosophy · Debate</p>
+        </div>
+      </div>
+
+      <div class="watch-video-card">
+        <div class="watch-video-thumb">
+          <div class="watch-thumb-placeholder"><div class="watch-play-icon">▶</div></div>
+        </div>
+        <div class="watch-video-info">
+          <p class="watch-video-title">Is the Bible Corrupted? What the Manuscripts Show</p>
+          <p class="watch-video-meta">Testify · Debate</p>
+        </div>
+      </div>
+
+      <div class="watch-video-card">
+        <div class="watch-video-thumb">
+          <div class="watch-thumb-placeholder"><div class="watch-play-icon">▶</div></div>
+        </div>
+        <div class="watch-video-info">
+          <p class="watch-video-title">The Preservation of the Quran — A Critical Debate</p>
+          <p class="watch-video-meta">Islam Critiqued · Debate</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /page-landing -->
+
+
+<!-- ═══════════════════════════════════════════════════
+     CHANNEL DETAIL PAGE
+════════════════════════════════════════════════════ -->
+<div id="page-channel">
+
+  <div class="watch-back-bar">
+    <button class="watch-back-btn" onclick="showLanding()">← Back to Watch</button>
+  </div>
+
+  <div class="watch-channel-header">
+    <div class="watch-channel-header-avatar" id="ch-avatar">
+      <img id="ch-avatar-img" src="" alt="">
+    </div>
+    <div>
+      <h2 class="watch-channel-header-name" id="ch-name">Channel Name</h2>
+      <p class="watch-channel-header-desc" id="ch-desc">Channel description</p>
+    </div>
+  </div>
+
+  <div class="watch-section">
+    <div class="watch-filter-bar">
+      <button class="watch-filter-btn is-active">All</button>
+      <button class="watch-filter-btn">Featured</button>
+    </div>
+    <div class="watch-video-grid" id="ch-videos"></div>
+  </div>
+
+</div><!-- /page-channel -->
+
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+
+<script>
+const CHANNELS = {
+  'apologetics-roadshow': {
+    name: 'Apologetics Roadshow',
+    avatar: 'https://yt3.googleusercontent.com/j_M5sYeCPmq365u80wODYWhSMDaUkA312Tk6YQwHU8gzy1mxZx-Op2Zk-6ElSMeo3EhT2-ig4w=s160-c-k-c0x00ffffff-no-rj',
+    desc: 'Christian apologetics engaging Islamic claims and theology',
+    videos: [
+      { title: 'The Historical Problems with Islamic Origins',    meta: '126K views' },
+      { title: 'Does the Quran Contradict Itself?',              meta: '89K views'  },
+      { title: 'Muhammad and the Bible: What Does It Really Say?', meta: '74K views' },
+      { title: 'Why I Left Islam — A Conversation',              meta: '215K views' },
+      { title: 'The Problem of Abrogation in the Quran',         meta: '58K views'  },
+      { title: 'Is Allah the God of the Bible?',                 meta: '112K views' },
+    ]
+  },
+  'apostate-prophet': {
+    name: 'Apostate Prophet',
+    avatar: 'https://yt3.googleusercontent.com/CZBxdqCOAKwMLkmIFYZ5b03EMXp11GuI6izqled-kHcS1mc3TMAsHrAUDBEotOtiB0Nhz_T0=s160-c-k-c0x00ffffff-no-rj',
+    desc: 'Concise, critical, often satirical videos on Islam and its texts',
+    videos: [
+      { title: 'The Most Embarrassing Verse in the Quran',       meta: '1.2M views' },
+      { title: "Muhammad's Disturbing Marriage to Aisha",        meta: '2.4M views' },
+      { title: 'Islamic Paradise — What Does the Quran Say?',    meta: '980K views' },
+      { title: 'Why Islam Cannot Be Reformed',                   meta: '760K views' },
+      { title: "The Satanic Verses: Islam's Biggest Cover-Up",   meta: '1.1M views' },
+      { title: "Allah vs. the Bible's God: Key Differences",     meta: '640K views' },
+    ]
+  },
+  'godlogic-apologetics': {
+    name: 'GodLogic Apologetics',
+    avatar: 'https://yt3.googleusercontent.com/RW7ys_686G5Fsu-QGUAF38WUrvJ2lZ1HtZGQsqaYeCkg5TZAXvcnU26JXJbDW3fjNp-QLP9qbFE=s160-c-k-c0x00ffffff-no-rj',
+    desc: 'Debates and discussions on Islamic and Christian truth claims',
+    videos: [
+      { title: 'Is Islam True? Full 2-Hour Debate',              meta: '340K views' },
+      { title: 'The Logic Problem with Islamic Theology',        meta: '180K views' },
+      { title: 'Does the Quran Preserve the Gospel?',            meta: '95K views'  },
+      { title: 'Top 5 Islamic Arguments Refuted',                meta: '420K views' },
+      { title: 'The Trinity vs. Tawhid — Philosophical Analysis', meta: '210K views' },
+      { title: 'Why Muslim Apologists Get the Bible Wrong',      meta: '155K views' },
+    ]
+  },
+  'inspiring-philosophy': {
+    name: 'InspiringPhilosophy',
+    avatar: 'https://yt3.googleusercontent.com/PbJXbRMCaB5wq-PCYIo2F1DQGtC1N2D6x8-aSKby3kDEn7-h-SyoqVgq8GgNWPLg_c8olTsSyw=s160-c-k-c0x00ffffff-no-rj',
+    desc: 'Philosophy, theology, and the intersection of faith and reason',
+    videos: [
+      { title: 'The Cosmological Argument vs. Islamic Theology',  meta: '510K views' },
+      { title: 'Does Science Disprove God?',                      meta: '1.4M views' },
+      { title: 'The Problem of Evil and Islamic Theodicy',        meta: '380K views' },
+      { title: 'Is the Quran a Miracle? Testing the Claim',       meta: '290K views' },
+      { title: 'Near-Death Experiences and the Afterlife',        meta: '820K views' },
+      { title: 'Consciousness, Free Will, and Islam',             meta: '240K views' },
+    ]
+  },
+  'islam-critiqued': {
+    name: 'Islam Critiqued',
+    avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_ki3p-Lwn0Dn9I4DE1C8yPzhUPv5CgTA1mFfA0E_EAITs8=s160-c-k-c0x00ffffff-no-rj',
+    desc: "A Christian studying Sunni Islam and critiquing it in depth",
+    videos: [
+      { title: 'The Hadith Compilation Problem',                  meta: '74K views'  },
+      { title: 'Was Muhammad Illiterate? The Evidence Says No',   meta: '120K views' },
+      { title: "Sunni Islam's Theological Contradictions",        meta: '88K views'  },
+      { title: 'The Preservation of the Quran — A Critical Review', meta: '210K views' },
+      { title: 'Jizya and Non-Muslims in Islamic Law',            meta: '96K views'  },
+      { title: "Islam's View of Jesus vs. the Gospels",           meta: '145K views' },
+    ]
+  },
+  'testify': {
+    name: 'Testify',
+    avatar: 'https://yt3.googleusercontent.com/VQcWHewWwG5bFsNZA8KwYOtxVAWbMbMrSOC1NMOaQ2E-d_f1gNEcFJM2q1tRE_eSv3PxzyLk=s160-c-k-c0x00ffffff-no-rj',
+    desc: 'Reasons to trust the New Testament; engaging Islamic objections',
+    videos: [
+      { title: 'Did Paul Corrupt Christianity? An Islamic Claim Examined', meta: '45K views' },
+      { title: 'The Reliability of the New Testament Manuscripts',         meta: '78K views' },
+      { title: 'How the Quran Gets Jesus Wrong',                           meta: '55K views' },
+      { title: 'The Resurrection: Response to Muslim Objections',          meta: '93K views' },
+      { title: 'Is the Bible Corrupted? What the Evidence Shows',          meta: '112K views' },
+      { title: 'Early Church Fathers vs. Islamic Claims',                  meta: '38K views' },
+    ]
+  }
+};
+
+function showChannel(id) {
+  const ch = CHANNELS[id];
+  if (!ch) return;
+
+  document.getElementById('ch-avatar-img').src         = ch.avatar;
+  document.getElementById('ch-avatar-img').alt         = ch.name;
+  document.getElementById('ch-name').textContent      = ch.name;
+  document.getElementById('ch-desc').textContent      = ch.desc;
+
+  document.getElementById('ch-videos').innerHTML = ch.videos.map(v => `
+    <div class="watch-video-card">
+      <div class="watch-video-thumb">
+        <div class="watch-thumb-placeholder"><div class="watch-play-icon">▶</div></div>
+      </div>
+      <div class="watch-video-info">
+        <p class="watch-video-title">${v.title}</p>
+        <p class="watch-video-meta">${ch.name} · ${v.meta}</p>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('page-landing').style.display = 'none';
+  document.getElementById('page-channel').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function showLanding() {
+  document.getElementById('page-landing').style.display = 'block';
+  document.getElementById('page-channel').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll('.watch-filter-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    this.closest('.watch-filter-bar')
+        .querySelectorAll('.watch-filter-btn')
+        .forEach(b => b.classList.remove('is-active'));
+    this.classList.add('is-active');
+  });
+});
+</script>
+
+</body>
+</html>
