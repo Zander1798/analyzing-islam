@@ -260,7 +260,7 @@
           ? '<dt>Part of speech</dt><dd>' + escapeHtml(expandPos(entry.pos) || entry.pos) + '</dd>'
           : '') +
         (entry.gloss
-          ? '<dt>Gloss</dt><dd>' + escapeHtml(entry.gloss) + '</dd>'
+          ? '<dt>Common meaning</dt><dd>' + escapeHtml(entry.gloss) + '</dd>'
           : '') +
         (defn
           ? '<dt>Definition</dt><dd class="panel-definition">' + escapeHtml(defn) + '</dd>'
@@ -339,10 +339,10 @@
         const surahLabel = si ? si.name : ("Surah " + s);
         const isCurrent = s === CURRENT_SURAH;
         const surahFile = "surah-" + String(s).padStart(3, "0") + ".html";
-        const anchor    = "#s" + s + "v" + v;
+        const anchor    = "#s" + s + "v" + v + "w" + w;
         const href = isCurrent ? anchor : (surahFile + anchor);
         html += '<li><a href="' + href + '" ' +
-                'data-target="s' + s + 'v' + v + '" ' +
+                'data-target="s' + s + 'v' + v + 'w' + w + '" ' +
                 'data-root="' + escapeHtml(root) + '">' +
                 '<span>' + escapeHtml(surahLabel) + ' ' + s + ':' + v + '</span>' +
                 '<span class="concordance-ref">' + s + ':' + v + '</span>' +
@@ -362,10 +362,10 @@
           if (same) {
             setTimeout(() => {
               document.querySelectorAll(".w.is-highlight").forEach((el) => el.classList.remove("is-highlight"));
-              const vs = document.getElementById(tgt);
-              if (!vs) return;
-              const r = a.getAttribute("data-root");
-              vs.querySelectorAll('.w[data-root="' + r + '"]').forEach((w) => w.classList.add("is-highlight"));
+              const wordEl = document.getElementById(tgt);
+              if (!wordEl) return;
+              wordEl.classList.add("is-highlight");
+              wordEl.scrollIntoView({ behavior: "smooth", block: "center" });
             }, 50);
           }
         });

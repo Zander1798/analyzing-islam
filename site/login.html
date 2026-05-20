@@ -101,7 +101,15 @@
       submit.textContent = "Signing in…";
       msg.style.display = "none";
 
-      const { error } = await window.AI_AUTH.signIn(email.value.trim(), password.value);
+      let { error } = await window.AI_AUTH.signIn(email.value.trim(), password.value);
+
+      // "Failed to fetch" is a network-level error — most often a Supabase
+      // cold-start where the first request times out before the instance wakes.
+      // Retry once automatically so the user never sees it.
+      if (error && /failed to fetch/i.test(error.message || "")) {
+        await new Promise((r) => setTimeout(r, 800));
+        ({ error } = await window.AI_AUTH.signIn(email.value.trim(), password.value));
+      }
 
       if (error) {
         submit.disabled = false;
