@@ -143,14 +143,12 @@
 .watch-video-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1px;
-  border: 1px solid var(--border);
+  gap: 1rem;
 }
 .watch-video-card {
   cursor: pointer;
   background: var(--bg);
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  border: 1px solid var(--border);
   transition: background 0.12s;
 }
 .watch-video-card:hover { background: var(--panel-2); }
@@ -333,6 +331,28 @@
   display: block;
 }
 
+/* ─── Load more ─────────────────────────────────────── */
+.watch-load-more {
+  padding: 1.5rem 0 0;
+  text-align: center;
+}
+.watch-load-more-btn {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 0.75rem 2.5rem;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: color 0.12s, border-color 0.12s;
+}
+.watch-load-more-btn:hover {
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+
 /* ─── Page visibility ───────────────────────────────── */
 #watch-landing { display: block; }
 #watch-channel { display: none; }
@@ -453,6 +473,9 @@
       <span class="watch-section-count">Featured</span>
     </div>
     <div class="watch-video-grid" id="debates-grid"></div>
+    <div class="watch-load-more" id="debates-load-more" style="display:none;">
+      <button class="watch-load-more-btn" onclick="loadMoreDebates()">Load more</button>
+    </div>
   </div>
 
 </div><!-- /watch-landing -->
@@ -483,6 +506,9 @@
       <button class="watch-filter-btn" data-filter="featured">Featured</button>
     </div>
     <div class="watch-video-grid" id="ch-videos"></div>
+    <div class="watch-load-more" id="ch-load-more" style="display:none;">
+      <button class="watch-load-more-btn" onclick="loadMoreChannel()">Load more</button>
+    </div>
   </div>
 
 </div><!-- /watch-channel -->
@@ -525,7 +551,19 @@ const WATCH_DATA = {
         { id: '8i8TQA50hps', title: 'What Are the "Best" Arguments for Islam? with David Wood' },
         { id: 'ZMs0PDA_sWo', title: 'Islam Is Collapsing!' },
         { id: 'f2S27Rttxqo', title: 'Mohammed Hijab Buried on the Logical Problem of the Quran' },
-        { id: 'Ug_r32RbelQ', title: 'Is the West Too Weak to Deal with Radical Islam?' }
+        { id: 'Ug_r32RbelQ', title: 'Is the West Too Weak to Deal with Radical Islam?' },
+        { id: '7OOj6WsTznw', title: 'Top Muslim Scholar BLASTS David Wood\'s Favourite Argument!' },
+        { id: 'fBq_H2RloFQ', title: 'Transforming the Church to Defeat Jihad' },
+        { id: 'p2Unkuiv-Ls', title: 'A Tsunami of New Evidence Against Muhammad & the Quran — Jay Smith' },
+        { id: 'X-uDOUGEk4A', title: 'Muslim Tries to Whitewash Muhammad After Wes Huff Calls Him a Warlord!' },
+        { id: '5esIZXErVhk', title: 'The Truth of Jihad in Islam — The West Keeps Ignoring It!' },
+        { id: 'xVmRCwBFSew', title: 'The New Dilemma That DEBUNKS Islam — It\'s Better Than You Think!' },
+        { id: 'YcHqIp6WFbM', title: 'The Talmudic Dilemma DEBUNKS Islam — Muslims Can\'t Respond!' },
+        { id: 'p2y28sp7fqg', title: 'This Muslim CRIES BLUNDER Then Gets HUMILIATED By His OWN CLAIMS!' },
+        { id: 'rbqLsvMY38c', title: 'David Wood Wants To Change Apologetics: The Islamic Dilemma' },
+        { id: 'vMdR8eyOA_Q', title: 'This Mockery During a Muslim-Christian Debate Will Make You Rethink the Origins of Islam' },
+        { id: 'fgAVZ1rHIDI', title: 'PROVING Muhammad WAS DEMON POSSESSED For 4 HOURS STRAIGHT...(LIVE DEBATES)' },
+        { id: '07ytgv2ZRXM', title: '"The Quran is FALSE" | Wes & Avery COOK Islam' }
       ]
     },
     'apostate-prophet': {
@@ -538,7 +576,19 @@ const WATCH_DATA = {
         { id: 'WYMDQHTtEuo', title: 'Why Islam Is False — Heated Debate — Muhammad vs. Apostate Prophet' },
         { id: 'eQNX6AuzEDo', title: 'Why I Left Islam and Became a Christian' },
         { id: 'nWO0TUFPpVA', title: 'Full Debate — Is Islam Dangerous? — MENJ vs Apostate Prophet' },
-        { id: 'jsyNIvU2n1w', title: 'The Truth About Islam from an Ex-Muslim' }
+        { id: 'jsyNIvU2n1w', title: 'The Truth About Islam from an Ex-Muslim' },
+        { id: 'xJNTnA2UvWw', title: 'The Truth About Islam: Violence and Conquest' },
+        { id: 'F7jsAoxUQzw', title: 'Woke Useful Idiots HELPED Islamists Take Power' },
+        { id: 'YHgw0t8iBOY', title: 'Islam, Ghazwa-e-Hind & The Future Of Islam' },
+        { id: '7yxCMye9sSU', title: 'War and Violence Are Central to Islam' },
+        { id: 'TlEaXFFDDio', title: 'THIS is How Muslims Treat Women' },
+        { id: 'lk64TLCd12k', title: 'Muslim "Expert" SHOCKED When Apostate Prophet Quotes Quran Verses Exposing Him' },
+        { id: 'iBiKYAHWbZw', title: 'How Mohammed Hijab RAN From the Debate HE Initiated with Apostate Prophet' },
+        { id: 'PH89kew15bI', title: 'Muslim Imam Sits in SHAME as Apostate Prophet Reads Quran Quotes To His Face!' },
+        { id: 'qg4GjgGd8dE', title: 'Islam Will Conquer The World By Any Means Necessary' },
+        { id: 'Jj4G3H7WXsY', title: 'DEBATE: "IS ISLAM TRUE" — ApostateProphet vs Deen Responds' },
+        { id: 'QsAqrQBkbLA', title: 'FULL DEBATE: Is Islam True? — Apostate Prophet vs. Finding Truth' },
+        { id: 'rvgfNg5WHFc', title: 'DEBATE: Islam or Christianity, Which Is True? — Apostate Prophet vs Jake Brancatella' }
       ]
     },
     'godlogic-apologetics': {
@@ -551,7 +601,19 @@ const WATCH_DATA = {
         { id: 'UjRS5ZaDWOM', title: 'GodLogic Destroys Muslim on the Islamic Dilemma' },
         { id: 'gw1rLy-yLbo', title: 'The Lie You\'ve Been Sold About Islam' },
         { id: '7kR_vusz7-Y', title: 'Epic Debate: GodLogic vs Dr. Abdul Majid — Islam vs. Christianity' },
-        { id: 'WhXshEWVE54', title: 'Is Jesus a Muslim? — Ali Dawah vs GodLogic Full Debate' }
+        { id: 'WhXshEWVE54', title: 'Is Jesus a Muslim? — Ali Dawah vs GodLogic Full Debate' },
+        { id: '1IeSSkEuRYs', title: 'GodLogic Destroys Islam in Viral Debate!' },
+        { id: '4okKfx0qF6Y', title: 'DEBATE: GodLogicApologetics vs MuslimSkeptic — The Islamic Dilemma on Trial' },
+        { id: 'RgrXKJmw9NA', title: 'HILARIOUS Debate Between GodLogic Apologetics and an OLD MUSLIM Man!' },
+        { id: 'AJ6FVhOW0qg', title: 'GodLogic CONFRONTS Muslim Debater While Other Muslims PANIC!' },
+        { id: 'o9e5cILf2u0', title: 'Mohammed Hijab or Any Muslim, Come Debate the Islamic Dilemma' },
+        { id: 't3wrhq35W2o', title: 'Muslims Still Can\'t Defeat the Islamic Dilemma (feat. Shamoun and GodLogic)' },
+        { id: '2dgYOCW1GZQ', title: 'Cocky Muslim HUMBLED by Christian in Islamic Dilemma Debate' },
+        { id: 'p_RQbesnapI', title: 'The Islamic Dilemma — GodLogic vs Daniel Haqiqatjou [Full Debate]' },
+        { id: 'A1zfLkB4Fgk', title: 'I CHALLENGED 2 Billion Muslims On THESE Topics...(LIVE DEBATES)' },
+        { id: 'QrCqPbaRrjo', title: 'Christian Shows Muslim ONE VERSE That ENDS Islam' },
+        { id: 'u93N61gJSb0', title: 'Why Islam is False and Christianity is True' },
+        { id: 'vyYYTRdZwag', title: 'GodLogic Shows Muslims the Quran Affirms the Bible!' }
       ]
     },
     'inspiring-philosophy': {
@@ -561,10 +623,21 @@ const WATCH_DATA = {
       videos: [
         { id: 'aacs0_E7Qdw', title: 'Are the Gospels Historically Reliable? (Full Series)' },
         { id: 'CL9JXi6rYAc', title: 'Are the Gospels Reliable?' },
-        { id: 'yLB9g3m-lTw', title: 'Debate: Does God Exist? — Mike Jones vs Dr. Richard Carrier' },
         { id: 'ra-wrc82Ngc', title: 'Debate: Which Is Best for Society — Christianity or Islam?' },
         { id: 'rpjPBM_laPY', title: 'Michael Jones vs MuslimOrthodoxy: Is Muhammad in the Bible?' },
-        { id: 'F4Kri5bSIzU', title: 'Debate: Does God Exist? — InspiringPhilosophy vs Dr. Richard Carrier' }
+        { id: 'F4Kri5bSIzU', title: 'Debate: Does God Exist? — InspiringPhilosophy vs Dr. Richard Carrier' },
+        { id: 'u_caZZq5Oo4', title: 'DEBATE: InspiringPhilosophy vs True Islam UK — Did Jesus Die by Crucifixion?' },
+        { id: 'nqTj58ipBAE', title: 'Muslims FAIL TO DEBUNK The Crucifixion...' },
+        { id: '0nb8fsWEd8E', title: 'Is Muhammad in the Bible? Debate Review' },
+        { id: 'TXd6O3OLWdQ', title: 'Islam\'s BEST DEBATER Thought HE COOKED InspiringPhilosophy WITH THIS?' },
+        { id: 'P7vDam-C40A', title: 'MUSLIMS Come Show MUHAMMAD In The BIBLE — GodLogic & InspiringPhilosophy LIVE IN STUDIO!' },
+        { id: 'X9PDLiETlMo', title: 'Mohammed Hijab HAS NO EVIDENCE FOR ISLAM...' },
+        { id: '6k9rfI4YYT4', title: 'Examining Libyano\'s BEST Argument for Islam' },
+        { id: 'vKyMn7A7m0c', title: 'DEBATE: Is Muhammad in the Bible? — Orthodox Muslim vs Inspiring Philosophy' },
+        { id: 'wdQktYu4UkQ', title: 'Is Muhammad in the Bible? IP vs Orthodox Muslim — CALL IN STREAM' },
+        { id: 'jHY5QzXFt6Q', title: 'Answering Secularism and Islam' },
+        { id: 'I_C2MSAhCO0', title: 'Muhammad in Song of Solomon 5:16? (Understanding the Bible)' },
+        { id: 'nOL3FO3SUMk', title: 'Why Islam\'s Denial of Jesus\' Crucifixion Doesn\'t Fly' }
       ]
     },
     'islam-critiqued': {
@@ -577,7 +650,19 @@ const WATCH_DATA = {
         { id: '8Ws8AafZq5s', title: 'Islam Critiqued Smashes the Myth of Perfect Quran Preservation' },
         { id: 'THwL8l1SQHM', title: 'Ali Dawah Defends the Trinity!!!' },
         { id: 'amRo3a4cVRc', title: 'Islam Is a Cult of Idolatry' },
-        { id: 'coiyrAJTbUY', title: 'The Quran: A Literary Miracle?' }
+        { id: 'coiyrAJTbUY', title: 'The Quran: A Literary Miracle?' },
+        { id: 'NH_33t56nGk', title: 'Quran FAIL: How Islam\'s Holy Book DISPROVES Itself' },
+        { id: 'mB_K1kkyDHw', title: 'Muslim Apologists and Their Lies' },
+        { id: 'j4wSUY40GSI', title: 'How the Quran Turns Jews Into Monkeys' },
+        { id: 'gmbn6onuN3c', title: 'Muhammad in Song of Solomon?' },
+        { id: 'q7uOczN5xbw', title: 'Surah 9:29 in Context' },
+        { id: 'GNQ6qbftidc', title: 'The Illiteracy of Muhammad' },
+        { id: 'PYO6vvVaBOg', title: 'Is the Bible Corrupted? — Second Response (Topkapi Manuscript)' },
+        { id: 'FM1MlSsUaYE', title: 'Muslims\' Worst Anti-Christian Polemics: Corruption of the New Testament' },
+        { id: 'Ok5igqIyhrI', title: 'Allah\'s Forgiveness, Muhammad\'s Uncertainty and the Harshness of Islamic Law' },
+        { id: 'wkiT1cqQAWg', title: 'A Critique of Shabir Ally\'s "Markian" Theory — Forgiveness of Sin' },
+        { id: 'Y6MWAD1gW3o', title: 'Islam Answered — Genocide in the Old Testament' },
+        { id: '8YbI04WhH8I', title: 'Biblical Insights: The Divine Cloud Rider' }
       ]
     },
     'testify': {
@@ -590,7 +675,19 @@ const WATCH_DATA = {
         { id: 'BC_r7J74FlI', title: 'The Resurrection: Skeptics\' Best Arguments Answered' },
         { id: 'qa6RT6MFzzA', title: 'The Crucifixion Dilemma That Destroys Islam' },
         { id: 'ugJyNb6BeYk', title: 'Why This Popular Muslim Attack on Christianity Backfires' },
-        { id: 'vxuqSg4f7yY', title: 'Is There Any Hard Evidence That Jesus Actually Existed?' }
+        { id: 'vxuqSg4f7yY', title: 'Is There Any Hard Evidence That Jesus Actually Existed?' },
+        { id: 'P-oK3iB4gHc', title: 'The Crucifixion Dilemma that STILL DESTROYS Islam: Muslims Call In!' },
+        { id: 'bkM5ZOB85B8', title: 'Live with Testify Apologetics on Islam!' },
+        { id: 'vyTios0Q_qg', title: 'GodLogic and Testify CHALLENGE Muslims and LDS Live!' },
+        { id: 'w5p4jplRyc0', title: 'Did This Muslim Really Solve the Islamic Dilemma?' },
+        { id: 'x3ZChIyFICI', title: '3 Odd Quran Verses that Disprove Islam (A New Islamic Dilemma)' },
+        { id: 'AxjO9seGZ10', title: 'Scholar Disproves Islam In 20 Minutes (Only Verified FACTS!)' },
+        { id: 'v414hAvRWso', title: 'Who\'s Right About Jesus\'s Crucifixion: Islam or Everyone Else?' },
+        { id: 'QDVc-MBdQl8', title: 'How to Refute Islam in Less than Ten Minutes: The Crucifixion Dilemma' },
+        { id: 'MhlbWSwrufI', title: 'CONVERT US TO ISLAM! (LIVE DEBATES)' },
+        { id: 'KrABgmjTTKc', title: 'Almost 3 Hours Of MUSLIMS HATING ALLAH AND MUHAMMAD...(LIVE DEBATES)' },
+        { id: 'Wht_KkQxCsA', title: 'How Does The Resurrection Disprove Islam & The Quran?' },
+        { id: 'nOL3FO3SUMk', title: 'Why Islam\'s Denial of Jesus\' Crucifixion Doesn\'t Fly' }
       ]
     }
   },
@@ -601,11 +698,24 @@ const WATCH_DATA = {
     { id: 'WhXshEWVE54', title: 'Is Jesus a Muslim? — Ali Dawah vs GodLogic Full Debate', meta: 'GodLogic Apologetics · Debate' },
     { id: 'nEHXD_n4_-8', title: 'James White vs Shabir Ally — The Trinity Debate', meta: 'Formal Debate · Christianity vs Islam' },
     { id: 'hcfSUH74u5o', title: 'Is Islam the One True Religion? — Apostate Prophet vs Jvnior', meta: 'Apostate Prophet · Debate' },
-    { id: 'yLB9g3m-lTw', title: 'Does God Exist? — Mike Jones (InspiringPhilosophy) vs Dr. Richard Carrier', meta: 'InspiringPhilosophy · Debate' }
+    { id: 'Jj4G3H7WXsY', title: 'Is Islam True? — ApostateProphet vs Deen Responds', meta: 'Apostate Prophet · Debate' },
+    { id: 'QsAqrQBkbLA', title: 'Is Islam True? — Apostate Prophet vs. Finding Truth', meta: 'Apostate Prophet · Debate' },
+    { id: 'rvgfNg5WHFc', title: 'Islam or Christianity, Which Is True? — Apostate Prophet vs Jake Brancatella', meta: 'Apostate Prophet · Debate' },
+    { id: 'u_caZZq5Oo4', title: 'Did Jesus Die by Crucifixion? — InspiringPhilosophy vs True Islam UK', meta: 'InspiringPhilosophy · Debate' },
+    { id: 'vKyMn7A7m0c', title: 'Is Muhammad in the Bible? — Orthodox Muslim vs Inspiring Philosophy', meta: 'InspiringPhilosophy · Debate' },
+    { id: '4okKfx0qF6Y', title: 'The Islamic Dilemma on Trial — GodLogicApologetics vs MuslimSkeptic', meta: 'GodLogic Apologetics · Debate' },
+    { id: 'p_RQbesnapI', title: 'The Islamic Dilemma — GodLogic vs Daniel Haqiqatjou', meta: 'GodLogic Apologetics · Debate' },
+    { id: '1IeSSkEuRYs', title: 'GodLogic Destroys Islam in Viral Debate!', meta: 'GodLogic Apologetics · Debate' },
+    { id: '9LTVUquDv64', title: 'Islam vs Christianity — Muslim Lantern vs Jay Dyer', meta: 'Formal Debate · Christianity vs Islam' },
+    { id: 'gdtE0hRMW28', title: 'Has The Qur\'an Eternally Existed? — Yusuf Ismail vs James White', meta: 'Formal Debate · Christianity vs Islam' },
+    { id: 'NKeMsW2b71U', title: 'Tawhid or Trinity? — James White vs Shabir Ally', meta: 'Formal Debate · Christianity vs Islam' },
+    { id: 'az9cTAsg_CU', title: 'Christology in John\'s Gospel and The Quran — James White vs Yusuf Ismail', meta: 'Formal Debate · Christianity vs Islam' }
   ]
 };
 
 /* ── Helpers ── */
+var PAGE_SIZE = 6;
+
 function thumbUrl(id) {
   return 'https://img.youtube.com/vi/' + id + '/hqdefault.jpg';
 }
@@ -624,36 +734,62 @@ function videoCardHtml(v, channelName) {
   '</div>';
 }
 
-/* ── Render debates on load ── */
-(function renderDebates() {
-  var grid = document.getElementById('debates-grid');
-  grid.innerHTML = WATCH_DATA.debates.map(function(v) {
-    return videoCardHtml(v, null);
-  }).join('');
-})();
+function setLoadMore(btnId, visible) {
+  document.getElementById(btnId).style.display = visible ? 'block' : 'none';
+}
+
+/* ── Debates ── */
+var debatesShown = 0;
+
+function renderDebates(reset) {
+  if (reset) debatesShown = 0;
+  var grid   = document.getElementById('debates-grid');
+  var list   = WATCH_DATA.debates;
+  var batch  = list.slice(debatesShown, debatesShown + PAGE_SIZE);
+  debatesShown += batch.length;
+  var html   = batch.map(function(v) { return videoCardHtml(v, null); }).join('');
+  if (reset) { grid.innerHTML = html; } else { grid.insertAdjacentHTML('beforeend', html); }
+  setLoadMore('debates-load-more', debatesShown < list.length);
+}
+
+function loadMoreDebates() { renderDebates(false); }
+
+renderDebates(true);
 
 /* ── Channel detail ── */
+var currentChannelId = null;
+var chShown = 0;
+
 function openChannel(id) {
   var ch = WATCH_DATA.channels[id];
   if (!ch) return;
+  currentChannelId = id;
 
   document.getElementById('ch-avatar-img').src = ch.avatar;
   document.getElementById('ch-avatar-img').alt = ch.name;
   document.getElementById('ch-name').textContent = ch.name;
   document.getElementById('ch-desc').textContent = ch.desc;
 
-  renderChannelVideos(ch);
+  renderChannelVideos(ch, true);
 
   document.getElementById('watch-landing').style.display = 'none';
   document.getElementById('watch-channel').style.display = 'block';
   window.scrollTo(0, 0);
 }
 
-function renderChannelVideos(ch) {
-  var grid = document.getElementById('ch-videos');
-  grid.innerHTML = ch.videos.map(function(v) {
-    return videoCardHtml(v, ch.name);
-  }).join('');
+function renderChannelVideos(ch, reset) {
+  if (reset) chShown = 0;
+  var grid  = document.getElementById('ch-videos');
+  var batch = ch.videos.slice(chShown, chShown + PAGE_SIZE);
+  chShown  += batch.length;
+  var html  = batch.map(function(v) { return videoCardHtml(v, ch.name); }).join('');
+  if (reset) { grid.innerHTML = html; } else { grid.insertAdjacentHTML('beforeend', html); }
+  setLoadMore('ch-load-more', chShown < ch.videos.length);
+}
+
+function loadMoreChannel() {
+  var ch = WATCH_DATA.channels[currentChannelId];
+  if (ch) renderChannelVideos(ch, false);
 }
 
 function closeChannel() {
