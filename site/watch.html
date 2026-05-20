@@ -287,6 +287,11 @@
   color: var(--text-muted);
   margin: 0;
 }
+.watch-ch-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+.watch-ch-name-link:hover { color: var(--accent); }
 
 /* ─── Video modal ───────────────────────────────────── */
 .watch-modal-backdrop {
@@ -543,6 +548,7 @@ const WATCH_DATA = {
   channels: {
     'apologetics-roadshow': {
       name:   'Apologetics Roadshow',
+      url:    'https://www.youtube.com/@apologeticsroadshow',
       avatar: 'https://yt3.googleusercontent.com/j_M5sYeCPmq365u80wODYWhSMDaUkA312Tk6YQwHU8gzy1mxZx-Op2Zk-6ElSMeo3EhT2-ig4w=s160-c-k-c0x00ffffff-no-rj',
       desc:   'Christian apologetics engaging Islamic claims and theology',
       videos: [
@@ -568,6 +574,7 @@ const WATCH_DATA = {
     },
     'apostate-prophet': {
       name:   'Apostate Prophet',
+      url:    'https://www.youtube.com/@ApostateProphet',
       avatar: 'https://yt3.googleusercontent.com/CZBxdqCOAKwMLkmIFYZ5b03EMXp11GuI6izqled-kHcS1mc3TMAsHrAUDBEotOtiB0Nhz_T0=s160-c-k-c0x00ffffff-no-rj',
       desc:   'Concise, critical, often satirical videos on Islam and its texts',
       videos: [
@@ -593,6 +600,7 @@ const WATCH_DATA = {
     },
     'godlogic-apologetics': {
       name:   'GodLogic Apologetics',
+      url:    'https://www.youtube.com/@GodLogicApologetics',
       avatar: 'https://yt3.googleusercontent.com/RW7ys_686G5Fsu-QGUAF38WUrvJ2lZ1HtZGQsqaYeCkg5TZAXvcnU26JXJbDW3fjNp-QLP9qbFE=s160-c-k-c0x00ffffff-no-rj',
       desc:   'Debates and discussions on Islamic and Christian truth claims',
       videos: [
@@ -618,6 +626,7 @@ const WATCH_DATA = {
     },
     'inspiring-philosophy': {
       name:   'InspiringPhilosophy',
+      url:    'https://www.youtube.com/@InspiringPhilosophy',
       avatar: 'https://yt3.googleusercontent.com/PbJXbRMCaB5wq-PCYIo2F1DQGtC1N2D6x8-aSKby3kDEn7-h-SyoqVgq8GgNWPLg_c8olTsSyw=s160-c-k-c0x00ffffff-no-rj',
       desc:   'Philosophy, theology, and the intersection of faith and reason',
       videos: [
@@ -643,6 +652,7 @@ const WATCH_DATA = {
     },
     'islam-critiqued': {
       name:   'Islam Critiqued',
+      url:    'https://www.youtube.com/@IslamCritiqued',
       avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_ki3p-Lwn0Dn9I4DE1C8yPzhUPv5CgTA1mFfA0E_EAITs8=s160-c-k-c0x00ffffff-no-rj',
       desc:   'A Christian studying Sunni Islam and critiquing it in depth',
       videos: [
@@ -668,6 +678,7 @@ const WATCH_DATA = {
     },
     'testify': {
       name:   'Testify',
+      url:    'https://www.youtube.com/@TestifyApologetics',
       avatar: 'https://yt3.googleusercontent.com/VQcWHewWwG5bFsNZA8KwYOtxVAWbMbMrSOC1NMOaQ2E-d_f1gNEcFJM2q1tRE_eSv3PxzyLk=s160-c-k-c0x00ffffff-no-rj',
       desc:   'Reasons to trust the New Testament; engaging Islamic objections',
       videos: [
@@ -769,7 +780,7 @@ function openChannel(id) {
 
   document.getElementById('ch-avatar-img').src = ch.avatar;
   document.getElementById('ch-avatar-img').alt = ch.name;
-  document.getElementById('ch-name').textContent = ch.name;
+  document.getElementById('ch-name').innerHTML = '<a href="' + ch.url + '" target="_blank" rel="noopener" class="watch-ch-name-link">' + ch.name + '</a>';
   document.getElementById('ch-desc').textContent = ch.desc;
 
   renderChannelVideos(ch, true);
