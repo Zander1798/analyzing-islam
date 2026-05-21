@@ -83,6 +83,8 @@ CATEGORIES = [
      "Zaynab bint Jahsh (adopted son's wife), adult breastfeeding as a kinship workaround, the Salim ruling, milk-mother rules weaponized."),
     ("gross-vile",    "Gross / Vile",
      "Camel urine as medicine, dip the fly in your drink, dog-saliva seven washes, menstrual-sex rules, paradise-sweat-is-musk, bestiality, masturbation, anal-sex curses."),
+    ("animals",       "Animals",
+     "Dogs nullifying prayer, camel urine as medicine, fly-wing cure, apes and pigs, geckos, snakes, the divine throne on goats, camels weeping to Muhammad, and animals in Islamic law."),
 ]
 
 CATALOG_FILES = [

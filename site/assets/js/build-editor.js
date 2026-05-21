@@ -88,6 +88,7 @@
     { slug: "ct-strange",       title: "Strange / Obscure",          path: "category/strange.html",       group: "Catalog · by category" },
     { slug: "ct-incest",        title: "Incest",                     path: "category/incest.html",        group: "Catalog · by category" },
     { slug: "ct-gross-vile",    title: "Gross / Vile",               path: "category/gross-vile.html",    group: "Catalog · by category" },
+    { slug: "ct-animals",       title: "Animals",                    path: "category/animals.html",       group: "Catalog · by category" },
   ];
   const DEFAULT_SOURCE = "quran";
   const SOURCE_BY_SLUG = Object.create(null);
