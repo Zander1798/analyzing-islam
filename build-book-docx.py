@@ -655,6 +655,64 @@ def add_abbreviations(doc):
         p.add_run(defn)
 
 
+# ── Body content ───────────────────────────────────────────────────────────────
+
+def add_part_opener(doc):
+    """The Quran part opener — first page of body (arabic p.1)."""
+    doc.add_paragraph('VOLUME I', style='AI_PartLabel')
+    doc.add_paragraph('The Quran', style='AI_PartTitle')
+    doc.add_paragraph(
+        'Comprising 114 surahs and 6,236 verses, the Quran is Islam\'s central divine text — '
+        'believed by Muslims to be the literal word of Allah as revealed to Muhammad between '
+        'approximately 610 and 632 CE. The surahs were revealed in Mecca and Medina, collected '
+        'under Abu Bakr and standardised under Uthman ibn Affan around 650 CE. All verses in '
+        'this volume are quoted from the Saheeh International English translation.',
+        style='AI_PartIntro')
+    p = doc.add_paragraph(style='AI_Normal')
+    run = p.add_run('262 ENTRIES ACROSS 23 CHAPTERS')
+    run.bold = True
+
+
+def add_source_intro(doc):
+    """Source introduction page."""
+    add_page_break(doc)
+    doc.add_paragraph('PRIMARY SOURCE', style='AI_SourceLabel')
+    doc.add_paragraph('The Quran', style='AI_SourceTitle')
+    doc.add_paragraph(
+        'The Quran is the central religious text of Islam, believed by Muslims to be the direct '
+        'word of Allah as revealed to the Prophet Muhammad through the angel Jibril (Gabriel) over '
+        'approximately twenty-three years — from 610 CE until Muhammad\'s death in 632 CE. It '
+        'comprises 114 chapters (surahs) containing 6,236 verses (ayahs), arranged roughly in '
+        'descending order of length rather than chronological order of revelation.',
+        style='AI_Normal')
+    doc.add_paragraph(
+        'During Muhammad\'s lifetime, verses were memorised by companions and recorded on various '
+        'materials. Following the Battle of Yamama in 632 CE, in which many memorisers were killed, '
+        'Caliph Abu Bakr commissioned a written compilation. The standardised text known today was '
+        'established under the third Caliph Uthman ibn Affan around 650 CE; variant readings were '
+        'officially destroyed.',
+        style='AI_Normal')
+    doc.add_paragraph(
+        'Surahs revealed in Mecca — primarily the earlier, shorter chapters — tend to focus on '
+        'monotheism, eschatology, and moral instruction. Those revealed in Medina — longer, later '
+        'chapters — deal extensively with law, governance, warfare, and relations with non-Muslims. '
+        'The doctrine of abrogation (naskh) holds that later verses may supersede earlier ones, a '
+        'principle with significant ethical implications examined throughout this volume.',
+        style='AI_Normal')
+    doc.add_paragraph(
+        'All Quranic verses in this volume are quoted from the Saheeh International English '
+        'translation, the edition most widely recommended by contemporary Sunni scholars for '
+        'accuracy to the Arabic.',
+        style='AI_Normal')
+    # Stats row
+    p = doc.add_paragraph(style='AI_Normal')
+    for stat, label in [('114', 'SURAHS'), ('6,236', 'VERSES'),
+                        ('610–632 CE', 'REVELATION PERIOD'), ('c. 650 CE', "UTHMAN'S COMPILATION")]:
+        run = p.add_run(f'{stat}  ')
+        run.bold = True
+        p.add_run(f'{label}    ')
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     entries  = get_entries()
@@ -683,6 +741,9 @@ def main():
     body_section = add_section_break_next_page(doc)
     setup_footer(body_section)
     set_section_page_numbering(body_section, fmt='decimal', start=1)
+
+    add_part_opener(doc)
+    add_source_intro(doc)
 
     doc.save(OUT)
     print(f"Saved: {OUT}")
