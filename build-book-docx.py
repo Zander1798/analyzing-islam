@@ -449,6 +449,145 @@ def add_copyright(doc):
     doc.add_paragraph('ISBN — [to be assigned]', style='AI_CopyrightBody')
 
 
+def add_toc(doc):
+    """Pages v–vi — Table of Contents (Word auto-generates on open)."""
+    doc.add_paragraph('Contents', style='AI_TOCHeading')
+
+    # Insert Word TOC field — user must press F9 / Update Table on first open
+    para = doc.add_paragraph(style='AI_TOCEntry')
+    run = para.add_run()
+    r = run._r
+
+    fc1 = OxmlElement('w:fldChar'); fc1.set(qn('w:fldCharType'), 'begin'); r.append(fc1)
+
+    run2 = para.add_run()
+    it = OxmlElement('w:instrText')
+    it.set(qn('xml:space'), 'preserve')
+    it.text = r' TOC \o "1-1" \h \z \u '
+    run2._r.append(it)
+
+    run3 = para.add_run()
+    fc3 = OxmlElement('w:fldChar'); fc3.set(qn('w:fldCharType'), 'separate'); run3._r.append(fc3)
+
+    run4 = para.add_run('Right-click → Update Field after opening to generate page numbers.')
+
+    run5 = para.add_run()
+    fc5 = OxmlElement('w:fldChar'); fc5.set(qn('w:fldCharType'), 'end'); run5._r.append(fc5)
+
+
+def add_foreword(doc):
+    """Pages vii–ix — 3-page foreword."""
+    doc.add_paragraph('Foreword', style='AI_ForewordH1')
+
+    doc.add_paragraph('WHAT THIS IS', style='AI_ForewordSH')
+    doc.add_paragraph(
+        'This book is a reference catalog of passages from the Quran that present philosophical, '
+        'historical, moral, or logical difficulties. Every entry cites a specific verse, explains '
+        'what it says in plain language, and builds the case for why it presents a problem. Where '
+        'relevant, entries also present the standard Muslim apologetic response and push back on it.',
+        style='AI_Normal')
+    doc.add_paragraph(
+        'Volume I covers one source: the Quran — the text that Islam itself holds to be the direct, '
+        'unaltered word of Allah, superior to all other Islamic sources in authority. No fringe '
+        'interpretations. No hostile translations. The case is built entirely from Islam\'s own most '
+        'authoritative scripture as rendered in its most widely endorsed English edition.',
+        style='AI_Normal')
+
+    doc.add_paragraph('HOW ENTRIES ARE ORGANISED', style='AI_ForewordSH')
+    doc.add_paragraph(
+        'Entries are grouped into 23 thematic chapters — Abrogation, Contradictions, Warfare & Jihad, '
+        'Women & Sexual Issues, and so on. Each chapter collects every entry that belongs to that theme. '
+        'If the Quran yields no entries in a given category, that chapter is omitted entirely.',
+        style='AI_Normal')
+    doc.add_paragraph(
+        'When an entry touches more than one theme, it appears under the category that best captures '
+        'its primary problem. It does not appear twice. Subsequent volumes examine the hadith '
+        'collections — Sahih al-Bukhari, Sahih Muslim, and the four canonical Sunan.',
+        style='AI_Normal')
+
+    doc.add_paragraph('HOW TO READ AN ENTRY', style='AI_ForewordSH')
+    doc.add_paragraph('Each entry contains four elements:', style='AI_Normal')
+    for label, desc in [
+        ('REFERENCE', 'The Quran citation — surah and verse number.'),
+        ('RATING',    'The apologetic difficulty level: Basic, Moderate, or Strong.'),
+        ('PASSAGE',   'The verse quoted in full from the Saheeh International translation.'),
+        ('COMMENTARY','An explanation of the problem — what it says, why it matters, '
+                       'and where the standard apologetic falls short.'),
+    ]:
+        p = doc.add_paragraph(style='AI_Normal')
+        run = p.add_run(label + '  ')
+        run.bold = True
+        p.add_run(desc)
+
+    # Page 2
+    doc.add_paragraph('STRENGTH RATINGS', style='AI_ForewordSH')
+    doc.add_paragraph(
+        'Every entry is rated according to how difficult the problem is to answer from within the '
+        'Islamic apologetic tradition:', style='AI_Normal')
+    for level, desc in [
+        ('Basic',    'Apologists have a stock reply. The problem is real but the standard response '
+                     'is widely known and rehearsed.'),
+        ('Moderate', 'Answering requires conceding something — softening a claim, reinterpreting a text, '
+                     'or acknowledging that the tradition is not unanimous.'),
+        ('Strong',   'The apologetic moves themselves generate new problems. Every standard response '
+                     'either contradicts another Islamic claim or requires abandoning the plain meaning '
+                     'of the text.'),
+    ]:
+        p = doc.add_paragraph(style='AI_Normal')
+        run = p.add_run(level + '  ')
+        run.bold = True
+        p.add_run(desc)
+    doc.add_paragraph(
+        'Ratings reflect apologetic difficulty — not moral severity. A passage can be morally '
+        'disturbing and still rated Basic if the apologetic reply is well-established and coherent.',
+        style='AI_Normal')
+
+    doc.add_paragraph('SOURCES AND TRANSLATIONS', style='AI_ForewordSH')
+    doc.add_paragraph(
+        'All Quranic verses in this volume are quoted from the Saheeh International English '
+        'translation — the Saudi-sanctioned mainstream Sunni edition, widely used in mosques and '
+        'Islamic universities across the English-speaking world. It is the edition most commonly '
+        'recommended by contemporary Sunni scholars when asked to name an accurate English Quran.',
+        style='AI_Normal')
+    doc.add_paragraph(
+        'Choosing the most mainstream, most-recommended translation removes the easy dismissal of '
+        '"hostile translation." The problems documented in this volume are not artifacts of a '
+        'tendentious rendering — they appear in the text that Islam\'s own authorities have endorsed '
+        'and distributed worldwide.',
+        style='AI_Normal')
+
+    # Page 3
+    doc.add_paragraph('A NOTE ON TONE', style='AI_ForewordSH')
+    doc.add_paragraph(
+        'This catalog does not argue. It presents. The entries speak through the texts themselves — '
+        'the reader is left to draw their own conclusions. No passage is fabricated, paraphrased to '
+        'distort, or stripped of context that would change its meaning. Where context matters, it is '
+        'provided.',
+        style='AI_Normal')
+    doc.add_paragraph(
+        'The commentary aims to be precise rather than polemical. Where Islamic scholars disagree '
+        'among themselves, that disagreement is noted. Where a passage has a defensible reading, '
+        'that reading is acknowledged before the problem with it is explained. The goal is not to '
+        'mock but to examine — carefully, specifically, and without concession.',
+        style='AI_Normal')
+    doc.add_paragraph(
+        'Readers who find a specific entry inaccurate, mistranslated, or missing essential context '
+        'are encouraged to raise the objection at analyzingislam.com, where every entry in this '
+        'volume is also published online and open to scrutiny.',
+        style='AI_Normal')
+
+    doc.add_paragraph('HOW TO USE THIS BOOK', style='AI_ForewordSH')
+    doc.add_paragraph(
+        'Read it in order or jump directly to a category. Each entry stands on its own. The 23 '
+        'thematic chapters are self-contained — no prior entry is assumed when reading any later entry.',
+        style='AI_Normal')
+    doc.add_paragraph(
+        'Use the Quran Verse Index at the back to locate entries by surah and verse number. Use the '
+        'General Index to find entries touching a specific topic, person, or concept across all 23 '
+        'chapters. Every entry references a specific verse. Verify before citing.',
+        style='AI_Normal')
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     entries  = get_entries()
@@ -469,7 +608,9 @@ def main():
     add_copyright(doc)     # page iii
     add_page_break(doc)    # page iv (blank)
 
-    # Placeholder — TOC, foreword, abbreviations added in Tasks 5 & 6
+    add_toc(doc)           # pages v–vi
+    add_foreword(doc)      # pages vii–ix
+    # Abbreviations added in Task 6
 
     # ── Body section (arabic numerals: 1, 2, 3…) ────────────────────────────
     body_section = add_section_break_next_page(doc)
