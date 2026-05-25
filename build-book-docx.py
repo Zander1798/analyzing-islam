@@ -146,6 +146,7 @@ CHAPTERS = {
          "receive divine inspiration, animals that form communities like humans, Solomon commanding the ants."),
 }
 
+# TAG_PRIORITY: 31 priority-ordered (tag, chapter_num) pairs
 TAG_PRIORITY = [
     ("antisemitism", 19), ("childmarriage", 12), ("apostasy", 16),
     ("privileges",    9), ("jesus",         10), ("abrogation",   1),
@@ -174,8 +175,9 @@ ID_OVERRIDES = {
     "islamic-dilemma": 2,
     "the-quran-endorses-jews-and-christians-to-judge-by-their-own-32929162": 2,
     "no-one-can-change-the-words-of-allah-yet-tahrif-is-the-centr-d98f36e4": 2,
-    # Chapter population fixes — ensure ch 13, 14, 23 are non-empty
-    "zaynab-affair": 13,
+    # Chapter population fixes — ensure ch 14, 23 are non-empty
+    # NOTE: zaynab-affair was incorrectly overridden to ch 13 (LGBTQ/Gender);
+    # it belongs in ch 9 (Prophetic Privileges) via its 'privileges' tag.
     "prophet-should-not-take-captives-until-he-inflicts-a-massacr-75d23fb1": 14,
     "quran-38-31-33-solomon-hamstrings-the-horses": 23,
 }
