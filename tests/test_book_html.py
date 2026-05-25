@@ -1,5 +1,5 @@
 # tests/test_book_html.py
-import importlib.util, sys
+import importlib.util
 from pathlib import Path
 
 def _load():
@@ -19,11 +19,11 @@ def test_entry_count():
     assert len(entries) == 262, f"Expected 262, got {len(entries)}"
 
 def test_all_chapters_populated():
-    """No more than 3 chapters are empty."""
+    """Only chapter 13 (LGBTQ/Gender) is expected to be empty — no others."""
     entries = mod.get_entries()
     chapters = mod.build_chapters(entries)
     empty = [n for n, ch in chapters.items() if len(ch) == 0]
-    assert len(empty) <= 3, f"Too many empty chapters: {empty}"
+    assert empty == [13], f"Unexpected empty chapters: {empty}"
 
 def test_parse_entries_has_body():
     """At least 200 entries have body text parsed from quran.html."""

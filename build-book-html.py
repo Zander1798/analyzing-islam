@@ -197,12 +197,15 @@ def parse_entries() -> dict:
         eid = m.group(1)
         end = opens[i+1].start() if i+1 < len(opens) else len(raw)
         chunk = raw[m.start():end]
-        bq_m = re.search(r'<blockquote[^>]*>(.*?)</blockquote>', chunk, re.DOTALL)
+        bq_matches = re.findall(r'<blockquote[^>]*>(.*?)</blockquote>', chunk, re.DOTALL)
         quote = ''
-        if bq_m:
-            q = re.sub(r'<p[^>]*>', '', bq_m.group(1))
-            q = re.sub(r'</p>', ' ', q)
-            quote = strip_tags(q).strip()
+        if bq_matches:
+            parts = []
+            for bq in bq_matches:
+                q = re.sub(r'<p[^>]*>', '', bq)
+                q = re.sub(r'</p>', ' ', q)
+                parts.append(strip_tags(q).strip())
+            quote = ' / '.join(p for p in parts if p)
         h4_parts = re.split(r'<h4[^>]*>', chunk)
         sections = {'quote': quote, 'says': '', 'problem': '', 'response': '', 'fails': ''}
         for part in h4_parts[1:]:
