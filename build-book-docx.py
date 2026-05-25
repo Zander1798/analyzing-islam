@@ -183,6 +183,7 @@ ID_OVERRIDES = {
 }
 
 STRENGTH_ORDER = {"basic": 0, "moderate": 1, "strong": 2}
+STRENGTH_LABEL = {'basic': '[BASIC]', 'moderate': '[MODERATE]', 'strong': '[STRONG]'}
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -713,6 +714,43 @@ def add_source_intro(doc):
         p.add_run(f'{label}    ')
 
 
+# ── Chapter content ────────────────────────────────────────────────────────────
+
+def add_chapter_opener(doc, ch_num, title, intro, entries):
+    """Chapter opener page — title, intro, numbered entry list."""
+    # Breadcrumb
+    doc.add_paragraph(f'THE QURAN  ·  CHAPTER {ch_num}', style='AI_Breadcrumb')
+    # Title — AI_ChapterTitle has page_break_before=True so a new page starts automatically
+    doc.add_paragraph(title, style='AI_ChapterTitle')
+    # Thin horizontal rule via bottom border on a blank paragraph
+    rule_p = doc.add_paragraph()
+    pPr = rule_p._p.get_or_add_pPr()
+    pBdr = OxmlElement('w:pBdr')
+    bottom = OxmlElement('w:bottom')
+    bottom.set(qn('w:val'), 'single')
+    bottom.set(qn('w:sz'), '4')
+    bottom.set(qn('w:space'), '1')
+    bottom.set(qn('w:color'), '888888')
+    pBdr.append(bottom)
+    pPr.append(pBdr)
+    # Intro paragraph
+    doc.add_paragraph(intro, style='AI_ChapterIntro')
+    # Numbered entry list
+    for i, entry in enumerate(entries, 1):
+        strength = STRENGTH_LABEL.get(entry.get('strength', ''), '')
+        ref = entry.get('ref', '')
+        title_text = entry.get('title', '')
+        p = doc.add_paragraph(style='AI_EntryListItem')
+        run = p.add_run(f'{i}.  ')
+        run.bold = True
+        p.add_run(title_text)
+        p.add_run(f'  {ref}  {strength}')
+    # Entry count footer line
+    p = doc.add_paragraph(style='AI_Normal')
+    run = p.add_run(f'{len(entries)} ENTRIES')
+    run.bold = True
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     entries  = get_entries()
@@ -744,6 +782,14 @@ def main():
 
     add_part_opener(doc)
     add_source_intro(doc)
+
+    # ── Chapters ─────────────────────────────────────────────────────────────
+    for ch_num in sorted(chapters.keys()):
+        ch_entries = chapters[ch_num]
+        if not ch_entries:
+            continue
+        ch_title, ch_intro = CHAPTERS[ch_num]
+        add_chapter_opener(doc, ch_num, ch_title, ch_intro, ch_entries)
 
     doc.save(OUT)
     print(f"Saved: {OUT}")
