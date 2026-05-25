@@ -7,7 +7,7 @@ Run: python build-book-html.py
 import re, json, html as html_mod
 from pathlib import Path
 
-BASE    = Path(r"C:\Users\zande\Documents\AI Workspace\Analyzing Islam")
+BASE    = Path(__file__).resolve().parent
 CATALOG = BASE / "site/assets/data/catalog-entries.json"
 QURAN   = BASE / "site/catalog/quran.html"
 OUT_DIR = BASE / "book-design/vol1-quran"
@@ -811,7 +811,7 @@ def render_general_index(chapters: dict, section_idx: int) -> str:
 def render_verse_index(entries: list, section_idx: int) -> str:
     """Render the Quran Verse Index back matter page, sorted by surah then ayah."""
     def sort_key(e: dict) -> tuple:
-        m = re.search(r'Q\s*(\d+):(\d+)', e['ref'])
+        m = re.search(r'(?:Q|Quran)\s*(\d+):(\d+)', e['ref'])
         if m:
             return (int(m.group(1)), int(m.group(2)))
         return (9999, 0)
@@ -878,7 +878,7 @@ def render_navigator(all_section_ids: list, chapter_section_ids: set) -> str:
   }});
 
   track.addEventListener('click', function(e) {{
-    if (e.target === track || e.target.id === 'pn-thumb') {{
+    if (e.target === track) {{  /* pn-thumb has pointer-events:none so never fires here */
       var rect = track.getBoundingClientRect();
       var pct  = (e.clientY - rect.top) / rect.height;
       var idx  = Math.round(pct * (sections.length - 1));

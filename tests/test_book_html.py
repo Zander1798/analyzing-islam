@@ -116,8 +116,14 @@ def test_verse_index_sorted_and_present():
     entries = mod.get_entries()
     html = mod.render_verse_index(entries, section_idx=301)
     assert 'Quran Verse Index' in html
-    assert 'Q 2:' in html
     assert 'id="s301"' in html
+    # Verify actual sort order: surah 2 entries must appear before surah 9 entries
+    # (catches regex that only matched 'Q X:Y' and missed 'Quran X:Y' format)
+    pos_q2 = html.find('Q 2:')
+    pos_q9 = html.find('Q 9:')
+    assert pos_q2 != -1, "Q 2:x not found in verse index"
+    assert pos_q9 != -1, "Q 9:x not found in verse index"
+    assert pos_q2 < pos_q9, "Q 2:x should appear before Q 9:x in verse index (sort broken)"
 
 
 # ── Task 7: Navigator ─────────────────────────────────────────────────────────
