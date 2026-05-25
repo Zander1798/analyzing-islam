@@ -588,6 +588,73 @@ def add_foreword(doc):
         style='AI_Normal')
 
 
+def add_abbreviations(doc):
+    """Pages x–xi — Abbreviations & Reference Guide."""
+    doc.add_paragraph('Abbreviations & Reference Guide', style='AI_ForewordH1')
+
+    doc.add_paragraph('CITATION FORMAT', style='AI_ForewordSH')
+    p = doc.add_paragraph(style='AI_Normal')
+    run = p.add_run('Q 4:34  ')
+    run.bold = True
+    p.add_run('Quran, Surah 4 (An-Nisa), Verse 34. All Quranic citations follow this '
+              'surah:verse format. Where a range of verses is relevant, it appears as Q 9:5–6. '
+              'All quotations are from the Saheeh International English translation.')
+
+    doc.add_paragraph('STRENGTH RATINGS', style='AI_ForewordSH')
+    for term, defn in [
+        ('Basic',    'Apologists have a stock reply. The problem is real but the standard response '
+                     'is widely known and rehearsed.'),
+        ('Moderate', 'Answering requires conceding something — softening a claim or reinterpreting '
+                     'the text.'),
+        ('Strong',   'Apologetic moves generate new problems. Every standard response requires '
+                     'abandoning the plain meaning of the text or contradicts another Islamic claim.'),
+    ]:
+        p = doc.add_paragraph(style='AI_Normal')
+        run = p.add_run(term + '  ')
+        run.bold = True
+        p.add_run(defn)
+
+    doc.add_paragraph('QURANIC TERMINOLOGY', style='AI_ForewordSH')
+    quranic_terms = [
+        ('Ayah (pl. Ayat)', 'A verse of the Quran; literally "a sign"'),
+        ('Surah', 'A chapter of the Quran; there are 114 in total'),
+        ('Meccan', 'Revealed while Muhammad was in Mecca (c. 610–622 CE) — generally monotheism and eschatology'),
+        ('Medinan', 'Revealed while Muhammad was in Medina (c. 622–632 CE) — generally law, governance, and warfare'),
+        ('Naskh', 'Abrogation — the doctrine that later Quranic verses can cancel earlier ones'),
+        ('Tafsir', 'Quranic exegesis or commentary; the classical tradition of explaining individual verses'),
+        ('Asbab al-Nuzul', 'The "occasions of revelation" — historical circumstances that triggered specific verses'),
+    ]
+    for term, defn in quranic_terms:
+        p = doc.add_paragraph(style='AI_Normal')
+        run = p.add_run(term + '  ')
+        run.bold = True
+        p.add_run(defn)
+
+    # Page 2
+    doc.add_paragraph('ARABIC & ISLAMIC TERMINOLOGY', style='AI_ForewordSH')
+    arabic_terms = [
+        ('Fiqh', 'Islamic jurisprudence — the body of legal rulings derived from the Quran and hadith'),
+        ('Ulema', 'Islamic scholars and jurists collectively'),
+        ('Dhimmi', 'A non-Muslim subject living under Islamic rule, subject to the jizya tax and legal restrictions'),
+        ('Hudud', 'Fixed Quranic punishments — amputation, stoning, lashing — that cannot be reduced by a judge'),
+        ('Jizya', 'A tax levied on non-Muslims living under Islamic governance in lieu of military service (Q 9:29)'),
+        ('Jinn', 'Supernatural beings made of smokeless fire; mentioned throughout the Quran'),
+        ('Tahrif', 'The Islamic claim that Jews and Christians corrupted their scriptures'),
+        ('Fitnah', 'Trial, strife, or persecution; used in key warfare verses (Q 2:193, 8:39)'),
+        ('Ma malakat aymanukum', '"What your right hands possess" — the Quranic phrase for enslaved people and captive women'),
+        ('Dahaha', 'Verb in Q 79:30 translated "spread out" or "egg-shaped" — key in cosmology debates'),
+        ('Makr', 'Plotting or scheming; used of Allah in Q 3:54 and 8:30'),
+        ('Ijaz al-Quran', 'The doctrine of the Quran\'s inimitability — the claim that its literary style is miraculous'),
+        ('r.a.', 'Radi Allahu anhu / anha — "May Allah be pleased with him / her"'),
+        ('s.a.w.', 'Sallallahu alayhi wa sallam — "Peace and blessings be upon him"'),
+    ]
+    for term, defn in arabic_terms:
+        p = doc.add_paragraph(style='AI_Normal')
+        run = p.add_run(term + '  ')
+        run.bold = True
+        p.add_run(defn)
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     entries  = get_entries()
@@ -610,7 +677,7 @@ def main():
 
     add_toc(doc)           # pages v–vi
     add_foreword(doc)      # pages vii–ix
-    # Abbreviations added in Task 6
+    add_abbreviations(doc) # pages x–xi
 
     # ── Body section (arabic numerals: 1, 2, 3…) ────────────────────────────
     body_section = add_section_break_next_page(doc)
