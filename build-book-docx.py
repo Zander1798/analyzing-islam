@@ -931,6 +931,9 @@ def add_quran_verse_index(doc, entries):
     # Apply two-column layout to the body sentinel sectPr,
     # which governs the Verse Index section (all content added above)
     body_sectPr = doc.element.body.find(qn('w:sectPr'))
+    # Remove any pre-existing w:cols to avoid OOXML-invalid duplicates
+    for old_cols in body_sectPr.findall(qn('w:cols')):
+        body_sectPr.remove(old_cols)
     cols = OxmlElement('w:cols')
     cols.set(qn('w:num'), '2')
     cols.set(qn('w:space'), str(int(6 * 56.7)))
