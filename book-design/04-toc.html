@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Table of Contents — Analyzing Islam Vol. I</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 80px;
+    gap: 48px;
+    font-family: system-ui, sans-serif;
+  }
+
+  .page-label {
+    width: 665px;
+    color: #555;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: -32px;
+  }
+
+  /* B5: 665px × 945px */
+  .page {
+    width: 665px;
+    height: 945px;
+    background: #000;
+    color: #f5f5f5;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px #2a2a2a, 0 20px 60px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+  }
+
+  .page-inner {
+    position: absolute;
+    top: 76px;
+    bottom: 76px;
+    left: 68px;
+    right: 53px;
+    overflow: hidden;
+  }
+
+  .toc-heading {
+    font-family: "Didot","GFS Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #f5f5f5;
+    margin-bottom: 24px;
+    letter-spacing: -0.01em;
+  }
+
+  .toc-rule {
+    width: 100%;
+    height: 1px;
+    background: #1e1e1e;
+    margin-bottom: 22px;
+  }
+
+  /* Front matter / back matter items */
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+
+  .toc-item-label {
+    font-family: system-ui, sans-serif;
+    font-size: 11px;
+    color: #9a9a9a;
+    white-space: nowrap;
+  }
+
+  .toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted #3a3a3a;
+    margin: 0 8px 3px;
+    min-width: 20px;
+  }
+
+  .toc-page {
+    font-family: system-ui, sans-serif;
+    font-size: 11px;
+    color: #9a9a9a;
+    white-space: nowrap;
+  }
+
+  /* Part header */
+  .toc-part {
+    margin-top: 20px;
+    margin-bottom: 12px;
+  }
+
+  .toc-part-label {
+    font-family: system-ui, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+    margin-bottom: 3px;
+  }
+
+  .toc-part-row {
+    display: flex;
+    align-items: baseline;
+  }
+
+  .toc-part-title {
+    font-family: "Didot","GFS Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #f5f5f5;
+    white-space: nowrap;
+  }
+
+  .toc-part-dots {
+    flex: 1;
+    border-bottom: 1px dotted #2a2a2a;
+    margin: 0 8px 3px;
+    min-width: 20px;
+  }
+
+  .toc-part-page {
+    font-family: system-ui, sans-serif;
+    font-size: 14px;
+    color: #9a9a9a;
+    white-space: nowrap;
+  }
+
+  /* Chapter items */
+  .toc-chapter {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 6px;
+    padding-left: 18px;
+  }
+
+  .toc-chapter-label {
+    font-family: system-ui, sans-serif;
+    font-size: 11px;
+    color: #9a9a9a;
+    white-space: nowrap;
+  }
+
+  .toc-chapter-dots {
+    flex: 1;
+    border-bottom: 1px dotted #2a2a2a;
+    margin: 0 8px 3px;
+    min-width: 20px;
+  }
+
+  .toc-chapter-page {
+    font-family: system-ui, sans-serif;
+    font-size: 11px;
+    color: #5a5a5a;
+    white-space: nowrap;
+  }
+
+  .gap { height: 12px; }
+</style>
+</head>
+<body>
+
+  <!-- PAGE 4 — TOC page 1: front matter + Part I -->
+  <div class="page-label">Page 4 — Table of Contents (1 of 3)</div>
+  <div class="page">
+    <div class="page-inner">
+
+      <div class="toc-heading">Contents</div>
+      <div class="toc-rule"></div>
+
+      <div class="toc-item">
+        <span class="toc-item-label">Foreword</span>
+        <span class="toc-dots"></span>
+        <span class="toc-page">vii</span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-item-label">Abbreviations &amp; Reference Guide</span>
+        <span class="toc-dots"></span>
+        <span class="toc-page">xi</span>
+      </div>
+
+      <div class="toc-part">
+        <div class="toc-part-label">Part I</div>
+        <div class="toc-part-row">
+          <span class="toc-part-title">The Quran</span>
+          <span class="toc-part-dots"></span>
+          <span class="toc-part-page">1</span>
+        </div>
+      </div>
+
+      <div class="toc-chapter"><span class="toc-chapter-label">Abrogation</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Scripture Integrity</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Contradictions</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Logical Inconsistency</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Allah's Character</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Cosmology</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Pre-Islamic Borrowings</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Prophetic Character</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Prophetic Privileges</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Jesus / Christology</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Women &amp; Sexual Issues</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Child Marriage</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">LGBTQ / Gender</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Slavery &amp; Captives</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Warfare &amp; Jihad</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Apostasy &amp; Blasphemy</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Governance</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Disbelievers &amp; Moral Problems</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Antisemitism</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Paradise</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Eschatology</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Strange, Magic &amp; Ritual</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Animals</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+
+    </div>
+  </div>
+
+  <!-- PAGE 5 — TOC page 2: Part II -->
+  <div class="page-label">Page 5 — Table of Contents (2 of 3)</div>
+  <div class="page">
+    <div class="page-inner">
+
+      <div class="toc-part" style="margin-top:0;">
+        <div class="toc-part-label">Part II</div>
+        <div class="toc-part-row">
+          <span class="toc-part-title">Sahih al-Bukhari</span>
+          <span class="toc-part-dots"></span>
+          <span class="toc-part-page">xxx</span>
+        </div>
+      </div>
+
+      <div class="toc-chapter"><span class="toc-chapter-label">Abrogation</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Scripture Integrity</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Contradictions</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Logical Inconsistency</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Moral Problems</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Allah's Character</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Cosmology</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Pre-Islamic Borrowings</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Magic &amp; Occult</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Ritual Absurdities</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Prophetic Character</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Prophetic Privileges</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Jesus / Christology</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Women &amp; Child Marriage</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Sexual Issues</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">LGBTQ / Gender</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Slavery &amp; Captives</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Hudud</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Warfare &amp; Jihad</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Apostasy &amp; Blasphemy</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Governance</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Disbelievers &amp; Antisemitism</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Paradise &amp; Hell</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Eschatology</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Strange &amp; Obscure</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Animals</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Gross / Vile</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+
+    </div>
+  </div>
+
+  <!-- PAGE 6 — TOC page 3: Part III + back matter -->
+  <div class="page-label">Page 6 — Table of Contents (3 of 3)</div>
+  <div class="page">
+    <div class="page-inner">
+
+      <div class="toc-part" style="margin-top:0;">
+        <div class="toc-part-label">Part III</div>
+        <div class="toc-part-row">
+          <span class="toc-part-title">Sahih Muslim</span>
+          <span class="toc-part-dots"></span>
+          <span class="toc-part-page">xxx</span>
+        </div>
+      </div>
+
+      <div class="toc-chapter"><span class="toc-chapter-label">Abrogation</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Contradictions</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Logical Inconsistency</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Moral Problems &amp; LGBTQ</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Allah's Character</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Cosmology</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Pre-Islamic Borrowings</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Magic &amp; Occult</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Ritual Absurdities</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Prophetic Character</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Prophetic Privileges</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Women &amp; Child Marriage</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Sexual Issues</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Slavery &amp; Captives</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Hudud</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Warfare &amp; Jihad</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Apostasy &amp; Blasphemy</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Governance</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Disbelievers &amp; Antisemitism</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Paradise &amp; Hell</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Eschatology</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Strange &amp; Obscure</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Animals</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+      <div class="toc-chapter"><span class="toc-chapter-label">Gross / Vile</span><span class="toc-chapter-dots"></span><span class="toc-chapter-page">xxx</span></div>
+
+      <div class="gap"></div>
+      <div class="gap"></div>
+
+      <div class="toc-rule"></div>
+
+      <div class="toc-item">
+        <span class="toc-item-label">General Index</span>
+        <span class="toc-dots"></span>
+        <span class="toc-page">xxx</span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-item-label">Quran Verse Index</span>
+        <span class="toc-dots"></span>
+        <span class="toc-page">xxx</span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-item-label">Hadith Reference Index</span>
+        <span class="toc-dots"></span>
+        <span class="toc-page">xxx</span>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

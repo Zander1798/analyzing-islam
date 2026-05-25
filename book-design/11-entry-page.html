@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Entry Page (Template) — Analyzing Islam Vol. I</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 80px;
+    gap: 48px;
+  }
+
+  .page-label {
+    width: 665px;
+    color: #555;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: -32px;
+  }
+
+  .page {
+    width: 665px;
+    height: 945px;
+    background: #000;
+    color: #f5f5f5;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px #2a2a2a, 0 20px 60px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+  }
+
+  .page-inner {
+    position: absolute;
+    top: 76px;
+    bottom: 76px;
+    left: 68px;
+    right: 53px;
+    overflow: hidden;
+  }
+
+  /* ── Running header ── */
+  .running-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+
+  .running-chapter {
+    font-family: system-ui, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+  }
+
+  .running-page {
+    font-family: system-ui, sans-serif;
+    font-size: 10px;
+    color: #5a5a5a;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Entry ── */
+  .entry {
+    padding-bottom: 22px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid #111;
+  }
+
+  .entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .entry-title {
+    font-family: "Didot","GFS Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
+    font-size: 17px;
+    font-weight: bold;
+    color: #f5f5f5;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+
+  .entry-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .tag {
+    font-family: system-ui, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+    border: 1px solid #2a2a2a;
+    padding: 2px 7px;
+  }
+
+  .tag.strength-basic    { color: #4caf50; border-color: #4caf50; }
+  .tag.strength-moderate { color: #ff9800; border-color: #ff9800; }
+  .tag.strength-strong   { color: #e53935; border-color: #e53935; }
+
+  .entry-ref {
+    font-family: system-ui, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: #7aa2f7;
+    margin-left: auto;
+  }
+
+  blockquote {
+    border-left: 2px solid #7aa2f7;
+    margin: 0 0 14px 0;
+    padding: 8px 16px;
+    font-family: "Didot","GFS Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
+    font-style: italic;
+    font-size: 12px;
+    color: #9a9a9a;
+    line-height: 1.6;
+  }
+
+  .entry h4 {
+    font-family: system-ui, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+    font-weight: 700;
+    margin: 14px 0 6px;
+  }
+
+  .entry p {
+    font-family: system-ui, sans-serif;
+    font-size: 11px;
+    line-height: 1.75;
+    color: #f5f5f5;
+    margin-bottom: 8px;
+  }
+
+  .entry p:last-child { margin-bottom: 0; }
+
+  .entry p em {
+    font-style: italic;
+    color: #d0d0d0;
+  }
+
+  .entry p strong {
+    font-weight: 600;
+    color: #f5f5f5;
+  }
+</style>
+</head>
+<body>
+
+<!-- ─────────────────────────────────────────────
+     PAGE — Entry page (template / sample)
+     Sample entry: "We sent down iron"
+     ───────────────────────────────────────────── -->
+<div class="page-label">Entry Page — Template (sample: Cosmology, Part I · The Quran)</div>
+<div class="page">
+  <div class="page-inner">
+
+    <div class="running-header">
+      <span class="running-chapter">Part I · The Quran · Cosmology</span>
+      <span class="running-page">xxx</span>
+    </div>
+
+    <div class="entry">
+      <div class="entry-title">"We sent down iron" — apologetic claim of meteoric origin</div>
+      <div class="entry-meta">
+        <span class="tag">Cosmology</span>
+        <span class="tag">Strange / Obscure</span>
+        <span class="tag strength-basic">Basic</span>
+        <span class="entry-ref">Q 57:25</span>
+      </div>
+      <blockquote>"We sent down iron, wherein is great military might and benefits for the people."</blockquote>
+
+      <h4>What the verse says</h4>
+      <p>The Quran uses the verb <em>anzalna</em> ("we sent down") for iron. Modern Islamic apologetics
+      claims this anticipates the astrophysical discovery that heavy elements including iron are forged
+      in supernovae and distributed to planetary systems — that iron was literally "sent down" from the stars.</p>
+
+      <h4>Why this is a problem</h4>
+      <p>The word <em>anzalna</em> ("we sent down") is used throughout the Quran for scripture, rain, cattle,
+      garments, and divine mercy — none of which originate in supernovae. It is the standard Quranic verb
+      for divine provision or bestowal, used generically. The iron-from-supernova retrofit requires this
+      common word to carry a meaning it carries nowhere else in the Quran, specifically because the
+      astrophysical claim makes the retrofit attractive after the fact. All heavy elements — carbon, oxygen,
+      gold, uranium — also originate in stellar processes. The Quran does not say "we sent down carbon"
+      or "we sent down oxygen." Singling out iron for the cosmic-origin reading is apologetic cherry-picking.</p>
+
+      <h4>The Muslim response</h4>
+      <p>The use of <em>anzalna</em> for iron is distinctive because the Quran uses it for objects with
+      specific divine purposes rather than randomly. Iron's importance for human civilization (tools,
+      weapons, agriculture) makes it a fitting candidate for a statement of divine provision that
+      carries cosmological weight.</p>
+
+      <h4>Why it fails</h4>
+      <p><em>Anzalna</em> is used for rain, cattle, and garments — items of obvious human utility —
+      without those uses being interpreted as cosmological claims about stellar nucleosynthesis.
+      The word means "we bestowed" or "we provided" across all its Quranic uses. Applying a unique
+      astrophysical meaning only to iron, because modern science happens to support such a reading
+      for iron specifically, is pattern-matching after the fact rather than linguistic analysis.
+      The scientific miracle claim requires <em>anzalna</em> to mean something contrary to its
+      consistent Quranic usage, and the motivation for that departure is not linguistic but apologetic.</p>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ─────────────────────────────────────────────
+     PAGE 2 — Shows multi-entry flow + a Strong entry
+     ───────────────────────────────────────────── -->
+<div class="page-label">Entry Page — Template (multi-entry flow, showing Strong &amp; Moderate ratings)</div>
+<div class="page">
+  <div class="page-inner">
+
+    <div class="running-header">
+      <span class="running-chapter">Part I · The Quran · Warfare &amp; Jihad</span>
+      <span class="running-page">xxx</span>
+    </div>
+
+    <!-- Entry 1 — Strong -->
+    <div class="entry">
+      <div class="entry-title">Strike the necks — "when you meet those who disbelieve, strike necks"</div>
+      <div class="entry-meta">
+        <span class="tag">Warfare &amp; Jihad</span>
+        <span class="tag strength-strong">Strong</span>
+        <span class="entry-ref">Q 47:4</span>
+      </div>
+      <blockquote>"So when you meet those who disbelieve, strike necks until, when you have inflicted slaughter upon them, then secure their bonds."</blockquote>
+
+      <h4>What the verse says</h4>
+      <p>Q 47:4 instructs believers to strike the necks of disbelievers in battle, continue until sufficient
+      slaughter has been inflicted, then take prisoners. After the war lays down its burdens,
+      prisoners may be released freely or ransomed.</p>
+
+      <h4>Why this is a problem</h4>
+      <p>The verse contains no defensive qualifier. It does not require that believers be attacked first,
+      that a threat exist, or that any condition be met before striking. Classical commentators
+      understood it as a general rule for battlefield conduct against unbelievers, not a defensive
+      dispensation. The instruction to "inflict slaughter" before taking prisoners creates a hierarchy
+      in which killing takes precedence over capture.</p>
+
+      <h4>The Muslim response</h4>
+      <p>Muslims argue that the verse describes battlefield conduct once combat has begun — it is not a
+      licence to initiate violence, and must be read alongside verses that permit peace when the enemy
+      inclines to it (Q 8:61) and that prohibit transgression (Q 2:190).</p>
+
+      <h4>Why it fails</h4>
+      <p>The verse does not say "if they attack you, strike." It says "when you meet those who disbelieve,
+      strike." The meeting itself is the trigger. Contextualising this with peace verses does not change
+      the instruction's plain grammar; it merely adds conditions the verse itself does not impose. The
+      phrase "strike necks" became the most literal possible instruction in classical jihad law precisely
+      because the text provides no limiting principle that the peaceable verses can override.</p>
+    </div>
+
+    <!-- Entry 2 — Moderate (partial, to show flow) -->
+    <div class="entry">
+      <div class="entry-title">Banu Qurayza — the massacre the Quran does not condemn</div>
+      <div class="entry-meta">
+        <span class="tag">Warfare &amp; Jihad</span>
+        <span class="tag strength-moderate">Moderate</span>
+        <span class="entry-ref">Q 33:26–27</span>
+      </div>
+      <blockquote>"And He brought down those who supported them among the People of the Scripture from their fortresses and cast terror into their hearts; a party you killed, and you took captive a party."</blockquote>
+
+      <h4>What the verse says</h4>
+      <p>Q 33:26–27 describes Allah bringing down the Banu Qurayza from their fortresses, casting terror
+      into their hearts, after which some were killed and others taken captive. The historical context
+      is the siege following the Battle of the Trench, when the Jewish tribe was accused of treachery.
+      Between 600 and 900 men were executed; the women and children were enslaved.</p>
+
+      <h4>Why this is a problem</h4>
+      <p>The Quran does not merely record these events — it frames them as divine action ("He brought
+      down," "He cast terror") and divine approval. Allah is the grammatical subject of both verbs.
+      The massacre of Banu Qurayza is not an event the Quran tolerates or regrets; it is an event
+      the Quran attributes to Allah and presents as a gift to the believers.</p>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

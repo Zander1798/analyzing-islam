@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hadith Reference Index — Analyzing Islam Vol. I</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 80px;
+    gap: 48px;
+  }
+
+  .page-label {
+    width: 665px;
+    color: #555;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: -32px;
+  }
+
+  .page {
+    width: 665px;
+    height: 945px;
+    background: #000;
+    color: #f5f5f5;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px #2a2a2a, 0 20px 60px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+  }
+
+  .page-inner {
+    position: absolute;
+    top: 76px;
+    bottom: 76px;
+    left: 68px;
+    right: 53px;
+    overflow: hidden;
+  }
+
+  /* ── Page heading ── */
+  .index-heading {
+    font-family: "Didot","GFS Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #f5f5f5;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+
+  .index-sub {
+    font-family: system-ui, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+    margin-bottom: 16px;
+  }
+
+  .index-rule {
+    width: 100%;
+    height: 1px;
+    background: #1e1e1e;
+    margin-bottom: 14px;
+  }
+
+  /* ── Running header ── */
+  .running-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+
+  .running-title {
+    font-family: system-ui, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+  }
+
+  .running-page {
+    font-family: system-ui, sans-serif;
+    font-size: 10px;
+    color: #5a5a5a;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Collection banner ── */
+  .collection-banner {
+    font-family: "Didot","GFS Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: #f5f5f5;
+    letter-spacing: 0.02em;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #3a3a3a;
+    margin-bottom: 10px;
+  }
+
+  .collection-banner span {
+    font-family: system-ui, sans-serif;
+    font-size: 8.5px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+    font-weight: normal;
+    margin-left: 8px;
+  }
+
+  /* ── Three-column layout ── */
+  .verse-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0 20px;
+  }
+
+  /* ── Book header ── */
+  .book-head {
+    margin-top: 9px;
+    margin-bottom: 3px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+
+  .book-head:first-child { margin-top: 0; }
+
+  .book-num {
+    font-family: "Didot","GFS Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
+    font-size: 10px;
+    font-weight: bold;
+    color: #f5f5f5;
+    line-height: 1.2;
+  }
+
+  .book-name {
+    font-family: system-ui, sans-serif;
+    font-size: 7.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+    line-height: 1.4;
+  }
+
+  /* ── Hadith entry ── */
+  .hx {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 2px;
+  }
+
+  .hx-ref {
+    font-family: system-ui, sans-serif;
+    font-size: 8.5px;
+    color: #d0d0d0;
+    white-space: nowrap;
+    min-width: 50px;
+  }
+
+  .hx-dots {
+    flex: 1;
+    border-bottom: 1px dotted #2a2a2a;
+    margin: 0 4px 2px;
+    min-width: 4px;
+  }
+
+  .hx-page {
+    font-family: system-ui, sans-serif;
+    font-size: 8.5px;
+    color: #5a5a5a;
+    white-space: nowrap;
+  }
+
+  /* ── Collection separator (mid-page) ── */
+  .collection-sep {
+    margin-top: 14px;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #2a2a2a;
+  }
+
+  /* ── Page number ── */
+  .page-num {
+    position: absolute;
+    bottom: 0;
+    font-family: system-ui, sans-serif;
+    font-size: 10px;
+    color: #5a5a5a;
+    letter-spacing: 0.1em;
+  }
+
+  .page-num.right { right: 0; }
+</style>
+</head>
+<body>
+
+<!-- ── PAGE 1 — Hadith Reference Index (Bukhari Books 1–72) ── -->
+<div class="page-label">Hadith Reference Index — Page 1 of 2</div>
+<div class="page">
+  <div class="page-inner">
+    <div class="index-heading">Hadith Reference Index</div>
+    <div class="index-sub">Parts II &amp; III — Sahih al-Bukhari · Sahih Muslim</div>
+    <div class="index-rule"></div>
+
+    <div class="collection-banner">Sahih al-Bukhari <span>Part II</span></div>
+
+    <div class="verse-columns">
+
+      <!-- COLUMN 1 -->
+      <div>
+        <div class="book-head">
+          <div class="book-num">Book 4</div>
+          <div class="book-name">Ablutions (Wudu')</div>
+        </div>
+        <div class="hx"><span class="hx-ref">4:174</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">4:200</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 8</div>
+          <div class="book-name">Prayer (Salah)</div>
+        </div>
+        <div class="hx"><span class="hx-ref">8:449</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">8:450</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">8:490</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 9</div>
+          <div class="book-name">Times of Prayer</div>
+        </div>
+        <div class="hx"><span class="hx-ref">9:520</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 29</div>
+          <div class="book-name">Hunting, Slaughter</div>
+        </div>
+        <div class="hx"><span class="hx-ref">29:54</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 34</div>
+          <div class="book-name">Sales &amp; Trade</div>
+        </div>
+        <div class="hx"><span class="hx-ref">34:299</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 52</div>
+          <div class="book-name">Jihad &amp; Expeditions</div>
+        </div>
+        <div class="hx"><span class="hx-ref">52:42</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">52:46</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">52:57</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">52:65</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">52:72</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">52:110</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">52:256</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">52:260</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">52:269</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+      </div>
+
+      <!-- COLUMN 2 -->
+      <div>
+        <div class="book-head">
+          <div class="book-num">Book 54</div>
+          <div class="book-name">Beginning of Creation</div>
+        </div>
+        <div class="hx"><span class="hx-ref">54:418</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">54:439</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">54:514</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">54:524</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">54:537</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 55</div>
+          <div class="book-name">Prophets</div>
+        </div>
+        <div class="hx"><span class="hx-ref">55:546</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">55:578</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">55:653</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 56</div>
+          <div class="book-name">Virtues &amp; Merits</div>
+        </div>
+        <div class="hx"><span class="hx-ref">56:826</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 59</div>
+          <div class="book-name">Military Expeditions</div>
+        </div>
+        <div class="hx"><span class="hx-ref">59:362</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">59:369</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">59:443</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">59:448</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">59:516</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">59:524</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 62</div>
+          <div class="book-name">Wedlock &amp; Marriage</div>
+        </div>
+        <div class="hx"><span class="hx-ref">62:64</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">62:65</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">62:88</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+      </div>
+
+      <!-- COLUMN 3 -->
+      <div>
+        <div class="book-head">
+          <div class="book-num">Book 65</div>
+          <div class="book-name">Quran Commentary</div>
+        </div>
+        <div class="hx"><span class="hx-ref">65:4785</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">65:4921</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 71</div>
+          <div class="book-name">Medicine</div>
+        </div>
+        <div class="hx"><span class="hx-ref">71:590</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">71:592</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">71:673</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 72</div>
+          <div class="book-name">Dress</div>
+        </div>
+        <div class="hx"><span class="hx-ref">72:777</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">72:834</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 77</div>
+          <div class="book-name">Divine Will (Qadar)</div>
+        </div>
+        <div class="hx"><span class="hx-ref">77:594</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">77:611</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 82</div>
+          <div class="book-name">Limits &amp; Punishments</div>
+        </div>
+        <div class="hx"><span class="hx-ref">82:816</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">82:817</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">82:820</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 84</div>
+          <div class="book-name">Apostates</div>
+        </div>
+        <div class="hx"><span class="hx-ref">84:57</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">84:58</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 87</div>
+          <div class="book-name">Dream Visions</div>
+        </div>
+        <div class="hx"><span class="hx-ref">87:119</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="page-num right">xxx</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ── PAGE 2 — Hadith Reference Index (Sahih Muslim) ── -->
+<div class="page-label">Hadith Reference Index — Page 2 of 2</div>
+<div class="page">
+  <div class="page-inner">
+    <div class="running-header">
+      <span class="running-title">Hadith Reference Index</span>
+      <span class="running-page">xxx</span>
+    </div>
+
+    <div class="collection-banner">Sahih Muslim <span>Part III</span></div>
+
+    <div class="verse-columns">
+
+      <!-- COLUMN 1 -->
+      <div>
+        <div class="book-head">
+          <div class="book-num">Book 1</div>
+          <div class="book-name">Faith (Iman)</div>
+        </div>
+        <div class="hx"><span class="hx-ref">1:30</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">1:33</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">1:142</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">1:240</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 4</div>
+          <div class="book-name">Prayer</div>
+        </div>
+        <div class="hx"><span class="hx-ref">4:1032</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">4:1034</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">4:1038</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 5</div>
+          <div class="book-name">Mosques</div>
+        </div>
+        <div class="hx"><span class="hx-ref">5:1159</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 8</div>
+          <div class="book-name">Menstruation</div>
+        </div>
+        <div class="hx"><span class="hx-ref">8:3309</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">8:3368</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 9</div>
+          <div class="book-name">Prayer (Times)</div>
+        </div>
+        <div class="hx"><span class="hx-ref">9:300</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 10</div>
+          <div class="book-name">Marriage</div>
+        </div>
+        <div class="hx"><span class="hx-ref">10:3243</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">10:3246</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">10:3252</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">10:3426</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">10:3490</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+      </div>
+
+      <!-- COLUMN 2 -->
+      <div>
+        <div class="book-head">
+          <div class="book-num">Book 17</div>
+          <div class="book-name">Oaths &amp; Vows</div>
+        </div>
+        <div class="hx"><span class="hx-ref">17:4224</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 19</div>
+          <div class="book-name">Jihad &amp; Expeditions</div>
+        </div>
+        <div class="hx"><span class="hx-ref">19:4294</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">19:4319</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">19:4321</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">19:4362</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">19:4395</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">19:4457</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 20</div>
+          <div class="book-name">Government (Imarah)</div>
+        </div>
+        <div class="hx"><span class="hx-ref">20:4542</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">20:4553</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">20:4584</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 23</div>
+          <div class="book-name">Purification</div>
+        </div>
+        <div class="hx"><span class="hx-ref">23:496</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 26</div>
+          <div class="book-name">Drinks</div>
+        </div>
+        <div class="hx"><span class="hx-ref">26:5612</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 28</div>
+          <div class="book-name">Clothing &amp; Adornment</div>
+        </div>
+        <div class="hx"><span class="hx-ref">28:5173</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">28:5239</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+      </div>
+
+      <!-- COLUMN 3 -->
+      <div>
+        <div class="book-head">
+          <div class="book-num">Book 29</div>
+          <div class="book-name">General Behaviour</div>
+        </div>
+        <div class="hx"><span class="hx-ref">29:5567</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">29:5580</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">29:5613</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 31</div>
+          <div class="book-name">Visions (Ru'ya)</div>
+        </div>
+        <div class="hx"><span class="hx-ref">31:5635</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 32</div>
+          <div class="book-name">Virtues of the Companions</div>
+        </div>
+        <div class="hx"><span class="hx-ref">32:6159</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">32:6173</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 37</div>
+          <div class="book-name">Knowledge</div>
+        </div>
+        <div class="hx"><span class="hx-ref">37:6851</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 39</div>
+          <div class="book-name">Characteristics of Hypocrites</div>
+        </div>
+        <div class="hx"><span class="hx-ref">39:6985</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 40</div>
+          <div class="book-name">Heart-Softening Reports</div>
+        </div>
+        <div class="hx"><span class="hx-ref">40:7028</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">40:7059</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="book-head">
+          <div class="book-num">Book 41</div>
+          <div class="book-name">Tribulations &amp; Signs of the Hour</div>
+        </div>
+        <div class="hx"><span class="hx-ref">41:6985</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">41:7015</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+        <div class="hx"><span class="hx-ref">41:7034</span><span class="hx-dots"></span><span class="hx-page">xxx</span></div>
+
+        <div class="page-num right">xxx</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

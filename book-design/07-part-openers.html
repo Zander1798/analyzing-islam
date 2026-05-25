@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Part Openers — Analyzing Islam Vol. I</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 80px;
+    gap: 48px;
+  }
+
+  .page-label {
+    width: 665px;
+    color: #555;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: -32px;
+  }
+
+  .page {
+    width: 665px;
+    height: 945px;
+    background: #000;
+    color: #f5f5f5;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px #2a2a2a, 0 20px 60px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+  }
+
+  .page-inner {
+    position: absolute;
+    top: 76px;
+    bottom: 76px;
+    left: 68px;
+    right: 53px;
+  }
+
+  /* Part number label */
+  .part-label {
+    font-family: system-ui, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+    margin-bottom: 16px;
+  }
+
+  /* Large roman numeral — decorative, very large and dim */
+  .part-numeral {
+    font-family: "Didot","GFS Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
+    font-size: 180px;
+    font-weight: bold;
+    color: #0d0d0d;
+    line-height: 1;
+    position: absolute;
+    right: -10px;
+    top: 40px;
+    letter-spacing: -0.05em;
+    user-select: none;
+  }
+
+  /* Part title block — centered vertically */
+  .part-block {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+  }
+
+  .part-number-text {
+    font-family: system-ui, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+    margin-bottom: 14px;
+  }
+
+  .part-title {
+    font-family: "Didot","GFS Didot","Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;
+    font-size: 48px;
+    font-weight: bold;
+    color: #f5f5f5;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+
+  .part-rule {
+    width: 40px;
+    height: 1px;
+    background: #3a3a3a;
+    margin-bottom: 20px;
+  }
+
+  .part-desc {
+    font-family: system-ui, sans-serif;
+    font-size: 11px;
+    line-height: 1.8;
+    color: #9a9a9a;
+    max-width: 420px;
+  }
+
+  /* Entry count — pinned to bottom */
+  .part-count {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .part-count-rule {
+    width: 100%;
+    height: 1px;
+    background: #1e1e1e;
+    margin-bottom: 14px;
+  }
+
+  .part-count-text {
+    font-family: system-ui, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #5a5a5a;
+  }
+
+  .part-count-text span {
+    color: #9a9a9a;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+  <!-- PART I OPENER -->
+  <div class="page-label">Part Opener — Part I: The Quran</div>
+  <div class="page">
+    <div class="page-inner">
+      <div class="part-numeral">I</div>
+      <div class="part-block">
+        <div class="part-number-text">Part I</div>
+        <div class="part-title">The Quran</div>
+        <div class="part-rule"></div>
+        <div class="part-desc">
+          The central scripture of Islam, claimed by Muslims to be the eternal,
+          unchanged word of Allah revealed to Muhammad over twenty-three years
+          (c. 610–632 CE). Comprising 114 surahs and 6,236 verses, it is the
+          highest authority in Islamic law and theology.
+        </div>
+      </div>
+      <div class="part-count">
+        <div class="part-count-rule"></div>
+        <div class="part-count-text"><span>xxx</span> entries across <span>23</span> chapters</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART II OPENER -->
+  <div class="page-label">Part Opener — Part II: Sahih al-Bukhari</div>
+  <div class="page">
+    <div class="page-inner">
+      <div class="part-numeral">II</div>
+      <div class="part-block">
+        <div class="part-number-text">Part II</div>
+        <div class="part-title">Sahih<br>al-Bukhari</div>
+        <div class="part-rule"></div>
+        <div class="part-desc">
+          Compiled by Muhammad ibn Ismail al-Bukhari (810–870 CE), who examined
+          approximately 600,000 hadiths and retained 7,275. Considered by Sunni
+          Islam to be the most authentic book after the Quran. Its rulings form
+          the backbone of Sunni jurisprudence worldwide.
+        </div>
+      </div>
+      <div class="part-count">
+        <div class="part-count-rule"></div>
+        <div class="part-count-text"><span>xxx</span> entries across <span>27</span> chapters</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART III OPENER -->
+  <div class="page-label">Part Opener — Part III: Sahih Muslim</div>
+  <div class="page">
+    <div class="page-inner">
+      <div class="part-numeral">III</div>
+      <div class="part-block">
+        <div class="part-number-text">Part III</div>
+        <div class="part-title">Sahih Muslim</div>
+        <div class="part-rule"></div>
+        <div class="part-desc">
+          Compiled by Muslim ibn al-Hajjaj (815–875 CE), a contemporary of
+          al-Bukhari who examined approximately 300,000 hadiths and retained
+          around 7,500. Ranked second only to Sahih al-Bukhari in Sunni
+          tradition. Unlike Bukhari, it avoids repetition and is organized
+          thematically by subject.
+        </div>
+      </div>
+      <div class="part-count">
+        <div class="part-count-rule"></div>
+        <div class="part-count-text"><span>xxx</span> entries across <span>24</span> chapters</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
