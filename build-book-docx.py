@@ -847,7 +847,10 @@ SURAH_NAMES = {
 
 
 def parse_surah_verse(ref_str):
-    """Extract primary surah number from a ref string like 'Q 4:34' or 'Quran 9:5-6'."""
+    """Extract primary surah number from a ref string like 'Q 4:34' or 'Q 111'."""
+    m = re.search(r'Q\s+(\d+)', ref_str)
+    if m:
+        return int(m.group(1))
     m = re.search(r'(\d+):\d', ref_str)
     return int(m.group(1)) if m else 999
 
@@ -886,22 +889,34 @@ def add_general_index(doc, chapters):
 
 def add_quran_verse_index(doc, entries):
     """Back matter — Quran Verse Index, grouped by surah, two-column layout."""
-    # Add section break for two-column layout
-    sec = add_section_break_next_page(doc)
-    # Set two columns on this section via XML
-    sectPr = sec._sectPr
+    # Create an inline next-page section break and hold the reference to ITS sectPr
+    para = doc.add_paragraph()
+    pPr = para._p.get_or_add_pPr()
+    sectPr_el = OxmlElement('w:sectPr')
+    pgType = OxmlElement('w:type')
+    pgType.set(qn('w:val'), 'nextPage')
+    sectPr_el.append(pgType)
+
+    # Two-column layout on THIS inline sectPr (6mm gap)
     cols = OxmlElement('w:cols')
     cols.set(qn('w:num'), '2')
-    # 6mm gap in twips (1 mm = 56.7 twips)
     cols.set(qn('w:space'), str(int(6 * 56.7)))
-    sectPr.append(cols)
-    # Copy page size/margins to this section
-    sec.page_width    = Mm(176)
-    sec.page_height   = Mm(250)
-    sec.top_margin    = Mm(20)
-    sec.bottom_margin = Mm(25)
-    sec.left_margin   = Mm(25)
-    sec.right_margin  = Mm(18)
+    sectPr_el.append(cols)
+
+    # Page size in twips (1 pt = 20 twips; Mm(x).pt converts mm to points)
+    pgSz = OxmlElement('w:pgSz')
+    pgSz.set(qn('w:w'), str(int(Mm(176).pt * 20)))
+    pgSz.set(qn('w:h'), str(int(Mm(250).pt * 20)))
+    sectPr_el.append(pgSz)
+
+    pgMar = OxmlElement('w:pgMar')
+    pgMar.set(qn('w:top'),    str(int(Mm(20).pt * 20)))
+    pgMar.set(qn('w:bottom'), str(int(Mm(25).pt * 20)))
+    pgMar.set(qn('w:left'),   str(int(Mm(25).pt * 20)))
+    pgMar.set(qn('w:right'),  str(int(Mm(18).pt * 20)))
+    sectPr_el.append(pgMar)
+
+    pPr.append(sectPr_el)
 
     doc.add_paragraph('Quran Verse Index', style='AI_IndexH1')
 
@@ -911,7 +926,8 @@ def add_quran_verse_index(doc, entries):
         surah_num = parse_surah_verse(entry.get('ref', ''))
         by_surah.setdefault(surah_num, []).append(entry)
 
-    for surah_num in sorted(by_surah.keys()):
+    # Skip phantom 999 group (entries with no recognizable surah reference)
+    for surah_num in sorted(k for k in by_surah.keys() if k != 999):
         surah_entries = by_surah[surah_num]
         surah_name = SURAH_NAMES.get(surah_num, '')
         p = doc.add_paragraph(style='AI_IndexChapter')
