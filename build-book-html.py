@@ -167,8 +167,12 @@ def strip_tags(s: str) -> str:
 
 
 def esc(s: str) -> str:
-    """HTML-escape a plain-text string for insertion into HTML."""
-    return html_mod.escape(str(s))
+    """HTML-escape a plain-text string for insertion into HTML text nodes.
+
+    Uses quote=False so apostrophes are not converted to &#x27; — apostrophes
+    are safe in HTML text content and only require escaping inside attribute values.
+    """
+    return html_mod.escape(str(s), quote=False)
 
 
 def assign_chapter(eid: str, categories: list) -> int:
@@ -511,6 +515,415 @@ body {
 }
 @page { size: 176mm 250mm; margin: 0; }
 """
+
+
+def render_front_matter(chapters: dict, ch_start_pages: dict) -> list:
+    """Return list of 6 HTML strings: half-title, title, copyright, TOC, foreword, abbreviations."""
+
+    # ── i: Half-title ──
+    s_halftitle = '''
+<section class="page fm-page" id="fm-halftitle" data-page="i">
+  <div class="fm-halftitle">Analyzing Islam</div>
+  <div class="fm-vol">Volume I</div>
+  <div class="fm-subtitle">The Quran</div>
+  <div class="fm-pagenum">i</div>
+</section>'''
+
+    # ── ii: Title page ──
+    s_title = '''
+<section class="page fm-page" id="fm-title" data-page="ii">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:0;">
+    <div class="fm-halftitle" style="margin-top:0;">Analyzing Islam</div>
+    <div class="fm-vol" style="margin-top:12px;">Volume I &mdash; The Quran</div>
+    <div class="fm-subtitle" style="margin-top:8px;">A Critical Reference Guide</div>
+    <hr class="fm-rule" style="margin:32px 0;">
+    <div class="fm-author">G.J. van Vuuren</div>
+    <hr class="fm-rule" style="margin:32px 0;">
+    <div class="fm-publisher">analyzingislam.com</div>
+  </div>
+  <div class="fm-pagenum">ii</div>
+</section>'''
+
+    # ── iii: Copyright ──
+    s_copyright = '''
+<section class="page fm-page" id="fm-copyright" data-page="iii">
+  <div style="margin-top:auto;">
+    <p class="fm-copyright">Copyright &copy; 2026 G.J. van Vuuren</p>
+    <p class="fm-copyright" style="margin-top:12px;">
+      All rights reserved. No part of this publication may be reproduced, distributed,
+      or transmitted in any form or by any means without the prior written permission
+      of the publisher.
+    </p>
+    <p class="fm-copyright" style="margin-top:12px;">
+      Published by AnalyzingIslam.com<br>
+      analyzingislam.com
+    </p>
+    <p class="fm-copyright" style="margin-top:12px;">First edition, 2026</p>
+    <p class="fm-copyright" style="margin-top:12px;">
+      All Quranic quotations are from the Saheeh International English translation.
+    </p>
+    <p class="fm-copyright" style="margin-top:12px;">
+      Volume I of a projected multi-volume series examining primary Islamic source texts.
+    </p>
+  </div>
+  <div class="fm-pagenum">iii</div>
+</section>'''
+
+    # ── iv: TOC ──
+    toc_rows = ''
+    for ch_num in sorted(chapters.keys()):
+        if not chapters[ch_num]:
+            continue
+        ch_name, _ = CHAPTERS[ch_num]
+        pg = ch_start_pages.get(ch_num, '&mdash;')
+        toc_rows += f'''
+    <div class="toc-entry">
+      <span class="toc-num">{ch_num}</span>
+      <span class="toc-title">{ch_name}</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page">{pg}</span>
+    </div>'''
+
+    s_toc = f'''
+<section class="page fm-page" id="fm-toc" data-page="iv">
+  <h2 class="fm-h1">Contents</h2>
+  {toc_rows}
+  <div class="fm-pagenum">iv</div>
+</section>'''
+
+    # ── v–vii: Foreword ──
+    s_foreword = '''
+<section class="page fm-page" id="fm-foreword" data-page="v">
+  <h2 class="fm-h1">Foreword</h2>
+  <p class="fm-p">
+    This volume is a reference guide, not a polemic. Its purpose is to catalogue, clearly and
+    without embellishment, the passages of the Quran that present difficulties &mdash; theological,
+    logical, scientific, historical, or ethical &mdash; for the claim that the text is the literal,
+    perfect, and eternal word of an omniscient God.
+  </p>
+  <p class="fm-p">
+    Each entry follows the same structure: what the verse or passage says, why it constitutes
+    a problem, the standard Muslim apologetic response, and why that response does or does not
+    resolve the difficulty. Entries are rated by strength: <em>Basic</em> (a stock reply exists
+    and is widely rehearsed), <em>Moderate</em> (answering requires conceding something), or
+    <em>Strong</em> (every standard response generates a new problem or requires abandoning the
+    plain meaning of the text).
+  </p>
+  <p class="fm-p">
+    The Quran is quoted throughout from the Saheeh International English translation &mdash; chosen
+    because it is the translation most widely recommended by contemporary Islamic scholars and
+    apologists as accurate and faithful to the Arabic. Where a specific word or phrase is
+    disputed, the Arabic and multiple translations are noted in the entry.
+  </p>
+  <p class="fm-p">
+    This is Volume I of a projected series. Subsequent volumes will address the hadith
+    collections (Sahih Bukhari, Sahih Muslim, and the four Sunan), the Sira (prophetic
+    biography), and classical Islamic jurisprudence. Each volume follows the same format and
+    rating system, permitting cross-volume comparison.
+  </p>
+  <p class="fm-p">
+    The twenty-three chapters of this volume correspond to the major category groupings used
+    on the AnalyzingIslam.com catalog. Not every entry belongs neatly in one category; where
+    a passage raises problems of multiple types, it is placed in the chapter corresponding to
+    its primary difficulty, with cross-references noted where relevant.
+  </p>
+  <p class="fm-p">
+    A note on tone: the entries describe problems as problems. They do not impute bad faith
+    to Muslim believers, assume that Islam as a religion is reducible to its difficult texts,
+    or suggest that individual Muslims are responsible for what their scripture contains.
+    The object of scrutiny throughout is the text and its implications &mdash; not its adherents.
+  </p>
+  <div class="fm-pagenum">v</div>
+</section>'''
+
+    # ── viii–ix: Abbreviations ──
+    s_abbr = '''
+<section class="page fm-page" id="fm-abbr" data-page="viii">
+  <h2 class="fm-h1">Abbreviations &amp; Reference Guide</h2>
+
+  <div class="fm-sh">CITATION FORMAT</div>
+  <p class="fm-p">
+    <span class="fm-term">Q 4:34</span>
+    &nbsp; Quran, Surah 4 (An-Nisa), Verse 34. All Quranic citations follow this
+    surah:verse format. Where a range of verses is relevant, it appears as Q 9:5&ndash;6.
+    All quotations are from the Saheeh International English translation.
+  </p>
+
+  <div class="fm-sh">STRENGTH RATINGS</div>
+  <p class="fm-p">
+    <span class="fm-term">Basic</span>
+    &nbsp; Apologists have a stock reply. The problem is real but the standard response
+    is widely known and rehearsed.
+  </p>
+  <p class="fm-p">
+    <span class="fm-term">Moderate</span>
+    &nbsp; Answering requires conceding something &mdash; softening a claim or reinterpreting the text.
+  </p>
+  <p class="fm-p">
+    <span class="fm-term">Strong</span>
+    &nbsp; Apologetic moves generate new problems. Every standard response requires
+    abandoning the plain meaning of the text or contradicts another Islamic claim.
+  </p>
+
+  <div class="fm-sh">QURANIC TERMINOLOGY</div>
+  <p class="fm-p"><span class="fm-term">Ayah (pl. Ayat)</span> &nbsp; A verse of the Quran; literally &ldquo;a sign&rdquo;</p>
+  <p class="fm-p"><span class="fm-term">Surah</span> &nbsp; A chapter of the Quran; there are 114 in total</p>
+  <p class="fm-p"><span class="fm-term">Meccan</span> &nbsp; Revealed while Muhammad was in Mecca (c. 610&ndash;622 CE)</p>
+  <p class="fm-p"><span class="fm-term">Medinan</span> &nbsp; Revealed while Muhammad was in Medina (c. 622&ndash;632 CE)</p>
+  <p class="fm-p"><span class="fm-term">Naskh</span> &nbsp; Abrogation &mdash; the doctrine that later verses can cancel earlier ones</p>
+  <p class="fm-p"><span class="fm-term">Tafsir</span> &nbsp; Quranic exegesis or commentary</p>
+  <p class="fm-p"><span class="fm-term">Asbab al-Nuzul</span> &nbsp; The &ldquo;occasions of revelation&rdquo; &mdash; historical circumstances that triggered specific verses</p>
+
+  <div class="fm-sh">ARABIC &amp; ISLAMIC TERMINOLOGY</div>
+  <p class="fm-p"><span class="fm-term">Fiqh</span> &nbsp; Islamic jurisprudence &mdash; the body of legal rulings derived from Quran and hadith</p>
+  <p class="fm-p"><span class="fm-term">Dhimmi</span> &nbsp; A non-Muslim subject living under Islamic rule</p>
+  <p class="fm-p"><span class="fm-term">Hudud</span> &nbsp; Fixed Quranic punishments &mdash; amputation, stoning, lashing</p>
+  <p class="fm-p"><span class="fm-term">Jizya</span> &nbsp; A tax levied on non-Muslims under Islamic governance (Q 9:29)</p>
+  <p class="fm-p"><span class="fm-term">Tahrif</span> &nbsp; The Islamic claim that Jews and Christians corrupted their scriptures</p>
+  <p class="fm-p"><span class="fm-term">Makr</span> &nbsp; Plotting or scheming; used of Allah in Q 3:54 and 8:30</p>
+  <p class="fm-p"><span class="fm-term">Ma malakat aymanukum</span> &nbsp; &ldquo;What your right hands possess&rdquo; &mdash; the Quranic phrase for enslaved people and captives</p>
+
+  <div class="fm-pagenum">viii</div>
+</section>'''
+
+    return [s_halftitle, s_title, s_copyright, s_toc, s_foreword, s_abbr]
+
+
+def render_chapter_opener(ch_num: int, entries: list, section_idx: int) -> str:
+    """Render one chapter opener page."""
+    ch_name, ch_intro = CHAPTERS[ch_num]
+    count_label = f"{len(entries)} {'entry' if len(entries) == 1 else 'entries'}"
+
+    entry_items = ''
+    for i, e in enumerate(entries, 1):
+        title = e['title']
+        if len(title) > 68:
+            title = title[:67] + '…'
+        entry_items += (
+            f'<div class="ch-entry-item">'
+            f'<span class="ch-entry-num">{i}.</span>{esc(title)}'
+            f'</div>\n'
+        )
+
+    return f'''
+<section class="page chapter-opener" id="s{section_idx}" data-page="{section_idx}" data-chapter="{ch_num}">
+  <div class="ch-label">CHAPTER {ch_num}</div>
+  <h1 class="ch-title">{esc(ch_name)}</h1>
+  <hr class="ch-rule">
+  <div class="ch-count">{count_label}</div>
+  <p class="ch-intro">{esc(ch_intro)}</p>
+  <div class="ch-entries-list">
+    {entry_items}
+  </div>
+  <div class="entry-pagenum">{section_idx}</div>
+</section>'''
+
+
+def render_entry(meta: dict, sections_data: dict, ch_num: int, section_idx: int) -> str:
+    """Render one entry page."""
+    eid      = meta['id']
+    title    = meta['title']
+    ref      = meta['ref']
+    strength = meta.get('strength', 'basic')
+    cats     = meta.get('categories', [])
+    sec      = sections_data.get(eid, {})
+
+    ch_name, _ = CHAPTERS.get(ch_num, (str(ch_num), ''))
+    breadcrumb = f'THE QURAN  ·  CHAPTER {ch_num}  ·  {ch_name.upper()}'
+
+    # Tags row
+    cat_badges = ''.join(
+        f'<span class="tag-badge">{esc(c.upper().replace("-", " "))}</span> '
+        for c in cats[:2]
+    )
+    strength_cls = STRENGTH_CSS.get(strength, 'tag-basic')
+    strength_lbl = STRENGTH_LABEL.get(strength, 'BASIC')
+    tags_html = (
+        f'{cat_badges}'
+        f'<span class="tag-badge {strength_cls}">{strength_lbl}</span> '
+        f'<span class="tag-ref">{esc(ref)}</span>'
+    )
+
+    # Quote block
+    quote = sec.get('quote', '').strip()
+    quote_html = ''
+    if quote:
+        quote_html = f'<blockquote class="entry-quote">&ldquo;{esc(quote)}&rdquo;</blockquote>'
+
+    # Content sections
+    content_html = ''
+    for label, key in [
+        ('WHAT THE VERSE SAYS',   'says'),
+        ('WHY THIS IS A PROBLEM', 'problem'),
+        ('THE MUSLIM RESPONSE',   'response'),
+        ('WHY IT FAILS',          'fails'),
+    ]:
+        text = sec.get(key, '').strip()
+        if not text:
+            continue
+        paras = ''.join(
+            f'<p class="section-body">{esc(p.strip())}</p>'
+            for p in text.split('\n\n') if p.strip()
+        )
+        content_html += f'<div class="section-label">{label}</div>{paras}\n'
+
+    return f'''
+<section class="page entry" id="s{section_idx}" data-page="{section_idx}" data-chapter="{ch_num}">
+  <div class="entry-breadcrumb">{esc(breadcrumb)}</div>
+  <h2 class="entry-title">{esc(title)}</h2>
+  <div class="entry-tags">{tags_html}</div>
+  {quote_html}
+  {content_html}
+  <div class="entry-pagenum">{section_idx}</div>
+</section>'''
+
+
+def render_general_index(chapters: dict, section_idx: int) -> str:
+    """Render the General Index back matter page."""
+    rows = ''
+    for ch_num in sorted(chapters.keys()):
+        ch_entries = chapters[ch_num]
+        if not ch_entries:
+            continue
+        ch_name, _ = CHAPTERS[ch_num]
+        rows += f'<div class="idx-cat-header">Chapter {ch_num} — {esc(ch_name)}</div>\n'
+        for e in ch_entries:
+            title = e['title']
+            if len(title) > 70:
+                title = title[:69] + '…'
+            rows += (
+                f'<div class="idx-entry">'
+                f'<span class="idx-entry-title">{esc(title)}</span>'
+                f'<span class="idx-entry-page">{esc(e["ref"])}</span>'
+                f'</div>\n'
+            )
+
+    return f'''
+<section class="page back-matter" id="s{section_idx}" data-page="{section_idx}">
+  <h2 class="bm-h1">General Index</h2>
+  <div class="idx-columns">
+    {rows}
+  </div>
+  <div class="entry-pagenum">{section_idx}</div>
+</section>'''
+
+
+def render_verse_index(entries: list, section_idx: int) -> str:
+    """Render the Quran Verse Index back matter page, sorted by surah then ayah."""
+    def sort_key(e: dict) -> tuple:
+        m = re.search(r'Q\s*(\d+):(\d+)', e['ref'])
+        if m:
+            return (int(m.group(1)), int(m.group(2)))
+        return (9999, 0)
+
+    sorted_entries = sorted(entries, key=sort_key)
+
+    rows = ''
+    for e in sorted_entries:
+        title = e['title']
+        if len(title) > 70:
+            title = title[:69] + '…'
+        rows += (
+            f'<div class="idx-entry">'
+            f'<span class="idx-entry-page" style="min-width:60px;margin-left:0;margin-right:8px;">'
+            f'{esc(e["ref"])}</span>'
+            f'<span class="idx-entry-title">{esc(title)}</span>'
+            f'</div>\n'
+        )
+
+    return f'''
+<section class="page back-matter" id="s{section_idx}" data-page="{section_idx}">
+  <h2 class="bm-h1">Quran Verse Index</h2>
+  <div class="idx-columns">
+    {rows}
+  </div>
+  <div class="entry-pagenum">{section_idx}</div>
+</section>'''
+
+
+def render_navigator(all_section_ids: list, chapter_section_ids: set) -> str:
+    """
+    Render the fixed right-side page navigator and inline JS.
+
+    all_section_ids     : ordered list of every section id
+    chapter_section_ids : set of ids that are chapter openers (get brighter tick)
+    """
+    total = len(all_section_ids)
+
+    ticks_html = ''
+    for i, sid in enumerate(all_section_ids):
+        pct = (i / (total - 1) * 100) if total > 1 else 0
+        extra_cls = ' chapter-mark' if sid in chapter_section_ids else ''
+        ticks_html += (
+            f'<div class="pn-tick{extra_cls}" '
+            f'data-idx="{i}" data-sid="{sid}" '
+            f'style="top:{pct:.3f}%"></div>\n'
+        )
+
+    js = f"""
+(function() {{
+  var sections = Array.from(document.querySelectorAll('section.page'));
+  var track   = document.getElementById('pn-track');
+  var counter = document.getElementById('pn-counter');
+  var thumb   = document.getElementById('pn-thumb');
+  var total   = {total};
+
+  track.querySelectorAll('.pn-tick').forEach(function(tick) {{
+    tick.addEventListener('click', function(e) {{
+      e.stopPropagation();
+      var sid = tick.dataset.sid;
+      var target = document.getElementById(sid);
+      if (target) target.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+    }});
+  }});
+
+  track.addEventListener('click', function(e) {{
+    if (e.target === track || e.target.id === 'pn-thumb') {{
+      var rect = track.getBoundingClientRect();
+      var pct  = (e.clientY - rect.top) / rect.height;
+      var idx  = Math.round(pct * (sections.length - 1));
+      if (sections[idx]) sections[idx].scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+    }}
+  }});
+
+  function setActive(idx) {{
+    var sec = sections[idx];
+    if (!sec) return;
+    var pg = sec.dataset.page || (idx + 1);
+    counter.textContent = pg + '\\n/ ' + total;
+    var pct = total > 1 ? (idx / (total - 1) * 100) : 0;
+    thumb.style.top = pct.toFixed(2) + '%';
+    var prev = track.querySelector('.pn-tick.active');
+    if (prev) prev.classList.remove('active');
+    var next = track.querySelector('.pn-tick[data-idx="' + idx + '"]');
+    if (next) next.classList.add('active');
+  }}
+
+  var io = new IntersectionObserver(function(entries) {{
+    entries.forEach(function(entry) {{
+      if (entry.isIntersecting) {{
+        var idx = sections.indexOf(entry.target);
+        if (idx >= 0) setActive(idx);
+      }}
+    }});
+  }}, {{ threshold: 0.15, rootMargin: '-20% 0px -20% 0px' }});
+
+  sections.forEach(function(sec) {{ io.observe(sec); }});
+  setActive(0);
+}})();
+"""
+
+    return f'''
+<div id="page-nav">
+  <div id="pn-counter">1&#10;/ {total}</div>
+  <div id="pn-track">
+    {ticks_html}
+    <div id="pn-thumb"></div>
+  </div>
+</div>
+<script>
+{js}
+</script>'''
 
 
 if __name__ == '__main__':
