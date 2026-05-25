@@ -889,34 +889,19 @@ def add_general_index(doc, chapters):
 
 def add_quran_verse_index(doc, entries):
     """Back matter — Quran Verse Index, grouped by surah, two-column layout."""
-    # Create an inline next-page section break and hold the reference to ITS sectPr
+    # Page break into the verse index section
+    # NOTE: In OOXML, an inline sectPr inside a paragraph's pPr ENDS the section
+    # at that paragraph — so it governs the content BEFORE the break (General Index),
+    # not the content after (Verse Index). The Verse Index content falls into the
+    # body sentinel sectPr. We add w:cols to the body sentinel AFTER writing content.
     para = doc.add_paragraph()
     pPr = para._p.get_or_add_pPr()
     sectPr_el = OxmlElement('w:sectPr')
     pgType = OxmlElement('w:type')
     pgType.set(qn('w:val'), 'nextPage')
     sectPr_el.append(pgType)
-
-    # Two-column layout on THIS inline sectPr (6mm gap)
-    cols = OxmlElement('w:cols')
-    cols.set(qn('w:num'), '2')
-    cols.set(qn('w:space'), str(int(6 * 56.7)))
-    sectPr_el.append(cols)
-
-    # Page size in twips (1 pt = 20 twips; Mm(x).pt converts mm to points)
-    pgSz = OxmlElement('w:pgSz')
-    pgSz.set(qn('w:w'), str(int(Mm(176).pt * 20)))
-    pgSz.set(qn('w:h'), str(int(Mm(250).pt * 20)))
-    sectPr_el.append(pgSz)
-
-    pgMar = OxmlElement('w:pgMar')
-    pgMar.set(qn('w:top'),    str(int(Mm(20).pt * 20)))
-    pgMar.set(qn('w:bottom'), str(int(Mm(25).pt * 20)))
-    pgMar.set(qn('w:left'),   str(int(Mm(25).pt * 20)))
-    pgMar.set(qn('w:right'),  str(int(Mm(18).pt * 20)))
-    sectPr_el.append(pgMar)
-
     pPr.append(sectPr_el)
+    # (No w:cols here — this sectPr governs the General Index section, not the Verse Index)
 
     doc.add_paragraph('Quran Verse Index', style='AI_IndexH1')
 
@@ -926,7 +911,7 @@ def add_quran_verse_index(doc, entries):
         surah_num = parse_surah_verse(entry.get('ref', ''))
         by_surah.setdefault(surah_num, []).append(entry)
 
-    # Skip phantom 999 group (entries with no recognizable surah reference)
+    # Skip phantom 999 group
     for surah_num in sorted(k for k in by_surah.keys() if k != 999):
         surah_entries = by_surah[surah_num]
         surah_name = SURAH_NAMES.get(surah_num, '')
@@ -942,6 +927,14 @@ def add_quran_verse_index(doc, entries):
             p.add_run(ref)
             _add_right_tab(p, position_mm=55)
             p.add_run('\t[p]')
+
+    # Apply two-column layout to the body sentinel sectPr,
+    # which governs the Verse Index section (all content added above)
+    body_sectPr = doc.element.body.find(qn('w:sectPr'))
+    cols = OxmlElement('w:cols')
+    cols.set(qn('w:num'), '2')
+    cols.set(qn('w:space'), str(int(6 * 56.7)))
+    body_sectPr.append(cols)
 
 
 def main():
