@@ -131,3 +131,33 @@ def test_navigator_tick_count_and_chapter_marks():
     assert tick_count >= 290, f"Expected >=290 ticks, got {tick_count}"
     assert 'chapter-mark' in html
     assert 'IntersectionObserver' in html
+
+
+# ── Task 8: Integration test ──────────────────────────────────────────────────
+
+def test_build_produces_valid_output():
+    """Full integration test: build runs, output > 1 MB, contains key content."""
+    import subprocess, sys
+    result = subprocess.run(
+        [sys.executable, 'build-book-html.py'],
+        capture_output=True, text=True,
+        cwd=str(Path(__file__).parent.parent)
+    )
+    assert result.returncode == 0, (
+        f"Build failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+    )
+
+    out = Path(__file__).parent.parent / 'book-design/vol1-quran/book.html'
+    assert out.exists(), "book.html was not created"
+    size = out.stat().st_size
+    assert size > 1_000_000, f"book.html too small: {size} bytes"
+
+    content = out.read_text(encoding='utf-8')
+    for ch_name in ['Abrogation', 'Scripture Integrity', 'Contradictions',
+                    'Warfare &amp; Jihad', 'Antisemitism', 'Paradise',
+                    'Prophetic Privileges']:
+        assert ch_name in content, f"Missing chapter: {ch_name}"
+    assert 'General Index' in content
+    assert 'Quran Verse Index' in content
+    assert 'IntersectionObserver' in content
+    assert 'pn-tick' in content

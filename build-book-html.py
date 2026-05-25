@@ -926,5 +926,108 @@ def render_navigator(all_section_ids: list, chapter_section_ids: set) -> str:
 </script>'''
 
 
+def main():
+    print("Loading entries…")
+    entries       = get_entries()
+    sections_data = parse_entries()
+    chapters      = build_chapters(entries)
+
+    non_empty = sum(1 for v in chapters.values() if v)
+    print(f"  {len(entries)} entries across {non_empty} chapters")
+
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # ── Assign section indices ────────────────────────────────────────────────
+    # Front matter: 6 fixed sections (indices 0-5)
+    FM_IDS = ['fm-halftitle', 'fm-title', 'fm-copyright',
+              'fm-toc', 'fm-foreword', 'fm-abbr']
+    FM_COUNT = len(FM_IDS)
+
+    all_section_ids     = list(FM_IDS)
+    chapter_section_ids = set()
+    ch_start_pages      = {}   # ch_num -> section_idx (used in TOC)
+    ch_sections         = []   # (kind, ch_num, data, section_idx)
+
+    body_idx = FM_COUNT
+    for ch_num in sorted(chapters.keys()):
+        ch_entries = chapters[ch_num]
+        if not ch_entries:
+            continue
+
+        # Chapter opener
+        ch_start_pages[ch_num] = body_idx
+        section_id = f's{body_idx}'
+        all_section_ids.append(section_id)
+        chapter_section_ids.add(section_id)
+        ch_sections.append(('opener', ch_num, ch_entries, body_idx))
+        body_idx += 1
+
+        # Entries
+        for e in ch_entries:
+            section_id = f's{body_idx}'
+            all_section_ids.append(section_id)
+            ch_sections.append(('entry', ch_num, e, body_idx))
+            body_idx += 1
+
+    # Back matter: 2 sections
+    genidx_idx  = body_idx; all_section_ids.append(f's{body_idx}'); body_idx += 1
+    versidx_idx = body_idx; all_section_ids.append(f's{body_idx}'); body_idx += 1
+
+    total_sections = len(all_section_ids)
+    print(f"  {total_sections} total sections")
+
+    # ── Render all parts ──────────────────────────────────────────────────────
+    print("Rendering front matter…")
+    fm_sections = render_front_matter(chapters, ch_start_pages)
+
+    print("Rendering body sections…")
+    body_parts = []
+    for item in ch_sections:
+        kind = item[0]
+        if kind == 'opener':
+            _, ch_num, ch_entries, idx = item
+            body_parts.append(render_chapter_opener(ch_num, ch_entries, idx))
+        else:
+            _, ch_num, entry, idx = item
+            body_parts.append(render_entry(entry, sections_data, ch_num, idx))
+
+    print("Rendering back matter…")
+    genidx_html  = render_general_index(chapters, genidx_idx)
+    versidx_html = render_verse_index(entries, versidx_idx)
+
+    print("Rendering navigator…")
+    nav_html = render_navigator(all_section_ids, chapter_section_ids)
+
+    # ── Assemble full HTML ────────────────────────────────────────────────────
+    print("Assembling book.html…")
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyzing Islam — Volume I: The Quran</title>
+  <style>
+{render_styles()}
+  </style>
+</head>
+<body>
+
+{''.join(fm_sections)}
+
+{''.join(body_parts)}
+
+{genidx_html}
+{versidx_html}
+
+{nav_html}
+
+</body>
+</html>"""
+
+    OUT.write_text(html, encoding='utf-8')
+    size_mb = OUT.stat().st_size / 1_048_576
+    print(f"Done -> {OUT}  ({size_mb:.1f} MB, {total_sections} sections)")
+
+
 if __name__ == '__main__':
-    print("main() not yet implemented — run after Task 8 is complete.")
+    main()
