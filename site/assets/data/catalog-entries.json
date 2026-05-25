@@ -587,17 +587,6 @@
     "url": "catalog/quran.html#salvation-for-jews-christians-sabeans-then-canceled-bc6d047c"
   },
   {
-    "id": "jews-transformed-into-apes-a205d9d7",
-    "source": "quran",
-    "title": "Jews transformed into apes",
-    "ref": "Quran 2:65 (also 5:60, 7:166)",
-    "categories": [
-      "strange"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#jews-transformed-into-apes-a205d9d7"
-  },
-  {
     "id": "the-cow-that-revives-a-murdered-man-bd38a867",
     "source": "quran",
     "title": "The cow that revives a murdered man",
@@ -1048,19 +1037,6 @@
     "url": "catalog/quran.html#jizya-humiliation-tax-on-jews-and-christians-36d927d8"
   },
   {
-    "id": "fabricated-quote-jews-say-ezra-is-the-son-of-allah-df9200f3",
-    "source": "quran",
-    "title": "Fabricated quote: \"Jews say Ezra is the son of Allah\"",
-    "ref": "Quran 9:30",
-    "categories": [
-      "preislamic",
-      "jesus",
-      "disbelievers"
-    ],
-    "strength": "strong",
-    "url": "catalog/quran.html#fabricated-quote-jews-say-ezra-is-the-son-of-allah-df9200f3"
-  },
-  {
     "id": "cast-terror-into-the-hearts-strike-upon-the-necks-caf4bc42",
     "source": "quran",
     "title": "\"Cast terror into the hearts... strike upon the necks\"",
@@ -1125,17 +1101,6 @@
     ],
     "strength": "strong",
     "url": "catalog/quran.html#prophet-should-not-take-captives-until-he-inflicts-a-massacr-75d23fb1"
-  },
-  {
-    "id": "polytheists-are-unclean-and-forbidden-from-the-sacred-mosque-793234d0",
-    "source": "quran",
-    "title": "Polytheists are \"unclean\" and forbidden from the sacred mosque",
-    "ref": "Quran 9:28",
-    "categories": [
-      "disbelievers"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#polytheists-are-unclean-and-forbidden-from-the-sacred-mosque-793234d0"
   },
   {
     "id": "allah-has-purchased-their-lives-the-martyrdom-transaction-a1c4aee2",
@@ -1471,18 +1436,6 @@
     "url": "catalog/quran.html#mountains-as-pegs-holding-down-the-earth-76c69e15"
   },
   {
-    "id": "the-sun-runs-to-a-fixed-resting-place-5f69c2e2",
-    "source": "quran",
-    "title": "The sun runs to a fixed resting place",
-    "ref": "Quran 36:38",
-    "categories": [
-      "cosmology",
-      "strange"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#the-sun-runs-to-a-fixed-resting-place-5f69c2e2"
-  },
-  {
     "id": "the-quran-s-claims-of-clarity-vs-need-for-external-interpret-82791166",
     "source": "quran",
     "title": "The Quran's claims of clarity vs need for external interpretation",
@@ -1507,18 +1460,6 @@
     ],
     "strength": "strong",
     "url": "catalog/quran.html#the-preserved-tablet-vs-20-years-of-piecemeal-revelation-d829f63b"
-  },
-  {
-    "id": "creation-in-six-days-or-eight-a-day-count-contradiction-201b57cd",
-    "source": "quran",
-    "title": "Creation in six days — or eight? A day-count contradiction",
-    "ref": "Quran 7:54, 10:3, 25:59 vs 41:9–12",
-    "categories": [
-      "contradiction",
-      "cosmology"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#creation-in-six-days-or-eight-a-day-count-contradiction-201b57cd"
   },
   {
     "id": "noah-s-flood-covered-the-earth-with-water-spouting-from-oven-c4a19623",
@@ -1980,18 +1921,6 @@
     "url": "catalog/quran.html#allah-sends-blessings-upon-the-prophet-why-would-god-praise-50a00fdc"
   },
   {
-    "id": "jinn-listen-to-the-quran-in-a-tree-and-convert-63828ff4",
-    "source": "quran",
-    "title": "Jinn listen to the Quran in a tree and convert",
-    "ref": "Quran 72:1–15 (also 46:29–32)",
-    "categories": [
-      "magic",
-      "strange"
-    ],
-    "strength": "basic",
-    "url": "catalog/quran.html#jinn-listen-to-the-quran-in-a-tree-and-convert-63828ff4"
-  },
-  {
     "id": "quran-night-prayer-abrogated",
     "source": "quran",
     "title": "Night prayer originally obligatory — then halved, then voluntary",
@@ -2023,17 +1952,6 @@
     ],
     "strength": "strong",
     "url": "catalog/quran.html#quran-jews-christians-not-friends"
-  },
-  {
-    "id": "quran-do-not-befriend-kafir",
-    "source": "quran",
-    "title": "\"Let not believers take disbelievers as allies\" — unless pretending",
-    "ref": "Q 3:28",
-    "categories": [
-      "disbelievers"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#quran-do-not-befriend-kafir"
   },
   {
     "id": "quran-severe-against-disbelievers",
@@ -2101,17 +2019,6 @@
     ],
     "strength": "strong",
     "url": "catalog/quran.html#quran-jesus-prophesied-ahmad"
-  },
-  {
-    "id": "quran-allah-best-plotters-jesus",
-    "source": "quran",
-    "title": "\"They plotted, Allah plotted — Allah is the best of plotters\"",
-    "ref": "Q 3:54",
-    "categories": [
-      "jesus"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#quran-allah-best-plotters-jesus"
   },
   {
     "id": "quran-mary-no-joseph",
@@ -2287,18 +2194,6 @@
     "url": "catalog/quran.html#quran-ask-those-before-you"
   },
   {
-    "id": "quran-pharaoh-wall-building",
-    "source": "quran",
-    "title": "Pharaoh asks Haman to bake clay bricks and build a tall tower",
-    "ref": "Q 28:38, 40:36-37",
-    "categories": [
-      "contradiction",
-      "science"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#quran-pharaoh-wall-building"
-  },
-  {
     "id": "quran-solomon-army-hoopoe",
     "source": "quran",
     "title": "Solomon's hoopoe bird scout investigates Sheba",
@@ -2416,18 +2311,6 @@
     "url": "catalog/quran.html#quran-one-breath-fifty-thousand-years"
   },
   {
-    "id": "quran-predestination-but-punishment",
-    "source": "quran",
-    "title": "Allah creates disbelievers and guarantees their damnation — then punishes them for it",
-    "ref": "Q 7:179, 11:119, 32:13",
-    "categories": [
-      "logic",
-      "contradiction"
-    ],
-    "strength": "strong",
-    "url": "catalog/quran.html#quran-predestination-but-punishment"
-  },
-  {
     "id": "quran-verse-recitation-variant",
     "source": "quran",
     "title": "Seven ahruf vs one book — the canonical-variant problem",
@@ -2438,18 +2321,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/quran.html#quran-verse-recitation-variant"
-  },
-  {
-    "id": "quran-fire-punishment-to-skin-replace",
-    "source": "quran",
-    "title": "Skins replaced in hell for maximum pain — divine engineering of torture",
-    "ref": "Q 4:56",
-    "categories": [
-      "contradiction",
-      "logic"
-    ],
-    "strength": "basic",
-    "url": "catalog/quran.html#quran-fire-punishment-to-skin-replace"
   },
   {
     "id": "quran-prophet-cursed-jewish-child",
@@ -2483,17 +2354,6 @@
     ],
     "strength": "basic",
     "url": "catalog/quran.html#quran-mountains-sing-with-david"
-  },
-  {
-    "id": "quran-cow-that-killed",
-    "source": "quran",
-    "title": "A dead man is struck with a cow's tail — and revives to name his murderer",
-    "ref": "Q 2:72-73",
-    "categories": [
-      "strange"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#quran-cow-that-killed"
   },
   {
     "id": "quran-gog-magog-wall-yajuj",
@@ -2642,18 +2502,6 @@
     ],
     "strength": "basic",
     "url": "catalog/quran.html#quran-male-servants-paradise"
-  },
-  {
-    "id": "quran-menstruating-retreat",
-    "source": "quran",
-    "title": "\"Retreat from women during menstruation — and do not approach them\"",
-    "ref": "Q 2:222",
-    "categories": [
-      "women",
-      "gross-vile"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#quran-menstruating-retreat"
   },
   {
     "id": "quran-jews-killed-prophets",
@@ -2846,17 +2694,6 @@
     ],
     "strength": "basic",
     "url": "catalog/quran.html#quran-animals-will-be-gathered"
-  },
-  {
-    "id": "quran-iblis-command-prostrate",
-    "source": "quran",
-    "title": "Iblis's refusal to bow — the origin story of Satan",
-    "ref": "Q 2:34, 7:11-18, 15:28-35",
-    "categories": [
-      "strange"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#quran-iblis-command-prostrate"
   },
   {
     "id": "quran-satan-follower-made-plots",
