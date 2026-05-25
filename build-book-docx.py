@@ -376,12 +376,106 @@ def setup_styles(doc):
     bq.paragraph_format.right_indent = Mm(12)
 
 
+# ── Document structure helpers ─────────────────────────────────────────────────
+
+def add_page_break(doc):
+    """Add an explicit page break (blank page)."""
+    para = doc.add_paragraph()
+    run = para.add_run()
+    br = OxmlElement('w:br')
+    br.set(qn('w:type'), 'page')
+    run._r.append(br)
+
+
+def set_section_page_numbering(section, fmt='lowerRoman', start=1):
+    """Set page number format and start for a section."""
+    sectPr = section._sectPr
+    for old in sectPr.findall(qn('w:pgNumType')):
+        sectPr.remove(old)
+    pgNumType = OxmlElement('w:pgNumType')
+    pgNumType.set(qn('w:fmt'), fmt)
+    pgNumType.set(qn('w:start'), str(start))
+    sectPr.append(pgNumType)
+
+
+def add_section_break_next_page(doc):
+    """Insert a next-page section break and return the new section."""
+    para = doc.add_paragraph()
+    pPr = para._p.get_or_add_pPr()
+    sectPr = OxmlElement('w:sectPr')
+    pgType = OxmlElement('w:type')
+    pgType.set(qn('w:val'), 'nextPage')
+    sectPr.append(pgType)
+    pPr.append(sectPr)
+    return doc.sections[-1]
+
+
+# ── Front matter ───────────────────────────────────────────────────────────────
+
+def add_half_title(doc):
+    """Page i — half-title."""
+    doc.add_paragraph('Analyzing Islam', style='AI_HalfTitle')
+    doc.add_paragraph('Volume I — The Quran', style='AI_SubTitle')
+    doc.add_paragraph('A Critical Reference Guide', style='AI_SubTitle')
+
+
+def add_copyright(doc):
+    """Page iii — copyright."""
+    doc.add_paragraph('Analyzing Islam — Volume I: The Quran', style='AI_CopyrightBody')
+    doc.add_paragraph('A Critical Reference Guide', style='AI_CopyrightBody')
+    doc.add_paragraph('', style='AI_CopyrightBody')
+    doc.add_paragraph('© 2026 Analyzing Islam. All rights reserved.', style='AI_CopyrightBody')
+    doc.add_paragraph('analyzingislam.com', style='AI_CopyrightBody')
+    doc.add_paragraph('', style='AI_CopyrightBody')
+    doc.add_paragraph('First edition, 2026.', style='AI_CopyrightBody')
+    doc.add_paragraph('', style='AI_CopyrightBody')
+    p = doc.add_paragraph(style='AI_CopyrightBody')
+    p.add_run('All Quranic verses are quoted from the ')
+    r = p.add_run('Saheeh International')
+    r.italic = True
+    p.add_run((' English translation — the Saudi-sanctioned mainstream Sunni edition, '
+               'widely used in mosques and Islamic universities across the English-speaking world. '
+               'This volume covers the Quran exclusively. Hadith collections — '
+               'Sahih al-Bukhari, Sahih Muslim, and the four Sunan — are examined in subsequent volumes.'))
+    doc.add_paragraph('', style='AI_CopyrightBody')
+    doc.add_paragraph(('No part of this publication may be reproduced or transmitted in any form '
+                        'without prior written permission from the publisher, except for brief quotations '
+                        'in reviews or scholarly work with full attribution.'),
+                       style='AI_CopyrightBody')
+    doc.add_paragraph('', style='AI_CopyrightBody')
+    doc.add_paragraph('Every entry references a specific verse — verify before citing.',
+                       style='AI_CopyrightBody')
+    doc.add_paragraph('', style='AI_CopyrightBody')
+    doc.add_paragraph('ISBN — [to be assigned]', style='AI_CopyrightBody')
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    entries  = get_entries()
+    content  = parse_entries()
+    chapters = build_chapters(entries)
+
+    print(f"Entries: {len(entries)}  |  Chapters: {sum(1 for c in chapters.values() if c)}")
+
     doc = Document()
     setup_document(doc)
     setup_styles(doc)
-    print("Skeleton OK")
+
+    # ── Front matter (roman numerals: i, ii, iii…) ──────────────────────────
+    set_section_page_numbering(doc.sections[0], fmt='lowerRoman', start=1)
+
+    add_half_title(doc)    # page i
+    add_page_break(doc)    # page ii (blank)
+    add_copyright(doc)     # page iii
+    add_page_break(doc)    # page iv (blank)
+
+    # Placeholder — TOC, foreword, abbreviations added in Tasks 5 & 6
+
+    # ── Body section (arabic numerals: 1, 2, 3…) ────────────────────────────
+    body_section = add_section_break_next_page(doc)
+    setup_footer(body_section)
+    set_section_page_numbering(body_section, fmt='decimal', start=1)
+
     doc.save(OUT)
     print(f"Saved: {OUT}")
 
