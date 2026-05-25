@@ -1603,19 +1603,6 @@
     "url": "catalog/quran.html#amputation-crucifixion-or-exile-the-penalty-for-waging-war-a-b42a9eab"
   },
   {
-    "id": "amputate-the-hand-of-the-thief-regardless-of-circumstance-4104d45b",
-    "source": "quran",
-    "title": "Amputate the hand of the thief — regardless of circumstance",
-    "ref": "Quran 5:38",
-    "categories": [
-      "logic",
-      "hudud",
-      "disbelievers"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#amputate-the-hand-of-the-thief-regardless-of-circumstance-4104d45b"
-  },
-  {
     "id": "jews-and-polytheists-are-most-intense-in-animosity-toward-be-d7e2e208",
     "source": "quran",
     "title": "Jews and polytheists are \"most intense in animosity\" toward believers",
@@ -1712,20 +1699,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/quran.html#a-day-with-allah-is-1-000-years-or-50-000-years-e2d18789"
-  },
-  {
-    "id": "one-hundred-lashes-for-fornication-yet-the-hadith-demands-st-f805f912",
-    "source": "quran",
-    "title": "One hundred lashes for fornication — yet the hadith demands stoning",
-    "ref": "Quran 24:2 vs hadith (Bukhari 6829, Muslim 1691, etc.)",
-    "categories": [
-      "contradiction",
-      "women",
-      "sexual",
-      "hudud"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#one-hundred-lashes-for-fornication-yet-the-hadith-demands-st-f805f912"
   },
   {
     "id": "the-talking-ant-warning-the-colony-about-solomon-s-army-3a9d68d7",
@@ -2217,29 +2190,6 @@
     "url": "catalog/quran.html#quran-allah-never-tired"
   },
   {
-    "id": "quran-number-of-sleepers",
-    "source": "quran",
-    "title": "\"How many sleepers? Three, four, five, six, seven...\" — the Quran admits ignorance",
-    "ref": "Q 18:22",
-    "categories": [
-      "contradiction",
-      "logic"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#quran-number-of-sleepers"
-  },
-  {
-    "id": "quran-how-long-sleepers-slept",
-    "source": "quran",
-    "title": "Cave Sleepers slept 309 years — but then \"Allah knows best how long\"",
-    "ref": "Q 18:25-26",
-    "categories": [
-      "contradiction"
-    ],
-    "strength": "basic",
-    "url": "catalog/quran.html#quran-how-long-sleepers-slept"
-  },
-  {
     "id": "quran-moses-staff-dragon",
     "source": "quran",
     "title": "Moses's staff becomes a serpent — or a dragon — or a jinn",
@@ -2433,18 +2383,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/quran.html#quran-cross-enemies-if-allies-dont-help"
-  },
-  {
-    "id": "quran-children-spoils-war",
-    "source": "quran",
-    "title": "\"What your right hand possesses\" — war captives as legal sexual partners",
-    "ref": "Q 4:24 (already touched but expanding)",
-    "categories": [
-      "disbelievers",
-      "women"
-    ],
-    "strength": "moderate",
-    "url": "catalog/quran.html#quran-children-spoils-war"
   },
   {
     "id": "quran-apostate-burn-fire",
@@ -2762,17 +2700,6 @@
     "url": "catalog/quran.html#quran-eleven-planets-joseph"
   },
   {
-    "id": "quran-right-hand-sex-captive-wife",
-    "source": "quran",
-    "title": "\"What your right hand possesses\" — sexual access to captives",
-    "ref": "Q 23:5-6, 70:29-30",
-    "categories": [
-      "women"
-    ],
-    "strength": "strong",
-    "url": "catalog/quran.html#quran-right-hand-sex-captive-wife"
-  },
-  {
     "id": "quran-captive-women-marry-with-permission",
     "source": "quran",
     "title": "\"Marry slave girls with their families' permission\" — the regulated slavery",
@@ -2883,18 +2810,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/quran.html#quran-battle-pre-meccan-kin-opponents"
-  },
-  {
-    "id": "quran-muhammad-mutah-private-wife",
-    "source": "quran",
-    "title": "Muhammad's private sexual permission — \"a believing woman who gives herself to the Prophet\"",
-    "ref": "Q 33:50",
-    "categories": [
-      "women",
-      "prophet"
-    ],
-    "strength": "strong",
-    "url": "catalog/quran.html#quran-muhammad-mutah-private-wife"
   },
   {
     "id": "quran-tribes-different-race",
@@ -3227,19 +3142,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/quran.html#quran-hijab-screen-wives"
-  },
-  {
-    "id": "quran-prophet-captives-war-booty",
-    "source": "quran",
-    "title": "Prophet's special license: any woman he wants, including captives",
-    "ref": "Q 33:50",
-    "categories": [
-      "prophet",
-      "women",
-      "disbelievers"
-    ],
-    "strength": "strong",
-    "url": "catalog/quran.html#quran-prophet-captives-war-booty"
   },
   {
     "id": "quran-divorce-triple-talaq",
