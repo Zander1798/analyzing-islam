@@ -985,8 +985,16 @@ def main():
     add_general_index(doc, chapters)
     add_quran_verse_index(doc, entries)
 
+    print("\nChapter summary:")
+    for ch_num in sorted(chapters.keys()):
+        ch_entries = chapters[ch_num]
+        if ch_entries:
+            print(f"  Ch {ch_num:>2}: {CHAPTERS[ch_num][0]:<35} {len(ch_entries):>3} entries")
+    total = sum(len(v) for v in chapters.values())
+    print(f"\n  TOTAL: {total} entries")
+
     doc.save(OUT)
-    print(f"Saved: {OUT}")
+    print(f"\nSaved: {OUT}")
 
 
 if __name__ == "__main__":
