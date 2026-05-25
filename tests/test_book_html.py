@@ -30,3 +30,10 @@ def test_parse_entries_has_body():
     sections = mod.parse_entries()
     has_says = sum(1 for s in sections.values() if s.get('says', '').strip())
     assert has_says >= 200, f"Only {has_says} entries have body text"
+
+def test_render_styles_contains_key_rules():
+    css = mod.render_styles()
+    for rule in ['@page', '#page-nav', '.entry', '.chapter-opener',
+                 'Libre Baskerville', 'EB Garamond', 'Montserrat',
+                 'break-before: page', '#0d0d0d', '#c8963c']:
+        assert rule in css, f"CSS missing: {rule}"

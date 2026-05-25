@@ -239,5 +239,279 @@ def build_chapters(entries: list) -> dict:
     return chapters
 
 
+def render_styles() -> str:
+    """Return the full CSS for the book as a <style> block string."""
+    return """
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap');
+
+:root {
+  --bg:         #0d0d0d;
+  --surface:    #111111;
+  --border:     #1e1e1e;
+  --quote-bar:  #2a2a2a;
+  --text-body:  #cccccc;
+  --text-dim:   #888888;
+  --text-faint: #555555;
+  --text-ghost: #333333;
+  --gold:       #c8963c;
+  --white:      #ffffff;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text-body);
+  font-family: 'Libre Baskerville', Georgia, serif;
+  margin: 0;
+  padding: 0 52px 0 0;
+}
+
+/* ── Page sections ── */
+.page {
+  width: 176mm;
+  min-height: 250mm;
+  margin: 0 auto;
+  padding: 20mm 18mm 22mm 18mm;
+  box-sizing: border-box;
+  break-before: page;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Front matter ── */
+.fm-page { background: var(--bg); }
+.fm-halftitle {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 28px; font-weight: 700; color: var(--white);
+  text-align: center; margin-top: auto;
+}
+.fm-vol {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px; font-weight: 400; color: var(--text-dim);
+  text-align: center; letter-spacing: 3px; text-transform: uppercase;
+  margin-top: 14px;
+}
+.fm-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; color: var(--text-faint);
+  text-align: center; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 8px; margin-bottom: auto;
+}
+.fm-rule { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+.fm-author {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 14px; color: var(--text-dim); text-align: center;
+}
+.fm-publisher {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; color: var(--text-ghost);
+  text-align: center; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 8px;
+}
+.fm-copyright {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 9px; color: var(--text-dim); line-height: 1.8;
+}
+.fm-h1 {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 20px;
+}
+.fm-sh {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; font-weight: 600; color: var(--text-faint);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 16px; margin-bottom: 8px;
+}
+.fm-p {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 9.5px; color: var(--text-body); line-height: 1.7; margin-bottom: 10px;
+}
+.fm-term { font-weight: 700; color: var(--white); }
+.fm-pagenum {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; color: var(--text-ghost);
+  text-align: center; margin-top: auto;
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+
+/* TOC */
+.toc-entry {
+  display: flex; align-items: baseline;
+  gap: 4px; margin-bottom: 9px;
+}
+.toc-num {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; color: var(--text-faint); min-width: 28px;
+}
+.toc-title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 10px; color: var(--text-body); flex: 1;
+}
+.toc-dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--border);
+  margin: 0 6px; min-width: 20px;
+}
+.toc-page {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; color: var(--text-faint);
+}
+
+/* ── Chapter opener ── */
+.chapter-opener { background: var(--surface); }
+.ch-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; font-weight: 600; color: var(--text-faint);
+  letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px;
+}
+.ch-title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 26px; font-weight: 700; color: var(--white);
+  line-height: 1.2; margin-bottom: 16px;
+}
+.ch-rule { border: none; border-top: 1px solid var(--gold); width: 40%; margin-bottom: 12px; }
+.ch-count {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; color: var(--text-faint); letter-spacing: 1px; margin-bottom: 20px;
+}
+.ch-intro {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 9px; font-style: italic; color: var(--text-dim);
+  line-height: 1.75; margin-bottom: 24px;
+}
+.ch-entries-list { columns: 2; column-gap: 20px; margin-top: auto; }
+.ch-entry-item {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7px; color: #444; line-height: 1.9;
+  break-inside: avoid; overflow: hidden;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+.ch-entry-num { color: var(--text-ghost); margin-right: 4px; }
+
+/* ── Entry ── */
+.entry { background: var(--bg); }
+.entry-breadcrumb {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7px; color: var(--text-faint);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
+}
+.entry-title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 15px; font-weight: 700; color: var(--white);
+  line-height: 1.35; margin-bottom: 10px;
+}
+.entry-tags {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7.5px; color: var(--gold);
+  letter-spacing: 1px; margin-bottom: 12px;
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.tag-badge {
+  background: #1a1a2e; color: #7986cb;
+  padding: 2px 6px; border-radius: 2px;
+  font-size: 7px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.tag-strong   { background: #1a3a1a; color: #4caf50; }
+.tag-moderate { background: #2a2a0a; color: #cddc39; }
+.tag-basic    { background: #1e1e1e; color: #888888; }
+.tag-ref      { color: var(--gold); font-weight: 600; }
+.entry-quote {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 11px; font-style: italic; color: #bbbbbb;
+  border-left: 2px solid var(--quote-bar);
+  padding-left: 12px; margin: 0 0 14px 0; line-height: 1.65;
+}
+.section-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7px; font-weight: 600; color: var(--text-faint);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 12px; margin-bottom: 5px;
+}
+.section-body {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 9.5px; color: var(--text-body);
+  line-height: 1.7; margin-bottom: 6px;
+}
+.entry-pagenum {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; color: var(--text-ghost);
+  text-align: center; margin-top: auto;
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+
+/* ── Back matter ── */
+.back-matter { background: var(--bg); }
+.bm-h1 {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 20px;
+}
+.idx-columns { columns: 2; column-gap: 20px; }
+.idx-cat-header {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; font-weight: 600; color: var(--gold);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-top: 14px; margin-bottom: 4px; break-after: avoid;
+}
+.idx-entry {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 8.5px; color: var(--text-body);
+  line-height: 1.6; padding-left: 10px;
+  display: flex; justify-content: space-between;
+}
+.idx-entry-title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.idx-entry-page {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7.5px; color: var(--text-ghost);
+  margin-left: 8px; white-space: nowrap;
+}
+
+/* ── Navigator ── */
+#page-nav {
+  position: fixed; right: 0; top: 0;
+  width: 36px; height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 0;
+  background: #0a0a0a; border-left: 1px solid #1a1a1a; z-index: 100;
+}
+#pn-counter {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 6px; color: #555;
+  margin-bottom: 6px; letter-spacing: 0.5px;
+  text-align: center; line-height: 1.6; white-space: pre;
+}
+#pn-track {
+  flex: 1; width: 10px;
+  background: #161616; border-radius: 5px;
+  border: 1px solid #222; position: relative;
+  overflow: hidden; cursor: pointer;
+}
+.pn-tick {
+  position: absolute; left: 0; right: 0;
+  height: 1px; background: #2a2a2a;
+  cursor: pointer; transition: background 0.15s;
+}
+.pn-tick:hover { background: #555; }
+.pn-tick.chapter-mark { background: #3d3d3d; height: 2px; }
+.pn-tick.active { background: #c8963c; }
+#pn-thumb {
+  position: absolute; left: 0; right: 0; height: 20px;
+  background: rgba(200,150,60,0.12);
+  border: 1px solid rgba(200,150,60,0.4);
+  border-radius: 3px; pointer-events: none;
+  transition: top 0.1s; top: 0;
+}
+
+/* ── Print ── */
+@media print {
+  #page-nav { display: none !important; }
+  body { padding: 0; }
+}
+@page { size: 176mm 250mm; margin: 0; }
+"""
+
+
 if __name__ == '__main__':
     pass  # main() added in Task 8
