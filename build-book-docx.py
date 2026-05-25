@@ -798,6 +798,53 @@ def add_entry(doc, meta, sections, ch_num, ch_title):
                 doc.add_paragraph(para_text, style='AI_Normal')
 
 
+# ── Back matter ─────────────────────────────────────────────────────────────────
+
+def _add_right_tab(paragraph, position_mm=120):
+    """Add a right-aligned dot-leader tab stop at position_mm from left margin."""
+    pPr = paragraph._p.get_or_add_pPr()
+    tabs_el = OxmlElement('w:tabs')
+    tab = OxmlElement('w:tab')
+    tab.set(qn('w:val'), 'right')
+    tab.set(qn('w:leader'), 'dot')
+    # 1 mm = 56.7 twips
+    tab.set(qn('w:pos'), str(int(position_mm * 56.7)))
+    tabs_el.append(tab)
+    pPr.append(tabs_el)
+
+
+def add_general_index(doc, chapters):
+    """Back matter — General Index, alphabetical by chapter name."""
+    doc.add_paragraph('General Index', style='AI_IndexH1')
+
+    # Sort chapters alphabetically by name
+    sorted_ch = sorted(chapters.items(), key=lambda kv: CHAPTERS[kv[0]][0].lower())
+
+    current_letter = ''
+    for ch_num, ch_entries in sorted_ch:
+        if not ch_entries:
+            continue
+        ch_name = CHAPTERS[ch_num][0]
+        letter = ch_name[0].upper()
+        if letter != current_letter:
+            current_letter = letter
+            doc.add_paragraph(letter, style='AI_IndexLetter')
+
+        # Chapter heading with placeholder page
+        p = doc.add_paragraph(style='AI_IndexChapter')
+        p.add_run(ch_name)
+        _add_right_tab(p)
+        p.add_run('\t[p]')
+
+        # Entry list under chapter
+        for entry in ch_entries:
+            p = doc.add_paragraph(style='AI_IndexEntry')
+            p.paragraph_format.left_indent = Mm(8)
+            p.add_run(entry.get('title', ''))
+            _add_right_tab(p)
+            p.add_run('\t[p]')
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     entries  = get_entries()
@@ -839,6 +886,8 @@ def main():
         add_chapter_opener(doc, ch_num, ch_title, ch_intro, ch_entries)
         for entry in ch_entries:
             add_entry(doc, entry, content, ch_num, ch_title)
+
+    add_general_index(doc, chapters)
 
     doc.save(OUT)
     print(f"Saved: {OUT}")
