@@ -751,6 +751,53 @@ def add_chapter_opener(doc, ch_num, title, intro, entries):
     run.bold = True
 
 
+def add_entry(doc, meta, sections, ch_num, ch_title):
+    """Write one entry — breadcrumb, title, labels, blockquote, 4 content sections."""
+    eid = meta['id']
+    entry_sections = sections.get(eid, {})
+
+    # Breadcrumb
+    doc.add_paragraph(
+        f'THE QURAN  ·  CHAPTER {ch_num}  ·  {ch_title.upper()}',
+        style='AI_Breadcrumb')
+
+    # Title
+    doc.add_paragraph(meta.get('title', ''), style='AI_EntryTitle')
+
+    # Labels line: [CATEGORY]  [STRENGTH]  Q X:Y
+    cats = meta.get('categories', [])
+    cat_label = cats[0].upper() if cats else ''
+    strength  = meta.get('strength', '').upper()
+    ref       = meta.get('ref', '')
+    p = doc.add_paragraph(style='AI_Labels')
+    if cat_label:
+        p.add_run(f'[{cat_label}]  ')
+    if strength:
+        p.add_run(f'[{strength}]  ')
+    p.add_run(ref)
+
+    # Blockquote
+    quote = entry_sections.get('quote', '')
+    if quote:
+        doc.add_paragraph(f'"{quote}"', style='AI_Blockquote')
+
+    # Four content sections
+    for header, key in [
+        ('WHAT THE VERSE SAYS',    'says'),
+        ('WHY THIS IS A PROBLEM',  'problem'),
+        ('THE MUSLIM RESPONSE',    'response'),
+        ('WHY IT FAILS',           'fails'),
+    ]:
+        text = entry_sections.get(key, '').strip()
+        if not text:
+            continue
+        doc.add_paragraph(header, style='AI_SectionHeader')
+        for para_text in text.split('\n\n'):
+            para_text = para_text.strip()
+            if para_text:
+                doc.add_paragraph(para_text, style='AI_Normal')
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     entries  = get_entries()
@@ -790,6 +837,8 @@ def main():
             continue
         ch_title, ch_intro = CHAPTERS[ch_num]
         add_chapter_opener(doc, ch_num, ch_title, ch_intro, ch_entries)
+        for entry in ch_entries:
+            add_entry(doc, entry, content, ch_num, ch_title)
 
     doc.save(OUT)
     print(f"Saved: {OUT}")
