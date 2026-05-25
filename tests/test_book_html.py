@@ -56,7 +56,9 @@ def test_front_matter_toc_contains_all_chapters():
     toc_html = sections[3]
     for ch_num, (ch_name, _) in mod.CHAPTERS.items():
         if chapters.get(ch_num):  # only non-empty chapters appear in TOC
-            assert ch_name in toc_html, f"TOC missing chapter: {ch_name}"
+            # Chapter names are HTML-escaped in the TOC, so check for escaped version
+            escaped_name = mod.esc(ch_name)
+            assert escaped_name in toc_html, f"TOC missing chapter: {ch_name}"
 
 
 # ── Task 4: Chapter opener ────────────────────────────────────────────────────

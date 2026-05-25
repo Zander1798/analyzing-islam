@@ -575,11 +575,11 @@ def render_front_matter(chapters: dict, ch_start_pages: dict) -> list:
         if not chapters[ch_num]:
             continue
         ch_name, _ = CHAPTERS[ch_num]
-        pg = ch_start_pages.get(ch_num, '&mdash;')
+        pg = ch_start_pages.get(ch_num, '&mdash;')  # may contain HTML entities (e.g. &mdash;) — do NOT esc()
         toc_rows += f'''
     <div class="toc-entry">
       <span class="toc-num">{ch_num}</span>
-      <span class="toc-title">{ch_name}</span>
+      <span class="toc-title">{esc(ch_name)}</span>
       <span class="toc-dots"></span>
       <span class="toc-page">{pg}</span>
     </div>'''
@@ -698,7 +698,7 @@ def render_chapter_opener(ch_num: int, entries: list, section_idx: int) -> str:
     for i, e in enumerate(entries, 1):
         title = e['title']
         if len(title) > 68:
-            title = title[:67] + '…'
+            title = title[:68] + '…'
         entry_items += (
             f'<div class="ch-entry-item">'
             f'<span class="ch-entry-num">{i}.</span>{esc(title)}'
@@ -790,7 +790,7 @@ def render_general_index(chapters: dict, section_idx: int) -> str:
         for e in ch_entries:
             title = e['title']
             if len(title) > 70:
-                title = title[:69] + '…'
+                title = title[:70] + '…'
             rows += (
                 f'<div class="idx-entry">'
                 f'<span class="idx-entry-title">{esc(title)}</span>'
@@ -822,7 +822,7 @@ def render_verse_index(entries: list, section_idx: int) -> str:
     for e in sorted_entries:
         title = e['title']
         if len(title) > 70:
-            title = title[:69] + '…'
+            title = title[:70] + '…'
         rows += (
             f'<div class="idx-entry">'
             f'<span class="idx-entry-page" style="min-width:60px;margin-left:0;margin-right:8px;">'
@@ -927,4 +927,4 @@ def render_navigator(all_section_ids: list, chapter_section_ids: set) -> str:
 
 
 if __name__ == '__main__':
-    pass  # main() added in Task 8
+    print("main() not yet implemented — run after Task 8 is complete.")
