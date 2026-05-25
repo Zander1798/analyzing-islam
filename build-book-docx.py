@@ -260,11 +260,120 @@ def build_chapters(entries):
 
 
 def setup_document(doc):
-    pass  # implemented in Task 3
+    """Configure B5 page size, mirrored margins, and footer."""
+    section = doc.sections[0]
+    section.page_width  = Mm(176)
+    section.page_height = Mm(250)
+    section.top_margin    = Mm(20)
+    section.bottom_margin = Mm(25)
+    section.left_margin   = Mm(25)   # inner (gutter side)
+    section.right_margin  = Mm(18)   # outer
+
+    # Enable mirror margins via document settings XML
+    settings = doc.settings.element
+    mirror = OxmlElement('w:mirrorMargins')
+    settings.append(mirror)
+
+    setup_footer(section)
+
+
+def setup_footer(section):
+    """Add centred Arabic page number to footer."""
+    section.footer_distance = Mm(12)
+    footer = section.footer
+    para = footer.paragraphs[0] if footer.paragraphs else footer.add_paragraph()
+    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    para.clear()
+
+    r1 = para.add_run()
+    fc1 = OxmlElement('w:fldChar'); fc1.set(qn('w:fldCharType'), 'begin')
+    r1._r.append(fc1)
+
+    r2 = para.add_run()
+    it = OxmlElement('w:instrText'); it.set(qn('xml:space'), 'preserve'); it.text = ' PAGE '
+    r2._r.append(it)
+
+    r3 = para.add_run()
+    fc3 = OxmlElement('w:fldChar'); fc3.set(qn('w:fldCharType'), 'separate')
+    r3._r.append(fc3)
+
+    r4 = para.add_run('1')   # placeholder shown before field update
+
+    r5 = para.add_run()
+    fc5 = OxmlElement('w:fldChar'); fc5.set(qn('w:fldCharType'), 'end')
+    r5._r.append(fc5)
 
 
 def setup_styles(doc):
-    pass  # implemented in Task 3
+    """Define all AI_* paragraph styles used in the document."""
+
+    def _make(name, font_name, size_pt, bold=False, italic=False,
+               before_pt=0, after_pt=6, line_spacing_pt=None,
+               align=WD_ALIGN_PARAGRAPH.LEFT,
+               keep_next=False, page_break_before=False,
+               color_rgb=None):
+        try:
+            s = doc.styles.add_style(name, WD_STYLE_TYPE.PARAGRAPH)
+        except ValueError:
+            s = doc.styles[name]
+        f = s.font
+        f.name = font_name
+        f.size = Pt(size_pt)
+        f.bold = bold
+        f.italic = italic
+        if color_rgb:
+            f.color.rgb = RGBColor(*color_rgb)
+        pf = s.paragraph_format
+        pf.space_before = Pt(before_pt)
+        pf.space_after  = Pt(after_pt)
+        pf.alignment    = align
+        pf.keep_with_next = keep_next
+        pf.page_break_before = page_break_before
+        if line_spacing_pt:
+            pf.line_spacing = Pt(line_spacing_pt)
+            pf.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+        return s
+
+    # Body text
+    _make('AI_Normal',       'Georgia', 11, after_pt=6,  line_spacing_pt=14.5)
+    # Entry elements
+    _make('AI_Breadcrumb',   'Calibri',  8, after_pt=4,  color_rgb=(120,120,120))
+    _make('AI_EntryTitle',   'Georgia', 14, bold=True, before_pt=4, after_pt=6, keep_next=True)
+    _make('AI_Labels',       'Calibri',  9, after_pt=4)
+    _make('AI_Blockquote',   'Georgia', 10, italic=True, before_pt=6, after_pt=6)
+    _make('AI_SectionHeader','Calibri',  8, bold=True,  before_pt=10, after_pt=3)
+    # Chapter opener
+    _make('AI_ChapterTitle', 'Georgia', 22, bold=True,  before_pt=0, after_pt=12,
+          page_break_before=True)
+    _make('AI_ChapterIntro', 'Georgia', 11, italic=True, before_pt=0, after_pt=8)
+    _make('AI_EntryListItem','Calibri', 10, after_pt=3)
+    # Front/back matter
+    _make('AI_HalfTitle',    'Georgia', 28, bold=True,  align=WD_ALIGN_PARAGRAPH.CENTER,
+          before_pt=80, after_pt=8)
+    _make('AI_SubTitle',     'Georgia', 13, italic=True,align=WD_ALIGN_PARAGRAPH.CENTER,
+          after_pt=6)
+    _make('AI_CopyrightBody','Georgia', 10, after_pt=5, line_spacing_pt=13)
+    _make('AI_ForewordH1',   'Georgia', 18, bold=True,  after_pt=10)
+    _make('AI_ForewordSH',   'Calibri',  8, bold=True,  before_pt=12, after_pt=4,
+          color_rgb=(80,80,80))
+    _make('AI_AbbrTerm',     'Georgia', 10, bold=True,  after_pt=2)
+    _make('AI_AbbrDef',      'Georgia', 10, after_pt=5)
+    _make('AI_IndexH1',      'Georgia', 18, bold=True,  after_pt=10)
+    _make('AI_IndexLetter',  'Georgia', 12, bold=True,  before_pt=10, after_pt=2)
+    _make('AI_IndexChapter', 'Georgia', 11, bold=True,  before_pt=4,  after_pt=1)
+    _make('AI_IndexEntry',   'Georgia', 10, after_pt=1)
+    _make('AI_PartLabel',    'Calibri',  8, color_rgb=(140,100,50), after_pt=4)
+    _make('AI_PartTitle',    'Georgia', 24, bold=True,  after_pt=10)
+    _make('AI_PartIntro',    'Georgia', 11, after_pt=8)
+    _make('AI_SourceLabel',  'Calibri',  8, color_rgb=(140,100,50), after_pt=4)
+    _make('AI_SourceTitle',  'Georgia', 18, bold=True,  after_pt=10)
+    _make('AI_TOCHeading',   'Georgia', 18, bold=True,  after_pt=10)
+    _make('AI_TOCEntry',     'Calibri', 11, after_pt=3)
+
+    # Blockquote indentation (must be set after style creation)
+    bq = doc.styles['AI_Blockquote']
+    bq.paragraph_format.left_indent  = Mm(12)
+    bq.paragraph_format.right_indent = Mm(12)
 
 
 def main():
