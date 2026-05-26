@@ -3799,18 +3799,6 @@
     "url": "catalog/bukhari.html#angels-curse-refusing-wife"
   },
   {
-    "id": "wife-beating-camel",
-    "source": "bukhari",
-    "title": "\"Don't beat your wife like a camel — and then sleep with her the same night\"",
-    "ref": "Bukhari 5813 (also Book 78)",
-    "categories": [
-      "prophet",
-      "women"
-    ],
-    "strength": "strong",
-    "url": "catalog/bukhari.html#wife-beating-camel"
-  },
-  {
     "id": "moses-slaps-death",
     "source": "bukhari",
     "title": "Moses slapped the angel of death and knocked his eye out",
@@ -3821,18 +3809,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/bukhari.html#moses-slaps-death"
-  },
-  {
-    "id": "grave-torture-urine",
-    "source": "bukhari",
-    "title": "Graves torture those who didn't carefully avoid urine splashes",
-    "ref": "Bukhari 216, #217 (also Book 23, narrations on grave punishments)",
-    "categories": [
-      "hell",
-      "strange"
-    ],
-    "strength": "moderate",
-    "url": "catalog/bukhari.html#grave-torture-urine"
   },
   {
     "id": "jinn-in-mosque",
@@ -4215,18 +4191,6 @@
     "url": "catalog/bukhari.html#prophecy-100-years"
   },
   {
-    "id": "kiss-black-stone",
-    "source": "bukhari",
-    "title": "Umar kissed the Black Stone — \"but I know you don't benefit or harm\"",
-    "ref": "Bukhari 1543",
-    "categories": [
-      "logic",
-      "strange"
-    ],
-    "strength": "moderate",
-    "url": "catalog/bukhari.html#kiss-black-stone"
-  },
-  {
     "id": "black-stone-paradise",
     "source": "bukhari",
     "title": "The Black Stone was originally white; sins turned it black",
@@ -4450,19 +4414,6 @@
     ],
     "strength": "basic",
     "url": "catalog/bukhari.html#allah-laughs-at-servants"
-  },
-  {
-    "id": "two-fasting-doors",
-    "source": "bukhari",
-    "title": "In Ramadan, gates of Paradise open; gates of Hell close; devils are chained",
-    "ref": "Bukhari 1831 (and parallels)",
-    "categories": [
-      "paradise",
-      "hell",
-      "strange"
-    ],
-    "strength": "basic",
-    "url": "catalog/bukhari.html#two-fasting-doors"
   },
   {
     "id": "stoning-adulterers-witnessed",
@@ -6241,19 +6192,6 @@
     "url": "catalog/bukhari.html#lot-people-cursed-by-allah"
   },
   {
-    "id": "cursed-effeminate-men-masculine-women",
-    "source": "bukhari",
-    "title": "\"Allah's curse be on effeminate men and masculine women\"",
-    "ref": "Bukhari 5658, #774, #779",
-    "categories": [
-      "lgbtq",
-      "women",
-      "prophet"
-    ],
-    "strength": "strong",
-    "url": "catalog/bukhari.html#cursed-effeminate-men-masculine-women"
-  },
-  {
     "id": "prophet-thighs-uncovered-uthman",
     "source": "bukhari",
     "title": "Muhammad's thighs were uncovered until Uthman entered",
@@ -6430,19 +6368,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/bukhari.html#mughira-son-jews-changed-scripture"
-  },
-  {
-    "id": "jews-expelled-medina-khaybar",
-    "source": "bukhari",
-    "title": "Muhammad expelled the Jews of Khaybar after his death would be enforced",
-    "ref": "Bukhari 2249; Bukhari 3023",
-    "categories": [
-      "antisemitism",
-      "warfare",
-      "governance"
-    ],
-    "strength": "strong",
-    "url": "catalog/bukhari.html#jews-expelled-medina-khaybar"
   },
   {
     "id": "ali-burned-apostates-alive",
@@ -6897,19 +6822,6 @@
     "url": "catalog/bukhari.html#yawn-put-hand-mouth-satan"
   },
   {
-    "id": "number-of-dates-odd-seven",
-    "source": "bukhari",
-    "title": "Eat an odd number of dates — seven Ajwa dates for protection from poison",
-    "ref": "Bukhari 5232, #357 (distinct angle from seven-ajwa)",
-    "categories": [
-      "ritual",
-      "magic",
-      "strange"
-    ],
-    "strength": "basic",
-    "url": "catalog/bukhari.html#number-of-dates-odd-seven"
-  },
-  {
     "id": "paradise-100-wives-stamina",
     "source": "bukhari",
     "title": "Every man in paradise gets 72 wives and the strength for them",
@@ -7336,20 +7248,6 @@
     "url": "catalog/muslim.html#muslim-dajjal-kills-khidr-resurrection"
   },
   {
-    "id": "aisha-age",
-    "source": "muslim",
-    "title": "Aisha married at six, sexually consummated at nine — Sahih Muslim confirms it",
-    "ref": "Muslim 3356",
-    "categories": [
-      "prophet",
-      "women",
-      "sexual",
-      "childmarriage"
-    ],
-    "strength": "strong",
-    "url": "catalog/muslim.html#aisha-age"
-  },
-  {
     "id": "stoning-adulterers",
     "source": "muslim",
     "title": "Stoning to death for adultery — and a \"lost\" verse of the Quran that commanded it",
@@ -7386,19 +7284,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/muslim.html#hand-amputation-quarter-dinar"
-  },
-  {
-    "id": "fight-until-testify",
-    "source": "muslim",
-    "title": "\"I have been commanded to fight against people until they testify there is no god but Allah\"",
-    "ref": "Muslim 33",
-    "categories": [
-      "warfare",
-      "governance",
-      "disbelievers"
-    ],
-    "strength": "strong",
-    "url": "catalog/muslim.html#fight-until-testify"
   },
   {
     "id": "mutah-temporary-marriage",
@@ -7544,18 +7429,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/muslim.html#adam-60-cubits"
-  },
-  {
-    "id": "women-majority-hell",
-    "source": "muslim",
-    "title": "The majority of the denizens of hell are women",
-    "ref": "Muslim 6767",
-    "categories": [
-      "women",
-      "hell"
-    ],
-    "strength": "strong",
-    "url": "catalog/muslim.html#women-majority-hell"
   },
   {
     "id": "adult-breastfeeding",
@@ -8103,18 +7976,6 @@
     ],
     "strength": "basic",
     "url": "catalog/muslim.html#bathing-after-intercourse"
-  },
-  {
-    "id": "bani-israel-eating-vermin",
-    "source": "muslim",
-    "title": "The Children of Israel were transformed — into rats, or their ancestors were rats",
-    "ref": "Muslim 7311 (related to rats and Children of Israel)",
-    "categories": [
-      "antisemitism",
-      "strange"
-    ],
-    "strength": "moderate",
-    "url": "catalog/muslim.html#bani-israel-eating-vermin"
   },
   {
     "id": "women-silk-gold",
@@ -8688,18 +8549,6 @@
     ],
     "strength": "basic",
     "url": "catalog/muslim.html#devil-farts-at-adhan"
-  },
-  {
-    "id": "adhan-satan-flee-distance-rauha",
-    "source": "muslim",
-    "title": "Satan's flight distance — measured in miles",
-    "ref": "Muslim 768 (precision of the distance)",
-    "categories": [
-      "magic",
-      "strange"
-    ],
-    "strength": "basic",
-    "url": "catalog/muslim.html#adhan-satan-flee-distance-rauha"
   },
   {
     "id": "fitra-five-circumcision",
@@ -9567,19 +9416,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/muslim.html#muslim-prophet-promised-ten-paradise"
-  },
-  {
-    "id": "muslim-prophet-kissed-black-stone-sunnah",
-    "source": "muslim",
-    "title": "Umar to the Black Stone: \"I kiss you only because the Prophet did\"",
-    "ref": "Sahih Muslim #1270",
-    "categories": [
-      "prophet",
-      "ritual",
-      "preislamic"
-    ],
-    "strength": "moderate",
-    "url": "catalog/muslim.html#muslim-prophet-kissed-black-stone-sunnah"
   },
   {
     "id": "muslim-prophet-laughed-at-hell-narrative",
@@ -11674,18 +11510,6 @@
     "url": "catalog/abu-dawud.html#dawud-master-slave-pledge-broken"
   },
   {
-    "id": "abu-dawud-shia-ali-emergence",
-    "source": "abu-dawud",
-    "title": "Twelve-imam predictions — Sunni and Shia both claim the same hadith",
-    "ref": "Abu Dawud #4279, #4280, #4281",
-    "categories": [
-      "contradiction",
-      "logic"
-    ],
-    "strength": "moderate",
-    "url": "catalog/abu-dawud.html#abu-dawud-shia-ali-emergence"
-  },
-  {
     "id": "harshness-jizya-collection",
     "source": "abu-dawud",
     "title": "\"Do not kill children\" — and the question of why the rule was needed",
@@ -11822,18 +11646,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/abu-dawud.html#abu-dawud-struck-belly-diyah"
-  },
-  {
-    "id": "abu-dawud-salat-child-age-seven",
-    "source": "abu-dawud",
-    "title": "Order your children to pray at seven — separate them at ten",
-    "ref": "Abu Dawud #495",
-    "categories": [
-      "logic",
-      "women"
-    ],
-    "strength": "basic",
-    "url": "catalog/abu-dawud.html#abu-dawud-salat-child-age-seven"
   },
   {
     "id": "abu-dawud-orphans-inheritance",
@@ -13233,17 +13045,6 @@
     "url": "catalog/tirmidhi.html#jesus-buried-next-muhammad"
   },
   {
-    "id": "paradise-smell-40-years",
-    "source": "tirmidhi",
-    "title": "Paradise's fragrance can be smelled from 40 years' travel away",
-    "ref": "Tirmidhi #1403",
-    "categories": [
-      "strange"
-    ],
-    "strength": "basic",
-    "url": "catalog/tirmidhi.html#paradise-smell-40-years"
-  },
-  {
     "id": "allah-mercy-100-parts",
     "source": "tirmidhi",
     "title": "Allah's mercy is divided into 100 parts — only 1 released to creation",
@@ -13743,18 +13544,6 @@
     "url": "catalog/tirmidhi.html#tirmidhi-muhammad-six-special-privileges"
   },
   {
-    "id": "tirmidhi-victorious-through-terror",
-    "source": "tirmidhi",
-    "title": "\"I have been made victorious through terror\"",
-    "ref": "Tirmidhi #1553 (isolated)",
-    "categories": [
-      "violence",
-      "prophet"
-    ],
-    "strength": "strong",
-    "url": "catalog/tirmidhi.html#tirmidhi-victorious-through-terror"
-  },
-  {
     "id": "tirmidhi-Aisha-age-similar",
     "source": "tirmidhi",
     "title": "Aisha's age confirmed — Tirmidhi's parallel",
@@ -13893,17 +13682,6 @@
     ],
     "strength": "basic",
     "url": "catalog/tirmidhi.html#tirmidhi-breastfeeding-boys-men"
-  },
-  {
-    "id": "tirmidhi-men-saved-only-women-damned",
-    "source": "tirmidhi",
-    "title": "Among the people of hellfire, women are the majority",
-    "ref": "Tirmidhi #2603",
-    "categories": [
-      "women"
-    ],
-    "strength": "moderate",
-    "url": "catalog/tirmidhi.html#tirmidhi-men-saved-only-women-damned"
   },
   {
     "id": "tirmidhi-satan-afraid-umar",
@@ -14937,17 +14715,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/tirmidhi.html#tirmidhi-pictures-angels-dont-enter"
-  },
-  {
-    "id": "tirmidhi-cat-urine-food",
-    "source": "tirmidhi",
-    "title": "Cats' leftover water is pure — they are \"frequent visitors\"",
-    "ref": "Tirmidhi #92",
-    "categories": [
-      "strange"
-    ],
-    "strength": "basic",
-    "url": "catalog/tirmidhi.html#tirmidhi-cat-urine-food"
   },
   {
     "id": "tirmidhi-stick-teeth-chew",
@@ -16717,18 +16484,6 @@
     ],
     "strength": "basic",
     "url": "catalog/nasai.html#nasai-menstruating-women-mosque-forbidden"
-  },
-  {
-    "id": "nasai-homosexual-execution-both",
-    "source": "nasai",
-    "title": "\"Whoever does the act of Lot's people, kill both parties\"",
-    "ref": "Nasai (elaboration of existing nasai-homosexual-execution)",
-    "categories": [
-      "lgbtq",
-      "hudud"
-    ],
-    "strength": "strong",
-    "url": "catalog/nasai.html#nasai-homosexual-execution-both"
   },
   {
     "id": "nasai-khumus-prophet-one-fifth",
@@ -18595,19 +18350,6 @@
     "url": "catalog/ibn-majah.html#ibnmajah-grave-questions-munkar-nakir"
   },
   {
-    "id": "ibnmajah-seventy-three-sects-one-saved",
-    "source": "ibn-majah",
-    "title": "Muslims will split into 73 sects — only one is saved",
-    "ref": "Ibn Majah #3992, #3993 (elaborated from existing seventy-three-sects)",
-    "categories": [
-      "apostasy",
-      "morality",
-      "governance"
-    ],
-    "strength": "strong",
-    "url": "catalog/ibn-majah.html#ibnmajah-seventy-three-sects-one-saved"
-  },
-  {
     "id": "ibnmajah-dhul-khuwaisira-ali-khawarij",
     "source": "ibn-majah",
     "title": "The \"first Khariji\" — Dhul Khuwaisira rebuked Muhammad himself",
@@ -18859,19 +18601,6 @@
     "url": "catalog/ibn-majah.html#ibnmajah-dabbat-al-ard-beast-stamps-forehead"
   },
   {
-    "id": "ibnmajah-mahdi-from-family-appears",
-    "source": "ibn-majah",
-    "title": "The Mahdi will appear — a descendant of the Prophet",
-    "ref": "Ibn Majah #4082–4087",
-    "categories": [
-      "eschatology",
-      "strange",
-      "governance"
-    ],
-    "strength": "moderate",
-    "url": "catalog/ibn-majah.html#ibnmajah-mahdi-from-family-appears"
-  },
-  {
     "id": "ibnmajah-mahdi-seven-years-mountain-treasure",
     "source": "ibn-majah",
     "title": "\"A Mahdi will rule, and the Euphrates will uncover a mountain of gold\"",
@@ -18922,19 +18651,6 @@
     "url": "catalog/ibn-majah.html#ibnmajah-morning-walk-jihad-better-world"
   },
   {
-    "id": "ibnmajah-sodomy-kill-both-doer-done-to",
-    "source": "ibn-majah",
-    "title": "\"Kill the doer and the one it is done to\" — homosexual act",
-    "ref": "Ibn Majah #2561 (distinct elaboration from first-pass)",
-    "categories": [
-      "lgbtq",
-      "hudud",
-      "prophet"
-    ],
-    "strength": "strong",
-    "url": "catalog/ibn-majah.html#ibnmajah-sodomy-kill-both-doer-done-to"
-  },
-  {
     "id": "ibnmajah-concubine-pregnancy-not-sold",
     "source": "ibn-majah",
     "title": "Selling a pregnant concubine — permitted, then forbidden",
@@ -18983,20 +18699,6 @@
     ],
     "strength": "moderate",
     "url": "catalog/ibn-majah.html#ibnmajah-wife-refuses-permission-journey"
-  },
-  {
-    "id": "ibnmajah-prophet-anus-forbidden-woman",
-    "source": "ibn-majah",
-    "title": "\"The one who approaches his wife in the anus is cursed\"",
-    "ref": "Ibn Majah #1923 (distinct angle from existing intercourse-anus-cursed)",
-    "categories": [
-      "sexual",
-      "women",
-      "prophet",
-      "gross-vile"
-    ],
-    "strength": "moderate",
-    "url": "catalog/ibn-majah.html#ibnmajah-prophet-anus-forbidden-woman"
   },
   {
     "id": "ibnmajah-night-raid-women-children-permitted",
