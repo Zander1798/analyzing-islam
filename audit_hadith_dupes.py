@@ -1,10 +1,12 @@
 """
 audit_hadith_dupes.py
-Detects candidate duplicate entries in the six hadith catalog HTML files.
-Outputs a markdown report to docs/hadith-dupe-audit-YYYY-MM-DD.md
+Detects candidate INTRA-SOURCE duplicate entries within each hadith catalog HTML file.
+Only compares entries within the same source (bukhari vs bukhari, muslim vs muslim, etc.)
 
 Run from project root:
     python audit_hadith_dupes.py
+
+Outputs: docs/hadith-dupe-audit-YYYY-MM-DD.md
 """
 import re, json, difflib
 from pathlib import Path
@@ -13,22 +15,21 @@ from datetime import date
 
 BASE = Path(r"C:\Users\zande\Documents\AI Workspace\Analyzing Islam")
 CATALOG_DIR = BASE / "site/catalog"
-CATALOG_JSON = BASE / "site/assets/data/catalog-entries.json"
 OUT_PATH = BASE / f"docs/hadith-dupe-audit-{date.today()}.md"
 
 SOURCE_MAP = {
-    "bukhari.html": "bukhari",
-    "muslim.html": "muslim",
+    "bukhari.html":   "bukhari",
+    "muslim.html":    "muslim",
     "abu-dawud.html": "abu-dawud",
-    "tirmidhi.html": "tirmidhi",
-    "nasai.html": "nasai",
+    "tirmidhi.html":  "tirmidhi",
+    "nasai.html":     "nasai",
     "ibn-majah.html": "ibn-majah",
 }
 
 # ---------------------------------------------------------------------------
-# 1. Parse all hadith entries from HTML (id, source, title, ref, bq_text)
+# 1. Parse all entries per source
 # ---------------------------------------------------------------------------
-entries = []  # list of dicts
+by_source = {}   # source -> list of entry dicts
 
 for fname, source in SOURCE_MAP.items():
     content = (CATALOG_DIR / fname).read_text(encoding="utf-8", errors="ignore")
@@ -36,6 +37,7 @@ for fname, source in SOURCE_MAP.items():
         r'<div\s+class=["\'][^"\']*\bentry\b[^"\']*["\'][^>]+id=["\']([^"\']+)["\']',
         content
     ))
+    entries = []
     for i, m in enumerate(opens):
         eid = m.group(1)
         end = opens[i+1].start() if i+1 < len(opens) else len(content)
@@ -44,161 +46,191 @@ for fname, source in SOURCE_MAP.items():
         ref_m   = re.search(r'class=["\'][^"\']*\bref\b[^"\']*["\'][^>]*>.*?<a[^>]*>(.*?)</a>', chunk, re.DOTALL)
         bq_m    = re.search(r'<blockquote[^>]*>(.*?)</blockquote>', chunk, re.DOTALL)
         entries.append({
-            "id":     eid,
-            "source": source,
-            "title":  re.sub(r"<[^>]+>", "", title_m.group(1)).strip() if title_m else "",
-            "ref":    re.sub(r"<[^>]+>", "", ref_m.group(1)).strip() if ref_m else "",
-            "bq":     re.sub(r"<[^>]+>", "", bq_m.group(1)).strip() if bq_m else "",
+            "id":    eid,
+            "title": re.sub(r"<[^>]+>", "", title_m.group(1)).strip() if title_m else "",
+            "ref":   re.sub(r"<[^>]+>", "", ref_m.group(1)).strip() if ref_m else "",
+            "bq":    re.sub(r"<[^>]+>", "", bq_m.group(1)).strip() if bq_m else "",
         })
+    by_source[source] = entries
+    print(f"  {source}: {len(entries)} entries")
 
-print(f"Parsed {len(entries)} hadith HTML entries from {len(SOURCE_MAP)} files")
+total = sum(len(v) for v in by_source.values())
+print(f"Total: {total} entries")
 
 # ---------------------------------------------------------------------------
-# 2. Detection — four candidate classes
+# 2. Intra-source detection per source
 # ---------------------------------------------------------------------------
 
-# CLASS A: Cross-source exact-ID duplicates (same id in >1 source file)
-id_to_sources = defaultdict(list)
-for e in entries:
-    id_to_sources[e["id"]].append(e["source"])
-class_a = {eid: srcs for eid, srcs in id_to_sources.items() if len(srcs) > 1}
+def normalize(text):
+    return re.sub(r"[^\w\s]", "", text.lower().strip())
 
-# CLASS B: Exact-title duplicates (cross-source, normalized)
-title_map = defaultdict(list)
-for e in entries:
-    norm = e["title"].lower().strip()
-    if norm:
-        title_map[norm].append(e)
-class_b = {t: es for t, es in title_map.items() if len(es) > 1}
+# Results containers
+exact_id_dups   = {}   # source -> list of (id, count)
+exact_title_dups = {}  # source -> list of (title, [entries])
+near_title_pairs = {}  # source -> list of (ratio, ea, eb)
+same_ref_groups  = {}  # source -> list of (ref, [entries])
+content_pairs    = {}  # source -> list of (ratio, ea, eb)
 
-# CLASS C: Near-title duplicates (fuzzy >= 0.82 SequenceMatcher ratio)
-#   Only compare entries in different sources to avoid excess noise.
-#   Skip pairs already caught by class B.
-titles_list = [(e["title"].lower().strip(), e) for e in entries if e["title"]]
-class_c = []
-for i in range(len(titles_list)):
-    for j in range(i + 1, len(titles_list)):
-        ta, ea = titles_list[i]
-        tb, eb = titles_list[j]
-        if ea["source"] == eb["source"]:
-            continue
-        if ta == tb:
-            continue  # already in class B
-        ratio = difflib.SequenceMatcher(None, ta, tb).ratio()
-        if ratio >= 0.82:
-            class_c.append((ratio, ea, eb))
-class_c.sort(key=lambda x: -x[0])
+for source, entries in by_source.items():
+    # --- Exact-ID duplicates within this source ---
+    id_counts = defaultdict(int)
+    for e in entries:
+        id_counts[e["id"]] += 1
+    exact_id_dups[source] = [(eid, cnt) for eid, cnt in id_counts.items() if cnt > 1]
 
-# CLASS D: Same-source same-ref duplicates (same hadith cited by two entries)
-ref_src_map = defaultdict(list)
-for e in entries:
-    r = e["ref"].strip()
-    if r:
-        ref_src_map[(e["source"], r)].append(e)
-class_d = {k: v for k, v in ref_src_map.items() if len(v) > 1}
+    # --- Exact-title duplicates within this source ---
+    tmap = defaultdict(list)
+    for e in entries:
+        t = e["title"].lower().strip()
+        if t:
+            tmap[t].append(e)
+    exact_title_dups[source] = [(t, es) for t, es in tmap.items() if len(es) > 1]
+
+    # --- Near-title pairs (>=82%) within this source ---
+    titles = [(e["title"].lower().strip(), e) for e in entries if e["title"]]
+    pairs = []
+    for i in range(len(titles)):
+        for j in range(i+1, len(titles)):
+            ta, ea = titles[i]
+            tb, eb = titles[j]
+            if ta == tb:
+                continue  # already in exact_title
+            ratio = difflib.SequenceMatcher(None, ta, tb).ratio()
+            if ratio >= 0.80:
+                pairs.append((ratio, ea, eb))
+    pairs.sort(key=lambda x: -x[0])
+    near_title_pairs[source] = pairs
+
+    # --- Same-ref groups within this source ---
+    rmap = defaultdict(list)
+    for e in entries:
+        r = e["ref"].strip()
+        if r:
+            rmap[r].append(e)
+    same_ref_groups[source] = [(r, es) for r, es in rmap.items() if len(es) > 1]
+
+    # --- High-content-similarity pairs (blockquote text >=0.75) ---
+    bq_entries = [(e["bq"], e) for e in entries if len(e["bq"]) > 40]
+    cpairs = []
+    for i in range(len(bq_entries)):
+        for j in range(i+1, len(bq_entries)):
+            ba, ea = bq_entries[i]
+            bb, eb = bq_entries[j]
+            ratio = difflib.SequenceMatcher(None, ba[:400], bb[:400]).ratio()
+            if ratio >= 0.75:
+                cpairs.append((ratio, ea, eb))
+    cpairs.sort(key=lambda x: -x[0])
+    content_pairs[source] = cpairs
 
 # ---------------------------------------------------------------------------
 # 3. Write the report
 # ---------------------------------------------------------------------------
 lines = [
-    f"# Hadith Duplicate Audit — {date.today()}",
+    f"# Hadith Intra-Source Duplicate Audit — {date.today()}",
     "",
-    f"Total hadith entries scanned: **{len(entries)}** across {len(SOURCE_MAP)} sources",
+    f"**Scope:** Entries compared only within the same source file.",
+    f"**Total entries scanned:** {total} across {len(SOURCE_MAP)} sources",
     "",
     "---",
     "",
 ]
 
-# --- Class A ---
-lines += [
-    "## Class A — Cross-Source Exact-ID Collisions",
-    "",
-    f"**{len(class_a)} found.** These are hard bugs — two different entry `<div>` blocks share the same anchor ID.",
-    "One must be removed from one of the files. Decide which source is the definitive home.",
-    "",
-]
-if class_a:
-    for eid, srcs in sorted(class_a.items()):
-        lines.append(f"- `{eid}` appears in: {', '.join(sorted(srcs))}")
-else:
-    lines.append("*(none found)*")
-lines.append("")
+for source in SOURCE_MAP.values():
+    entries = by_source[source]
+    eid_dups   = exact_id_dups[source]
+    etitle_dups= exact_title_dups[source]
+    ntpairs    = near_title_pairs[source]
+    srgroups   = same_ref_groups[source]
+    cpairs     = content_pairs[source]
 
-# --- Class B ---
-lines += [
-    "## Class B — Exact Title Duplicates (Cross-Source)",
-    "",
-    f"**{len(class_b)} groups.** Same title in different collections.",
-    "Common cause: the hadith appears in multiple authoritative compilations.",
-    "Recommended action: keep the entry with more analytical content; drop the thinner one.",
-    "",
-]
-if class_b:
-    for title, es in sorted(class_b.items(), key=lambda x: x[0]):
-        lines.append(f"### \"{es[0]['title']}\"")
-        for e in es:
-            lines.append(f"- **[{e['source']}]** `{e['id']}` | ref: {e['ref']}")
-            if e["bq"]:
-                preview = e["bq"][:150].replace("\n", " ")
-                lines.append(f"  > {preview}…")
-        lines.append("")
-else:
-    lines.append("*(none found)*")
+    total_flags = len(eid_dups) + len(etitle_dups) + len(ntpairs) + len(srgroups) + len(cpairs)
+    lines += [
+        f"## {source.upper()} ({len(entries)} entries)",
+        "",
+    ]
+
+    # --- Exact-ID dups ---
+    lines.append(f"### {source} — Exact-ID duplicates within this file")
+    if eid_dups:
+        for eid, cnt in eid_dups:
+            lines.append(f"- `{eid}` appears **{cnt}×**")
+    else:
+        lines.append("*(none)*")
     lines.append("")
 
-# --- Class C ---
-lines += [
-    "## Class C — Near-Title Duplicates (≥82% similarity, cross-source)",
-    "",
-    f"**{len(class_c)} pairs found.** Similar titles in different sources — may be intentional variants or duplicates.",
-    "Review each pair; mark as `KEEP_BOTH`, `DROP_FIRST`, or `DROP_SECOND`.",
-    "",
-]
-if class_c:
-    cap = 80
-    for ratio, ea, eb in class_c[:cap]:
-        lines.append(f"### {ratio:.0%} match")
-        lines.append(f"- **[{ea['source']}]** `{ea['id']}` | {ea['ref']}")
-        lines.append(f"  Title: \"{ea['title']}\"")
-        if ea["bq"]:
-            lines.append(f"  > {ea['bq'][:150].replace(chr(10), ' ')}…")
-        lines.append(f"- **[{eb['source']}]** `{eb['id']}` | {eb['ref']}")
-        lines.append(f"  Title: \"{eb['title']}\"")
-        if eb["bq"]:
-            lines.append(f"  > {eb['bq'][:150].replace(chr(10), ' ')}…")
-        lines.append(f"  **Decision:** KEEP_BOTH / DROP_FIRST / DROP_SECOND")
+    # --- Exact-title dups ---
+    lines.append(f"### {source} — Exact-title duplicates")
+    if etitle_dups:
+        for t, es in sorted(etitle_dups, key=lambda x: x[0]):
+            lines.append(f"**\"{es[0]['title']}\"**")
+            for e in es:
+                lines.append(f"- `{e['id']}` | {e['ref']}")
+                if e["bq"]:
+                    lines.append(f"  > {e['bq'][:160].replace(chr(10),' ')}…")
+            lines.append("")
+    else:
+        lines.append("*(none)*")
         lines.append("")
-    if len(class_c) > cap:
-        lines.append(f"*(…{len(class_c) - cap} additional pairs omitted — lower threshold in script to see more)*")
-        lines.append("")
-else:
-    lines.append("*(none found)*")
-    lines.append("")
 
-# --- Class D ---
-lines += [
-    "## Class D — Same-Source Same-Ref Duplicates",
-    "",
-    f"**{len(class_d)} groups.** Two entries within the same collection cite the same hadith reference number.",
-    "May be legitimate (different aspects highlighted) or true duplicates.",
-    "",
-]
-if class_d:
-    for (src, ref), es in sorted(class_d.items()):
-        lines.append(f"### [{src}] {ref}")
-        for e in es:
-            lines.append(f"- `{e['id']}` | \"{e['title'][:90]}\"")
-            if e["bq"]:
-                lines.append(f"  > {e['bq'][:150].replace(chr(10), ' ')}…")
+    # --- Near-title pairs ---
+    lines.append(f"### {source} — Near-title pairs (≥80%)")
+    if ntpairs:
+        for ratio, ea, eb in ntpairs:
+            lines.append(f"**{ratio:.0%}** | `{ea['id']}` vs `{eb['id']}`")
+            lines.append(f"- \"{ea['title']}\" | {ea['ref']}")
+            if ea["bq"]:
+                lines.append(f"  > {ea['bq'][:160].replace(chr(10),' ')}…")
+            lines.append(f"- \"{eb['title']}\" | {eb['ref']}")
+            if eb["bq"]:
+                lines.append(f"  > {eb['bq'][:160].replace(chr(10),' ')}…")
+            lines.append(f"  **Decision:** KEEP_BOTH / DROP_FIRST / DROP_SECOND")
+            lines.append("")
+    else:
+        lines.append("*(none)*")
         lines.append("")
-else:
-    lines.append("*(none found)*")
+
+    # --- Same-ref groups ---
+    lines.append(f"### {source} — Same-ref-number pairs")
+    if srgroups:
+        for ref, es in sorted(srgroups, key=lambda x: x[0]):
+            lines.append(f"**Ref: {ref}**")
+            for e in es:
+                lines.append(f"- `{e['id']}` | \"{e['title'][:80]}\"")
+                if e["bq"]:
+                    lines.append(f"  > {e['bq'][:160].replace(chr(10),' ')}…")
+            lines.append(f"  **Decision:** KEEP_BOTH / DROP one")
+            lines.append("")
+    else:
+        lines.append("*(none)*")
+        lines.append("")
+
+    # --- Content similarity pairs ---
+    lines.append(f"### {source} — High content-similarity pairs (≥75% blockquote match)")
+    if cpairs:
+        for ratio, ea, eb in cpairs:
+            lines.append(f"**{ratio:.0%} content match** | `{ea['id']}` vs `{eb['id']}`")
+            lines.append(f"- \"{ea['title']}\" | {ea['ref']}")
+            lines.append(f"  > {ea['bq'][:200].replace(chr(10),' ')}…")
+            lines.append(f"- \"{eb['title']}\" | {eb['ref']}")
+            lines.append(f"  > {eb['bq'][:200].replace(chr(10),' ')}…")
+            lines.append(f"  **Decision:** KEEP_BOTH / DROP_FIRST / DROP_SECOND")
+            lines.append("")
+    else:
+        lines.append("*(none)*")
+        lines.append("")
+
+    lines.append("---")
     lines.append("")
 
 OUT_PATH.write_text("\n".join(lines), encoding="utf-8")
 print(f"\nReport written to: {OUT_PATH}")
-print(f"\nSummary:")
-print(f"  Class A (exact-ID collisions):        {len(class_a)}")
-print(f"  Class B (exact title, cross-source):  {len(class_b)}")
-print(f"  Class C (near-title >=82%, cross-src): {len(class_c)}")
-print(f"  Class D (same-source same-ref):        {len(class_d)}")
+
+# Summary
+print("\nSummary by source:")
+for source in SOURCE_MAP.values():
+    nt = near_title_pairs[source]
+    sr = same_ref_groups[source]
+    cp = content_pairs[source]
+    et = exact_title_dups[source]
+    ei = exact_id_dups[source]
+    print(f"  {source:<14} exact-ID:{len(ei)}  exact-title:{len(et)}  near-title:{len(nt)}  same-ref:{len(sr)}  content-sim:{len(cp)}")
