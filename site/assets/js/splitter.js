@@ -109,12 +109,17 @@
     }
 
     // Restore persisted state.
+    // In embed mode (compare/build pane) never restore a collapsed TOC —
+    // the chapter list is the only in-pane navigation, so it must always
+    // start visible regardless of what the user did on the standalone reader.
+    var embedMode = false;
+    try { embedMode = new URLSearchParams(window.location.search).get("embed") === "1"; } catch (_) {}
     try {
       const saved = localStorage.getItem(key);
       if (saved !== null) {
         const px = parseInt(saved, 10);
         if (!isNaN(px)) {
-          if (px === 0 && collapsible) {
+          if (px === 0 && collapsible && !embedMode) {
             document.documentElement.style.setProperty(cssVar, "0px");
             setCollapsed(true);
           } else if (px > 0) {
