@@ -64,7 +64,7 @@
     { slug: "ct-logic",         title: "Logical Inconsistency",      path: "category/logic.html",         group: "Catalog · by category" },
     { slug: "ct-morality",      title: "Moral Problems",             path: "category/morality.html",      group: "Catalog · by category" },
     { slug: "ct-allah",         title: "Allah's Character",          path: "category/allah.html",         group: "Catalog · by category" },
-    { slug: "ct-cosmology",     title: "Cosmology",                  path: "category/cosmology.html",     group: "Catalog · by category" },
+    { slug: "ct-science",       title: "Science",                    path: "category/science.html",       group: "Catalog · by category" },
     { slug: "ct-preislamic",    title: "Pre-Islamic Borrowings",     path: "category/preislamic.html",    group: "Catalog · by category" },
     { slug: "ct-magic",         title: "Magic & Occult",             path: "category/magic.html",         group: "Catalog · by category" },
     { slug: "ct-ritual",        title: "Ritual Absurdities",         path: "category/ritual.html",        group: "Catalog · by category" },
