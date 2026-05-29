@@ -460,14 +460,13 @@ html.embed-mode.hl-in-compare .splitter[data-splitter-key="reader-hl"],
 body.embed-mode.hl-in-compare .splitter[data-splitter-key="reader-hl"] {
   display: block !important;
 }
-/* Desktop: compact 2-col layout — content fills left, HL panel on right. */
+/* Desktop: TOC left | content | HL-splitter | HL-panel right.
+   TOC drag handle hidden (not useful in a narrow pane); chapter list kept. */
 html.embed-mode.hl-in-compare .reader-layout.has-hl-card,
 body.embed-mode.hl-in-compare .reader-layout.has-hl-card {
-  grid-template-columns: minmax(0, 1fr) 10px var(--reader-hl-w, 240px) !important;
+  grid-template-columns: var(--reader-toc-w, 200px) minmax(0, 1fr) 10px var(--reader-hl-w, 240px) !important;
 }
-/* Hide the TOC and its splitter — not useful inside a compare pane. */
-html.embed-mode.hl-in-compare .reader-toc,
-body.embed-mode.hl-in-compare .reader-toc,
+/* Hide only the TOC drag handle — the chapter list is kept for navigation. */
 html.embed-mode.hl-in-compare .splitter[data-splitter-key="reader-toc"],
 body.embed-mode.hl-in-compare .splitter[data-splitter-key="reader-toc"] {
   display: none !important;
@@ -483,6 +482,16 @@ body.embed-mode.hl-in-compare .splitter[data-splitter-key="reader-toc"] {
   html.embed-mode.hl-in-compare .reader-layout.has-hl-card,
   body.embed-mode.hl-in-compare .reader-layout.has-hl-card {
     grid-template-columns: 1fr !important;
+  }
+  /* Grid collapses to 1fr — TOC stacks above content as a scrollable strip. */
+  html.embed-mode.hl-in-compare .reader-toc,
+  body.embed-mode.hl-in-compare .reader-toc {
+    position: static !important;
+    height: auto !important;
+    max-height: 280px !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 12px 16px !important;
   }
 }
 html.embed-mode .reader-layout.has-hl-card,
