@@ -260,6 +260,7 @@
 
   function renderAuthGate() {
     if (gridEl) gridEl.hidden = true;
+    selectSkin("standard", false);
     if (!sideCard || sideCard.querySelector(".skins-auth-gate")) return;
     var gate = document.createElement("div");
     gate.className = "skins-auth-gate";
