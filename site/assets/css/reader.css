@@ -770,3 +770,9 @@
     font-size: clamp(28px, 7vw, 40px);
   }
 }
+
+/* External link affordance on per-hadith reference labels. Rendered via
+   ::after (generated content) so it is NOT a DOM text node and does not
+   shift saved-highlight character offsets inside an article. */
+.hadith-ref a { text-decoration: none; }
+.hadith-ref a::after { content: " 97"; font-size: 0.85em; opacity: 0.7; }

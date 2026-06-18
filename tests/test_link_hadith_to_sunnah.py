@@ -12,6 +12,10 @@ def test_adds_link():
     assert 'href="https://sunnah.com/bukhari:224"' in out
     assert 'target="_blank"' in out and 'rel="noopener"' in out
     assert "Hadith 224 · Book 4" in out  # label text preserved
+    # The external-link cue must NOT be inline text — it would shift saved
+    # highlight offsets inside the article. It is rendered via CSS instead.
+    assert "↗" not in out
+    assert "Hadith 224 · Book 4</a>" in out  # label ends exactly at the close tag
 
 def test_idempotent_skips_existing_anchor():
     html = '<span class="hadith-ref"><a href="https://sunnah.com/bukhari:224">Hadith 224 · Book 4</a></span>'

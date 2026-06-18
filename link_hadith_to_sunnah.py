@@ -20,8 +20,12 @@ def add_links(html: str, stem: str) -> tuple:
     def repl(m):
         label, num = m.group(1), int(m.group(2))
         url = sl.hadith_url(stem, num)
+        # NOTE: the "↗" external-link cue is rendered via CSS (.hadith-ref a::after
+        # in reader.css), NOT as inline text. Adding literal text here would sit
+        # inside the <article id="h{n}"> and shift saved-highlight character
+        # offsets (highlights.js measures offsets within the anchor element).
         return (f'<span class="hadith-ref"><a href="{url}" target="_blank" '
-                f'rel="noopener">{label} ↗</a></span>')
+                f'rel="noopener">{label}</a></span>')
     return _REF.subn(repl, html)
 
 def main() -> None:
