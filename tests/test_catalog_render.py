@@ -35,3 +35,39 @@ def test_slugify_and_entry_slug_match_legacy_scheme():
     assert slug.endswith("-" + expected_hash)
     assert slug.startswith("paradise-as-physical-pleasure-garden")
     assert len(slug.split("-")[-1]) == 8
+
+
+FAKE = {
+    "quran": {"s2v25", "s4v92", "s2v228"},
+    "bukhari": {"h224"},
+    "abu-dawud": {"h2311"},
+}
+
+
+def test_normalize_ref_part():
+    assert cr.normalize_ref_part("contrast Q 21:101") == "Q 21:101"
+    assert cr.normalize_ref_part("abudawud:2311") == "Abu Dawud 2311"
+    assert cr.normalize_ref_part("Q4:92") == "Q 4:92"
+    assert cr.normalize_ref_part("see also Bukhari 224") == "Bukhari 224"
+
+
+def test_link_one_ref_resolves():
+    assert cr.link_one_ref("Q 2:25", FAKE) == (
+        '<a class="cite-link" href="../read/quran.html#s2v25">Q 2:25</a>')
+
+
+def test_link_one_ref_unresolved_is_plain():
+    # anchor not present -> plain text, no link
+    assert cr.link_one_ref("Q 99:99", FAKE) == "Q 99:99"
+
+
+def test_link_one_ref_referror_is_plain():
+    assert cr.link_one_ref("Musnad Ahmad 12345", FAKE) == "Musnad Ahmad 12345"
+
+
+def test_render_ref_html_multi_and_semicolon():
+    out = cr.render_ref_html(["Q 2:154,3:169–170"], FAKE)
+    # s2v154 absent in FAKE -> plain; both parts present, comma-joined
+    assert "Q 2:154" in out and "3:169" in out
+    out2 = cr.render_ref_html(["Bukhari 224; Bukhari 9999"], FAKE)
+    assert '#h224' in out2 and "Bukhari 9999" in out2  # second plain (absent)
