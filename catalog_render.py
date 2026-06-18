@@ -119,17 +119,13 @@ def link_one_ref(ref: str, anchor_sets: dict) -> str:
 
 
 def render_ref_html(verse_refs: list, anchor_sets: dict) -> str:
-    """Join each verse_refs element (after splitting on ,/; and normalizing) with comma.
+    """Render each verse_refs element verbatim with per-citation links in place.
 
-    Each is linked-or-plain; this is the <span class="ref"> inner HTML.
+    Uses link_inline so prose, parentheticals, and punctuation are preserved
+    verbatim while each Q/hadith token is individually linked if its anchor
+    exists. This is the <span class="ref"> inner HTML.
     """
-    out = []
-    for raw in verse_refs:
-        for part in re.split(r"[;,]", raw):
-            norm = normalize_ref_part(part)
-            if norm:
-                out.append(link_one_ref(norm, anchor_sets))
-    return ", ".join(out)
+    return ", ".join(link_inline(esc(raw), anchor_sets) for raw in (verse_refs or []))
 
 
 _HADITH_NAMES = sorted(

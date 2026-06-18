@@ -135,3 +135,18 @@ def test_render_entry_hadith_structure_and_multicat():
 def test_render_entry_escapes_quote():
     html_out = cr.render_entry(ENTRY_Q, "quran", FAKE)
     assert "<blockquote>" in html_out
+
+
+# New test: render_ref_html must preserve prose/parentheticals and link each citation token
+FAKE2 = {
+    "quran":    {"s17v1"},
+    "tirmidhi": {"h3147"},
+}
+
+def test_render_ref_html_preserves_prose_and_links_each():
+    out = cr.render_ref_html(["Q 17:1 (with hadith Tirmidhi 3147)"], FAKE2)
+    # Both citations must be independently linked
+    assert '../read/quran.html#s17v1">Q 17:1</a>' in out, f"Q 17:1 not linked: {out}"
+    assert '../read/tirmidhi.html#h3147">Tirmidhi 3147</a>' in out, f"Tirmidhi 3147 not linked: {out}"
+    # Prose must be preserved verbatim
+    assert "(with hadith" in out, f"prose parenthetical stripped: {out}"
