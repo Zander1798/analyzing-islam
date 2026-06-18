@@ -33,3 +33,41 @@ def parse_quran_ref(ref: str) -> list[tuple[int, int]]:
     if not pairs:
         raise RefError(f"No verses in {ref!r}")
     return pairs
+
+
+# Normalized collection name (lowercased, apostrophes/diacritics stripped to
+# ASCII) -> read-page slug. Keys cover the spellings used in book verse_refs.
+COLLECTION_SLUGS = {
+    "bukhari": "bukhari",
+    "muslim": "muslim",
+    "abu dawud": "abu-dawud",
+    "abudawud": "abu-dawud",
+    "tirmidhi": "tirmidhi",
+    "nasai": "nasai",
+    "ibn majah": "ibn-majah",
+    "ibnmajah": "ibn-majah",
+}
+
+
+def hadith_anchor(id_in_book: int) -> str:
+    return f"h{id_in_book}"
+
+
+def _normalize_collection(name: str) -> str:
+    n = name.strip().lower()
+    # Strip apostrophes/diacritic markers that appear in transliterations.
+    n = n.replace("'", "").replace("`", "").replace("'", "")
+    n = n.replace("ʾ", "").replace("ʿ", "")
+    n = re.sub(r"\s+", " ", n)
+    return n
+
+
+def parse_hadith_ref(ref: str) -> tuple[str, int]:
+    s = ref.strip()
+    m = re.match(r"^(.+?)\s+(\d+)", s)
+    if not m:
+        raise RefError(f"No collection+number in {ref!r}")
+    name = _normalize_collection(m.group(1))
+    if name not in COLLECTION_SLUGS:
+        raise RefError(f"Unknown collection {m.group(1)!r} in {ref!r}")
+    return COLLECTION_SLUGS[name], int(m.group(2))
