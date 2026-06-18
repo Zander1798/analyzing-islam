@@ -2,6 +2,15 @@
 # Single source of truth binding book/entry citations to the rebuilt read
 # pages. Consumed by the catalog generator (to emit links) and the link
 # validator (to check them). Stdlib only.
+#
+# CONTRACT: Callers MUST handle RefError. Both ref_to_links() and primary_anchor()
+# raise RefError when a ref is not parseable or uses an unsupported scheme
+# (e.g. "Musnad Ahmad ...", "Mishkat al-Masabih ..."). Callers should catch
+# RefError and render the ref as plain text rather than calling blindly.
+# Known unsupported forms (deferred to Plan 2 input normalization): semicolon-
+# separated multi-refs (e.g. "Bukhari 1040; Bukhari 3199" — only first returned),
+# colon-style hadith refs (e.g. "abudawud:2311"), and no-space Qur'an refs
+# (e.g. "Q4:92").
 import re
 
 QURAN_SLUG = "quran"

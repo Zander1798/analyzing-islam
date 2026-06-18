@@ -570,7 +570,7 @@ git commit -m "feat: add read-link resolution validator + baseline gate"
 **Interfaces:**
 - Consumes: `refs.ref_to_links`, `read_anchors.read_anchor_set`.
 
-This task has no production code — it is the integration gate proving the contract module agrees with the regenerated read pages on real citations, so later plans can trust `refs.py` to emit links blindly.
+This task has no production code — it is the integration gate proving the contract module agrees with the regenerated read pages on real citations, so later plans can rely on `refs.py` for the supported ref forms, but MUST catch `RefError` and normalize the unsupported forms listed in the Reconciliation notes.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -645,4 +645,9 @@ git commit -m "test: integration gate binding refs.py to regenerated read anchor
 
 ## Reconciliation notes
 
-_(Populated during execution if any sampled book ref number ≠ `idInBook`.)_
+Surfaced by the Plan 1 final review (tested against all 1,874 book refs in `../Analyzing Islam Books/data/*_v2.json`). These are book-data realities for Plan 2 to resolve, not Plan 1 regressions:
+
+1. **Semicolon multi-refs (9 entries) — silent truncation.** e.g. `"Bukhari 1040; Bukhari 3199"`, `"Ibn Majah 2554; Muslim 1695a"`, `"Q 19:71–72; contrast Q 21:101–102"`. `ref_to_links` splits only on `,`, so the second citation is dropped. Some carry prose ("contrast", "see also"), so a naive `;` split is insufficient — Plan 2 must normalize these (split + strip annotations) before emitting links. Violates the "never silently dropped" constraint if left unhandled.
+2. **RefError refs (109 entries).** Many are correctly non-resolvable (not in the Six Books: Musnad Ahmad, Mishkat al-Masabih, "untraceable in canonical collections"). Plan 2's catalog generator MUST wrap `primary_anchor`/`ref_to_links` in try/except `RefError` and render these as plain text (no link), never crash.
+3. **Rejected-but-resolvable forms.** Colon-style hadith refs (`"abudawud:2311"`, ~6) and no-space Qur'an refs (`"Q4:92"`). Plan 2 should normalize these to the canonical `"<Collection> N"` / `"Q s:v"` forms (or extend the parser) so they resolve.
+4. **Flip the baseline gate to strict.** Once Plan 2 regenerates catalog + category pages and drives `validate_links` to 0 unresolved, change the `xfail` in `tests/test_validate_links.py` to a hard assertion (remove the marker) so the gate can never silently regress.
