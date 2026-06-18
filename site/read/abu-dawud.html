@@ -1,12 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Read Sunan Abī Dāwūd in English — 5276 hadiths across 43 books, sourced from sunnah.com.">
+<!-- Favicon + app-icon set (browser tab, iOS home-screen, Android manifest) -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png">
+<link rel="icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/assets/icons/site.webmanifest">
+<meta name="theme-color" content="#0a0a0a">
 <title>Read Sunan Abī Dāwūd — Analyzing Islam</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/reader.css">
+<link rel="stylesheet" href="../assets/css/highlights.css">
 </head>
 <body>
 
@@ -16,14 +25,19 @@
     <div class="site-nav-links">
       <a href="../index.html">Home</a>
       <a href="../catalog.html">Catalog</a>
+      <a href="../arguments.html">Dossiers</a>
       <a href="../read.html" class="active">Read</a>
+      <a href="../compare.html">Compare</a>
+      <a href="../build.html">Build</a>
+      <a href="../watch.html">Watch</a>
+      <a href="../stats.html">Stats</a>
       <a href="../about.html">About</a>
       <a href="../faq.html">FAQ</a>
     </div>
   </div>
 </nav>
 
-<div class="reader-layout">
+<div class="reader-layout has-hl-card">
 
   <aside class="reader-toc">
     <div class="reader-toc-header">Books</div>
@@ -74,6 +88,7 @@
     </ol>
   </aside>
 
+  <div class="splitter" data-splitter-var="--reader-toc-w" data-splitter-min="180" data-splitter-max="460" data-splitter-key="reader-toc" aria-label="Resize chapter list"></div>
   <main class="reader-main">
 
     <header class="reader-hero">
@@ -81,7 +96,7 @@
       <h1>Sunan Abī Dāwūd</h1>
       <p class="reader-intro">Compiled by Abū Dāwūd al-Sijistānī (d. 889 CE). Focused on reports with legal implications — about 5,270 hadiths. One of the six canonical Sunni collections.</p>
       <div class="reader-cta">
-        <a href="../read.html" class="btn">← All sources</a>
+        <a href="../read-islamic.html" class="btn">← Islamic Sources</a>
         <a href="../assets/sources/abu-dawud.pdf" class="btn" download>Download PDF</a>
       </div>
     </header>
@@ -21263,9 +21278,6 @@ Abu Dawud said:</div>
         <div class="hadith-narrator">The aforesaid tradition (No 1963) has also been transmitted by Yazid ibn AbuZiyad with a different chain of narrators. 
 
 
-
-
-
 This version adds the words:</div>
         <p>He (the Prophet) did not stand near it (the jamrah).</p>
         <p class="hadith-arabic" lang="ar" dir="rtl">حَدَّثَنَا مُحَمَّدُ بْنُ الْعَلاَءِ، حَدَّثَنَا ابْنُ إِدْرِيسَ، حَدَّثَنَا يَزِيدُ بْنُ أَبِي زِيَادٍ، بِإِسْنَادِهِ فِي مِثْلِ هَذَا الْحَدِيثِ زَادَ وَلَمْ يَقُمْ عِنْدَهَا ‏.‏</p>
@@ -21770,9 +21782,6 @@ This version adds the words:</div>
       </header>
       <div class="hadith-body">
         <div class="hadith-narrator">Narrated Kathir b. Kathir b. al-Muttalib b. Abi Wida&#x27;ah
-
-
-
 
 
 From his people on the authority of his grandfather:</div>
@@ -23570,9 +23579,6 @@ Abu Dawud said:</div>
         <div class="hadith-narrator">The aforesaid tradition (No. 2182) has also been transmitted by Ali (ibn al-Mubarak) through a different chain of narrators to the same effect. 
 
 
-
-
-
 This version adds:</div>
         <p>Ibn Abbas said: There remained one more pronouncement of divorce for you. The Messenger of Allah (ﷺ) took the same decision.</p>
         <p>Abu Dawud said: I heard Ahmad b. Hanbal say: &#x27;Abd al-Razzaq said that Ibn al-Mubarak said to Ma&#x27;mar: Who is this Abu al-Hasan ? He bore a big rock.</p>
@@ -24739,9 +24745,6 @@ Abu Dawud said:</div>
       </header>
       <div class="hadith-body">
         <div class="hadith-narrator">Zaynab, daughter of Ka&#x27;b ibn Ujrah narrated that Furay&#x27;ah daughter of Malik ibn Sinan, told her that she came to the Messenger of Allah (ﷺ) and asked him whether she could return to her people, Banu Khidrah, for her husband went out seeking his slaves who ran away. When they met him at al-Qudum, they murdered him.  
-
-
-
 
 
 So I asked the Messenger of Allah (ﷺ):</div>
@@ -35516,9 +35519,6 @@ Abu Dawud said:</div>
         <div class="hadith-narrator">The tradition mentioned above (No.3299) has also been transmitted by Umar ibn Abd al-Rahman ibn Awf on the authority of his father and the Companions of the Prophet (ﷺ). 
 
 
-
-
-
 This version has:</div>
         <p>&quot;The Prophet (ﷺ) said: By Him Who sent Muhammad with truth, if you prayed here, this would be sufficient for you like the prayer in Jerusalem.&quot;</p>
         <p>Abu Dawud said: This tradition has also been transmitted by al-Ansari, from Ibn-Juraij. He said: Ja&#x27;far b. &#x27;Umar and &#x27;Amr b. Hayyah. He said: They transmitted from &#x27;Abd al-Rahman b. &#x27;Awf and from the Companions of the Prophet (ﷺ).</p>
@@ -35881,9 +35881,6 @@ This version has:</div>
       </header>
       <div class="hadith-body">
         <div class="hadith-narrator">The tradition mentioned above (No. 3330) has also been transmitted by AbuSafwan ibn Umayrah through a different chain of narrators. 
-
-
-
 
 
 This version has:</div>
@@ -37863,9 +37860,6 @@ Abu Dawud said:</div>
         <div class="hadith-narrator">A similar tradition (to the No. 3513) has been transmitted by AbuHurayrah from the Prophet (ﷺ). 
 
 
-
-
-
 This version has:</div>
         <p>If he paid something from its price, then he will be equal to the creditors in the remaining price. If a man dies and he has the very property of a man (i.e. seller), he is equal to the creditors whether he (the buyer) pays him (the price) or not.</p>
         <p>Abu Dawud said: Malik&#x27;s version of this tradition is sounder.</p>
@@ -38738,9 +38732,6 @@ Abu Dawud said:</div>
         <div class="hadith-narrator">The tradition mentioned above (No. 3593) has also been transmitted by Sulayman ibn Musa through a different chain of narrators. 
 
 
-
-
-
 This version has:</div>
         <p>The Messenger of Allah (ﷺ) said: The testimony of a deceitful man or woman, of an adulterer and adulteress, and of one who harbours rancour against his brother is not allowable.</p>
         <p class="hadith-arabic" lang="ar" dir="rtl">حَدَّثَنَا مُحَمَّدُ بْنُ خَلَفِ بْنِ طَارِقٍ الرَّازِيُّ، حَدَّثَنَا زَيْدُ بْنُ يَحْيَى بْنِ عُبَيْدٍ الْخُزَاعِيُّ، حَدَّثَنَا سَعِيدُ بْنُ عَبْدِ الْعَزِيزِ، عَنْ سُلَيْمَانَ بْنِ مُوسَى، بِإِسْنَادِهِ قَالَ قَالَ رَسُولُ اللَّهِ صلى الله عليه وسلم ‏
@@ -39126,13 +39117,7 @@ Abu Dawud said:</div>
         <div class="hadith-narrator">Abu Ja&#x27;far Muhammad bin &#x27;Ali reported from Samurah ibn Jundub that he had a row of palm-trees in the garden of a man of the Ansar. The man had his family with him. Samurah used to visit his palm-trees, and the man was annoyed by that and felt it keenly. So he asked him (Samurah) to sell them to him, but he refused. He then asked him to take something else in exchange, but he refused.  
 
 
-
-
-
 So he came to the Holy Prophet (ﷺ) and mentioned it to him. The Holy Prophet (ﷺ) asked him to sell it to him, but he refused. He asked him to take something else in exchange, but he refused.  
-
-
-
 
 
 He then said:</div>
@@ -43662,14 +43647,7 @@ Abu Dawud said:</div>
         <div class="hadith-narrator">Narrated Abul Husayn, that is al-Haytham ibn Shafi 
 
 
-
-
-
-
 I and a companion of mine called Abu &#x27;Amir, a man from al-Ma&#x27;afir went to perform prayer in Bayt al-Maqdis (Jerusalem). Their preacher was a man of Azd called AbuRayhanah, who was a companion of the Prophet (ﷺ).  
-
-
-
 
 
 Abul Husayn said:</div>
@@ -45061,9 +45039,6 @@ Abu Dawud said:</div>
         <div class="hadith-narrator">The tradition mentioned above (No. 4164) has also been transmitted by Ammar ibn Yasir through a different chain of narrators. 
 
 
-
-
-
 This version has:</div>
         <p>Ammar said: I used khaluq. The first version is more perfect; it mentioned &quot;taking a bath&quot;. Ibn Jurayj said: I said to Umar (a transmitter): They might be wearing ihram (robe of pilgrim)? He replied: No, they were residents.</p>
         <p class="hadith-arabic" lang="ar" dir="rtl">حَدَّثَنَا نَصْرُ بْنُ عَلِيٍّ، حَدَّثَنَا مُحَمَّدُ بْنُ بَكْرٍ، أَخْبَرَنَا ابْنُ جُرَيْجٍ، أَخْبَرَنِي عُمَرُ بْنُ عَطَاءِ بْنِ أَبِي الْخُوَارِ، أَنَّهُ سَمِعَ يَحْيَى بْنَ يَعْمَرَ، يُخْبِرُ عَنْ رَجُلٍ، أَخْبَرَهُ عَنْ عَمَّارِ بْنِ يَاسِرٍ، - زَعَمَ عُمَرُ أَنَّ يَحْيَى، سَمَّى ذَلِكَ الرَّجُلَ فَنَسِيَ عُمَرُ اسْمَهُ - أَنَّ عَمَّارًا قَالَ تَخَلَّقْتُ بِهَذِهِ الْقِصَّةِ ‏.‏ وَالأَوَّلُ أَتَمُّ بِكَثِيرٍ فِيهِ ذَكَرَ الْغُسْلَ قَالَ قُلْتُ لِعُمَرَ وَهُمْ حُرُمٌ قَالَ لاَ الْقَوْمُ مُقِيمُونَ ‏.‏</p>
@@ -45661,9 +45636,6 @@ Abu Dawud said:</div>
       </header>
       <div class="hadith-body">
         <div class="hadith-narrator">The tradition mentioned above (No. 4220) has also been transmitted by Arfajah ibn As&#x27;ad through a different chain to the same effect. 
-
-
-
 
 
 Yazid said:</div>
@@ -46857,9 +46829,6 @@ Abu Dawud said:</div>
       </header>
       <div class="hadith-body">
         <div class="hadith-narrator">A similar tradition (to the No. 4322) has also been transmitted by Ibn Mas&#x27;ud through a different chain of narrators to the same effect. 
-
-
-
 
 
 This version adds:</div>
@@ -48402,9 +48371,6 @@ This version adds:</div>
       </header>
       <div class="hadith-body">
         <div class="hadith-narrator">The tradition mentioned above (No. 4459) has also been transmitted by Muhammad ibn Ishaq through a different chain of narrators. But he did not mention Aisha. 
-
-
-
 
 
 This version has:</div>
@@ -57146,12 +57112,52 @@ Abu Dawud said:</div>
 
   </main>
 
+  <div class="splitter" data-splitter-var="--reader-hl-w" data-splitter-side="right" data-splitter-min="180" data-splitter-max="480" data-splitter-key="reader-hl" aria-label="Resize highlights panel"></div>
+  <aside class="hl-card" id="hl-card" aria-label="Highlights">
+    <header class="hl-card-head">
+      <h3>Highlights</h3>
+      <span class="hl-card-count">0</span>
+    </header>
+    <ol class="hl-card-list" id="hl-card-list"></ol>
+    <p class="hl-card-empty">Highlight text in the reader to save it here.</p>
+  </aside>
+  <button type="button" class="hl-card-toggle" aria-controls="hl-card">★ Highlights</button>
 </div>
 
 <footer class="site-footer">
   English text from sunnah.com via AhmedBaset/hadith-json v1.2.0. Every entry references a specific hadith by its canonical number — verify before citing.
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/auth.js" defer></script>
+<script src="../assets/js/auth-ui.js" defer></script>
+
+<script src="../assets/js/splitter.js" defer></script>
+<script src="../assets/js/goat-skins.js" defer></script>
 <script src="../assets/js/goat.js" defer></script>
+<script src="../assets/js/verse-parser.js" defer></script>
+<script src="../assets/js/reader-search.js" defer></script>
+<script src="../assets/js/snap-to-hash.js" defer></script>
+<script src="../assets/js/highlights.js?v=10" defer></script>
+<script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    function tryAttach() {
+      if (!window.AI_HIGHLIGHTS) { setTimeout(tryAttach, 30); return; }
+      window.AI_HIGHLIGHTS.attach({
+        source: "abu-dawud",
+        scope: document.querySelector(".reader-main") || document.querySelector(".bible-reader") || document.body,
+        anchorRe: /^h\d+$/,
+        cardEl: document.getElementById("hl-card"),
+      });
+    }
+    tryAttach();
+    var btn = document.querySelector(".hl-card-toggle");
+    var card = document.getElementById("hl-card");
+    if (btn && card) btn.addEventListener("click", function () {
+      card.classList.toggle("is-open");
+    });
+  });
+</script>
 </body>
 </html>
