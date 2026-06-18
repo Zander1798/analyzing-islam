@@ -89,3 +89,49 @@ def test_link_inline_hadith():
 def test_link_inline_no_double_link_and_plain_text_preserved():
     txt = "No refs here at all."
     assert cr.link_inline(txt, FAKE) == txt
+
+
+ENTRY_Q = {
+    "id": 1, "title": 'Paradise as physical pleasure garden',
+    "categories": ["Strange / Obscure"], "strength": "Basic",
+    "verse_refs": ["Q 2:25"], "verse_quote": "\"... gardens [in Paradise] ...\"",
+    "what_it_says": "Paradise is physical. See Q 2:25 again.",
+    "why_problem": "First para.\n\nSecond para.",
+    "muslim_response": None, "why_fails": None,
+}
+ENTRY_H = {
+    "id": 1, "title": "Muhammad urinated standing up at a dump",
+    "categories": ["Prophetic Character", "Strange / Obscure"], "strength": "Basic",
+    "verse_refs": ["Bukhari 224"], "verse_quote": "\"Once the Prophet ...\"",
+    "what_it_says": "Plain.", "why_problem": "Problem.",
+    "muslim_response": "They say X.", "why_fails": "It fails.", "source": "Bukhari",
+}
+
+def test_render_entry_quran_structure():
+    html_out = cr.render_entry(ENTRY_Q, "quran", FAKE)
+    assert 'class="entry"' in html_out
+    assert 'data-category="strange"' in html_out
+    assert 'data-strength="basic"' in html_out
+    assert "<h4>What the verse says</h4>" in html_out
+    assert "<h4>Why this is a problem</h4>" in html_out
+    assert "The Muslim response" not in html_out   # null -> omitted
+    assert "Why it fails" not in html_out           # null -> omitted
+    # inline link applied in body, anchor exists in FAKE
+    assert '../read/quran.html#s2v25">Q 2:25</a>' in html_out
+    # two paragraphs in why_problem
+    assert html_out.count("<p>") >= 3
+
+def test_render_entry_hadith_structure_and_multicat():
+    html_out = cr.render_entry(ENTRY_H, "bukhari", FAKE)
+    assert 'data-category="prophet strange"' in html_out
+    assert "<h4>What the hadith says</h4>" in html_out
+    assert "<h4>The Muslim response</h4>" in html_out
+    assert "<h4>Why it fails</h4>" in html_out
+    assert '<span class="tag">Prophetic Character</span>' in html_out
+    assert '<span class="tag">Strange / Obscure</span>' in html_out
+    assert '<span class="tag strength-basic">Basic</span>' in html_out
+    assert '../read/bukhari.html#h224">Bukhari 224</a>' in html_out
+
+def test_render_entry_escapes_quote():
+    html_out = cr.render_entry(ENTRY_Q, "quran", FAKE)
+    assert "<blockquote>" in html_out

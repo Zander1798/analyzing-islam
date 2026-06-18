@@ -155,3 +155,65 @@ def link_inline(text_html: str, anchor_sets: dict) -> str:
     text_html = _QURAN_INLINE.sub(q, text_html)
     text_html = _HADITH_INLINE.sub(h, text_html)
     return text_html
+
+
+def render_paragraphs(text: str, anchor_sets: dict) -> str:
+    """Split text on \n\n, esc each block, inline-link it, wrap in <p>…</p>, join with \n      ."""
+    blocks = [b.strip() for b in (text or "").split("\n\n") if b.strip()]
+    out = []
+    for b in blocks:
+        out.append("<p>" + link_inline(esc(b), anchor_sets) + "</p>")
+    return "\n      ".join(out)
+
+
+def says_heading(source: str, n_refs: int) -> str:
+    """Return heading text for what-it-says section.
+
+    For quran: "What the verse says" if n_refs <= 1, else "What the verses say".
+    For hadith: "What the hadith says".
+    """
+    if source == "quran":
+        return "What the verse says" if n_refs <= 1 else "What the verses say"
+    return "What the hadith says"
+
+
+def render_entry(entry: dict, source: str, anchor_sets: dict) -> str:
+    """Render a book entry dict into <div class="entry">…</div> block.
+
+    Omits "The Muslim response" h4+paras when muslim_response is null/empty.
+    Omits "Why it fails" block when why_fails is null/empty.
+    """
+    title = entry["title"]
+    cats = entry.get("categories") or []
+    slugs = [category_slug(c) for c in cats]
+    strength = entry.get("strength") or ""
+    scls = strength_class(strength)
+    eid = entry_slug(title, source)
+    refs_list = entry.get("verse_refs") or []
+    ref_html = render_ref_html(refs_list, anchor_sets)
+
+    parts = [
+        f'<div class="entry" id="{eid}" data-category="{esc(" ".join(slugs))}" data-strength="{scls}">',
+        '  <div class="entry-header">',
+        f'    <span class="entry-title">{esc(title)}</span>',
+    ]
+    for c in cats:
+        parts.append(f'    <span class="tag">{esc(c)}</span>')
+    parts.append(f'    <span class="tag strength-{scls}">{esc(strength)}</span>')
+    parts.append(f'    <span class="ref">{ref_html}</span>')
+    parts.append('  </div>')
+    parts.append('  <section>')
+    parts.append(f'    <blockquote>{esc(entry.get("verse_quote") or "")}</blockquote>')
+    parts.append(f'    <h4>{says_heading(source, len(refs_list))}</h4>')
+    parts.append(f'    {render_paragraphs(entry.get("what_it_says"), anchor_sets)}')
+    parts.append('    <h4>Why this is a problem</h4>')
+    parts.append(f'    {render_paragraphs(entry.get("why_problem"), anchor_sets)}')
+    if (entry.get("muslim_response") or "").strip():
+        parts.append('    <h4>The Muslim response</h4>')
+        parts.append(f'    {render_paragraphs(entry["muslim_response"], anchor_sets)}')
+    if (entry.get("why_fails") or "").strip():
+        parts.append('    <h4>Why it fails</h4>')
+        parts.append(f'    {render_paragraphs(entry["why_fails"], anchor_sets)}')
+    parts.append('  </section>')
+    parts.append('</div>')
+    return "\n".join(parts)
