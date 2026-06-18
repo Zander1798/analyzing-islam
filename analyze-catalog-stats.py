@@ -29,7 +29,7 @@ CATEGORIES = [
     ("logic", "Logical Inconsistency"),
     ("morality", "Moral Problems"),
     ("allah", "Allah's Character"),
-    ("cosmology", "Cosmology"),
+    ("science", "Science"),
     ("preislamic", "Pre-Islamic Borrowings"),
     ("magic", "Magic & Occult"),
     ("ritual", "Ritual Absurdities"),
@@ -53,6 +53,7 @@ CATEGORIES = [
     ("strange", "Strange / Obscure"),
     ("gross-vile", "Gross / Vile"),
     ("incest", "Incest"),
+    ("animals", "Animals"),
 ]
 
 NAME_TO_SLUG = {name: slug for slug, name in CATEGORIES}
@@ -68,7 +69,7 @@ TAG_VARIANTS = {
     "prophetic character": "prophet",
     "prophetic privileges": "privileges",
     "jesus / christology": "jesus",
-    "science claims": "cosmology",
+    "science claims": "science",
     "violence": "warfare",
     "misogyny": "women",
     "sexual misconduct": "sexual",
@@ -91,7 +92,9 @@ TAG_VARIANTS = {
     "contradictions": "contradiction",
     "moral problems": "morality",
     "allah's character": "allah",
-    "cosmology": "cosmology",
+    "cosmology": "science",
+    "science": "science",
+    "animals": "animals",
     "pre-islamic borrowings": "preislamic",
     "logical inconsistency": "logic",
     "paradise": "paradise",
