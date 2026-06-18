@@ -116,8 +116,8 @@ def test_render_entry_quran_structure():
     assert "<h4>Why this is a problem</h4>" in html_out
     assert "The Muslim response" not in html_out   # null -> omitted
     assert "Why it fails" not in html_out           # null -> omitted
-    # inline link applied in body, anchor exists in FAKE
-    assert '../read/quran.html#s2v25">Q 2:25</a>' in html_out
+    # inline link applied in body, anchor exists in FAKE; display tightened to Q2:25
+    assert '../read/quran.html#s2v25">Q2:25</a>' in html_out
     # two paragraphs in why_problem
     assert html_out.count("<p>") >= 3
 
@@ -150,3 +150,17 @@ def test_render_ref_html_preserves_prose_and_links_each():
     assert '../read/tirmidhi.html#h3147">Tirmidhi 3147</a>' in out, f"Tirmidhi 3147 not linked: {out}"
     # Prose must be preserved verbatim
     assert "(with hadith" in out, f"prose parenthetical stripped: {out}"
+
+
+def test_tighten_qrefs_display_only():
+    assert cr.tighten_qrefs("see Q 98:6 and Q 8:55") == "see Q98:6 and Q8:55"
+    # href contains no "Q " so it is never touched
+    assert cr.tighten_qrefs('<a href="../read/quran.html#s98v6">Q 98:6</a>') == \
+        '<a href="../read/quran.html#s98v6">Q98:6</a>'
+
+
+def test_render_entry_tightens_qref_keeps_link():
+    out = cr.render_entry(ENTRY_Q, "quran", FAKE)
+    assert "Q 2:25" not in out      # no spaced Q-ref display anywhere
+    assert "#s2v25" in out          # link target preserved
+    assert "Q2:25" in out           # tight display present

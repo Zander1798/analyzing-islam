@@ -49,6 +49,15 @@ def esc(s: str) -> str:
     return html.escape(s, quote=True) if s else ""
 
 
+_QREF_TIGHTEN = re.compile(r"\bQ (\d+):(\d+)")
+
+
+def tighten_qrefs(s: str) -> str:
+    """Render Qur'an reference display tight: 'Q 2:25' -> 'Q2:25'. Display only;
+    link hrefs ('#s2v25') contain no 'Q ' and are unaffected."""
+    return _QREF_TIGHTEN.sub(r"Q\1:\2", s)
+
+
 def slugify(s: str, max_len: int = 60) -> str:
     s = re.sub(r"<[^>]+>", "", s)
     s = re.sub(r"[̀-ͯ]", "", s)
@@ -212,4 +221,8 @@ def render_entry(entry: dict, source: str, anchor_sets: dict) -> str:
         parts.append(f'    {render_paragraphs(entry["why_fails"], anchor_sets)}')
     parts.append('  </section>')
     parts.append('</div>')
-    return "\n".join(parts)
+    # Tighten Qur'an reference DISPLAY ("Q 2:25" -> "Q2:25") site-wide style.
+    # Applied last, after link_inline has matched the spaced form, so links are
+    # created then their visible text is tightened. hrefs are "#sNvV" (no "Q "),
+    # so this never touches a link target — display only.
+    return tighten_qrefs("\n".join(parts))
