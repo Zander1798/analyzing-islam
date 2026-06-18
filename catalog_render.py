@@ -130,3 +130,28 @@ def render_ref_html(verse_refs: list, anchor_sets: dict) -> str:
             if norm:
                 out.append(link_one_ref(norm, anchor_sets))
     return ", ".join(out)
+
+
+_HADITH_NAMES = sorted(
+    ["Bukhari", "Muslim", "Abu Dawud", "Tirmidhi", "Nasa'i", "Nasai", "Ibn Majah"],
+    key=len, reverse=True)
+_HADITH_ALT = "|".join(re.escape(n) for n in _HADITH_NAMES)
+_QURAN_INLINE = re.compile(r"Q (\d+):(\d+)(?:[–\-]\d+)?")
+_HADITH_INLINE = re.compile(rf"({_HADITH_ALT}) (\d+[a-z]?)")
+
+
+def link_inline(text_html: str, anchor_sets: dict) -> str:
+    """Wrap inline Qur'an and hadith refs in <a class="cite-link"> if anchor exists.
+
+    Input is already HTML-escaped. Routes each candidate through link_one_ref
+    so no broken inline link is produced. Display text unchanged.
+    """
+    def q(m):
+        return link_one_ref(m.group(0), anchor_sets)
+
+    def h(m):
+        return link_one_ref(m.group(0), anchor_sets)
+
+    text_html = _QURAN_INLINE.sub(q, text_html)
+    text_html = _HADITH_INLINE.sub(h, text_html)
+    return text_html

@@ -71,3 +71,21 @@ def test_render_ref_html_multi_and_semicolon():
     assert "Q 2:154" in out and "3:169" in out
     out2 = cr.render_ref_html(["Bukhari 224; Bukhari 9999"], FAKE)
     assert '#h224' in out2 and "Bukhari 9999" in out2  # second plain (absent)
+
+
+def test_link_inline_quran_present_and_absent():
+    txt = "As in Q 2:25 and also Q 99:99 the text says."
+    out = cr.link_inline(txt, FAKE)
+    assert '<a class="cite-link" href="../read/quran.html#s2v25">Q 2:25</a>' in out
+    assert "Q 99:99" in out and "#s99v99" not in out  # absent -> plain
+
+
+def test_link_inline_hadith():
+    txt = "Reported in Bukhari 224 clearly."
+    out = cr.link_inline(txt, FAKE)
+    assert '<a class="cite-link" href="../read/bukhari.html#h224">Bukhari 224</a>' in out
+
+
+def test_link_inline_no_double_link_and_plain_text_preserved():
+    txt = "No refs here at all."
+    assert cr.link_inline(txt, FAKE) == txt
