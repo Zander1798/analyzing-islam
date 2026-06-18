@@ -18,7 +18,7 @@ _ra_spec = importlib.util.spec_from_file_location("read_anchors", ROOT / "read_a
 read_anchors = importlib.util.module_from_spec(_ra_spec)
 _ra_spec.loader.exec_module(read_anchors)
 
-_LINK_RE = re.compile(r'href="\.\./read/([a-z0-9-]+)\.html#([^"]+)"')
+_LINK_RE = re.compile(r'href="\.\./read/([a-z0-9-]+)\.html#([^"#\s]+)"')
 # quiz source links are stored without the "../" prefix, e.g. "read/quran.html#s1v2"
 _QUIZ_RE = re.compile(r'(?:\.\./)?read/([a-z0-9-]+)\.html#([^"#]+)')
 
