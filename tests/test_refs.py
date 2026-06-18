@@ -58,3 +58,20 @@ def test_parse_hadith_range_uses_start():
 def test_parse_hadith_unknown_collection():
     with pytest.raises(refs.RefError):
         refs.parse_hadith_ref("Darimi 5")
+
+
+def test_ref_to_links_quran_multi():
+    assert refs.ref_to_links("Q 2:154,3:169–170") == [
+        ("quran", "s2v154"), ("quran", "s3v169")]
+
+
+def test_ref_to_links_hadith():
+    assert refs.ref_to_links("Bukhari 224") == [("bukhari", "h224")]
+
+
+def test_primary_anchor_quran_range():
+    assert refs.primary_anchor("Q 27:15–44") == ("quran", "s27v15")
+
+
+def test_primary_anchor_hadith():
+    assert refs.primary_anchor("Muslim 2020a") == ("muslim", "h2020")

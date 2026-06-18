@@ -71,3 +71,19 @@ def parse_hadith_ref(ref: str) -> tuple[str, int]:
     if name not in COLLECTION_SLUGS:
         raise RefError(f"Unknown collection {m.group(1)!r} in {ref!r}")
     return COLLECTION_SLUGS[name], int(m.group(2))
+
+
+def ref_to_links(ref: str) -> list[tuple[str, str]]:
+    s = ref.strip()
+    if re.match(r"(?i)^q\b", s):
+        return [(QURAN_SLUG, quran_anchor(su, ve))
+                for su, ve in parse_quran_ref(s)]
+    slug, n = parse_hadith_ref(s)
+    return [(slug, hadith_anchor(n))]
+
+
+def primary_anchor(ref: str) -> tuple[str, str]:
+    links = ref_to_links(ref)
+    if not links:
+        raise RefError(f"No links for {ref!r}")
+    return links[0]
