@@ -31,3 +31,4 @@ scrape-data/
 
 # Supabase data dumps (contain user data — never commit)
 backups/
+hadith-sunnah/
