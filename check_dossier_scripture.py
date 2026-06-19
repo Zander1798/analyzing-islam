@@ -42,6 +42,9 @@ def reader_text(slug, anchor):
     return HV.get(slug, {}).get(anchor.lstrip("h"), "")
 
 
+ANCHOR = re.compile(r'href="\.\./\.\./read/([a-z-]+)\.html#([a-z0-9]+)"')
+
+
 def main():
     flagged = []
     checked = 0
@@ -49,22 +52,27 @@ def main():
         box = VERSEBOX.search(io.open(f, encoding="utf-8").read())
         if not box:
             continue
-        for slug, anchor, quoted in SEG.finditer(box.group(1)):
-            q = words(html.unescape(re.sub(r"<[^>]+>", "", quoted)))
-            if len(q) < 6:
+        # every source text cited anywhere in the box (quote may match any of them)
+        srcs = [reader_text(s, a) for s, a in ANCHOR.findall(box.group(1))]
+        srcwords = set().union(*[words(s) for s in srcs]) if srcs else set()
+        if not srcwords:
+            continue
+        for _m in SEG.finditer(box.group(1)):
+            raw = html.unescape(re.sub(r"<[^>]+>", "", _m.group(3))).strip()
+            if re.match(r"(?i)(parallel|also|with |see |cf\.|similar)", raw):
                 continue
-            src = reader_text(slug, anchor)
-            if not src:
+            q = words(raw)
+            if len(q) < 12:
                 continue
             checked += 1
-            ov = len(q & words(src)) / len(q)
+            ov = len(q & srcwords) / len(q)   # best match against ANY cited source in the box
             if ov < 0.35:
                 rel = f.split("arguments")[1].replace("\\", "/").lstrip("/")
-                flagged.append((round(ov, 2), rel, slug, anchor))
+                flagged.append((round(ov, 2), rel))
     print(f"checked {checked} dossier scripture quotes")
-    print(f"flagged (overlap < 0.35 — review for possible misquote): {len(flagged)}")
-    for ov, rel, slug, anc in sorted(flagged)[:40]:
-        print(f"  ov={ov}  {rel}  -> {slug}#{anc}")
+    print(f"flagged (quote matches NONE of its box's cited sources — review): {len(flagged)}")
+    for ov, rel in sorted(flagged)[:40]:
+        print(f"  ov={ov}  {rel}")
 
 
 if __name__ == "__main__":
