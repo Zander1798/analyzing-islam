@@ -81,14 +81,21 @@
   var DB_TABLE    = "quiz_progress";
 
   // ── In-memory cache (always in sync with the source of truth) ──────────
-  // Initialised from localStorage immediately so the page renders without
-  // waiting for the Supabase round-trip. Overwritten once auth resolves.
+  // Initialised to safe defaults; populated once auth + the Supabase
+  // round-trip resolve. `loaded` flips true the moment we know the real
+  // state (server row, migrated local progress, or confirmed signed-out)
+  // so the UI can tell "still loading" from "genuinely only standard".
   var _cache = (function () {
     var lvl     = parseInt(localStorage.getItem(LS_LEVEL) || "1", 10);
     var stored  = localStorage.getItem(LS_UNLOCKED);
     var ids     = stored ? JSON.parse(stored) : [];
     if (ids.indexOf("standard") === -1) ids.push("standard");
-    return { unlockedLevel: lvl, unlockedSkins: new Set(ids) };
+    return {
+      unlockedLevel: lvl,
+      unlockedSkins: new Set(ids),
+      selectedSkin:  "standard",
+      loaded:        false,
+    };
   }());
 
   function sb()  { return window.__supabase; }
@@ -99,7 +106,7 @@
     if (!sb() || !uid()) return null;
     var result = await sb()
       .from(DB_TABLE)
-      .select("unlocked_level, unlocked_skins")
+      .select("unlocked_level, unlocked_skins, selected_skin")
       .eq("user_id", uid())
       .maybeSingle();
     return result.data || null;
@@ -111,6 +118,7 @@
       user_id:         uid(),
       unlocked_level:  _cache.unlockedLevel,
       unlocked_skins:  Array.from(_cache.unlockedSkins),
+      selected_skin:   _cache.selectedSkin,
       updated_at:      new Date().toISOString(),
     }, { onConflict: "user_id" });
   }
@@ -122,21 +130,29 @@
     var ids    = stored ? JSON.parse(stored) : ["standard"];
     if (ids.indexOf("standard") === -1) ids.push("standard");
 
-    // Only migrate if the user has actual progress beyond the default.
+    // Carry the locally-chosen skin up too, but only if it's actually
+    // unlocked — otherwise fall back to standard.
+    var sel = localStorage.getItem(LS_SKIN) || "standard";
+    if (ids.indexOf(sel) === -1) sel = "standard";
+
+    _cache.unlockedLevel = lvl;
+    _cache.unlockedSkins = new Set(ids);
+    _cache.selectedSkin  = sel;
+
+    // Only write a server row if the user has real progress beyond the
+    // default; otherwise leave the table untouched (defaults apply).
     if (lvl <= 1 && ids.length <= 1) return;
 
     await sb().from(DB_TABLE).upsert({
       user_id:        uid(),
       unlocked_level: lvl,
       unlocked_skins: ids,
+      selected_skin:  sel,
       updated_at:     new Date().toISOString(),
     }, { onConflict: "user_id" });
 
     localStorage.removeItem(LS_LEVEL);
     localStorage.removeItem(LS_UNLOCKED);
-
-    _cache.unlockedLevel = lvl;
-    _cache.unlockedSkins = new Set(ids);
   }
 
   // ── Load progress and refresh the cache ────────────────────────────────
@@ -148,20 +164,41 @@
         if (ids.indexOf("standard") === -1) ids.push("standard");
         _cache.unlockedLevel = row.unlocked_level || 1;
         _cache.unlockedSkins = new Set(ids);
+
+        var sel = row.selected_skin || "standard";
+        if (ids.indexOf(sel) === -1) sel = "standard";
+
+        // One-time adoption of a pre-server-sync localStorage selection:
+        // if the server still holds the default but localStorage names an
+        // unlocked skin, adopt it and push it up so it syncs everywhere.
+        var localSel = localStorage.getItem(LS_SKIN);
+        if (sel === "standard" && localSel && localSel !== "standard" &&
+            ids.indexOf(localSel) !== -1) {
+          sel = localSel;
+          _cache.selectedSkin = sel;
+          serverSave();
+        } else {
+          _cache.selectedSkin = sel;
+        }
       } else {
-        // No server row yet — push any local progress up.
+        // No server row yet — push any local progress (incl. selection) up.
         await migrateLocal();
       }
     } else {
       // Signed out: always use defaults — skins are locked behind auth.
       _cache.unlockedLevel = 1;
       _cache.unlockedSkins = new Set(["standard"]);
+      _cache.selectedSkin  = "standard";
     }
+    _cache.loaded = true;
     window.dispatchEvent(new Event("aig:progress-loaded"));
   }
 
-  // Reload whenever auth state changes (sign-in / sign-out).
+  // Reload whenever auth state changes (sign-in / sign-out)…
   window.addEventListener("auth-state", function () { loadProgress(); });
+  // …and once on first load as a safety net, in case the initial
+  // auth-state event fired before this listener was registered.
+  (window.__authReady || Promise.resolve()).then(loadProgress);
 
   // ── Asset prefix helper ─────────────────────────────────────────────────
   function assetPrefix() {
@@ -182,17 +219,30 @@
   window.GoatSkins = {
     SKINS: SKINS,
 
-    // Skin selection — per-device localStorage, gated behind auth.
-    // Read optimistically from localStorage so the nav goat renders the
-    // correct skin immediately before auth resolves; the signed-out branch
-    // of loadProgress() resets to "standard" if auth comes back unsigned.
+    // Skin selection — server-backed (quiz_progress.selected_skin), synced
+    // across devices. Until the real state has loaded we deliberately
+    // report "standard" so the UI never shows a skin the user may not have
+    // unlocked on this device; callers repaint on "aig:progress-loaded".
     getSelectedId: function () {
-      return localStorage.getItem(LS_SKIN) || "standard";
+      if (!_cache.loaded) return "standard";
+      var id = _cache.selectedSkin || "standard";
+      if (!_cache.unlockedSkins.has(id)) id = "standard";
+      return id;
     },
     setSelectedId: function (id) {
       if (!uid()) return;
+      if (!_cache.unlockedSkins.has(id)) return;
+      _cache.selectedSkin = id;
+      // Mirror to localStorage so same-device tabs repaint via the
+      // "storage" event; the server row remains the source of truth.
       localStorage.setItem(LS_SKIN, id);
+      serverSave();
       window.dispatchEvent(new Event("aig:skin-changed"));
+    },
+
+    // Has the real (server/confirmed) state loaded yet?
+    isLoaded: function () {
+      return _cache.loaded;
     },
 
     // Progress reads — synchronous from cache.
@@ -223,12 +273,13 @@
     },
 
     resetProgress: function () {
+      var wasSelected = _cache.selectedSkin;
       _cache.unlockedLevel = 1;
       _cache.unlockedSkins = new Set(["standard"]);
+      _cache.selectedSkin  = "standard";
       if (uid()) {
-        var selectedId = localStorage.getItem(LS_SKIN);
-        if (selectedId && selectedId !== "standard") {
-          localStorage.setItem(LS_SKIN, "standard");
+        localStorage.setItem(LS_SKIN, "standard");
+        if (wasSelected && wasSelected !== "standard") {
           window.dispatchEvent(new Event("aig:skin-changed"));
         }
         serverSave();

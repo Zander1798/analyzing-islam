@@ -374,6 +374,12 @@
     // Hide the skins grid immediately — don't show skin previews before auth confirms.
     if (gridEl) gridEl.hidden = true;
 
+    // Reveal the standard goat right away as a guaranteed fallback so the
+    // stage is never empty while auth + progress load. paint() and the
+    // "aig:progress-loaded" handler upgrade it to the real selected skin
+    // once that resolves. (The <img> already carries the standard GIF.)
+    if (bigImg) bigImg.style.visibility = "visible";
+
     (window.__authReady || Promise.resolve()).then(paint);
     window.addEventListener("auth-state", paint);
 
