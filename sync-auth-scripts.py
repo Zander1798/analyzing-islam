@@ -31,6 +31,7 @@ def auth_script_block(prefix: str) -> str:
         f'<script src="{prefix}assets/js/config.js"></script>\n'
         f'<script src="{prefix}assets/js/auth.js" defer></script>\n'
         f'<script src="{prefix}assets/js/auth-ui.js" defer></script>\n'
+        f'<script src="{prefix}assets/js/track.js" defer></script>\n'
     )
 
 
