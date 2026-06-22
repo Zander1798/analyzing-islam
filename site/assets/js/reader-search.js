@@ -50,6 +50,12 @@
       indexPath: "assets/compare-index/quran-reader.json",
       contentBase: "read/quran/",
     },
+    "bukhari":   { indexPath: "assets/compare-index/bukhari.json",   contentBase: "read/bukhari/" },
+    "muslim":    { indexPath: "assets/compare-index/muslim.json",    contentBase: "read/muslim/" },
+    "nasai":     { indexPath: "assets/compare-index/nasai.json",     contentBase: "read/nasai/" },
+    "tirmidhi":  { indexPath: "assets/compare-index/tirmidhi.json",  contentBase: "read/tirmidhi/" },
+    "abu-dawud": { indexPath: "assets/compare-index/abu-dawud.json", contentBase: "read/abu-dawud/" },
+    "ibn-majah": { indexPath: "assets/compare-index/ibn-majah.json", contentBase: "read/ibn-majah/" },
   };
 
   // Compute the site's root prefix from the current reader page's
@@ -112,6 +118,8 @@
     if (slug === "ibn-kathir")        return /\/ibn-kathir\.html$/.test(path);
     if (slug === "talmud")            return /\/talmud\.html$/.test(path);
     if (slug === "quran") return /\/read\/quran\.html$/.test(path);
+    if (["bukhari","muslim","nasai","tirmidhi","abu-dawud","ibn-majah"].indexOf(slug) >= 0)
+      return new RegExp("/read/" + slug + "\\.html$").test(path);
     return false;
   }
 
