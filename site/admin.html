@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Creator analytics dashboard — Analyzing Islam.">
+<!-- Favicon + app-icon set (browser tab, iOS home-screen, Android manifest) -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png">
+<link rel="icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/assets/icons/site.webmanifest">
+<meta name="theme-color" content="#0a0a0a">
+<!-- Open Graph (link preview on WhatsApp, Facebook, LinkedIn, Slack, Discord, etc.) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Analyzing Islam">
+<meta property="og:title" content="Dashboard — Analyzing Islam">
+<meta property="og:description" content="Creator analytics dashboard — Analyzing Islam.">
+<meta property="og:url" content="https://analyzingislam.com/admin.html">
+<meta property="og:image" content="https://analyzingislam.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Analyzing Islam — 1,524 entries across 31 categories">
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dashboard — Analyzing Islam">
+<meta name="twitter:description" content="Creator analytics dashboard — Analyzing Islam.">
+<meta name="twitter:image" content="https://analyzingislam.com/assets/og-image.png">
+<title>Dashboard — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="arguments.html">Dossiers</a>
+      <a href="read.html">Read</a>
+      <a href="compare.html">Compare</a>
+      <a href="build.html">Build</a>
+      <a href="watch.html">Watch</a>
+      <a href="stats.html">Stats</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<main class="dash-wrap">
+  <div id="dash-gate" class="dash-gate">Checking access…</div>
+  <div id="dash-root" hidden>
+    <header class="dash-head">
+      <h1>Creator dashboard</h1>
+      <p class="dash-sub" id="dash-stamp">Loading…</p>
+    </header>
+    <section class="kpi-row" id="kpi-cards"></section>
+    <section class="dash-block"><h2>Traffic — last 30 days</h2><div id="chart-traffic"></div></section>
+    <section class="dash-block"><h2>Sign-ups — last 30 days</h2><div id="chart-signups"></div></section>
+    <section class="dash-block"><h2>Engagement</h2><div class="eng-row" id="engagement"></div></section>
+    <div class="dash-cols">
+      <section class="dash-block"><h2>Top pages (7d)</h2><div id="top-pages"></div></section>
+      <section class="dash-block"><h2>Top referrers (7d)</h2><div id="top-referrers"></div></section>
+      <section class="dash-block"><h2>Devices (7d)</h2><div id="device-split"></div></section>
+      <section class="dash-block"><h2>Most-bookmarked</h2><div id="top-bookmarked"></div></section>
+      <section class="dash-block"><h2>Top searches (30d)</h2><div id="top-searches"></div></section>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/track.js" defer></script>
+<script src="assets/js/goat-skins.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<script src="assets/js/admin-dashboard.js" defer></script>
+</body>
+</html>

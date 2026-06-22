@@ -68,10 +68,23 @@
         ? '<div class="auth-menu-handle">@' + escapeHtml(username) + "</div>"
         : "") +
       '<div class="auth-menu-email">' + escapeHtml(email) + "</div>" +
+      '<a href="' + prefix + 'admin.html" class="auth-menu-item auth-menu-admin" role="menuitem" hidden>📊 Dashboard</a>' +
       '<a href="' + prefix + 'saved.html" class="auth-menu-item" role="menuitem">My saved entries</a>' +
       '<a href="' + prefix + 'profile.html" class="auth-menu-item" role="menuitem">Profile</a>' +
       '<button type="button" class="auth-menu-item auth-signout" role="menuitem">Sign out</button>';
     wrap.appendChild(menu);
+
+    // Show the creator dashboard link only when the server confirms admin status.
+    try {
+      if (window.__supabase && sess && sess.user) {
+        window.__supabase.rpc("is_creator").then(function (res) {
+          if (res && res.data === true) {
+            var link = menu.querySelector(".auth-menu-admin");
+            if (link) link.hidden = false;
+          }
+        }, function () {});
+      }
+    } catch (_) {}
 
     trigger.addEventListener("click", function (e) {
       e.stopPropagation();
