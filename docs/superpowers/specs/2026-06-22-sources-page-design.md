@@ -56,18 +56,31 @@ a JSON source-of-truth, then rendered to static HTML.
 1. **Gather corpus** → `sources-corpus.json`: a list of `{entry_id, origin, text}` where
    `origin` is the catalog file or dossier slug. (Pure parsing: BeautifulSoup over
    `catalog/*.html`, JSON read over `arguments-data/*.json`. Dedupe catalog entries by id.)
-2. **Extract (parallel agents)** → `sources-raw.json`: each agent reads a batch of prose
-   blocks and emits, for every secondary work actually named in the text, a record
-   `{raw_mention, normalized_name, group, descriptor, entry_id}`. **Grounding rule:** only
-   works literally named in the provided text may be emitted — nothing invented. The
-   `entry_id` ties each capture back to where it appears.
+2. **Extract — completeness-first (parallel agents over 100% of blocks)** →
+   `sources-raw.json`. Recall is the priority (the user requires that no source be missed),
+   so extraction is built as a wide net, not a sample:
+   - **Total coverage:** *every* one of the ≈1,664 prose blocks is read — no sampling, no
+     truncation, no top-N. Coverage is logged and asserted (see Completeness below).
+   - **Pattern candidate net (deterministic, runs first):** a regex pass over the FULL
+     corpus surfaces a superset of candidate mentions — capitalized multi-word name
+     sequences, book-title shapes ("X's '<Title>' (<Year>)", "in <Title> (<Publisher>,
+     <Year>)", "Tafsir <Name>", "Sahih/Sunan …"), and a seed controlled-vocabulary of
+     known scholars/works (Ibn Kathir, al-Tabari, al-Qurtubi, Ibn Hajar, al-Nawawi, Kecia
+     Ali, Mernissi, Leila Ahmed, Goldziher, Reliance of the Traveller, Fath al-Bari, …).
+     This guarantees the known long tail is caught regardless of LLM judgment.
+   - **Agent pass (per block):** each agent reads its blocks AND is handed that block's
+     pattern-net candidates, and emits a record `{raw_mention, normalized_name, group,
+     descriptor, entry_id}` for every secondary work named — **grounding rule:** only works
+     literally present in the text, nothing invented; and it must not *drop* a pattern-net
+     candidate without explicitly classifying it as a non-source (so dropped candidates are
+     auditable, not silent).
+   - **Second independent pass:** a different agent re-reads each block to catch anything
+     the first missed; new captures are added. Repeated until a round yields nothing new
+     (loop-until-dry).
 3. **Normalize + curate** → `sources.json`: merge duplicates (same work, many phrasings)
    into one canonical record `{name, descriptor, group, aliases[], entry_ids[]}`; resolve
-   group/descriptor conflicts; drop false positives (e.g. a person who isn't a cited
-   source). A controlled vocabulary of the known high-frequency names (Ibn Kathir,
-   al-Tabari, al-Qurtubi, Ibn Hajar, al-Nawawi, Kecia Ali, Mernissi, Leila Ahmed,
-   Goldziher, Reliance of the Traveller, Fath al-Bari, …) seeds high-recall matching;
-   the agents catch the long tail.
+   group/descriptor conflicts; classify each pattern-net candidate as either a real source
+   or an explicitly-recorded non-source (so nothing is silently discarded).
 4. **Render** → `sources.html`: a static page in the site's dark style, grouped by the
    four types, alphabetical within each, each row = `name` + `descriptor`. Standard site
    nav/footer chrome. Built from `sources.json` so it is regenerable.
@@ -97,15 +110,29 @@ a JSON source-of-truth, then rendered to static HTML.
 ```
 `entry_ids` is retained for verification/spot-checking; it is NOT displayed on the page.
 
-## Accuracy & caveats
+## Completeness (the hard requirement: no source may be missed)
 
-- **Best-effort, grounded, reviewable.** Every listed source traces to ≥1 entry that names
-  it, so the list is verifiable and nothing is fabricated. A verification step asserts each
-  `sources.json` entry's `entry_ids` actually contain the mention.
-- A handful of obscure one-off mentions may be missed (recall < 100%), and a few
-  type-classifications are judgment calls. Descriptors come from general knowledge of each
-  work, kept neutral/factual; uncertain ones are flagged for review rather than guessed.
-- The result is refinable: corrections go into `sources.json` and the page re-renders.
+100% recall on free prose cannot be *mathematically proven*, but the pipeline is built so
+that coverage is total and any miss is **surfaced for review rather than silently dropped**:
+
+- **Total block coverage, asserted.** A coverage ledger records every prose block id that
+  was processed; the build FAILS if the processed set ≠ the full corpus set (no block may
+  be skipped or truncated).
+- **No silent candidate drops.** Every pattern-net candidate must be resolved to either a
+  source or an explicit non-source with a reason; an unresolved candidate FAILS the build.
+- **Completeness audit (the backstop).** After `sources.json` is built, an audit re-scans
+  the ENTIRE corpus for any name-/title-shaped token (capitalized multi-word sequence,
+  book-title pattern, honorific/`al-`/`Ibn`/`Tafsir`/author-year shapes) that is **not**
+  covered by some source's `name`/`aliases` and **not** on the explicit non-source list.
+  Anything it finds is written to `sources-unresolved.json` for human confirmation. The
+  feature is **not considered done while `sources-unresolved.json` is non-empty** — each
+  item is triaged into a source or the non-source list, then the audit re-runs, until it is
+  empty. This converts "a miss" from invisible into a build-blocking item.
+- **Grounded + reviewable.** Every listed source traces to ≥1 entry whose text contains one
+  of its aliases (asserted), so nothing is fabricated. Descriptors are neutral/factual from
+  general knowledge of each work; any the curator is unsure of are flagged, not guessed.
+- Corrections go into `sources.json` and the page re-renders — the data file is the
+  editable source of truth.
 
 ## Components / files
 
@@ -115,19 +142,26 @@ a JSON source-of-truth, then rendered to static HTML.
 - Create: `site/assets/css/` additions or a small block in `sources.html` for the list styling
   (reuse `style.css` tokens; minimal new CSS).
 - Modify: `site/about.html` — add the "Sources" section under "Who this is for".
-- Scratch (not shipped): `sources-corpus.json`, `sources-raw.json`.
+- Scratch (not shipped): `sources-corpus.json` (+ coverage ledger), `sources-raw.json`,
+  `sources-unresolved.json` (completeness-audit output; must be emptied before done),
+  and a `non-sources.json` list of pattern-net candidates explicitly judged not to be
+  sources (so they stay resolved on re-runs).
 
 ## Testing
 
-- **Grounding/verification:** a check that every `sources.json` source has ≥1 `entry_id`
-  whose corpus text contains one of the source's `aliases`/`name` (no orphan/invented
-  sources).
+- **Coverage (completeness):** assert the processed-block ledger equals the full corpus
+  block set — every one of the ≈1,664 blocks was extracted (build fails otherwise).
+- **Completeness audit:** assert `sources-unresolved.json` is empty — i.e. the corpus
+  contains no name-/title-shaped token that isn't either a known source alias or an
+  explicit non-source. (This is the "nothing slipped" gate.)
+- **Grounding/verification:** every `sources.json` source has ≥1 `entry_id` whose corpus
+  text contains one of the source's `aliases`/`name` (no orphan/invented sources).
 - **Render:** `sources.html` contains all four group headings, every source from
   `sources.json` appears under its group, output is HTML-escaped, alphabetical within group.
 - **About link:** the new "Sources" section exists under "Who this is for" and links to
   `sources.html` with `target="_blank"`.
-- The extraction stage is LLM-based and not unit-tested; its output is gated by the
-  grounding verification above and human spot-check.
+- The extraction stage is LLM-based and not unit-tested; its recall is enforced by the
+  coverage + completeness-audit gates above, not by sampling.
 
 ## Out of scope (future)
 
