@@ -198,6 +198,11 @@
     // /read/quran.html → quran ; /read/bukhari.html → bukhari ; etc.
     const readerMatch = path.match(/\/read\/([^\/]+?)(?:-v\d+)?\.html$/);
     if (readerMatch) return readerMatch[1];
+    // Split Quran reader sub-pages: /read/quran/<n>.html → quran
+    if (/\/read\/quran\/\d+\.html$/.test(path)) return "quran";
+    // Split hadith reader sub-pages: /read/<collection>/<id>.html → <collection>
+    var hsub = path.match(/\/read\/([^\/]+)\/\d+\.html$/);
+    if (hsub) return hsub[1];
     // Interlinear Bible sub-pages live one level deeper:
     // /read-external/bible/<book>.html
     if (/\/read-external\/bible\//.test(path)) return "bible-interlinear";
