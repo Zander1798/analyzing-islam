@@ -1,0 +1,28 @@
+/* Creator dashboard — dark, matches style.css tokens. */
+.dash-wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+.dash-gate { color: var(--muted, #888); padding: 48px 0; text-align: center; }
+.dash-head h1 { margin: 0 0 4px; }
+.dash-sub { color: var(--muted, #888); font-size: 13px; margin: 0 0 20px; }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.kpi-card { background: #000; border: 1px solid rgba(255,255,255,.15); border-radius: 8px; padding: 14px 16px; }
+.kpi-title { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted,#9a9a9a); margin: 0 0 10px; }
+.kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 12px; }
+.kpi-cell { display: flex; flex-direction: column; }
+.kpi-cell-label { font-size: 11px; color: var(--muted,#888); }
+.kpi-cell-val { font-size: 20px; font-weight: 700; }
+.dash-block { background: #000; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 14px 16px; margin-bottom: 18px; }
+.dash-block h2 { font-size: 14px; margin: 0 0 12px; }
+.dash-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: 18px; }
+.chart { width: 100%; height: 160px; }
+.chart-bars rect { fill: var(--accent, #c9962f); }
+.chart-line polyline { stroke: var(--accent, #c9962f); }
+.eng-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 12px; }
+.eng-stat { background: rgba(255,255,255,.03); border-radius: 6px; padding: 12px; text-align: center; }
+.eng-val { display: block; font-size: 22px; font-weight: 700; }
+.eng-label { font-size: 12px; color: var(--muted,#888); }
+.dash-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dash-table th, .dash-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.dash-table th { color: var(--muted,#9a9a9a); font-weight: 600; }
+.dash-table td:first-child { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dash-error { color: #e06b6b; font-size: 13px; }
+.dash-retry { background: none; border: 1px solid currentColor; color: inherit; border-radius: 4px; padding: 2px 8px; cursor: pointer; }
