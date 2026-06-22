@@ -96,7 +96,9 @@ def gather():
     return out
 
 def _norm(s):
-    return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
+    s = (s or "").lower()
+    s = re.sub(r"[''']s\b", "", s)   # drop possessive 's (straight or curly)
+    return re.sub(r"[^a-z0-9]+", " ", s).strip()
 
 def audit():
     corpus = json.loads(CORPUS.read_text(encoding="utf-8"))
@@ -115,7 +117,7 @@ def audit():
             nc = _norm(c)
             if not nc:
                 continue
-            if any(cov in nc or nc in cov for cov in covered):
+            if any((len(cov) >= 4 and cov in nc) or nc in cov for cov in covered):
                 continue
             if any(ns in nc or nc in ns for ns in nonset):
                 continue
