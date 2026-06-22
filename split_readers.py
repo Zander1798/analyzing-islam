@@ -28,6 +28,29 @@ READERS = [
     },
 ]
 
+_HADITH_NAMES = {
+    "bukhari": "Ṣaḥīḥ al-Bukhārī",
+    "muslim": "Ṣaḥīḥ Muslim",
+    "nasai": "Sunan an-Nasāʾī",
+    "tirmidhi": "Jāmiʿ at-Tirmidhī",
+    "abu-dawud": "Sunan Abī Dāwūd",
+    "ibn-majah": "Sunan Ibn Mājah",
+}
+for _slug, _name in _HADITH_NAMES.items():
+    READERS.append({
+        "slug": _slug,
+        "title": _name,
+        "src": f"read/{_slug}.html",
+        "outdir": f"read/{_slug}",
+        "block_open_re": r'<section class="hadith-book" id="book-(\d+)">',
+        "toc_href_re": r'href="#book-(\d+)"',
+        "anchor_re": r'id="(h\d+)"',
+        "anchor_to_block": None,            # not derivable -> use the built map
+        "ref_for_anchor": (lambda nm: (lambda a: f"{nm} {a[1:]}"))(  _name),
+        "needs_manifest": True,
+    })
+del _slug, _name
+
 # ---- chrome / block splitting -------------------------------------------------
 
 def source_html_path(cfg):
@@ -85,7 +108,42 @@ def pager_html(cfg, ids, idx):
 
 # ---- shell / landing ----------------------------------------------------------
 
-def redirect_script(cfg):
+def build_anchor_map(cfg):
+    """Build a dict mapping each hadith anchor id (e.g. "h299") to its book id."""
+    _, blocks, _ = load_reader(cfg)
+    amap = {}
+    inner_pat = re.search(r"\((.*)\)", cfg["anchor_re"]).group(1)
+    pat = re.compile(r'id="(' + inner_pat + r')"')
+    for bid, block in blocks:
+        for aid in pat.findall(block):
+            amap[aid] = bid
+    return amap
+
+
+def emit_manifest(cfg):
+    """Write anchors.json for a hadith collection; return the anchor map."""
+    if not cfg.get("needs_manifest"):
+        return None
+    amap = build_anchor_map(cfg)
+    out = SITE / cfg["outdir"] / "anchors.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(amap, ensure_ascii=False), encoding="utf-8")
+    print(f"[{cfg['slug']}] wrote manifest anchors.json ({len(amap)} anchors)")
+    return amap
+
+
+def redirect_script(cfg, amap=None):
+    if cfg.get("needs_manifest"):
+        m = json.dumps(amap, ensure_ascii=False)
+        return (
+            "<script>(function(){"
+            "var M=" + m + ";"
+            "var h=location.hash.slice(1);"
+            "if(!h)return;"
+            "var b=M[h];"
+            "if(b!==undefined){location.replace(b+'.html#'+h);}"
+            "})();</script>"
+        )
     # Quran: surah is derivable from the anchor, no map needed.
     return (
         "<script>(function(){"
@@ -115,8 +173,10 @@ def emit_shell(cfg):
     # TOC anchors -> sub-page links (no active item on the landing).
     toc = re.sub(cfg["toc_href_re"], lambda m: f'href="{m.group(1)}.html"', toc_inner)
     chrome_prefix = pre_toc + toc + post_toc
+    # For hadith collections, emit_manifest also builds the anchor map we inline.
+    amap = emit_manifest(cfg) if cfg.get("needs_manifest") else None
     # inject the redirect script just before </head>
-    chrome_prefix = chrome_prefix.replace("</head>", redirect_script(cfg) + "</head>", 1)
+    chrome_prefix = chrome_prefix.replace("</head>", redirect_script(cfg, amap) + "</head>", 1)
     body = landing_body(cfg, blocks)
     page = chrome_prefix + body + tail
     (SITE / cfg["src"]).write_text(page, encoding="utf-8")

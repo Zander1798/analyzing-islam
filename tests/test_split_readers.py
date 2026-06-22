@@ -88,3 +88,32 @@ def test_quran_search_index_built():
     mono = (SITE / "read" / "quran.orig.html").read_text(encoding="utf-8")
     import re as _re
     assert len(entries) == len(set(_re.findall(r'id="(s\d+v\d+)"', mono)))
+
+
+def test_bukhari_subpage_and_map():
+    import subprocess, sys, json, re
+    subprocess.run([sys.executable, str(ROOT / "split_readers.py"), "--only", "bukhari", "--all"],
+                   cwd=ROOT, check=True)
+    # the page that owns #h299
+    amap = json.loads((SITE / "read" / "bukhari" / "anchors.json").read_text(encoding="utf-8"))
+    assert "h299" in amap
+    book = amap["h299"]
+    page = SITE / "read" / "bukhari" / f"{book}.html"
+    assert page.exists()
+    assert 'id="h299"' in page.read_text(encoding="utf-8")
+    # shell carries the inline map + redirect
+    shell = (SITE / "read" / "bukhari.html").read_text(encoding="utf-8")
+    head = shell[:shell.index("</head>")]
+    assert "location.replace" in head
+    assert '"h299"' in head and f'"{book}"' in head  # inline map present
+    # index built under the hadith slug name (not -reader)
+    idx = json.loads((SITE / "assets" / "compare-index" / "bukhari.json").read_text(encoding="utf-8"))
+    assert any(e["href"] == f"{book}.html#h299" for e in idx["entries"])
+
+
+def test_bukhari_no_hadith_lost():
+    import re
+    mono = (SITE / "read" / "bukhari.orig.html").read_text(encoding="utf-8")
+    mono_ids = set(re.findall(r'id="(h\d+)"', mono))
+    amap = __import__("json").loads((SITE / "read" / "bukhari" / "anchors.json").read_text(encoding="utf-8"))
+    assert set(amap.keys()) == mono_ids
