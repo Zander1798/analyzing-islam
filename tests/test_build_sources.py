@@ -75,6 +75,15 @@ def test_render_groups_and_escapes():
         if backup is not None: src.write_text(backup, encoding="utf-8")
         elif src.exists(): src.unlink()
 
+def test_about_has_sources_section():
+    html = (ROOT / "site" / "about.html").read_text(encoding="utf-8")
+    assert "Who this is for" in html
+    i = html.index("Who this is for")
+    rest = html[i:]
+    assert "<h2>Sources</h2>" in rest, "Sources heading missing after Who-this-is-for"
+    assert 'href="sources.html"' in rest and 'target="_blank"' in rest
+    assert rest.index("<h2>Sources</h2>") < rest.index("</body>")
+
 def test_audit_flags_uncovered_and_clears_when_covered():
     _run("gather")
     import importlib.util
