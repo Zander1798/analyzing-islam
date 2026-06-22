@@ -117,3 +117,30 @@ def test_bukhari_no_hadith_lost():
     mono_ids = set(re.findall(r'id="(h\d+)"', mono))
     amap = __import__("json").loads((SITE / "read" / "bukhari" / "anchors.json").read_text(encoding="utf-8"))
     assert set(amap.keys()) == mono_ids
+
+
+def test_all_readers_no_anchor_lost():
+    import re, json, subprocess, sys
+    subprocess.run([sys.executable, str(ROOT / "split_readers.py"), "--all"], cwd=ROOT, check=True)
+    cases = [
+        ("quran",     r'id="(s\d+v\d+)"', None),
+        ("bukhari",   r'id="(h\d+)"', "bukhari/anchors.json"),
+        ("muslim",    r'id="(h\d+)"', "muslim/anchors.json"),
+        ("nasai",     r'id="(h\d+)"', "nasai/anchors.json"),
+        ("tirmidhi",  r'id="(h\d+)"', "tirmidhi/anchors.json"),
+        ("abu-dawud", r'id="(h\d+)"', "abu-dawud/anchors.json"),
+        ("ibn-majah", r'id="(h\d+)"', "ibn-majah/anchors.json"),
+    ]
+    for slug, idre, manifest in cases:
+        mono = (SITE / "read" / f"{slug}.orig.html").read_text(encoding="utf-8")
+        mono_ids = set(re.findall(idre, mono))
+        if manifest:
+            amap = json.loads((SITE / "read" / manifest).read_text(encoding="utf-8"))
+            seen = set(amap.keys())
+        else:
+            seen = set()
+            for n in range(1, 115):
+                p = SITE / "read" / "quran" / f"{n}.html"
+                if p.exists():
+                    seen |= set(re.findall(idre, p.read_text(encoding="utf-8")))
+        assert mono_ids == seen, f"{slug}: lost/extra {len(mono_ids ^ seen)} anchors"

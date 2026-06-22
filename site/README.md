@@ -132,3 +132,27 @@ All verse citations come from the **Saheeh International English translation** �
 The content of the entries is original analysis. You may use, adapt, republish, and share freely. Attribution is appreciated but not required.
 
 The Quranic text quoted in `blockquote` elements is from Saheeh International (1997, 2004 ABUL-QASIM PUBLISHING HOUSE / AL-MUNTADA AL-ISLAMI) and is quoted under fair use / fair dealing for the purposes of criticism and commentary.
+
+---
+
+## Reader build pipeline order
+
+Scripture readers are built in three stages:
+
+1. **Reader builders** — `build-quran-reader.py` / `build-hadith-readers.py`
+   Produce monolithic `read/*.html` files (one file per collection).
+
+2. **Post-build decorators** — e.g. `patch-quran-highlights.js`, `patch_gi_css.py`
+   Add highlight layers, CSS tweaks, and other embellishments to the monolithic files.
+
+3. **Split-reader orchestrator** — `./build-split-readers.sh`
+   Runs `python split_readers.py --all`, which:
+   - Splits each monolith into per-chapter sub-pages under `read/{slug}/`
+   - Rewrites `read/{slug}.html` as a redirect shell / landing page
+   - Emits per-collection search indexes and hadith anchor manifests
+
+**File status after step 3:**
+- `read/*.orig.html` — pristine monolith backups used as the split source
+  (git-ignored; large, regenerable; created automatically on first run)
+- `read/*.html` — now shells (redirect + TOC landing); these are committed
+- `read/{slug}/*.html` — per-chapter sub-pages; these are committed
