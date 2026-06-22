@@ -163,16 +163,22 @@ def gather():
             parts = [t.get_text(" ", strip=True) for t in e.select("p, li")]
             blocks.append({"block_id": bid, "origin": f"catalog:{slug}",
                            "text": re.sub(r"\s+", " ", " ".join(p for p in parts if p))})
+    # Dossiers: mine the RENDERED HTML under site/arguments/{slug}/ — the
+    # arguments-data/*.json is stale (the dossier scholarship upgrade was written
+    # into the HTML, not the JSON). Skip index/landing pages.
     for slug in CATALOG_SOURCES:
-        for arg in json.loads((ROOT / "arguments-data" / f"{slug}.json").read_text(encoding="utf-8")):
-            chunks = [arg.get("context", "")]
-            pr = arg.get("premises", "")
-            chunks.append(" ".join(pr) if isinstance(pr, list) else pr)
-            chunks.append(arg.get("conclusion", ""))
-            for mr in arg.get("muslim_responses", []):
-                chunks += [mr.get("response", ""), mr.get("counter", "")]
-            blocks.append({"block_id": f"dossier:{slug}:{arg['id']}", "origin": f"dossier:{slug}",
-                           "text": re.sub(r"\s+", " ", " ".join(c for c in chunks if c))})
+        dossier_dir = SITE / "arguments" / slug
+        if not dossier_dir.is_dir():
+            continue
+        for path in sorted(dossier_dir.glob("*.html")):
+            stem = path.stem
+            if stem in ("index", slug):
+                continue
+            soup = BeautifulSoup(path.read_text(encoding="utf-8"), "html.parser")
+            main = soup.find("main") or soup
+            parts = [t.get_text(" ", strip=True) for t in main.select("p, li")]
+            blocks.append({"block_id": f"dossier:{slug}:{stem}", "origin": f"dossier:{slug}",
+                           "text": re.sub(r"\s+", " ", " ".join(p for p in parts if p))})
     out = {"blocks": blocks, "block_ids": sorted(b["block_id"] for b in blocks)}
     CORPUS.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
     ncat = sum(1 for b in blocks if b["origin"].startswith("catalog:"))
@@ -203,7 +209,7 @@ def audit():
                 continue
             if any((len(cov) >= 4 and cov in nc) or nc in cov for cov in covered):
                 continue
-            if any(ns in nc or nc in ns for ns in nonset):
+            if any((len(ns) >= 4 and ns in nc) or nc in ns for ns in nonset):
                 continue
             unresolved.setdefault(c, []).append(b["block_id"])
     out = [{"candidate": c, "blocks": ids[:5], "count": len(ids)}
