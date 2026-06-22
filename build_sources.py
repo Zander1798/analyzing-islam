@@ -8,6 +8,60 @@ SITE = ROOT / "site"
 DATA = SITE / "assets" / "data"
 CATALOG_SOURCES = ["quran", "bukhari", "muslim", "abu-dawud", "tirmidhi", "nasai", "ibn-majah"]
 CORPUS = ROOT / "sources-corpus.json"
+CANDIDATES = ROOT / "sources-candidates.json"
+
+# Known recurring scholars/works — guarantees the long tail is caught regardless of LLM.
+SEED_VOCAB = [
+    "Ibn Kathir", "al-Tabari", "al-Qurtubi", "Ibn Hajar", "al-Nawawi", "Fath al-Bari",
+    "Reliance of the Traveller", "Ibn Ishaq", "al-Ghazali", "Ibn Taymiyya", "al-Suyuti",
+    "Ibn Sa'd", "al-Waqidi", "al-Baladhuri", "al-Baydawi", "Ibn Abbas", "al-Razi",
+    "Kecia Ali", "Fatima Mernissi", "Leila Ahmed", "Ignaz Goldziher", "Goldziher",
+    "Patricia Crone", "Joseph Schacht", "Montgomery Watt", "Nerina Rustomji",
+    "Jonathan Brown", "Wael Hallaq", "John Wansbrough", "Theodor Noldeke", "Noldeke",
+]
+# Capitalized phrases that are never bibliographic sources.
+STOPWORDS = {
+    "The Quran", "The Hadith", "The Prophet", "The Bible", "The Torah", "The Gospel",
+    "Allah", "Muhammad", "Mecca", "Medina", "Saudi Arabia", "Sunni", "Shia", "Islam",
+    "Muslim", "Muslims", "God", "Jesus", "Mary", "Moses", "Abraham", "Aisha", "Ali",
+    "Day of Judgment", "Day of Resurrection", "Mount Uhud", "Banu Qurayza", "Saheeh International",
+}
+
+_CAND_PATTERNS = [
+    # work-type prefixes: Tafsir/Sahih/Sunan/Musnad/Jami'/Muwatta/Sira/Mishkat/Fath al-...
+    re.compile(r"\b(?:Tafsir|Sahih|Sunan|Musnad|Jami['ʿ']?|Muwatta|Sira|Mishkat|Fath al-)[A-Za-z''ʿ \-]{2,40}"),
+    # Islamic name forms: al-/Ibn/Abu/Bin + Name (+ optional second name)
+    re.compile(r"\b(?:al-|Ibn |Abu |Bin |ibn )[A-Z][\w''ʿ\-]+(?:\s+[A-Z][\w''ʿ\-]+)?"),
+    # Author, in Title ... (Publisher?, Year)
+    re.compile(r"[A-Z][\w''.\-]+(?:\s+[A-Z][\w''.\-]+){0,3},?\s+(?:in\s+)?[''\"]?[A-Z][^()]{3,90}?\((?:[^)]*?\d{4})\)"),
+    # Title Case multi-word + (Year)
+    re.compile(r"[A-Z][A-Za-z''.\-]+(?:\s+[A-Za-z''.\-]+){1,8}\s\(\d{4}\)"),
+]
+
+def find_candidates(text):
+    cands = set()
+    for pat in _CAND_PATTERNS:
+        for m in pat.finditer(text or ""):
+            s = m.group(0).strip(" ,.;:''\"")
+            if len(s) >= 3:
+                cands.add(s)
+    for name in SEED_VOCAB:
+        if re.search(r"\b" + re.escape(name) + r"\b", text or ""):
+            cands.add(name)
+    return sorted(c for c in cands if c not in STOPWORDS)
+
+def candidates():
+    corpus = json.loads(CORPUS.read_text(encoding="utf-8"))
+    per_block, allc = {}, set()
+    for b in corpus["blocks"]:
+        cs = find_candidates(b["text"])
+        if cs:
+            per_block[b["block_id"]] = cs
+            allc.update(cs)
+    out = {"per_block": per_block, "all": sorted(allc)}
+    CANDIDATES.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+    print(f"{len(allc)} unique candidates across {len(per_block)} blocks")
+    return out
 
 def gather():
     blocks, seen = [], set()
@@ -44,6 +98,8 @@ def main():
     args = ap.parse_args()
     if args.cmd == "gather":
         gather()
+    elif args.cmd == "candidates":
+        candidates()
 
 if __name__ == "__main__":
     main()
