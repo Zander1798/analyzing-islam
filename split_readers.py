@@ -139,12 +139,41 @@ def emit_subpages(cfg):
         (outdir / f"{bid}.html").write_text(page, encoding="utf-8")
     return ids, blocks
 
+def _anchor_pattern(cfg):
+    # cfg["anchor_re"] is like r'id="(s\d+v\d+)"' -> inner group is the id shape
+    return re.compile("^" + re.search(r"\((.*)\)", cfg["anchor_re"]).group(1) + "$")
+
+def _index_path(cfg):
+    # Quran main reader avoids clobbering the interlinear's quran.json.
+    name = "quran-reader.json" if cfg["slug"] == "quran" else f"{cfg['slug']}.json"
+    return SITE / "assets" / "compare-index" / name
+
+def emit_index(cfg):
+    _, blocks, _ = load_reader(cfg)
+    anchor_id_re = _anchor_pattern(cfg)
+    entries = []
+    for bid, block in blocks:
+        soup = BeautifulSoup(block, "html.parser")
+        for el in soup.find_all(id=anchor_id_re):
+            anchor = el["id"]
+            text = re.sub(r"\s+", " ", el.get_text(" ", strip=True))[:600]
+            entries.append({
+                "ref": cfg["ref_for_anchor"](anchor),
+                "text": text,
+                "href": f"{bid}.html#{anchor}",
+            })
+    out = _index_path(cfg)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps({"entries": entries}, ensure_ascii=False), encoding="utf-8")
+    print(f"[{cfg['slug']}] wrote index {out.name} ({len(entries)} entries)")
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--only")
     ap.add_argument("--subpages", action="store_true")
     ap.add_argument("--shell", action="store_true")
+    ap.add_argument("--index", action="store_true")
     args = ap.parse_args()
     todo = READERS if (args.all or not args.only) else [c for c in READERS if c["slug"] == args.only]
     for cfg in todo:
@@ -153,6 +182,8 @@ def main():
             print(f"[{cfg['slug']}] wrote {len(ids)} sub-pages")
         if args.shell or args.all:
             emit_shell(cfg)
+        if args.index or args.all:
+            emit_index(cfg)
 
 if __name__ == "__main__":
     main()

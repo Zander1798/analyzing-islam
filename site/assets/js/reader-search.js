@@ -46,6 +46,10 @@
       indexPath: "assets/compare-index/talmud.json",
       contentBase: "read-external/",
     },
+    "quran": {
+      indexPath: "assets/compare-index/quran-reader.json",
+      contentBase: "read/quran/",
+    },
   };
 
   // Compute the site's root prefix from the current reader page's
@@ -107,6 +111,7 @@
     if (slug === "quran-interlinear") return /\/quran\.html$/.test(path);
     if (slug === "ibn-kathir")        return /\/ibn-kathir\.html$/.test(path);
     if (slug === "talmud")            return /\/talmud\.html$/.test(path);
+    if (slug === "quran") return /\/read\/quran\.html$/.test(path);
     return false;
   }
 

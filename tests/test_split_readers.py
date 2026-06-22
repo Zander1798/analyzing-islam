@@ -72,3 +72,19 @@ def test_quran_shell_redirects_and_lands():
     assert 'href="2.html"' in html
     # still no monolithic verse content
     assert 'id="s2v1"' not in html
+
+def test_quran_search_index_built():
+    import subprocess, sys, json
+    subprocess.run([sys.executable, str(ROOT / "split_readers.py"), "--only", "quran", "--index"],
+                   cwd=ROOT, check=True)
+    idx = json.loads((SITE / "assets" / "compare-index" / "quran-reader.json").read_text(encoding="utf-8"))
+    entries = idx["entries"]
+    by_href = {e["href"]: e for e in entries}
+    assert "23.html#s23v13" in by_href
+    e = by_href["23.html#s23v13"]
+    assert e["ref"] == "23:13"
+    assert len(e["text"]) > 0
+    # one entry per verse, none lost
+    mono = (SITE / "read" / "quran.orig.html").read_text(encoding="utf-8")
+    import re as _re
+    assert len(entries) == len(set(_re.findall(r'id="(s\d+v\d+)"', mono)))
