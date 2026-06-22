@@ -234,7 +234,7 @@ def render():
             continue
         rows = "".join(
             '<li><span class="src-name">' + ihtml.escape(s["name"]) + '</span>'
-            '<span class="src-desc">' + ihtml.escape(s["descriptor"]) + '</span></li>'
+            '<span class="src-desc">' + ihtml.escape(s.get("descriptor", "")) + '</span></li>'
             for s in items)
         body.append('<section class="src-group"><h2>' + ihtml.escape(titles.get(key, key)) +
                     '</h2><ul class="src-list">' + rows + '</ul></section>')

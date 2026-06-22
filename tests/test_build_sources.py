@@ -52,7 +52,9 @@ def test_render_groups_and_escapes():
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
     data_dir = ROOT / "site" / "assets" / "data"; data_dir.mkdir(parents=True, exist_ok=True)
     src = data_dir / "sources.json"
+    out_html = ROOT / "site" / "sources.html"
     backup = src.read_text(encoding="utf-8") if src.exists() else None
+    html_backup = out_html.read_text(encoding="utf-8") if out_html.exists() else None
     try:
         src.write_text(json.dumps({"groups": [
             {"key": "classical-islamic", "title": "Classical Islamic scholarship"},
@@ -65,7 +67,7 @@ def test_render_groups_and_escapes():
               {"name": "Tafsir Ibn Kathir", "descriptor": "classical", "group": "classical-islamic", "aliases": [], "entry_ids": ["z"]}]}),
             encoding="utf-8")
         mod.render()
-        html = (ROOT / "site" / "sources.html").read_text(encoding="utf-8")
+        html = out_html.read_text(encoding="utf-8")
         assert "Classical Islamic scholarship" in html and "Academic &amp; historical scholarship" in html
         assert "Tafsir Ibn Kathir" in html and "Apple Work" in html
         assert "&lt;b&gt;" in html and "Zebra Work <b>" not in html  # escaped
@@ -74,6 +76,8 @@ def test_render_groups_and_escapes():
     finally:
         if backup is not None: src.write_text(backup, encoding="utf-8")
         elif src.exists(): src.unlink()
+        if html_backup is not None: out_html.write_text(html_backup, encoding="utf-8")
+        elif out_html.exists(): out_html.unlink()
 
 def test_about_has_sources_section():
     html = (ROOT / "site" / "about.html").read_text(encoding="utf-8")
