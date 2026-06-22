@@ -30,8 +30,17 @@ READERS = [
 
 # ---- chrome / block splitting -------------------------------------------------
 
+def source_html_path(cfg):
+    """Use a pristine .orig backup of the monolith as the split source so the
+    splitter is idempotent even after the shell has overwritten read/{slug}.html."""
+    live = SITE / cfg["src"]
+    orig = live.with_suffix(".orig.html")
+    if not orig.exists():
+        orig.write_text(live.read_text(encoding="utf-8"), encoding="utf-8")
+    return orig
+
 def load_reader(cfg):
-    src = (SITE / cfg["src"]).read_text(encoding="utf-8")
+    src = source_html_path(cfg).read_text(encoding="utf-8")
     opens = list(re.finditer(cfg["block_open_re"], src))
     if not opens:
         raise SystemExit(f"no blocks found in {cfg['src']}")
@@ -74,6 +83,45 @@ def pager_html(cfg, ids, idx):
            if next_id else '<span class="reader-pager-next is-disabled">Next →</span>')
     return f'<nav class="reader-pager">{prev}{nxt}</nav>'
 
+# ---- shell / landing ----------------------------------------------------------
+
+def redirect_script(cfg):
+    # Quran: surah is derivable from the anchor, no map needed.
+    return (
+        "<script>(function(){"
+        "var h=location.hash.slice(1);"
+        "if(!h)return;"
+        "var m=h.match(/^s(\\d+)v\\d+/);"
+        "if(m){location.replace(m[1]+'.html#'+h);}"
+        "})();</script>"
+    )
+
+def landing_body(cfg, blocks):
+    items = []
+    for bid, block in blocks:
+        # pull the surah/book display name from its header if present
+        msoup = BeautifulSoup(block, "html.parser")
+        name_el = msoup.select_one(".surah-header, .hadith-book-header, h2, .toc-name")
+        name = name_el.get_text(" ", strip=True) if name_el else bid
+        items.append(f'<li><a href="{bid}.html"><span class="toc-num">{bid}</span> '
+                     f'<span class="toc-name">{ihtml.escape(name)}</span></a></li>')
+    return ('<div class="reader-landing"><h2>Contents</h2><ol class="reader-landing-list">'
+            + "".join(items) + "</ol></div>")
+
+def emit_shell(cfg):
+    prefix, blocks, tail = load_reader(cfg)
+    pre_toc, toc_inner, post_toc = split_prefix_chrome_and_toc(prefix, cfg)
+    # landing keeps the monolith's own depth (read/quran.html), so DON'T deepen.
+    # TOC anchors -> sub-page links (no active item on the landing).
+    toc = re.sub(cfg["toc_href_re"], lambda m: f'href="{m.group(1)}.html"', toc_inner)
+    chrome_prefix = pre_toc + toc + post_toc
+    # inject the redirect script just before </head>
+    chrome_prefix = chrome_prefix.replace("</head>", redirect_script(cfg) + "</head>", 1)
+    body = landing_body(cfg, blocks)
+    page = chrome_prefix + body + tail
+    (SITE / cfg["src"]).write_text(page, encoding="utf-8")
+    print(f"[{cfg['slug']}] wrote shell {cfg['src']}")
+
 # ---- emit ---------------------------------------------------------------------
 
 def emit_subpages(cfg):
@@ -96,12 +144,15 @@ def main():
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--only")
     ap.add_argument("--subpages", action="store_true")
+    ap.add_argument("--shell", action="store_true")
     args = ap.parse_args()
     todo = READERS if (args.all or not args.only) else [c for c in READERS if c["slug"] == args.only]
     for cfg in todo:
         if args.subpages or args.all:
             ids, _ = emit_subpages(cfg)
             print(f"[{cfg['slug']}] wrote {len(ids)} sub-pages")
+        if args.shell or args.all:
+            emit_shell(cfg)
 
 if __name__ == "__main__":
     main()

@@ -32,3 +32,6 @@ scrape-data/
 # Supabase data dumps (contain user data — never commit)
 backups/
 hadith-sunnah/
+
+# Pristine monolith backups for split_readers.py idempotency (large, regenerable)
+site/read/*.orig.html

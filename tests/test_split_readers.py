@@ -48,10 +48,27 @@ def test_quran_first_and_last_pages_pager_bounds():
 
 def test_no_verse_lost():
     # every s{n}v{m} anchor in the monolith appears on exactly one sub-page
-    mono = (SITE / "read" / "quran.html").read_text(encoding="utf-8")
+    # After the shell runs, quran.html is overwritten; use .orig.html if present.
+    orig = SITE / "read" / "quran.orig.html"
+    mono_path = orig if orig.exists() else SITE / "read" / "quran.html"
+    mono = mono_path.read_text(encoding="utf-8")
     mono_ids = set(re.findall(r'id="(s\d+v\d+)"', mono))
     seen = set()
     for n in range(1, 115):
         p = SITE / "read" / "quran" / f"{n}.html"
         seen |= set(re.findall(r'id="(s\d+v\d+)"', p.read_text(encoding="utf-8")))
     assert mono_ids == seen, f"lost/extra anchors: {mono_ids ^ seen}"
+
+def test_quran_shell_redirects_and_lands():
+    import subprocess, sys
+    subprocess.run([sys.executable, str(ROOT / "split_readers.py"), "--only", "quran", "--shell"],
+                   cwd=ROOT, check=True)
+    html = (SITE / "read" / "quran.html").read_text(encoding="utf-8")
+    # redirect logic present and runs before body (in <head>)
+    head = html[:html.index("</head>")]
+    assert "location.replace" in head
+    assert "s(\\d+)v\\d+" in head or "s(\\\\d+)v" in head or 'match(/s(\\d+)v' in head
+    # landing TOC lists surahs as sub-page links
+    assert 'href="2.html"' in html
+    # still no monolithic verse content
+    assert 'id="s2v1"' not in html
