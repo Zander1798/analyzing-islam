@@ -68,8 +68,11 @@ def test_quran_shell_redirects_and_lands():
     head = html[:html.index("</head>")]
     assert "location.replace" in head
     assert "s(\\d+)v\\d+" in head or "s(\\\\d+)v" in head or 'match(/s(\\d+)v' in head
-    # landing TOC lists surahs as sub-page links
-    assert 'href="2.html"' in html
+    # landing TOC lists surahs as sub-page links under the slug subdir
+    # (must carry the "quran/" prefix — links resolve against read/quran.html,
+    # so a bare "2.html" would 404 at read/2.html).
+    assert 'href="quran/2.html"' in html
+    assert 'href="2.html"' not in html
     # still no monolithic verse content
     assert 'id="s2v1"' not in html
 
@@ -144,3 +147,42 @@ def test_all_readers_no_anchor_lost():
                 if p.exists():
                     seen |= set(re.findall(idre, p.read_text(encoding="utf-8")))
         assert mono_ids == seen, f"{slug}: lost/extra {len(mono_ids ^ seen)} anchors"
+
+
+def _load_split_module():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("split_readers", ROOT / "split_readers.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_redirect_script_prefixes_slug_dir():
+    """Regression: shell links resolve against read/{slug}.html, so the redirect
+    target must carry the {slug}/ dir prefix — a bare {id}.html 404s at
+    read/{id}.html. Covers both the derive (quran) and map (hadith) branches."""
+    mod = _load_split_module()
+    q = mod.redirect_script({"slug": "quran"})
+    assert 'var D="quran/"' in q and "location.replace(D+" in q
+    h = mod.redirect_script({"slug": "abu-dawud", "needs_manifest": True}, {"h1": "0"})
+    assert 'var D="abu-dawud/"' in h and "location.replace(D+" in h
+
+
+def test_quran_shell_links_resolve_against_read_dir():
+    """Regression: every relative .html link in the shell (redirect dir, landing
+    TOC, sidebar TOC, nav) must resolve to a real file when joined to read/."""
+    import subprocess, sys
+    subprocess.run([sys.executable, str(ROOT / "split_readers.py"), "--only", "quran", "--all"],
+                   cwd=ROOT, check=True)
+    read = SITE / "read"
+    shell = (read / "quran.html").read_text(encoding="utf-8")
+    assert 'var D="quran/"' in shell
+    assert 'href="quran/2.html"' in shell           # landing/TOC link carries slug dir
+    assert 'href="2.html"' not in shell             # no un-prefixed sub-page link
+    for href in re.findall(r'href="([^"]+)"', shell):
+        if href.startswith(("http://", "https://", "//", "#", "mailto:")):
+            continue
+        path = href.split("#")[0].split("?")[0]
+        if not path.endswith(".html"):
+            continue
+        assert (read / path).resolve().exists(), f"shell link {href} -> 404"

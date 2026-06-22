@@ -133,24 +133,31 @@ def emit_manifest(cfg):
 
 
 def redirect_script(cfg, amap=None):
+    # The shell lives at read/{slug}.html; sub-pages at read/{slug}/{id}.html.
+    # A relative redirect resolves against the shell's own URL, so the target
+    # MUST be prefixed with "{slug}/" — otherwise "23.html" resolves to
+    # read/23.html (404) instead of read/{slug}/23.html.
+    d = json.dumps(cfg["slug"] + "/")
     if cfg.get("needs_manifest"):
         m = json.dumps(amap, ensure_ascii=False)
         return (
             "<script>(function(){"
+            "var D=" + d + ";"
             "var M=" + m + ";"
             "var h=location.hash.slice(1);"
             "if(!h)return;"
             "var b=M[h];"
-            "if(b!==undefined){location.replace(b+'.html#'+h);}"
+            "if(b!==undefined){location.replace(D+b+'.html#'+h);}"
             "})();</script>"
         )
     # Quran: surah is derivable from the anchor, no map needed.
     return (
         "<script>(function(){"
+        "var D=" + d + ";"
         "var h=location.hash.slice(1);"
         "if(!h)return;"
         "var m=h.match(/^s(\\d+)v\\d+/);"
-        "if(m){location.replace(m[1]+'.html#'+h);}"
+        "if(m){location.replace(D+m[1]+'.html#'+h);}"
         "})();</script>"
     )
 
@@ -161,7 +168,7 @@ def landing_body(cfg, blocks):
         msoup = BeautifulSoup(block, "html.parser")
         name_el = msoup.select_one(".surah-header, .hadith-book-header, h2, .toc-name")
         name = name_el.get_text(" ", strip=True) if name_el else bid
-        items.append(f'<li><a href="{bid}.html"><span class="toc-num">{bid}</span> '
+        items.append(f'<li><a href="{cfg["slug"]}/{bid}.html"><span class="toc-num">{bid}</span> '
                      f'<span class="toc-name">{ihtml.escape(name)}</span></a></li>')
     return ('<div class="reader-landing"><h2>Contents</h2><ol class="reader-landing-list">'
             + "".join(items) + "</ol></div>")
@@ -170,8 +177,10 @@ def emit_shell(cfg):
     prefix, blocks, tail = load_reader(cfg)
     pre_toc, toc_inner, post_toc = split_prefix_chrome_and_toc(prefix, cfg)
     # landing keeps the monolith's own depth (read/quran.html), so DON'T deepen.
-    # TOC anchors -> sub-page links (no active item on the landing).
-    toc = re.sub(cfg["toc_href_re"], lambda m: f'href="{m.group(1)}.html"', toc_inner)
+    # TOC anchors -> sub-page links under the {slug}/ subdir (no active item on
+    # the landing). The slug prefix is required: links resolve against the
+    # shell's URL (read/{slug}.html), so a bare "2.html" would 404 at read/2.html.
+    toc = re.sub(cfg["toc_href_re"], lambda m: f'href="{cfg["slug"]}/{m.group(1)}.html"', toc_inner)
     chrome_prefix = pre_toc + toc + post_toc
     # For hadith collections, emit_manifest also builds the anchor map we inline.
     amap = emit_manifest(cfg) if cfg.get("needs_manifest") else None

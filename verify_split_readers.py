@@ -43,46 +43,64 @@ READERS = [
 def index_name(slug):
     return "quran-reader.json" if slug == "quran" else f"{slug}.json"
 
+READ = SITE / "read"  # the shell's own directory; browser resolves shell links here
+
 random.seed(0)
 for slug, idre, derive in READERS:
     base = SITE / "read" / slug
-    shell = (SITE / "read" / f"{slug}.html").read_text(encoding="utf-8")
+    shell_path = SITE / "read" / f"{slug}.html"
+    shell = shell_path.read_text(encoding="utf-8")
     head = shell[:shell.index("</head>")]
     check("location.replace" in head, f"{slug}: shell head missing location.replace")
 
-    # Build anchor -> subpage resolver
+    # Extract the directory prefix the shell's redirect actually emits
+    # (var D="..."). The redirect/landing/TOC links resolve against the SHELL's
+    # URL (read/{slug}.html), so they must carry this prefix or they 404.
+    dm = re.search(r'var D=("[^"]*"|\'[^\']*\');', head)
+    check(dm is not None, f"{slug}: shell redirect missing dir-prefix var D")
+    D = json.loads(dm.group(1).replace("'", '"')) if dm else ""
+    check(D == f"{slug}/", f"{slug}: redirect dir-prefix is {D!r}, expected {slug+'/'!r}")
+
+    # Build anchor -> emitted-redirect-target (exactly what the shell JS produces)
     if derive:
-        def resolve(a):  # surah derivable
+        def emit_target(a, _D=D):
             m = re.match(r"s(\d+)v\d+", a)
-            return f"{m.group(1)}.html" if m else None
-        # sample some anchors straight from sub-pages
-        amap_items = []
+            return f"{_D}{m.group(1)}.html" if m else None
+        amap_anchors = []
         for n in (1, 2, 23, 100, 114):
-            amap_items += [(aid, f"{n}.html") for aid in
-                           re.findall(r'id="(s%dv\d+)"' % n,
-                                      (base / f"{n}.html").read_text(encoding="utf-8"))[:3]]
+            amap_anchors += re.findall(r'id="(s%dv\d+)"' % n,
+                                       (base / f"{n}.html").read_text(encoding="utf-8"))[:3]
     else:
-        # hadith: shell inlines `var M={...};` mapping anchor -> bookId
         m = re.search(r"var M=(\{.*?\});", head)
         check(m is not None, f"{slug}: shell inline anchor map not found")
         amap = json.loads(m.group(1)) if m else {}
-        # cross-check against the manifest file
         manifest = json.loads((base / "anchors.json").read_text(encoding="utf-8"))
         check(amap == manifest, f"{slug}: inline map != anchors.json manifest")
-        def resolve(a, _amap=amap):
-            return f"{_amap[a]}.html" if a in _amap else None
-        keys = list(amap.keys())
-        amap_items = [(k, f"{amap[k]}.html") for k in random.sample(keys, min(20, len(keys)))]
+        def emit_target(a, _amap=amap, _D=D):
+            return f"{_D}{_amap[a]}.html" if a in _amap else None
+        amap_anchors = random.sample(list(amap.keys()), min(20, len(amap)))
 
-    # check sampled anchors resolve to a live sub-page that contains them
-    for aid, expect_page in amap_items:
-        dest = resolve(aid)
-        check(dest == expect_page, f"{slug}: resolver gave {dest}, expected {expect_page} for {aid}")
-        sub = base / (dest or "MISSING")
-        check(sub.exists(), f"{slug}: redirect target missing {dest} for {aid}")
-        if sub.exists():
-            check(f'id="{aid}"' in sub.read_text(encoding="utf-8"),
-                  f"{slug}: anchor {aid} not on {dest}")
+    # Resolve each emitted redirect target RELATIVE TO THE SHELL'S DIR (read/),
+    # exactly as the browser does — this is what catches a missing {slug}/ prefix.
+    for aid in amap_anchors:
+        target = emit_target(aid)
+        check(target is not None, f"{slug}: no redirect target for {aid}")
+        resolved = (READ / (target or "MISSING")).resolve()
+        check(resolved.exists(), f"{slug}: redirect '{target}' from read/{slug}.html -> 404 ({resolved}) for {aid}")
+        if resolved.exists():
+            check(f'id="{aid}"' in resolved.read_text(encoding="utf-8"),
+                  f"{slug}: anchor {aid} not on redirect target {target}")
+
+    # Every relative .html link IN THE SHELL (landing + sidebar TOC + nav)
+    # must resolve against read/ (the shell's own dir), as the browser does.
+    for href in re.findall(r'href="([^"]+)"', shell):
+        if href.startswith(("http://", "https://", "//", "#", "mailto:")):
+            continue
+        path = href.split("#")[0].split("?")[0]
+        if not path.endswith(".html"):
+            continue
+        resolved = (READ / path).resolve()
+        check(resolved.exists(), f"{slug}: shell link '{href}' -> 404 ({resolved})")
 
     # asset paths on a few sub-pages
     subpages = sorted(base.glob("*.html"))
