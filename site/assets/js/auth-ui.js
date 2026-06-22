@@ -74,13 +74,18 @@
       '<button type="button" class="auth-menu-item auth-signout" role="menuitem">Sign out</button>';
     wrap.appendChild(menu);
 
-    // Show the creator dashboard link only when the server confirms admin status.
+    // Show the creator dashboard link only when the server confirms admin
+    // status — and flag this browser so the analytics beacon (track.js) stops
+    // counting the creator's own visits. The flag persists across sessions.
     try {
       if (window.__supabase && sess && sess.user) {
         window.__supabase.rpc("is_creator").then(function (res) {
           if (res && res.data === true) {
             var link = menu.querySelector(".auth-menu-admin");
             if (link) link.hidden = false;
+            try { localStorage.setItem("aig:no-track", "1"); } catch (_) {}
+          } else {
+            try { localStorage.removeItem("aig:no-track"); } catch (_) {}
           }
         }, function () {});
       }

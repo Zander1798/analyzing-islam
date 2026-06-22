@@ -34,6 +34,9 @@
     try {
       var host = W.location.hostname || "";
       if (host === "localhost" || /^127\./.test(host) || host === "") return true;
+      // Don't count the creator's own visits: this browser is flagged once the
+      // site confirms admin status (see auth-ui.js). Persists across sessions.
+      if (W.localStorage && W.localStorage.getItem("aig:no-track") === "1") return true;
       if (W.navigator && W.navigator.webdriver) return true;
       if (BOT_RE.test((W.navigator && W.navigator.userAgent) || "")) return true;
       var p = new URLSearchParams(W.location.search || "");

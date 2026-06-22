@@ -61,6 +61,9 @@ function fakeWindow(over = {}) {
   const w = fakeWindow(); w.navigator.webdriver = true;
   assert.equal(load(w).shouldSkip(), true);
   assert.equal(load(fakeWindow()).shouldSkip(), false);
+  // creator opt-out flag: this browser must not be counted
+  const wf = fakeWindow(); wf.localStorage.setItem("aig:no-track", "1");
+  assert.equal(load(wf).shouldSkip(), true);
 }
 // pagePath: pathname + hash
 {
