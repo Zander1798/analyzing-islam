@@ -45,3 +45,30 @@ def test_candidates_command_writes_per_block():
     data = json.loads((ROOT / "sources-candidates.json").read_text(encoding="utf-8"))
     assert data["all"], "no candidates found across corpus"
     assert any("Ibn Kathir" in c for c in data["all"])
+
+def test_audit_flags_uncovered_and_clears_when_covered():
+    _run("gather")
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("build_sources", ROOT / "build_sources.py")
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    data_dir = ROOT / "site" / "assets" / "data"; data_dir.mkdir(parents=True, exist_ok=True)
+    src = data_dir / "sources.json"; ns = ROOT / "non-sources.json"
+    backup = src.read_text(encoding="utf-8") if src.exists() else None
+    nbackup = ns.read_text(encoding="utf-8") if ns.exists() else None
+    try:
+        # empty sources + empty non-sources → corpus has many uncovered candidates
+        src.write_text(json.dumps({"groups": [], "sources": []}), encoding="utf-8")
+        ns.write_text("[]", encoding="utf-8")
+        unresolved = mod.audit()
+        assert len(unresolved) > 0, "audit should flag uncovered candidates"
+        # cover everything it flagged via aliases → unresolved must be empty
+        aliases = [u["candidate"] for u in unresolved]
+        src.write_text(json.dumps({"groups": [],
+            "sources": [{"name": "X", "descriptor": "d", "group": "academic", "aliases": aliases, "entry_ids": []}]}),
+            encoding="utf-8")
+        assert mod.audit() == [], "audit should be empty once all candidates are covered"
+    finally:
+        if backup is not None: src.write_text(backup, encoding="utf-8")
+        elif src.exists(): src.unlink()
+        if nbackup is not None: ns.write_text(nbackup, encoding="utf-8")
+        elif ns.exists(): ns.unlink()

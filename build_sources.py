@@ -9,6 +9,9 @@ DATA = SITE / "assets" / "data"
 CATALOG_SOURCES = ["quran", "bukhari", "muslim", "abu-dawud", "tirmidhi", "nasai", "ibn-majah"]
 CORPUS = ROOT / "sources-corpus.json"
 CANDIDATES = ROOT / "sources-candidates.json"
+UNRESOLVED = ROOT / "sources-unresolved.json"
+NON_SOURCES = ROOT / "non-sources.json"
+SOURCES_JSON = DATA / "sources.json"
 
 # Known recurring scholars/works — guarantees the long tail is caught regardless of LLM.
 SEED_VOCAB = [
@@ -92,6 +95,37 @@ def gather():
     print(f"gathered {len(blocks)} blocks ({ncat} catalog + {len(blocks) - ncat} dossier)")
     return out
 
+def _norm(s):
+    return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
+
+def audit():
+    corpus = json.loads(CORPUS.read_text(encoding="utf-8"))
+    sources = json.loads(SOURCES_JSON.read_text(encoding="utf-8"))["sources"] if SOURCES_JSON.exists() else []
+    nonsrc = json.loads(NON_SOURCES.read_text(encoding="utf-8")) if NON_SOURCES.exists() else []
+    covered = set()
+    for s in sources:
+        for a in [s["name"]] + s.get("aliases", []):
+            n = _norm(a)
+            if n:
+                covered.add(n)
+    nonset = {_norm(x) for x in nonsrc if _norm(x)}
+    unresolved = {}
+    for b in corpus["blocks"]:
+        for c in find_candidates(b["text"]):
+            nc = _norm(c)
+            if not nc:
+                continue
+            if any(cov in nc or nc in cov for cov in covered):
+                continue
+            if any(ns in nc or nc in ns for ns in nonset):
+                continue
+            unresolved.setdefault(c, []).append(b["block_id"])
+    out = [{"candidate": c, "blocks": ids[:5], "count": len(ids)}
+           for c, ids in sorted(unresolved.items(), key=lambda kv: -len(kv[1]))]
+    UNRESOLVED.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"{len(out)} unresolved candidates")
+    return out
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["gather", "candidates", "audit", "render"])
@@ -100,6 +134,8 @@ def main():
         gather()
     elif args.cmd == "candidates":
         candidates()
+    elif args.cmd == "audit":
+        audit()
 
 if __name__ == "__main__":
     main()
