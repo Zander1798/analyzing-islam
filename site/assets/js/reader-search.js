@@ -304,6 +304,7 @@
     function tryJump() {
       const q = (input.value || "").trim();
       if (!q) { clearHint(); clearResults(); return; }
+      try { if (window.AIG && window.AIG.trackSearch) window.AIG.trackSearch(q, slug || "reader"); } catch (_) {}
 
       // 1) Parser-derived IDs (casual verse refs) — only meaningful when
       //    verse anchors actually live on this page. On multi-page
