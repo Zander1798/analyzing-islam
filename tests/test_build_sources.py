@@ -46,6 +46,35 @@ def test_candidates_command_writes_per_block():
     assert data["all"], "no candidates found across corpus"
     assert any("Ibn Kathir" in c for c in data["all"])
 
+def test_render_groups_and_escapes():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("build_sources", ROOT / "build_sources.py")
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    data_dir = ROOT / "site" / "assets" / "data"; data_dir.mkdir(parents=True, exist_ok=True)
+    src = data_dir / "sources.json"
+    backup = src.read_text(encoding="utf-8") if src.exists() else None
+    try:
+        src.write_text(json.dumps({"groups": [
+            {"key": "classical-islamic", "title": "Classical Islamic scholarship"},
+            {"key": "academic", "title": "Academic & historical scholarship"},
+            {"key": "apologetics", "title": "Apologetics & polemics"},
+            {"key": "comparative", "title": "Other / comparative"}],
+            "sources": [
+              {"name": "Zebra Work <b>", "descriptor": "d1", "group": "academic", "aliases": [], "entry_ids": ["x"]},
+              {"name": "Apple Work", "descriptor": "d2", "group": "academic", "aliases": [], "entry_ids": ["y"]},
+              {"name": "Tafsir Ibn Kathir", "descriptor": "classical", "group": "classical-islamic", "aliases": [], "entry_ids": ["z"]}]}),
+            encoding="utf-8")
+        mod.render()
+        html = (ROOT / "site" / "sources.html").read_text(encoding="utf-8")
+        assert "Classical Islamic scholarship" in html and "Academic &amp; historical scholarship" in html
+        assert "Tafsir Ibn Kathir" in html and "Apple Work" in html
+        assert "&lt;b&gt;" in html and "Zebra Work <b>" not in html  # escaped
+        assert html.index("Apple Work") < html.index("Zebra Work"), "not alphabetical within group"
+        assert 'href="assets/css/style.css"' in html  # site chrome present
+    finally:
+        if backup is not None: src.write_text(backup, encoding="utf-8")
+        elif src.exists(): src.unlink()
+
 def test_audit_flags_uncovered_and_clears_when_covered():
     _run("gather")
     import importlib.util
