@@ -90,10 +90,15 @@
     var stored  = localStorage.getItem(LS_UNLOCKED);
     var ids     = stored ? JSON.parse(stored) : [];
     if (ids.indexOf("standard") === -1) ids.push("standard");
+    // Seed the selection from the localStorage mirror so the nav paints the
+    // user's last-known skin immediately, instead of flashing "standard"
+    // before the auth + Supabase round-trip resolves. This is only ever
+    // written by setSelectedId (which requires the skin to be unlocked), and
+    // loadProgress repaints to the authoritative value once it loads.
     return {
       unlockedLevel: lvl,
       unlockedSkins: new Set(ids),
-      selectedSkin:  "standard",
+      selectedSkin:  localStorage.getItem(LS_SKIN) || "standard",
       loaded:        false,
     };
   }());
@@ -186,9 +191,12 @@
       }
     } else {
       // Signed out: always use defaults — skins are locked behind auth.
+      // Drop the localStorage mirror too, so the next signed-out load
+      // doesn't optimistically paint a skin it'll only snap back from.
       _cache.unlockedLevel = 1;
       _cache.unlockedSkins = new Set(["standard"]);
       _cache.selectedSkin  = "standard";
+      localStorage.removeItem(LS_SKIN);
     }
     _cache.loaded = true;
     window.dispatchEvent(new Event("aig:progress-loaded"));
@@ -224,8 +232,12 @@
     // report "standard" so the UI never shows a skin the user may not have
     // unlocked on this device; callers repaint on "aig:progress-loaded".
     getSelectedId: function () {
-      if (!_cache.loaded) return "standard";
       var id = _cache.selectedSkin || "standard";
+      // Before the real state loads, optimistically honour the last-known
+      // selection (seeded from localStorage) so the nav never flashes the
+      // default skin first. loadProgress repaints to the authoritative
+      // value — including back to "standard" if signed out or locked.
+      if (!_cache.loaded) return id;
       if (!_cache.unlockedSkins.has(id)) id = "standard";
       return id;
     },
