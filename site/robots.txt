@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /profile.html
+Disallow: /saved.html
+Disallow: /forgot-password.html
+Disallow: /reset-password.html
+Disallow: /build-editor.html
+Disallow: /build-shared.html
+Disallow: /shared.html
+
+Sitemap: https://analyzingislam.com/sitemap.xml
