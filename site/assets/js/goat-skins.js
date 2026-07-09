@@ -48,7 +48,7 @@
     {
       id:    "detective",
       name:  "Detective",
-      blurb: "Cracks cases, chews cud.",
+      blurb: "Investigates, then grazes.",
       gif:   "assets/images/goat-detective.gif",
       level: 6,
     },
