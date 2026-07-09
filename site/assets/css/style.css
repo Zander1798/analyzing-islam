@@ -3105,6 +3105,9 @@ blockquote {
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 }
+/* The `hidden` attribute must win over the grid display above, otherwise the
+   skins leak through to signed-out visitors before the auth gate paints. */
+.skins-grid[hidden] { display: none; }
 
 .skin-slot {
   position: relative;
