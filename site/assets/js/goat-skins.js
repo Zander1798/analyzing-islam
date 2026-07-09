@@ -48,14 +48,14 @@
     {
       id:    "detective",
       name:  "Detective",
-      blurb: "The case of the missing grass.",
+      blurb: "Cracks cases, chews cud.",
       gif:   "assets/images/goat-detective.gif",
       level: 6,
     },
     {
       id:    "glorious",
       name:  "Glorious",
-      blurb: "Halo, wings, divine grazing.",
+      blurb: "Ascended — still hungry.",
       gif:   "assets/images/goat-glorious.gif",
       level: 7,
     },
@@ -69,7 +69,7 @@
     {
       id:    "quran",
       name:  "Quran Goat",
-      blurb: "Reads the book, eats the grass.",
+      blurb: "Recites verses, sometimes eats them.",
       gif:   "assets/images/goat-quran.gif",
       level: 9,
     },
