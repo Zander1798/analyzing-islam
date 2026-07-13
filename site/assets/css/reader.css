@@ -775,4 +775,29 @@
    ::after (generated content) so it is NOT a DOM text node and does not
    shift saved-highlight character offsets inside an article. */
 .hadith-ref a { text-decoration: none; }
+
+/* Previous / Next pager — flex so the two controls sit at opposite ends with a
+   clear gap between them (otherwise "Previous" and "Next" render merged). */
+.reader-pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.reader-pager-prev,
+.reader-pager-next {
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.reader-pager-next { margin-left: auto; }
+.reader-pager-prev:hover,
+.reader-pager-next:hover { text-decoration: underline; }
+.reader-pager-prev.is-disabled,
+.reader-pager-next.is-disabled {
+  color: var(--muted);
+  opacity: 0.5;
+  pointer-events: none;
+}
 .hadith-ref a::after { content: " 97"; font-size: 0.85em; opacity: 0.7; }

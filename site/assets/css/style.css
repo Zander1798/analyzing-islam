@@ -2460,6 +2460,42 @@ blockquote {
 .build-translate-copy:hover { background: var(--accent-hover); }
 .build-translate-copy[hidden] { display: none; }
 
+/* Desktop: lock the whole workspace to the viewport so each pane scrolls
+   INDEPENDENTLY inside its own box instead of growing the page (which coupled
+   the two columns — scrolling the source dragged the editor and vice-versa). */
+@media (min-width: 901px) {
+  .build-editor-main {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 44px); /* viewport minus the sticky nav */
+    box-sizing: border-box;
+  }
+  .build-panes {
+    flex: 1 1 auto;
+    min-height: 0;      /* allow the grid to shrink so children can scroll */
+    height: auto;
+  }
+  .build-pane {
+    min-height: 0;      /* override the base 78vh so the pane fits its box */
+    overflow: hidden;   /* the pane clips; its inner region scrolls */
+  }
+  /* Editor: Quill's own .ql-editor (height:100%, overflow-y:auto) scrolls once
+     the container is height-bounded. */
+  .build-pane-editor .ql-container.ql-snow {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .build-pane-editor .ql-editor {
+    min-height: 0;
+  }
+  /* Source: the iframe fills the pane below its toolbar and scrolls natively. */
+  .build-pane-source .compare-frame {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+  }
+}
+
 @media (max-width: 900px) {
   .build-panes {
     grid-template-columns: 1fr;
