@@ -2470,11 +2470,12 @@ blockquote {
     height: calc(100vh - 44px); /* viewport minus the sticky nav */
     box-sizing: border-box;
     /* Trim the workspace chrome so the two panes get as much room as possible. */
-    padding: 8px 10px 10px;
+    padding: 4px 10px 6px;
   }
-  /* Tighter gaps under the name-bar and RTL tip → taller panes. */
-  .build-bar { margin-bottom: 8px; }
-  .build-tip { margin-bottom: 6px; }
+  /* Compact the name-bar and RTL tip (padding + gaps) so the panes grow taller. */
+  .build-bar { margin-bottom: 6px; padding: 7px 14px; }
+  .build-bar-name { padding: 6px 10px; }
+  .build-tip { margin-bottom: 4px; padding: 5px 12px; }
   /* The editor markup lives inside this wrapper, so the flex chain must pass
      THROUGH it — otherwise .build-panes can't fill the height and the panes
      collapse to their content (short columns with dead space below). */
