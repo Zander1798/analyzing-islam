@@ -764,6 +764,22 @@ a.cite-link:hover {
   border-bottom-style: solid;
 }
 
+/* External source links — cited scholarly/apologetic works, blue like
+   cite-links but they open the source itself (archive.org, DOI, publisher…)
+   in a new tab. */
+a.src-link {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--accent);
+  transition: color 0.15s, border-bottom-style 0.15s;
+}
+
+a.src-link:hover {
+  color: var(--accent-hover);
+  border-bottom-color: var(--accent-hover);
+  border-bottom-style: solid;
+}
+
 /* Interlinear word deep-links — distinct from cite-links; italic Arabic terms
    that open the word panel in the Interlinear Quran on click. */
 a.interlinear-link {
