@@ -42,3 +42,7 @@ sources-candidates.json
 sources-raw.json
 sources-unresolved.json
 sources-processed.json
+
+# Remotion video sub-project
+video/node_modules/
+video/out/
