@@ -3,6 +3,7 @@ import { Composition } from "remotion";
 import { TheQuestion } from "./ads/TheQuestion";
 import { WorkflowTour } from "./ads/WorkflowTour";
 import { Proof } from "./ads/Proof";
+import { ScrollDemo } from "./ads/ScrollDemo";
 
 const RATIOS = [
   { suffix: "Vertical", width: 1080, height: 1920 },
@@ -16,6 +17,14 @@ export const Root: React.FC = () => (
       id="Proof"
       component={Proof}
       durationInFrames={478}
+      fps={60}
+      width={1080}
+      height={1920}
+    />
+    <Composition
+      id="ScrollDemo"
+      component={ScrollDemo}
+      durationInFrames={600}
       fps={60}
       width={1080}
       height={1920}
