@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Contact the Analyzing Islam project — report an error or correction, ask about an entry, suggest a dossier revision, or contribute a source.">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png">
+<link rel="icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/assets/icons/site.webmanifest">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Analyzing Islam">
+<meta property="og:title" content="Contact — Analyzing Islam">
+<meta property="og:description" content="Report an error, ask about an entry, suggest a dossier revision, or contribute a source.">
+<meta property="og:url" content="https://analyzingislam.com/contact.html">
+<meta property="og:image" content="https://analyzingislam.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Analyzing Islam — 1,524 entries across 31 categories">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contact — Analyzing Islam">
+<meta name="twitter:description" content="Report an error, ask about an entry, suggest a dossier revision, or contribute a source.">
+<meta name="twitter:image" content="https://analyzingislam.com/assets/og-image.png">
+<title>Contact — Analyzing Islam</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .contact-wrap { display:grid; grid-template-columns:1fr 1.1fr; gap:48px; margin-top:28px; align-items:start; }
+  .contact-intro h1 { margin:0 0 18px; }
+  .contact-intro p { color:var(--text-muted); line-height:1.7; margin:0 0 16px; }
+  .contact-intro p:last-child { margin-bottom:0; }
+  .contact-email { color:var(--accent); }
+  .contact-card { border:1px solid var(--border); background:var(--panel-2); padding:28px; border-radius:var(--radius-lg); }
+  .contact-card .auth-field select {
+    appearance:none; -webkit-appearance:none; background:var(--panel); border:1px solid var(--border);
+    border-radius:var(--radius); padding:12px 14px; color:var(--text); font-family:inherit; font-size:15px;
+    transition:border-color .2s; cursor:pointer;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat; background-position:right 14px center;
+  }
+  .contact-card .auth-field select:invalid { color:var(--text-dim); }
+  .contact-card .auth-field input:focus,
+  .contact-card .auth-field select:focus,
+  .contact-card .auth-field textarea:focus { outline:none; border-color:var(--accent); }
+  .contact-card .auth-field .optional { text-transform:none; letter-spacing:0; color:var(--text-dim); font-weight:400; }
+  .contact-send { display:inline-flex; align-items:center; gap:10px; align-self:flex-start; }
+  .contact-send svg { width:16px; height:16px; }
+  .contact-status { font-size:14px; margin-top:-4px; }
+  .contact-status.error { color:#ff8a8a; }
+  .contact-status a { color:var(--accent); }
+  .contact-success { border:1px solid var(--accent); background:rgba(122,162,247,.08); padding:24px; border-radius:var(--radius-lg); color:var(--text); line-height:1.6; }
+  @media (max-width:720px){ .contact-wrap { grid-template-columns:1fr; gap:32px; } }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">Analyzing Islam</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="arguments.html">Dossiers</a>
+      <a href="read.html">Read</a>
+      <a href="compare.html">Compare</a>
+      <a href="build.html">Build</a>
+      <a href="watch.html">Watch</a>
+      <a href="stats.html">Stats</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contact.html" class="active">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container-narrow">
+  <div class="contact-wrap">
+    <div class="contact-intro">
+      <h1>We&#x27;re here to help</h1>
+      <p>Spotted an error in an entry, want a dossier revisited, or have a source worth adding? Send it here. Corrections, questions about a specific passage, and well-sourced contributions are all welcome — and every message reaches the project directly.</p>
+      <p>Where you can, include the exact page you&#x27;re referring to. It makes the note far easier to act on.</p>
+      <p>You can also email us any time at <a class="contact-email" href="mailto:analyzingislam2026@gmail.com">analyzingislam2026@gmail.com</a>.</p>
+    </div>
+
+    <div class="contact-card">
+      <form id="contact-form" class="auth-form" novalidate>
+        <div class="auth-field">
+          <label for="cf-email">Your email</label>
+          <input id="cf-email" name="email" type="email" required placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="auth-field">
+          <label for="cf-reason">Reason</label>
+          <select id="cf-reason" name="reason" required>
+            <option value="" disabled selected>Select a reason…</option>
+            <option>Entry inquiry</option>
+            <option>Dossier revision</option>
+            <option>Report an error / correction</option>
+            <option>Contribute an entry</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="auth-field">
+          <label for="cf-url">Entry / dossier URL <span class="optional">(optional)</span></label>
+          <input id="cf-url" name="page_url" type="url" placeholder="https://analyzingislam.com/…">
+        </div>
+        <div class="auth-field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" required rows="6" placeholder="Your message…"></textarea>
+        </div>
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <button type="submit" class="btn btn-primary contact-send" id="cf-submit">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 2 11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2l-7 20-4-9-9-4 20-7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Send message</span>
+        </button>
+        <div class="contact-status" id="cf-status" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  Built from the Saheeh International translation. Every entry references a specific verse — verify before citing.
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('contact-form');
+  var btn = document.getElementById('cf-submit');
+  var statusEl = document.getElementById('cf-status');
+  var ENDPOINT = 'https://formsubmit.co/ajax/analyzingislam2026@gmail.com';
+  var MAILTO = '<a class="contact-email" href="mailto:analyzingislam2026@gmail.com">analyzingislam2026@gmail.com</a>';
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    statusEl.className = 'contact-status'; statusEl.textContent = '';
+    if (!form.reportValidity()) return;
+    var data = new FormData(form);
+    data.append('_subject', 'Analyzing Islam contact — ' + (data.get('reason') || 'message'));
+    data.append('_captcha', 'false');
+    data.append('_template', 'table');
+    var label = btn.querySelector('span'); var orig = label.textContent;
+    btn.disabled = true; label.textContent = 'Sending…';
+    try {
+      var res = await fetch(ENDPOINT, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
+      if (!res.ok) throw new Error('bad status ' + res.status);
+      form.innerHTML = '<div class="contact-success"><strong>Thanks — your message was sent.</strong><br>' +
+        'We&#x27;ll reply to the email you gave. You can also reach us any time at ' + MAILTO + '.</div>';
+    } catch (err) {
+      btn.disabled = false; label.textContent = orig;
+      statusEl.className = 'contact-status error';
+      statusEl.innerHTML = 'Something went wrong sending your message. Please email us directly at ' + MAILTO + '.';
+    }
+  });
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js" defer></script>
+<script src="assets/js/auth-ui.js" defer></script>
+<script src="assets/js/track.js" defer></script>
+<script src="assets/js/goat-skins.js" defer></script>
+<script src="assets/js/goat.js" defer></script>
+<script src="assets/js/snap-to-hash.js" defer></script>
+</body>
+</html>
