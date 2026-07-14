@@ -1,6 +1,20 @@
 # Source-link readability fix — 2026-07-14
 
-## UPDATE (same day) — archive.org is unreachable in the owner's region → moved ALL book links to OpenLibrary
+## UPDATE 2 (same day) — OpenLibrary ALSO unreachable in the owner's region → ALL book links now Google Books
+Owner tested the OpenLibrary migration: **openlibrary.org also returns a connection error for their
+region** — expected, since archive.org and openlibrary.org share Internet Archive infrastructure. So
+the entire IA family is blocked there. Final fix: **every book link now points to a Google Books search**
+(`google.com/search?tbm=bks&q=…`, google.com is reachable), with the query built from the citation's own
+anchor text (author + title). 145 OpenLibrary works → Google Books; **4,174 hrefs rewritten** + 1 stray
+`/isbn/` link fixed by hand. `apply-source-links.py` generalised to key off BOTH `archive.org/details/<id>`
+and `openlibrary.org/works/<id>`. **Verified: 0 archive.org and 0 openlibrary.org links anywhere in
+site/*.html.** Non-book scholarly sources (33 DOIs — 16 journal articles + book/monograph DOIs, all
+Crossref-valid; plus Cambridge/OUP/JSTOR/Brill/MDPI journal links) were audited and left as-is: doi.org
+and publisher sites are not IA infrastructure and resolve to the actual article/paper pages.
+NOTE: source-urls.json still holds openlibrary URLs (inert reference file, not consumed at build); the
+live site is clean. If a future rebuild re-injects OpenLibrary links, re-run `apply-source-links.py`.
+
+## UPDATE 1 (same day) — archive.org is unreachable in the owner's region → moved ALL book links to OpenLibrary
 The first pass (below) repointed pirate uploads to legitimate archive.org scans. But testing
 showed **archive.org itself returns "Bad Request" for the owner's network/region (South Africa),
 even in incognito, on every archive.org page** — it serves 200 to other locations, so it's a

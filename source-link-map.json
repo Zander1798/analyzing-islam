@@ -1,809 +1,875 @@
 {
- "_comment": "Canonical source-link map. archive.org is unreachable in the site owner's region (serves 'Bad Request' regionally), so EVERY archive.org book link is remapped to its OpenLibrary work page (readable: edition info + read/borrow/buy) or a Google Books search fallback where the book is not confidently on OpenLibrary. Applied idempotently by apply-source-links.py; keyed by the archive.org identifier appearing in a src-link href.",
+ "_comment": "archive.org AND openlibrary.org are both unreachable in the site owner's region (same Internet Archive infra). ALL book links now point to Google Books search built from the citation text. Keyed by OpenLibrary work id or archive id in a src-link href; idempotent via apply-source-links.py.",
  "map": {
-  "whyiamnotmuslim0000ibnw": {
-   "url": "https://openlibrary.org/works/OL3746587W",
-   "tier": "openlibrary",
-   "book": "Why I am not a Muslim",
-   "method": "openlibrary-search"
+  "OL10151850W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Christoph+Luxenberg%27s+%27The+Syro-Aramaic+Reading+of+the+Koran",
+   "tier": "googlebooks",
+   "book": "Christoph Luxenberg's 'The Syro-Aramaic Reading of the Koran",
+   "method": "anchor-query"
   },
-  "truthaboutmuhamm0000spen": {
-   "url": "https://openlibrary.org/works/OL5826039W",
-   "tier": "openlibrary",
-   "book": "The Truth About Muhammad: Founder of the World's Most Intolerant Relig",
-   "method": "openlibrary-curated"
+  "OL1018819W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Veil+and+the+Male+Elite",
+   "tier": "googlebooks",
+   "book": "The Veil and the Male Elite",
+   "method": "anchor-query"
   },
-  "fath-al-bari-selectd-sections-only": {
-   "url": "https://openlibrary.org/works/OL9875908W",
-   "tier": "openlibrary",
-   "book": "Selections from Fath Al-Bari (M.A.T. Papers)",
-   "method": "openlibrary-search"
+  "OL10232228W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Multiple+sahih+hadith+in+Bukhari",
+   "tier": "googlebooks",
+   "book": "Multiple sahih hadith in Bukhari",
+   "method": "anchor-query"
   },
-  "KeciaAliMarriageAndSlaveryInEarlyIslam": {
-   "url": "https://openlibrary.org/works/OL18589506W",
-   "tier": "openlibrary",
+  "OL10746354W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Arthur+Jeffery%27s+%27Materials+for+the+History+of+the+Text+of+the+Qur%27an",
+   "tier": "googlebooks",
+   "book": "Arthur Jeffery's 'Materials for the History of the Text of the Qur'an",
+   "method": "anchor-query"
+  },
+  "OL1093601W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Folklore+scholar+Alan+Dundes%2C+in+The+Evil+Eye%3A+A+Casebook",
+   "tier": "googlebooks",
+   "book": "Folklore scholar Alan Dundes, in The Evil Eye: A Casebook",
+   "method": "anchor-query"
+  },
+  "OL1096188W": {
+   "url": "https://www.google.com/search?tbm=bks&q=William+Muir%2C+in+The+Life+of+Mahomet",
+   "tier": "googlebooks",
+   "book": "William Muir, in The Life of Mahomet",
+   "method": "anchor-query"
+  },
+  "OL1157026W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Bernard+Lewis%27s+%27Islam+and+the+West",
+   "tier": "googlebooks",
+   "book": "Bernard Lewis's 'Islam and the West",
+   "method": "anchor-query"
+  },
+  "OL1157036W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Bernard+Lewis%2C+Race+and+Slavery+in+the+Middle+East%3A+An+Historical+Enquiry",
+   "tier": "googlebooks",
+   "book": "Bernard Lewis, Race and Slavery in the Middle East: An Historical Enquiry",
+   "method": "anchor-query"
+  },
+  "OL11707625W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ayaan+Hirsi+Ali%27s+%27Infidel",
+   "tier": "googlebooks",
+   "book": "Ayaan Hirsi Ali's 'Infidel",
+   "method": "anchor-query"
+  },
+  "OL1179345W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Majid+Khadduri%2C+War+and+Peace+in+the+Law+of+Islam",
+   "tier": "googlebooks",
+   "book": "Majid Khadduri, War and Peace in the Law of Islam",
+   "method": "anchor-query"
+  },
+  "OL1186503W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Joseph+Needham%2C+whose+A+History+of+Embryology",
+   "tier": "googlebooks",
+   "book": "Joseph Needham, whose A History of Embryology",
+   "method": "anchor-query"
+  },
+  "OL11994348W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Nerina+Rustomji%27s+academic+studies+%E2%80%94+The+Garden+and+the+Fire",
+   "tier": "googlebooks",
+   "book": "Nerina Rustomji's academic studies — The Garden and the Fire",
+   "method": "anchor-query"
+  },
+  "OL1202819W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ehrman%2C+The+Text+of+the+New+Testament%3A+Its+Transmission%2C+Corruption%2C+and+Restoration",
+   "tier": "googlebooks",
+   "book": "Ehrman, The Text of the New Testament: Its Transmission, Corruption, and Restora",
+   "method": "anchor-query"
+  },
+  "OL12747973W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Guillaume+as+The+Life+of+Muhammad",
+   "tier": "googlebooks",
+   "book": "Guillaume as The Life of Muhammad",
+   "method": "anchor-query"
+  },
+  "OL1282729W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Moroccan+Muslim+communities+produced+Ritual+and+Belief+in+Morocco",
+   "tier": "googlebooks",
+   "book": "Moroccan Muslim communities produced Ritual and Belief in Morocco",
+   "method": "anchor-query"
+  },
+  "OL13781973W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Wafa+Sultan+in+A+God+Who+Hates",
+   "tier": "googlebooks",
+   "book": "Wafa Sultan in A God Who Hates",
+   "method": "anchor-query"
+  },
+  "OL13798347W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Man%E1%BA%93%C5%ABr%27s+Lis%C4%81n+al-%CA%BFArab",
+   "tier": "googlebooks",
+   "book": "Ibn Manẓūr's Lisān al-ʿArab",
+   "method": "anchor-query"
+  },
+  "OL13848120W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Crucifixion+and+the+Qur%27an",
+   "tier": "googlebooks",
+   "book": "The Crucifixion and the Qur'an",
+   "method": "anchor-query"
+  },
+  "OL1415399W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Watt%2C+Free+Will+and+Predestination+in+Early+Islam",
+   "tier": "googlebooks",
+   "book": "Watt, Free Will and Predestination in Early Islam",
+   "method": "anchor-query"
+  },
+  "OL1415427W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Montgomery+Watt%27s+Muhammad+at+Medina",
+   "tier": "googlebooks",
+   "book": "Montgomery Watt's Muhammad at Medina",
+   "method": "anchor-query"
+  },
+  "OL1415429W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Montgomery+Watt%2C+Muhammad+at+Mecca",
+   "tier": "googlebooks",
+   "book": "Montgomery Watt, Muhammad at Mecca",
+   "method": "anchor-query"
+  },
+  "OL15588692W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Mark+Durie%2C+The+Third+Choice%3A+Islam%2C+Dhimmitude+and+Freedom",
+   "tier": "googlebooks",
+   "book": "Mark Durie, The Third Choice: Islam, Dhimmitude and Freedom",
+   "method": "anchor-query"
+  },
+  "OL1571403W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Abraham+Geiger%2C+in+Was+hat+Mohammed+aus+dem+Judenthume+aufgenommen%3F",
+   "tier": "googlebooks",
+   "book": "Abraham Geiger, in Was hat Mohammed aus dem Judenthume aufgenommen?",
+   "method": "anchor-query"
+  },
+  "OL15838611W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Myth+of+Islamic+Tolerance%3A+How+Islamic+Law+Treats+Non-Muslims",
+   "tier": "googlebooks",
+   "book": "The Myth of Islamic Tolerance: How Islamic Law Treats Non-Muslims",
+   "method": "anchor-query"
+  },
+  "OL16026710W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Warraq%27s+%27The+Quest+for+the+Historical+Muhammad",
+   "tier": "googlebooks",
+   "book": "Ibn Warraq's 'The Quest for the Historical Muhammad",
+   "method": "anchor-query"
+  },
+  "OL16340681W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Warraq%2C+in+Which+Koran%3F",
+   "tier": "googlebooks",
+   "book": "Ibn Warraq, in Which Koran?",
+   "method": "anchor-query"
+  },
+  "OL1635075W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Arthur+Jeffery%2C+in+The+Foreign+Vocabulary+of+the+Qur%27an",
+   "tier": "googlebooks",
+   "book": "Arthur Jeffery, in The Foreign Vocabulary of the Qur'an",
+   "method": "anchor-query"
+  },
+  "OL16462004W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Robert+Spencer%2C+Did+Muhammad+Exist%3F+An+Inquiry+into+Islam%27s+Obscure+Origins",
+   "tier": "googlebooks",
+   "book": "Robert Spencer, Did Muhammad Exist? An Inquiry into Islam's Obscure Origins",
+   "method": "anchor-query"
+  },
+  "OL16637697W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Kressel%27s+The+Sons+of+Pigs+and+Apes",
+   "tier": "googlebooks",
+   "book": "Kressel's The Sons of Pigs and Apes",
+   "method": "anchor-query"
+  },
+  "OL16815707W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Judea%2C+Pontius+Pilate.%22+He+reaffirms+the+point+in+How+Jesus+Became+God",
+   "tier": "googlebooks",
+   "book": "Judea, Pontius Pilate.\" He reaffirms the point in How Jesus Became God",
+   "method": "anchor-query"
+  },
+  "OL17079247W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Louay+Fatoohi%2C+in+Abrogation+in+the+Qur%27an+and+Islamic+Law",
+   "tier": "googlebooks",
+   "book": "Louay Fatoohi, in Abrogation in the Qur'an and Islamic Law",
+   "method": "anchor-query"
+  },
+  "OL17313043W": {
+   "url": "https://www.google.com/search?tbm=bks&q=William+McCants%2C+The+ISIS+Apocalypse%3A+The+History%2C+Strategy%2C+and+Doomsday+Vision+of+the+Islamic+State",
+   "tier": "googlebooks",
+   "book": "William McCants, The ISIS Apocalypse: The History, Strategy, and Doomsday Vision",
+   "method": "anchor-query"
+  },
+  "OL17400800W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Brown%2C+in+Hadith%3A+Muhammad%27s+Legacy+in+the+Medieval+and+Modern+World",
+   "tier": "googlebooks",
+   "book": "Brown, in Hadith: Muhammad's Legacy in the Medieval and Modern World",
+   "method": "anchor-query"
+  },
+  "OL17412656W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Astronomy%2C+in+Islam%27s+Quantum+Question%3A+Reconciling+Muslim+Tradition+and+Modern+Science",
+   "tier": "googlebooks",
+   "book": "Astronomy, in Islam's Quantum Question: Reconciling Muslim Tradition and Modern ",
+   "method": "anchor-query"
+  },
+  "OL17542051W": {
+   "url": "https://www.google.com/search?tbm=bks&q=White%27s+analysis+of+Islamic+Christology",
+   "tier": "googlebooks",
+   "book": "White's analysis of Islamic Christology",
+   "method": "anchor-query"
+  },
+  "OL17613840W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Nicolaus+Copernicus%27s+De+revolutionibus+orbium+coelestium",
+   "tier": "googlebooks",
+   "book": "Nicolaus Copernicus's De revolutionibus orbium coelestium",
+   "method": "anchor-query"
+  },
+  "OL17867272W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Brown%2C+in+Misquoting+Muhammad",
+   "tier": "googlebooks",
+   "book": "Brown, in Misquoting Muhammad",
+   "method": "anchor-query"
+  },
+  "OL1809527W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Wilferd+Madelung%2C+The+Succession+to+Muhammad",
+   "tier": "googlebooks",
+   "book": "Wilferd Madelung, The Succession to Muhammad",
+   "method": "anchor-query"
+  },
+  "OL1833356W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Saleeb%2C+in+%27Answering+Islam",
+   "tier": "googlebooks",
+   "book": "Saleeb, in 'Answering Islam",
+   "method": "anchor-query"
+  },
+  "OL18589506W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Kecia+Ali%2C+Marriage+and+Slavery+in+Early+Islam",
+   "tier": "googlebooks",
    "book": "Kecia Ali, Marriage and Slavery in Early Islam",
-   "method": "author-verified-fix"
+   "method": "anchor-query"
   },
-  "isbn_9780813343358": {
-   "url": "https://openlibrary.org/works/OL2435028W",
-   "tier": "openlibrary",
-   "book": "Islam and Human Rights",
-   "method": "openlibrary-search"
+  "OL18734392W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Jean-Pierre+Filiu%2C+in+Apocalypse+in+Islam",
+   "tier": "googlebooks",
+   "book": "Jean-Pierre Filiu, in Apocalypse in Islam",
+   "method": "anchor-query"
   },
-  "womengenderinisl0000ahme": {
-   "url": "https://openlibrary.org/works/OL1959507W",
-   "tier": "openlibrary",
-   "book": "Women and gender in Islam",
-   "method": "openlibrary-search"
-  },
-  "slaveryinarabwor0000gord": {
-   "url": "https://openlibrary.org/works/OL4645914W",
-   "tier": "openlibrary",
-   "book": "Slavery in the Arab world",
-   "method": "openlibrary-search"
-  },
-  "legacyofislamica0000unse": {
-   "url": "https://openlibrary.org/works/OL9253290W",
-   "tier": "openlibrary",
-   "book": "The Legacy of Islamic Antisemitism",
-   "method": "openlibrary-search"
-  },
-  "understandingjih0000cook": {
-   "url": "https://openlibrary.org/works/OL2234501W",
-   "tier": "openlibrary",
-   "book": "Understanding Jihad",
-   "method": "openlibrary-search"
-  },
-  "dhimmijewschrist0000baty": {
-   "url": "https://openlibrary.org/works/OL2972150W",
-   "tier": "openlibrary",
-   "book": "The Dhimmi",
-   "method": "openlibrary-search"
-  },
-  "misquotingmuhamm0000brow": {
-   "url": "https://openlibrary.org/works/OL17867272W",
-   "tier": "openlibrary",
-   "book": "Misquoting Muhammad",
-   "method": "openlibrary-curated"
-  },
-  "legacyofjihadisl00bost": {
-   "url": "https://openlibrary.org/works/OL8978493W",
-   "tier": "openlibrary",
-   "book": "The Legacy of Jihad",
-   "method": "openlibrary-search"
-  },
-  "godsrulegovernme0000cron": {
-   "url": "https://openlibrary.org/works/OL4648056W",
-   "tier": "openlibrary",
-   "book": "God's Rule: Government and Islam",
-   "method": "openlibrary-curated"
-  },
-  "illusionofharmon0000edis": {
-   "url": "https://openlibrary.org/works/OL5829147W",
-   "tier": "openlibrary",
-   "book": "An Illusion of Harmony",
-   "method": "openlibrary-curated"
-  },
-  "jihadinclassical00pete": {
-   "url": "https://openlibrary.org/works/OL2927930W",
-   "tier": "openlibrary",
-   "book": "Jihad In Classical And Modern Islam",
-   "method": "openlibrary-search"
-  },
-  "war-and-peace-in-the-law-of-islam": {
-   "url": "https://openlibrary.org/works/OL31848399W",
-   "tier": "openlibrary",
-   "book": "War and Peace in the Law of Islam by Majid Khadduri Vintage 1960",
-   "method": "openlibrary-search"
-  },
-  "islamicunderstan0000smit": {
-   "url": "https://openlibrary.org/works/OL1933622W",
-   "tier": "openlibrary",
+  "OL1933622W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Islamic+Understanding+of+Death+and+Resurrection",
+   "tier": "googlebooks",
    "book": "The Islamic Understanding of Death and Resurrection",
-   "method": "openlibrary-curated"
+   "method": "anchor-query"
   },
-  "islamandscience": {
-   "url": "https://openlibrary.org/works/OL4097712W",
-   "tier": "openlibrary",
-   "book": "Islam and science",
-   "method": "openlibrary-search"
+  "OL19585996W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Classical+Islam%3A+A+Sourcebook+of+Religious+Literature",
+   "tier": "googlebooks",
+   "book": "Classical Islam: A Sourcebook of Religious Literature",
+   "method": "anchor-query"
   },
-  "in.ernet.dli.2015.210695": {
-   "url": "https://openlibrary.org/works/OL6547110W",
-   "tier": "openlibrary",
-   "book": "Mohammed and the rise of Islam",
-   "method": "openlibrary-search"
+  "OL1959507W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Leila+Ahmed%27s+%27Women+and+Gender+in+Islam",
+   "tier": "googlebooks",
+   "book": "Leila Ahmed's 'Women and Gender in Islam",
+   "method": "anchor-query"
   },
-  "bwb_W9-DIL-086": {
-   "url": "https://openlibrary.org/works/OL5411631W",
-   "tier": "openlibrary",
-   "book": "Schacht, An Introduction to Islamic Law",
-   "method": "author-verified-fix"
+  "OL1990170W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Orlando+Patterson%27s+foundational+%27Slavery+and+Social+Death",
+   "tier": "googlebooks",
+   "book": "Orlando Patterson's foundational 'Slavery and Social Death",
+   "method": "anchor-query"
   },
-  "Jeffery1937Materials000061": {
-   "url": "https://openlibrary.org/works/OL10746354W",
-   "tier": "openlibrary",
-   "book": "Materials for the history of the text of the Qur'ān",
-   "method": "openlibrary-search"
+  "OL19986724W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Lives+of+Muhammad",
+   "tier": "googlebooks",
+   "book": "The Lives of Muhammad",
+   "method": "anchor-query"
   },
-  "cu31924029170236": {
-   "url": "https://openlibrary.org/works/OL24415777W",
-   "tier": "openlibrary",
-   "book": "Judaism and Islam. A Prize Essay",
-   "method": "openlibrary-search"
+  "OL20055780W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Shahab+Ahmed%2C+Before+Orthodoxy%3A+The+Satanic+Verses+in+Early+Islam",
+   "tier": "googlebooks",
+   "book": "Shahab Ahmed, Before Orthodoxy: The Satanic Verses in Early Islam",
+   "method": "anchor-query"
   },
-  "critical-quran-robert-spencer": {
-   "url": "https://openlibrary.org/works/OL26599619W",
-   "tier": "openlibrary",
-   "book": "The Critical Qur'an",
-   "method": "openlibrary-curated"
+  "OL20175001W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Barbara+Freyer+Stowasser%2C+in+Women+in+the+Qur%27an%2C+Traditions%2C+and+Interpretation",
+   "tier": "googlebooks",
+   "book": "Barbara Freyer Stowasser, in Women in the Qur'an, Traditions, and Interpretation",
+   "method": "anchor-query"
   },
-  "30779166islamandslavery": {
-   "url": "https://openlibrary.org/works/OL3593867W",
-   "tier": "openlibrary",
-   "book": "Islam, Black nationalism and slavery",
-   "method": "openlibrary-search"
+  "OL20245338W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ayaan+Hirsi+Ali%2C+in+%27Heretic",
+   "tier": "googlebooks",
+   "book": "Ayaan Hirsi Ali, in 'Heretic",
+   "method": "anchor-query"
   },
-  "TheSyroAramaicReadingOfTheKoran": {
-   "url": "https://openlibrary.org/works/OL10151850W",
-   "tier": "openlibrary",
-   "book": "The Syro-Aramaic Reading of the Koran. A Contribution to the Decoding ",
-   "method": "openlibrary-search"
+  "OL20312585W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Locating+Hell+in+Islamic+Traditions",
+   "tier": "googlebooks",
+   "book": "Locating Hell in Islamic Traditions",
+   "method": "anchor-query"
   },
-  "veilmaleelitefem00mernrich": {
-   "url": "https://openlibrary.org/works/OL1018819W",
-   "tier": "openlibrary",
-   "book": "Abu Dawud. Fatima Mernissi's The Veil and the Male Elite",
-   "method": "openlibrary-curated"
+  "OL20345553W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Emon%2C+Religious+Pluralism+and+Islamic+Law%3A+Dhimm%C4%ABs+and+Others+in+the+Empire+of+Law",
+   "tier": "googlebooks",
+   "book": "Emon, Religious Pluralism and Islamic Law: Dhimmīs and Others in the Empire of L",
+   "method": "anchor-query"
   },
-  "washatmohammedau00geig": {
-   "url": "https://openlibrary.org/works/OL1571403W",
-   "tier": "openlibrary",
-   "book": "Was hat Mohammed aus dem Judenthume aufgenommen?",
-   "method": "openlibrary-search"
+  "OL20477151W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Collins%2C+The+Apocalyptic+Imagination%3A+An+Introduction+to+Jewish+Apocalyptic+Literature",
+   "tier": "googlebooks",
+   "book": "Collins, The Apocalyptic Imagination: An Introduction to Jewish Apocalyptic Lite",
+   "method": "anchor-query"
   },
-  "islamwest00lewi": {
-   "url": "https://openlibrary.org/works/OL1157026W",
-   "tier": "openlibrary",
-   "book": "Islam and the West",
-   "method": "openlibrary-search"
+  "OL20547040W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Scott+Kugle%27s+%27Homosexuality+in+Islam",
+   "tier": "googlebooks",
+   "book": "Scott Kugle's 'Homosexuality in Islam",
+   "method": "anchor-query"
   },
-  "originsofkoran00ibnw": {
-   "url": "https://openlibrary.org/works/OL3746582W",
-   "tier": "openlibrary",
-   "book": "Ibn Warraq, The Origins of the Koran",
-   "method": "openlibrary-curated"
+  "OL20592054W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Milka+Levy-Rubin%2C+Non-Muslims+in+the+Early+Islamic+Empire",
+   "tier": "googlebooks",
+   "book": "Milka Levy-Rubin, Non-Muslims in the Early Islamic Empire",
+   "method": "anchor-query"
   },
-  "politicallyincor0000spen": {
-   "url": "https://openlibrary.org/works/OL24192034W",
-   "tier": "openlibrary",
+  "OL20916796W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Coulson%2C+in+Succession+in+the+Muslim+Family",
+   "tier": "googlebooks",
+   "book": "Coulson, in Succession in the Muslim Family",
+   "method": "anchor-query"
+  },
+  "OL20926283W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Bladel%2C+in+%22The+Alexander+Legend+in+the+Quran+18%3A83-102",
+   "tier": "googlebooks",
+   "book": "Bladel, in \"The Alexander Legend in the Quran 18:83-102",
+   "method": "anchor-query"
+  },
+  "OL21158900W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Brown%2C+Hadith%3A+Muhammad%27s+Legacy+in+the+Medieval+and+Modern+World",
+   "tier": "googlebooks",
+   "book": "Brown, Hadith: Muhammad's Legacy in the Medieval and Modern World",
+   "method": "anchor-query"
+  },
+  "OL21228578W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Cook%27s+Contemporary+Muslim+Apocalyptic+Literature",
+   "tier": "googlebooks",
+   "book": "Cook's Contemporary Muslim Apocalyptic Literature",
+   "method": "anchor-query"
+  },
+  "OL21266012W": {
+   "url": "https://www.google.com/search?tbm=bks&q=David+S.+Powers%2C+in+Zayd",
+   "tier": "googlebooks",
+   "book": "David S. Powers, in Zayd",
+   "method": "anchor-query"
+  },
+  "OL21311904W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Maria+De+Cillis%27s+Free+Will+and+Predestination+in+Islamic+Thought",
+   "tier": "googlebooks",
+   "book": "Maria De Cillis's Free Will and Predestination in Islamic Thought",
+   "method": "anchor-query"
+  },
+  "OL21340365W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Daniel+Pipes%2C+in+In+the+Path+of+God",
+   "tier": "googlebooks",
+   "book": "Daniel Pipes, in In the Path of God",
+   "method": "anchor-query"
+  },
+  "OL21493585W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Noah+Feldman%2C+in+The+Fall+and+Rise+of+the+Islamic+State",
+   "tier": "googlebooks",
+   "book": "Noah Feldman, in The Fall and Rise of the Islamic State",
+   "method": "anchor-query"
+  },
+  "OL2203660W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Atmaja%2C+Defenders+of+Reason+in+Islam%3A+Mu%27tazilism+from+Medieval+School+to+Modern+Symbol",
+   "tier": "googlebooks",
+   "book": "Atmaja, Defenders of Reason in Islam: Mu'tazilism from Medieval School to Modern",
+   "method": "anchor-query"
+  },
+  "OL2214228W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Search+for+Beauty+in+Islam",
+   "tier": "googlebooks",
+   "book": "The Search for Beauty in Islam",
+   "method": "anchor-query"
+  },
+  "OL2214230W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Khaled+Abou+El+Fadl+in+%27Speaking+in+God%27s+Name",
+   "tier": "googlebooks",
+   "book": "Khaled Abou El Fadl in 'Speaking in God's Name",
+   "method": "anchor-query"
+  },
+  "OL2214232W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Khaled+Abou+El+Fadl%2C+The+Great+Theft%3A+Wrestling+Islam+from+the+Extremists",
+   "tier": "googlebooks",
+   "book": "Khaled Abou El Fadl, The Great Theft: Wrestling Islam from the Extremists",
+   "method": "anchor-query"
+  },
+  "OL2214234W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Khaled+Abou+El+Fadl%2C+in+%27Rebellion+and+Violence+in+Islamic+Law",
+   "tier": "googlebooks",
+   "book": "Khaled Abou El Fadl, in 'Rebellion and Violence in Islamic Law",
+   "method": "anchor-query"
+  },
+  "OL2234477W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Addressing+Suicide+Attacks%3A+The+Faith+and+Politics+of+Martyrdom+Operations",
+   "tier": "googlebooks",
+   "book": "Addressing Suicide Attacks: The Faith and Politics of Martyrdom Operations",
+   "method": "anchor-query"
+  },
+  "OL2234493W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Cook%2C+Martyrdom+in+Islam",
+   "tier": "googlebooks",
+   "book": "Cook, Martyrdom in Islam",
+   "method": "anchor-query"
+  },
+  "OL2234501W": {
+   "url": "https://www.google.com/search?tbm=bks&q=David+Cook%27s+%27Understanding+Jihad",
+   "tier": "googlebooks",
+   "book": "David Cook's 'Understanding Jihad",
+   "method": "anchor-query"
+  },
+  "OL24192034W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Politically+Incorrect+Guide+to+Islam",
+   "tier": "googlebooks",
    "book": "The Politically Incorrect Guide to Islam",
-   "method": "openlibrary-search"
+   "method": "anchor-query"
   },
-  "whyiamnotmuslim0000ibnw_o7h2": {
-   "url": "https://openlibrary.org/works/OL3746587W",
-   "tier": "openlibrary",
-   "book": "Why I am not a Muslim",
-   "method": "openlibrary-search"
+  "OL2435028W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ann+Mayer%2C+in+Islam+and+Human+Rights",
+   "tier": "googlebooks",
+   "book": "Ann Mayer, in Islam and Human Rights",
+   "method": "anchor-query"
   },
-  "islamsecularstat0000naim": {
-   "url": "https://openlibrary.org/works/OL4786437W",
-   "tier": "openlibrary",
-   "book": "Islam and the Secular State",
-   "method": "openlibrary-curated"
+  "OL24415777W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Abraham+Geiger%27s+%27Judaism+and+Islam",
+   "tier": "googlebooks",
+   "book": "Abraham Geiger's 'Judaism and Islam",
+   "method": "anchor-query"
   },
-  "martyrdominislam0000cook": {
-   "url": "https://openlibrary.org/works/OL2234493W",
-   "tier": "openlibrary",
-   "book": "Martyrdom in Islam (Themes in Islamic History)",
-   "method": "openlibrary-search"
+  "OL2451365W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Nahum+Sarna%2C+Genesis%3A+The+JPS+Torah+Commentary",
+   "tier": "googlebooks",
+   "book": "Nahum Sarna, Genesis: The JPS Torah Commentary",
+   "method": "anchor-query"
   },
-  "bukhari.muslim_202304": {
-   "url": "https://openlibrary.org/works/OL5121621W",
-   "tier": "openlibrary",
+  "OL2490697W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Dome+of+the+Rock",
+   "tier": "googlebooks",
+   "book": "The Dome of the Rock",
+   "method": "anchor-query"
+  },
+  "OL2490703W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Oleg+Grabar%2C+The+Formation+of+Islamic+Art",
+   "tier": "googlebooks",
+   "book": "Oleg Grabar, The Formation of Islamic Art",
+   "method": "anchor-query"
+  },
+  "OL25613757W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Majid+Fakhry%27s+Ethical+Theories+in+Islam",
+   "tier": "googlebooks",
+   "book": "Majid Fakhry's Ethical Theories in Islam",
+   "method": "anchor-query"
+  },
+  "OL25762551W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Nerina+Rustomji%27s+The+Beauty+of+the+Houri",
+   "tier": "googlebooks",
+   "book": "Nerina Rustomji's The Beauty of the Houri",
+   "method": "anchor-query"
+  },
+  "OL26599619W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Robert+Spencer%27s+The+Critical+Qur%27an",
+   "tier": "googlebooks",
+   "book": "Robert Spencer's The Critical Qur'an",
+   "method": "anchor-query"
+  },
+  "OL26754927W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Emilie+Savage-Smith%2C+in+Magic+and+Divination+in+Early+Islam",
+   "tier": "googlebooks",
+   "book": "Emilie Savage-Smith, in Magic and Divination in Early Islam",
+   "method": "anchor-query"
+  },
+  "OL2693599W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Judith+Tucker%2C+Women%2C+Family%2C+and+Gender+in+Islamic+Law",
+   "tier": "googlebooks",
+   "book": "Judith Tucker, Women, Family, and Gender in Islamic Law",
+   "method": "anchor-query"
+  },
+  "OL27083896W": {
+   "url": "https://www.google.com/search?tbm=bks&q=David+Cook%27s+%27Studies+in+Muslim+Apocalyptic",
+   "tier": "googlebooks",
+   "book": "David Cook's 'Studies in Muslim Apocalyptic",
+   "method": "anchor-query"
+  },
+  "OL27825507W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Schmidt%2C+%27Gog+and+Magog+in+Early+Eastern+Christian+and+Islamic+Sources",
+   "tier": "googlebooks",
+   "book": "Schmidt, 'Gog and Magog in Early Eastern Christian and Islamic Sources",
+   "method": "anchor-query"
+  },
+  "OL2927929W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Crime+and+Punishment+in+Islamic+Law",
+   "tier": "googlebooks",
+   "book": "Crime and Punishment in Islamic Law",
+   "method": "anchor-query"
+  },
+  "OL2927930W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Rudolph+Peters%27s+%27Jihad+in+Classical+and+Modern+Islam",
+   "tier": "googlebooks",
+   "book": "Rudolph Peters's 'Jihad in Classical and Modern Islam",
+   "method": "anchor-query"
+  },
+  "OL2970108W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Muslim+Writers+on+Judaism+and+the+Hebrew+Bible%3A+From+Ibn+Rabban+to+Ibn+Hazm",
+   "tier": "googlebooks",
+   "book": "Muslim Writers on Judaism and the Hebrew Bible: From Ibn Rabban to Ibn Hazm",
+   "method": "anchor-query"
+  },
+  "OL2972149W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Decline+of+Eastern+Christianity+under+Islam%3A+From+Jihad+to+Dhimmitude",
+   "tier": "googlebooks",
+   "book": "The Decline of Eastern Christianity under Islam: From Jihad to Dhimmitude",
+   "method": "anchor-query"
+  },
+  "OL2972150W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Bat+Ye%27or%27s+The+Dhimmi",
+   "tier": "googlebooks",
+   "book": "Bat Ye'or's The Dhimmi",
+   "method": "anchor-query"
+  },
+  "OL31378222W": {
+   "url": "https://www.google.com/search?tbm=bks&q=William+Montgomery+Watt%2C+in+Muhammad%3A+Prophet+and+Statesman",
+   "tier": "googlebooks",
+   "book": "William Montgomery Watt, in Muhammad: Prophet and Statesman",
+   "method": "anchor-query"
+  },
+  "OL31848399W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Majid+Khadduri%27s+%27War+and+Peace+in+the+Law+of+Islam",
+   "tier": "googlebooks",
+   "book": "Majid Khadduri's 'War and Peace in the Law of Islam",
+   "method": "anchor-query"
+  },
+  "OL3297253W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ormsby%2C+Theodicy+in+Islamic+Thought",
+   "tier": "googlebooks",
+   "book": "Ormsby, Theodicy in Islamic Thought",
+   "method": "anchor-query"
+  },
+  "OL34591695W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Fazlur+Rahman%2C+Islam",
+   "tier": "googlebooks",
+   "book": "Fazlur Rahman, Islam",
+   "method": "anchor-query"
+  },
+  "OL3493043W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Spellberg%2C+in+Politics%2C+Gender%2C+and+the+Islamic+Past%3A+The+Legacy+of+%CA%BF%C4%80%CA%BEisha+bint+Ab%C4%AB+Bakr",
+   "tier": "googlebooks",
+   "book": "Spellberg, in Politics, Gender, and the Islamic Past: The Legacy of ʿĀʾisha bint",
+   "method": "anchor-query"
+  },
+  "OL3515750W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Jews.%27+Matthias+K%C3%BCntzel%2C+in+Jihad+and+Jew-Hatred%3A+Islamism%2C+Nazism+and+the+Roots+of+9%2F11",
+   "tier": "googlebooks",
+   "book": "Jews.' Matthias Küntzel, in Jihad and Jew-Hatred: Islamism, Nazism and the Roots",
+   "method": "anchor-query"
+  },
+  "OL3589862W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Collection+of+the+Qur%27an",
+   "tier": "googlebooks",
+   "book": "The Collection of the Qur'an",
+   "method": "anchor-query"
+  },
+  "OL3593867W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Brown%2C+Slavery+and+Islam",
+   "tier": "googlebooks",
+   "book": "Brown, Slavery and Islam",
+   "method": "anchor-query"
+  },
+  "OL36397789W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Maurice+Bucaille%27s+The+Bible%2C+the+Qur%27an+and+Science",
+   "tier": "googlebooks",
+   "book": "Maurice Bucaille's The Bible, the Qur'an and Science",
+   "method": "anchor-query"
+  },
+  "OL3733159W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Lynn+Welchman%2C+Women+and+Muslim+Family+Laws+in+Arab+States",
+   "tier": "googlebooks",
+   "book": "Lynn Welchman, Women and Muslim Family Laws in Arab States",
+   "method": "anchor-query"
+  },
+  "OL3742373W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Asma+Barlas%2C+in+%22Believing+Women%22+in+Islam%3A+Unreading+Patriarchal+Interpretations+of+the+Qur%27an",
+   "tier": "googlebooks",
+   "book": "Asma Barlas, in \"Believing Women\" in Islam: Unreading Patriarchal Interpretation",
+   "method": "anchor-query"
+  },
+  "OL3746582W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Origins+of+the+Koran",
+   "tier": "googlebooks",
+   "book": "The Origins of the Koran",
+   "method": "anchor-query"
+  },
+  "OL3746587W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Warraq%27s+analysis+of+this+episode",
+   "tier": "googlebooks",
+   "book": "Ibn Warraq's analysis of this episode",
+   "method": "anchor-query"
+  },
+  "OL3846941W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Norman+Stillman%2C+The+Jews+of+Arab+Lands%3A+A+History+and+Source+Book",
+   "tier": "googlebooks",
+   "book": "Norman Stillman, The Jews of Arab Lands: A History and Source Book",
+   "method": "anchor-query"
+  },
+  "OL3856616W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ess%2C+The+Flowering+of+Muslim+Theology",
+   "tier": "googlebooks",
+   "book": "Ess, The Flowering of Muslim Theology",
+   "method": "anchor-query"
+  },
+  "OL39142220W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Amina+Wadud%2C+in+%27Qur%27an+and+Woman",
+   "tier": "googlebooks",
+   "book": "Amina Wadud, in 'Qur'an and Woman",
+   "method": "anchor-query"
+  },
+  "OL3954438W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Cohen%2C+Under+Crescent+and+Cross%3A+The+Jews+in+the+Middle+Ages",
+   "tier": "googlebooks",
+   "book": "Cohen, Under Crescent and Cross: The Jews in the Middle Ages",
+   "method": "anchor-query"
+  },
+  "OL40130027W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Sachiko+Murata%2C+Muta%27%3A+Temporary+Marriage+in+Islamic+Law",
+   "tier": "googlebooks",
+   "book": "Sachiko Murata, Muta': Temporary Marriage in Islamic Law",
+   "method": "anchor-query"
+  },
+  "OL4080880W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Anchor+Bible+scholar+whose+five-volume+A+Marginal+Jew%3A+Rethinking+the+Historical+Jesus",
+   "tier": "googlebooks",
+   "book": "Anchor Bible scholar whose five-volume A Marginal Jew: Rethinking the Historical",
+   "method": "anchor-query"
+  },
+  "OL4097712W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Pervez+Hoodbhoy%27s+Islam+and+Science",
+   "tier": "googlebooks",
+   "book": "Pervez Hoodbhoy's Islam and Science",
+   "method": "anchor-query"
+  },
+  "OL44539632W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Guessoum%2C+in+Islam%27s+Quantum+Question",
+   "tier": "googlebooks",
+   "book": "Guessoum, in Islam's Quantum Question",
+   "method": "anchor-query"
+  },
+  "OL4623510W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Gordon+Newby%2C+in+A+History+of+the+Jews+of+Arabia",
+   "tier": "googlebooks",
+   "book": "Gordon Newby, in A History of the Jews of Arabia",
+   "method": "anchor-query"
+  },
+  "OL4645914W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Murray+Gordon%27s+Slavery+in+the+Arab+World",
+   "tier": "googlebooks",
+   "book": "Murray Gordon's Slavery in the Arab World",
+   "method": "anchor-query"
+  },
+  "OL4648053W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Patricia+Crone+and+Michael+Cook%27s+%27Hagarism",
+   "tier": "googlebooks",
+   "book": "Patricia Crone and Michael Cook's 'Hagarism",
+   "method": "anchor-query"
+  },
+  "OL4648056W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Patricia+Crone%27s+God%27s+Rule",
+   "tier": "googlebooks",
+   "book": "Patricia Crone's God's Rule",
+   "method": "anchor-query"
+  },
+  "OL475324W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Tabari%27s+History+Vol.+8",
+   "tier": "googlebooks",
+   "book": "Tabari's History Vol. 8",
+   "method": "anchor-query"
+  },
+  "OL4774373W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Shahla+Haeri%2C+Law+of+Desire%3A+Temporary+Marriage+in+Shi%26%23x2018%3Bi+Iran",
+   "tier": "googlebooks",
+   "book": "Shahla Haeri, Law of Desire: Temporary Marriage in Shi&#x2018;i Iran",
+   "method": "anchor-query"
+  },
+  "OL4786437W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Abdullahi+Ahmed+An-Na%27im%27s+%27Islam+and+the+Secular+State",
+   "tier": "googlebooks",
+   "book": "Abdullahi Ahmed An-Na'im's 'Islam and the Secular State",
+   "method": "anchor-query"
+  },
+  "OL4979743W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Islamic+Messianism%3A+The+Idea+of+the+Mahdi+in+Twelver+Shi%CA%BFism",
+   "tier": "googlebooks",
+   "book": "Islamic Messianism: The Idea of the Mahdi in Twelver Shiʿism",
+   "method": "anchor-query"
+  },
+  "OL5100704W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Studies+in+Qur%CA%BE%C4%81n+and+%E1%B8%A4ad%C4%ABth%3A+The+Formation+of+the+Islamic+Law+of+Inheritance",
+   "tier": "googlebooks",
+   "book": "Studies in Qurʾān and Ḥadīth: The Formation of the Islamic Law of Inheritance",
+   "method": "anchor-query"
+  },
+  "OL5121621W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Canonization+of+al-Bukhari+and+Muslim",
+   "tier": "googlebooks",
    "book": "The Canonization of al-Bukhari and Muslim",
-   "method": "openlibrary-search"
+   "method": "anchor-query"
   },
-  "hereticwhyislamn0000hirs": {
-   "url": "https://openlibrary.org/works/OL20245338W",
-   "tier": "openlibrary",
-   "book": "Heretic",
-   "method": "openlibrary-search"
+  "OL5263569W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Friedmann%2C+Tolerance+and+Coercion+in+Islam",
+   "tier": "googlebooks",
+   "book": "Friedmann, Tolerance and Coercion in Islam",
+   "method": "anchor-query"
   },
-  "slaverysocialdea0000patt_a6j9": {
-   "url": "https://openlibrary.org/works/OL1990170W",
-   "tier": "openlibrary",
-   "book": "Slavery and social death",
-   "method": "openlibrary-search"
+  "OL5359452W": {
+   "url": "https://www.google.com/search?tbm=bks&q=William+Gervase+Clarence-Smith%2C+Islam+and+the+Abolition+of+Slavery",
+   "tier": "googlebooks",
+   "book": "William Gervase Clarence-Smith, Islam and the Abolition of Slavery",
+   "method": "anchor-query"
   },
-  "thesonsofpigsape0000kres": {
-   "url": "https://openlibrary.org/works/OL16637697W",
-   "tier": "openlibrary",
-   "book": "Neil J. Kressel's The Sons of Pigs and Apes",
-   "method": "openlibrary-curated"
+  "OL5411631W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Joseph+Schacht%27s+An+Introduction+to+Islamic+Law",
+   "tier": "googlebooks",
+   "book": "Joseph Schacht's An Introduction to Islamic Law",
+   "method": "anchor-query"
   },
-  "fallriseofislami00feld": {
-   "url": "https://openlibrary.org/works/OL21493585W",
-   "tier": "openlibrary",
-   "book": "Fall and Rise of the Islamic State",
-   "method": "openlibrary-search"
+  "OL5411632W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Joseph+Schacht%27s+Origins+of+Muhammadan+Jurisprudence",
+   "tier": "googlebooks",
+   "book": "Joseph Schacht's Origins of Muhammadan Jurisprudence",
+   "method": "anchor-query"
   },
-  "homosexualityini0000kugl": {
-   "url": "https://openlibrary.org/works/OL20547040W",
-   "tier": "openlibrary",
-   "book": "Homosexuality in Islam",
-   "method": "openlibrary-curated"
-  },
-  "muhammadatmecca0000wmon": {
-   "url": "https://openlibrary.org/works/OL1415429W",
-   "tier": "openlibrary",
-   "book": "Muhammad at Mecca",
-   "method": "openlibrary-search"
-  },
-  "successiontomuam0000made": {
-   "url": "https://openlibrary.org/works/OL1809527W",
-   "tier": "openlibrary",
-   "book": "The Succession to Muhammad",
-   "method": "openlibrary-search"
-  },
-  "formativeperiodo0000watt": {
-   "url": "https://openlibrary.org/works/OL3297253W",
-   "tier": "openlibrary",
-   "book": "Islamic Thought",
-   "method": "openlibrary-curated"
-  },
-  "norman-l.-geisler-abdul-saleeb-answering-islam-the-crescent-in-light-of-the-cross": {
-   "url": "https://openlibrary.org/works/OL1833356W",
-   "tier": "openlibrary",
-   "book": "Answering Islam",
-   "method": "openlibrary-curated"
-  },
-  "questforhistoric00ibnw": {
-   "url": "https://openlibrary.org/works/OL16026710W",
-   "tier": "openlibrary",
-   "book": "The quest for the historical Muhammad",
-   "method": "openlibrary-search"
-  },
-  "warpeaceinlawofi0000khad": {
-   "url": "https://openlibrary.org/works/OL1179345W",
-   "tier": "openlibrary",
-   "book": "War and peace in the law of Islam",
-   "method": "openlibrary-search"
-  },
-  "whateverychristi0000whit": {
-   "url": "https://openlibrary.org/works/OL17542051W",
-   "tier": "openlibrary",
-   "book": "What Every Christian Needs to Know About the Qur'an",
-   "method": "openlibrary-curated"
-  },
-  "whichkoranvarian0000unse": {
-   "url": "https://openlibrary.org/works/OL16340681W",
-   "tier": "openlibrary",
-   "book": "Which Koran ?",
-   "method": "openlibrary-search"
-  },
-  "bwb_C0-BNY-701": {
-   "url": "https://openlibrary.org/works/OL1415427W",
-   "tier": "openlibrary",
-   "book": "Muhammad at Medina",
-   "method": "openlibrary-search"
-  },
-  "gardenfireheaven0000rust": {
-   "url": "https://openlibrary.org/works/OL11994348W",
-   "tier": "openlibrary",
-   "book": "The garden and the fire",
-   "method": "openlibrary-search"
-  },
-  "godwhohatescoura0000sult": {
-   "url": "https://openlibrary.org/works/OL13781973W",
-   "tier": "openlibrary",
-   "book": "A god who hates",
-   "method": "openlibrary-search"
-  },
-  "cu31924032327425": {
-   "url": "https://openlibrary.org/works/OL1096188W",
-   "tier": "openlibrary",
-   "book": "The life of Mahomet",
-   "method": "openlibrary-search"
-  },
-  "muhammadatmedina0000wmon": {
-   "url": "https://openlibrary.org/works/OL1415427W",
-   "tier": "openlibrary",
-   "book": "Muhammad at Medina",
-   "method": "openlibrary-search"
-  },
-  "sexualethicsisla0000alik": {
-   "url": "https://openlibrary.org/works/OL9036315W",
-   "tier": "openlibrary",
-   "book": "Sexual Ethics and Islam",
-   "method": "openlibrary-curated"
-  },
-  "gogandmagoginearlyeasternchristianandislamicsources": {
-   "url": "https://openlibrary.org/works/OL27825507W",
-   "tier": "openlibrary",
-   "book": "Gog and Magog in Early Eastern Christian and Islamic Sources",
-   "method": "openlibrary-search"
-  },
-  "hadithmuhammadsl0000brow": {
-   "url": "https://openlibrary.org/works/OL21158900W",
-   "tier": "openlibrary",
-   "book": "Hadith",
-   "method": "openlibrary-search"
-  },
-  "hereticwhyislamn0000hirs_f0n7": {
-   "url": "https://openlibrary.org/works/OL20245338W",
-   "tier": "openlibrary",
-   "book": "Heretic",
-   "method": "openlibrary-search"
-  },
-  "historyofislamic0000coul": {
-   "url": "https://openlibrary.org/works/OL5414483W",
-   "tier": "openlibrary",
+  "OL5414483W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Coulson%2C+A+History+of+Islamic+Law",
+   "tier": "googlebooks",
    "book": "Coulson, A History of Islamic Law",
-   "method": "author-verified-fix"
+   "method": "anchor-query"
   },
-  "isisapocalypsehi0000mcca": {
-   "url": "https://openlibrary.org/works/OL17313043W",
-   "tier": "openlibrary",
-   "book": "The ISIS Apocalypse",
-   "method": "openlibrary-search"
+  "OL5722249W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Timothy+Furnish%2C+in+Holiest+Wars%3A+Islamic+Mahdis%2C+Their+Jihads%2C+and+Osama+bin+Laden",
+   "tier": "googlebooks",
+   "book": "Timothy Furnish, in Holiest Wars: Islamic Mahdis, Their Jihads, and Osama bin La",
+   "method": "anchor-query"
   },
-  "islamicfinancela0000elga": {
-   "url": "https://openlibrary.org/works/OL8332554W",
-   "tier": "openlibrary",
-   "book": "Islamic Finance",
-   "method": "openlibrary-search"
+  "OL582352W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Nasr%2C+An+Introduction+to+Islamic+Cosmological+Doctrines",
+   "tier": "googlebooks",
+   "book": "Nasr, An Introduction to Islamic Cosmological Doctrines",
+   "method": "anchor-query"
   },
-  "lawofdesiretempo0000haer": {
-   "url": "https://openlibrary.org/works/OL4774373W",
-   "tier": "openlibrary",
-   "book": "The Law of Desire",
-   "method": "openlibrary-search"
+  "OL5826028W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Robert+Spencer%2C+in+The+Complete+Infidel%27s+Guide+to+the+Koran",
+   "tier": "googlebooks",
+   "book": "Robert Spencer, in The Complete Infidel's Guide to the Koran",
+   "method": "anchor-query"
   },
-  "muhammadprophets0000wmon_a8w8": {
-   "url": "https://openlibrary.org/works/OL31378222W",
-   "tier": "openlibrary",
-   "book": "Muhammad, Prophet and Statesman",
-   "method": "openlibrary-search"
+  "OL5826039W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Truth+About+Muhammad",
+   "tier": "googlebooks",
+   "book": "The Truth About Muhammad",
+   "method": "anchor-query"
   },
-  "rebellionviolenc0000abou": {
-   "url": "https://openlibrary.org/works/OL2214234W",
-   "tier": "openlibrary",
-   "book": "Abou El Fadl, Rebellion and Violence in Islamic Law",
-   "method": "author-verified-fix"
+  "OL5829147W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Taner+Edis%27s+%27An+Illusion+of+Harmony",
+   "tier": "googlebooks",
+   "book": "Taner Edis's 'An Illusion of Harmony",
+   "method": "anchor-query"
   },
-  "slaverysocialdea0000patt": {
-   "url": "https://openlibrary.org/works/OL1990170W",
-   "tier": "openlibrary",
-   "book": "Slavery and social death",
-   "method": "openlibrary-search"
+  "OL5856486W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Bernard+Lewis%2C+in+%27The+Crisis+of+Islam",
+   "tier": "googlebooks",
+   "book": "Bernard Lewis, in 'The Crisis of Islam",
+   "method": "anchor-query"
   },
-  "truthaboutmuhamm0000spen_p1e4": {
-   "url": "https://openlibrary.org/works/OL5826039W",
-   "tier": "openlibrary",
-   "book": "The Truth About Muhammad: Founder of the World's Most Intolerant Relig",
-   "method": "openlibrary-curated"
+  "OL6547110W": {
+   "url": "https://www.google.com/search?tbm=bks&q=David+Margoliouth%27s+%27Mohammed+and+the+Rise+of+Islam",
+   "tier": "googlebooks",
+   "book": "David Margoliouth's 'Mohammed and the Rise of Islam",
+   "method": "anchor-query"
   },
-  "wahhabimissionsa0000comm_v9y1": {
-   "url": "https://openlibrary.org/works/OL8481442W",
-   "tier": "openlibrary",
-   "book": "The Wahhabi Mission and Saudi Arabia",
-   "method": "openlibrary-search"
-  },
-  "answeringislamcr00geis": {
-   "url": "https://openlibrary.org/works/OL1833356W",
-   "tier": "openlibrary",
-   "book": "Answering Islam",
-   "method": "openlibrary-curated"
-  },
-  "believingwomenin0000barl": {
-   "url": "https://openlibrary.org/works/OL3742373W",
-   "tier": "openlibrary",
-   "book": "\"Believing women\" in Islam",
-   "method": "openlibrary-search"
-  },
-  "bwb_W9-CRT-663": {
-   "url": "https://openlibrary.org/works/OL1415399W",
-   "tier": "openlibrary",
-   "book": "Early Islam",
-   "method": "openlibrary-curated"
-  },
-  "ethicaltheoriesi0000fakh": {
-   "url": "https://openlibrary.org/works/OL25613757W",
-   "tier": "openlibrary",
-   "book": "Ethical Theories in Islam",
-   "method": "openlibrary-search"
-  },
-  "forbiddingwrongi0000cook": {
-   "url": "https://openlibrary.org/works/OL6628403W",
-   "tier": "openlibrary",
+  "OL6628403W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Forbidding+Wrong+in+Islam",
+   "tier": "googlebooks",
    "book": "Forbidding Wrong in Islam",
-   "method": "openlibrary-search"
+   "method": "anchor-query"
   },
-  "historyofembryol0000need_f1t1": {
-   "url": "https://openlibrary.org/works/OL1186503W",
-   "tier": "openlibrary",
-   "book": "A history of embryology",
-   "method": "openlibrary-search"
-  },
-  "infidel0000hirs": {
-   "url": "https://openlibrary.org/works/OL11707625W",
-   "tier": "openlibrary",
-   "book": "Infidel",
-   "method": "openlibrary-search"
-  },
-  "introductiontois00nasr": {
-   "url": "https://openlibrary.org/works/OL582352W",
-   "tier": "openlibrary",
-   "book": "An introduction to Islamic cosmological doctrines",
-   "method": "openlibrary-search"
-  },
-  "jewsofarablandsh0000unse": {
-   "url": "https://openlibrary.org/works/OL3846941W",
-   "tier": "openlibrary",
-   "book": "The Jews of Arab Lands in Modern Times",
-   "method": "openlibrary-search"
-  },
-  "muhammadatmecca0000watt": {
-   "url": "https://openlibrary.org/works/OL1415429W",
-   "tier": "openlibrary",
-   "book": "Muhammad at Mecca",
-   "method": "openlibrary-search"
-  },
-  "politicsgenderis0000spel": {
-   "url": "https://openlibrary.org/works/OL3493043W",
-   "tier": "openlibrary",
-   "book": "Politics, gender, and the Islamic past",
-   "method": "openlibrary-search"
-  },
-  "undercrescentcro0000cohe": {
-   "url": "https://openlibrary.org/works/OL3954438W",
-   "tier": "openlibrary",
-   "book": "Under crescent and cross",
-   "method": "openlibrary-search"
-  },
-  "TheLifeOfMohammedGuillaume": {
-   "url": "https://openlibrary.org/works/OL12747973W",
-   "tier": "openlibrary",
-   "book": "The Life of Muhammad",
-   "method": "openlibrary-curated"
-  },
-  "aishahbelovedofm0000unse": {
-   "url": "https://openlibrary.org/works/OL7200006W",
-   "tier": "openlibrary",
-   "book": "Aishah, the beloved of Mohammed",
-   "method": "openlibrary-search"
-  },
-  "apocalypseinisla0852fili_W3CSK": {
-   "url": "https://openlibrary.org/works/OL18734392W",
-   "tier": "openlibrary",
-   "book": "Apocalypse in Islam",
-   "method": "openlibrary-search"
-  },
-  "bwb_t2-drr-167": {
-   "url": "https://openlibrary.org/works/OL1093601W",
-   "tier": "openlibrary",
-   "book": "The evil eye",
-   "method": "openlibrary-search"
-  },
-  "churchinshadowof0000grif": {
-   "url": "https://openlibrary.org/works/OL8223558W",
-   "tier": "openlibrary",
-   "book": "The Church in the Shadow of the Mosque",
-   "method": "openlibrary-search"
-  },
-  "commandingrightf0000cook": {
-   "url": "https://openlibrary.org/works/OL3297253W",
-   "tier": "openlibrary",
-   "book": "Islamic Thought",
-   "method": "openlibrary-curated"
-  },
-  "declineofeastern0000baty": {
-   "url": "https://openlibrary.org/works/OL2972149W",
-   "tier": "openlibrary",
-   "book": "The decline of Eastern Christianity under Islam",
-   "method": "openlibrary-search"
-  },
-  "didmuhammadexist0000spen": {
-   "url": "https://openlibrary.org/works/OL16462004W",
-   "tier": "openlibrary",
-   "book": "Did Muhammad Exist?",
-   "method": "openlibrary-search"
-  },
-  "floweringofmusli00essj": {
-   "url": "https://openlibrary.org/works/OL3856616W",
-   "tier": "openlibrary",
-   "book": "The flowering of Muslim theology",
-   "method": "openlibrary-search"
-  },
-  "formationofislam0000grab": {
-   "url": "https://openlibrary.org/works/OL2490703W",
-   "tier": "openlibrary",
-   "book": "The Formation of Islamic Art",
-   "method": "openlibrary-search"
-  },
-  "greattheftwrestl00abou": {
-   "url": "https://openlibrary.org/works/OL2214232W",
-   "tier": "openlibrary",
-   "book": "The great theft",
-   "method": "openlibrary-search"
-  },
-  "holiestwarsislam0000furn": {
-   "url": "https://openlibrary.org/works/OL5722249W",
-   "tier": "openlibrary",
-   "book": "Holiest wars",
-   "method": "openlibrary-search"
-  },
-  "how-jesus-became-god-the-exalt-bart-d-1": {
-   "url": "https://openlibrary.org/works/OL16815707W",
-   "tier": "openlibrary",
-   "book": "How Jesus Became God",
-   "method": "openlibrary-search"
-  },
-  "isbn_9960717348_3": {
-   "url": "https://openlibrary.org/works/OL10232228W",
-   "tier": "openlibrary",
-   "book": "Sahih Bukhari",
-   "method": "openlibrary-curated"
-  },
-  "islam2ndseconded0000fazl": {
-   "url": "https://openlibrary.org/works/OL34591695W",
-   "tier": "openlibrary",
-   "book": "Islam 2nd (second) edition Text Only",
-   "method": "openlibrary-search"
-  },
-  "islamabolitionof0000clar_o5s8": {
-   "url": "https://openlibrary.org/works/OL5359452W",
-   "tier": "openlibrary",
-   "book": "Islam and the abolition of slavery",
-   "method": "openlibrary-search"
-  },
-  "islamhumanrights0000maye": {
-   "url": "https://openlibrary.org/works/OL2435028W",
-   "tier": "openlibrary",
-   "book": "Islam and Human Rights",
-   "method": "openlibrary-search"
-  },
-  "islamicmessianis0000sach": {
-   "url": "https://openlibrary.org/works/OL4979743W",
-   "tier": "openlibrary",
-   "book": "Islamic messianism",
-   "method": "openlibrary-search"
-  },
-  "jihadjewhatredis0000kunt": {
-   "url": "https://openlibrary.org/works/OL3515750W",
-   "tier": "openlibrary",
-   "book": "Jihad and Jew-hatred",
-   "method": "openlibrary-search"
-  },
-  "lisanalarab09ibnmuoft": {
-   "url": "https://openlibrary.org/works/OL13798347W",
-   "tier": "openlibrary",
-   "book": "Lisan al-'Arab",
-   "method": "openlibrary-search"
-  },
-  "marginaljewrethi0001meie": {
-   "url": "https://openlibrary.org/works/OL4080880W",
-   "tier": "openlibrary",
-   "book": "A marginal Jew",
-   "method": "openlibrary-search"
-  },
-  "muslimwritersonj0000adan": {
-   "url": "https://openlibrary.org/works/OL2970108W",
-   "tier": "openlibrary",
-   "book": "Muslim writers on Judaism and the Hebrew Bible",
-   "method": "openlibrary-search"
-  },
-  "mythofislamictol00spen": {
-   "url": "https://openlibrary.org/works/OL15838611W",
-   "tier": "openlibrary",
-   "book": "The Myth of Islamic Tolerance",
-   "method": "openlibrary-search"
-  },
-  "nicolaicopernici00cope_1": {
-   "url": "https://openlibrary.org/works/OL17613840W",
-   "tier": "openlibrary",
-   "book": "Nicolai Copernici Torinensis De revolutionibus orbium coelestium libri",
-   "method": "openlibrary-search"
-  },
-  "oapen-20.500.12657-32317": {
-   "url": "https://openlibrary.org/works/OL20312585W",
-   "tier": "openlibrary",
-   "book": "Islamic Traditions",
-   "method": "openlibrary-curated"
-  },
-  "originsofmuhamma0000scha": {
-   "url": "https://openlibrary.org/works/OL5411632W",
-   "tier": "openlibrary",
-   "book": "The Origins of Muhammadan Jurisprudence",
-   "method": "openlibrary-curated"
-  },
-  "religiousplurali0000emon": {
-   "url": "https://openlibrary.org/works/OL20345553W",
-   "tier": "openlibrary",
-   "book": "Emon, Religious Pluralism and Islamic Law",
-   "method": "author-verified-fix"
-  },
-  "ritualbeliefinmo0000edwa": {
-   "url": "https://openlibrary.org/works/OL1282729W",
-   "tier": "openlibrary",
-   "book": "Ritual and belief in Morocco",
-   "method": "openlibrary-search"
-  },
-  "shsm01": {
-   "url": "https://openlibrary.org/works/OL9087782W",
-   "tier": "openlibrary",
-   "book": "Sahih Muslim",
-   "method": "openlibrary-curated"
-  },
-  "sourcesofislamic0000burt": {
-   "url": "https://openlibrary.org/works/OL17079247W",
-   "tier": "openlibrary",
-   "book": "Abrogation in the Qur'an and Islamic Law",
-   "method": "openlibrary-curated"
-  },
-  "successioninmusl00coul": {
-   "url": "https://openlibrary.org/works/OL20916796W",
-   "tier": "openlibrary",
-   "book": "Succession in the Muslim Family",
-   "method": "openlibrary-search"
-  },
-  "thirdchoiceislam0000duri": {
-   "url": "https://openlibrary.org/works/OL15588692W",
-   "tier": "openlibrary",
-   "book": "The third choice",
-   "method": "openlibrary-search"
-  },
-  "understandingadd0000cook": {
-   "url": "https://openlibrary.org/works/OL2234477W",
-   "tier": "openlibrary",
-   "book": "Understanding and addressing suicide attacks",
-   "method": "openlibrary-search"
-  },
-  "victoryofislam0005taba": {
-   "url": "https://openlibrary.org/works/OL475324W",
-   "tier": "openlibrary",
-   "book": "The victory of Islam",
-   "method": "openlibrary-search"
-  },
-  "in.ernet.dli.2015.147133": {
-   "url": "https://openlibrary.org/works/OL8978467W",
-   "tier": "openlibrary",
-   "book": "Quranic Studies Sources And Methods Of Scriptural Interpretation Vol.-",
-   "method": "override-openlibrary"
-  },
-  "hagarism-the-making-of-the-islamic-world": {
-   "url": "https://openlibrary.org/works/OL4648053W",
-   "tier": "openlibrary",
-   "book": "Hagarism The Making Of The Islamic World",
-   "method": "override-openlibrary"
-  },
-  "alqaedareader0000unse": {
-   "url": "https://openlibrary.org/works/OL8052976W",
-   "tier": "openlibrary",
-   "book": "The Al Qaeda reader",
-   "method": "override-openlibrary"
-  },
-  "TheBibleTheQuranAndScienceMoriceBucailleEng": {
-   "url": "https://openlibrary.org/works/OL36397789W",
-   "tier": "openlibrary",
-   "book": "The Bible The Quran And Science Morice Bucaille Eng",
-   "method": "override-openlibrary"
-  },
-  "classicalislamso0000unse": {
-   "url": "https://openlibrary.org/works/OL19585996W",
-   "tier": "openlibrary",
-   "book": "Classical Islam : a sourcebook of religious literature",
-   "method": "override-openlibrary"
-  },
-  "jihdoriginofholy0000fire": {
-   "url": "https://www.google.com/search?tbm=bks&q=Jihād+Firestone",
+  "OL7200006W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Nabia+Abbott%2C+in+the+first+dedicated+English-language+biography%2C+Aishah%3A+The+Beloved+of+Mohammed",
    "tier": "googlebooks",
-   "book": "Jihād : the origin of holy war in Islam",
-   "method": "googlebooks"
+   "book": "Nabia Abbott, in the first dedicated English-language biography, Aishah: The Bel",
+   "method": "anchor-query"
   },
-  "tafsir-ibn-kathir-10.-Volumes": {
-   "url": "https://www.google.com/search?tbm=bks&q=Tafsir+Ibn+Kathir+10+Volumes+Al-Fida",
+  "OL8052976W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Raymond+Ibrahim%2C+in+%27The+Al+Qaeda+Reader",
    "tier": "googlebooks",
-   "book": "Tafsir Ibn Kathir 10 Volumes",
-   "method": "googlebooks"
+   "book": "Raymond Ibrahim, in 'The Al Qaeda Reader",
+   "method": "anchor-query"
   },
-  "TheCollectionOfTheQuranByJohnBurton": {
-   "url": "https://openlibrary.org/works/OL3589862W",
-   "tier": "openlibrary",
-   "book": "The collection of the Quran ",
-   "method": "override-openlibrary"
-  },
-  "alfirdwsiy2018_gmail_0264_201808": {
-   "url": "https://www.google.com/search?tbm=bks&q=0264+أضواء+على+السنة+المحمدية+أبو+رية+كتاب+اقرا+اونلاين",
+  "OL8053018W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Siege+of+Mecca",
    "tier": "googlebooks",
-   "book": "0264 أضواء على السنة المحمدية أبو رية كتاب اقرا اونلاين",
-   "method": "googlebooks"
+   "book": "The Siege of Mecca",
+   "method": "anchor-query"
   },
-  "isbn_2740412636739": {
-   "url": "https://openlibrary.org/works/OL21228578W",
-   "tier": "openlibrary",
-   "book": "Contemporary Muslim Apocalyptic Literature",
-   "method": "override-openlibrary"
-  },
-  "the-quran-in-its-historical-context-re": {
-   "url": "https://openlibrary.org/works/OL20926283W",
-   "tier": "openlibrary",
-   "book": "The Quran In Its Historical Context Re",
-   "method": "override-openlibrary"
-  },
-  "thecollectionofthequranbyjohnburton_201908": {
-   "url": "https://openlibrary.org/works/OL3589862W",
-   "tier": "openlibrary",
-   "book": "The Collection Of The Quran - John Burton",
-   "method": "override-openlibrary"
-  },
-  "IqtidaAlSiratAlMustaqim": {
-   "url": "https://www.google.com/search?tbm=bks&q=Iqtida'+Al+Sirat+Al+Mustaqim+knows",
+  "OL8223558W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Griffith%2C+in+The+Church+in+the+Shadow+of+the+Mosque",
    "tier": "googlebooks",
-   "book": "Iqtida' Al Sirat Al Mustaqim",
-   "method": "googlebooks"
+   "book": "Griffith, in The Church in the Shadow of the Mosque",
+   "method": "anchor-query"
   },
-  "Al_Jami_Ahkam_Al_Quran": {
-   "url": "https://www.google.com/search?tbm=bks&q=الجامع+لأحكام+القرآن+Al-Maliki",
+  "OL8332554W": {
+   "url": "https://www.google.com/search?tbm=bks&q=El-Gamal%27s+%27Islamic+Finance%3A+Law%2C+Economics%2C+and+Practice",
    "tier": "googlebooks",
-   "book": "الجامع لأحكام القرآن",
-   "method": "googlebooks"
+   "book": "El-Gamal's 'Islamic Finance: Law, Economics, and Practice",
+   "method": "anchor-query"
   },
-  "TheAlexanderLegendInTheQuran": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Alexander+Legend+In+The+Qur'an+18+Blader",
+  "OL8359040W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Tabari%27s+History",
    "tier": "googlebooks",
-   "book": " The Alexander Legend In The Qur'an 18:83-102",
-   "method": "googlebooks"
+   "book": "Tabari's History",
+   "method": "anchor-query"
   },
-  "IbnAbdAlBarr": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Abd+Al+Barr+الدرر+في+اختصار+المغازي+و+السير+تأليف+الإمام+الحافظ+ابن+عبد+البر",
+  "OL8481442W": {
+   "url": "https://www.google.com/search?tbm=bks&q=David+Commins+in+The+Wahhabi+Mission+and+Saudi+Arabia",
    "tier": "googlebooks",
-   "book": "Ibn Abd Al Barr الدرر في اختصار المغازي و السير تأليف الإمام الحافظ اب",
-   "method": "googlebooks"
+   "book": "David Commins in The Wahhabi Mission and Saudi Arabia",
+   "method": "anchor-query"
   },
-  "assarim-al-maslul-ala-shatim-arrasul": {
-   "url": "https://www.google.com/search?tbm=bks&q=الصارم+المسلول+على+شاتم+الرسول+ﷺ",
+  "OL8978467W": {
+   "url": "https://www.google.com/search?tbm=bks&q=John+Wansbrough%27s+Quranic+Studies",
    "tier": "googlebooks",
-   "book": "الصارم المسلول على شاتم الرسول ﷺ",
-   "method": "googlebooks"
+   "book": "John Wansbrough's Quranic Studies",
+   "method": "anchor-query"
   },
-  "complete-infidels-guide-to-quran-robert-spencer_202509": {
-   "url": "https://www.google.com/search?tbm=bks&q=Complete+Infidel's+Guide+To+Quran+and+the+Critical+Quran+combo+Spencer",
+  "OL8978493W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Andrew+Bostom%27s+The+Legacy+of+Jihad",
    "tier": "googlebooks",
-   "book": "Complete Infidel's Guide To Quran and the Critical Quran combo",
-   "method": "googlebooks"
+   "book": "Andrew Bostom's The Legacy of Jihad",
+   "method": "anchor-query"
   },
-  "islamicmedicine0000ullm": {
-   "url": "https://www.google.com/search?tbm=bks&q=Islamic+medicine+Ullmann",
+  "OL9036315W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Sexual+Ethics+and+Islam",
    "tier": "googlebooks",
-   "book": "Islamic medicine ",
-   "method": "googlebooks"
+   "book": "Sexual Ethics and Islam",
+   "method": "anchor-query"
   },
-  "muhammad0000rodi": {
-   "url": "https://www.google.com/search?tbm=bks&q=Muḥammad+Rodinson",
+  "OL9087782W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+hadith+appears+in+Sahih+Muslim",
    "tier": "googlebooks",
-   "book": "Muḥammad",
-   "method": "googlebooks"
+   "book": "The hadith appears in Sahih Muslim",
+   "method": "anchor-query"
   },
-  "oapen-20.500.12657-35191": {
-   "url": "https://openlibrary.org/works/OL3733159W",
-   "tier": "openlibrary",
-   "book": "Women and Muslim Family Laws in Arab States - A Comparative Overview o",
-   "method": "override-openlibrary"
-  },
-  "routledge-studies-in-classical-islam-rizwi-faizer-the-life-of-muhammad-al-waqidi": {
-   "url": "https://www.google.com/search?tbm=bks&q=Rizwi+Faizer+The+Life+Of+Muḥammad+Al+Wāqidī’s+Kitāb+Al+Maghāzī",
+  "OL9253290W": {
+   "url": "https://www.google.com/search?tbm=bks&q=The+Legacy+of+Islamic+Antisemitism",
    "tier": "googlebooks",
-   "book": "Rizwi Faizer The Life Of Muḥammad Al Wāqidī’s Kitāb Al Maghāzī ( 2011,",
-   "method": "googlebooks"
+   "book": "The Legacy of Islamic Antisemitism",
+   "method": "anchor-query"
   },
-  "the-text-of-the-new-testament-its-transmission-corruption": {
-   "url": "https://openlibrary.org/works/OL1202819W",
-   "tier": "openlibrary",
-   "book": "The Text Of The New Testament Its Transmission, Corruption 4th Edition",
-   "method": "override-openlibrary"
+  "OL9875908W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Hajar+al-Asqalani%27s+Fath+al-Bari",
+   "tier": "googlebooks",
+   "book": "Ibn Hajar al-Asqalani's Fath al-Bari",
+   "method": "anchor-query"
   }
  }
 }

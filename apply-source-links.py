@@ -36,7 +36,21 @@ MAP = cfg["map"]              # old_archive_id -> {url, tier, ...} OR {rules:[{c
 # Match a full src-link anchor so we can see both href and visible text.
 ANCHOR = re.compile(r'(<a\s+class="src-link"\s+href=")([^"]+)("[^>]*>)(.*?)(</a>)', re.S)
 ARCHIVE_ID = re.compile(r'archive\.org/details/([A-Za-z0-9._-]+)')
+OPENLIB_ID = re.compile(r'openlibrary\.org/works/(OL\d+W)')
 TAGS = re.compile(r"<[^>]+>")
+
+
+def href_key(href: str):
+    """The map is keyed by the identifier inside a book href: an Internet-Archive
+    item id (archive.org/details/<id>) or an OpenLibrary work id
+    (openlibrary.org/works/<OLxxxW>). Return that id, or None for other hosts."""
+    m = ARCHIVE_ID.search(href)
+    if m:
+        return m.group(1)
+    m = OPENLIB_ID.search(href)
+    if m:
+        return m.group(1)
+    return None
 
 
 def resolve(old_id: str, anchor_text: str) -> str | None:
@@ -60,10 +74,9 @@ def process(html: str) -> tuple[str, int, list[str]]:
     def repl(m: re.Match) -> str:
         nonlocal changed
         pre, href, mid, inner, close = m.groups()
-        am = ARCHIVE_ID.search(href)
-        if not am:
-            return m.group(0)                      # not an archive.org link — leave
-        old_id = am.group(1)
+        old_id = href_key(href)
+        if not old_id:
+            return m.group(0)                      # not a book link we manage — leave
         new_url = resolve(old_id, inner)
         if new_url is None:
             if old_id not in MAP:
