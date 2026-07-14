@@ -1,5 +1,31 @@
 # Source-link readability fix — 2026-07-14
 
+## UPDATE (same day) — archive.org is unreachable in the owner's region → moved ALL book links to OpenLibrary
+The first pass (below) repointed pirate uploads to legitimate archive.org scans. But testing
+showed **archive.org itself returns "Bad Request" for the owner's network/region (South Africa),
+even in incognito, on every archive.org page** — it serves 200 to other locations, so it's a
+regional archive.org problem we cannot fix from our side. So we moved **every** archive.org book
+link off archive.org:
+- `source-link-map.json` regenerated: **134 archive identifiers → 122 OpenLibrary works + 12 Google
+  Books searches** (fallback where a book isn't confidently on OpenLibrary).
+- OpenLibrary matches were **author-verified** (title+author cross-checked against archive metadata);
+  a systematic mis-match (short "…in Islamic Law" titles collapsing onto one work) was caught and fixed.
+- `apply-source-links.py` re-applied: **2,671 hrefs rewritten across 167 files**. Plus 2 non-src-link
+  edge cases fixed by hand (Tanakh reader "Source" button → Wikisource JPS 1917; a prose recommendation
+  dropped its archive.org pointer).
+- **Verified: 0 archive.org links remain anywhere in site/*.html.** All book sources now resolve to
+  OpenLibrary (readable: edition info + read/borrow/buy), Google Books, or publisher pages.
+- Reachability rationale: the site already had 1,517 OpenLibrary links live and the owner only ever
+  reported archive.org failing — OpenLibrary is a separate host and is expected reachable. Confirm with
+  the owner that an OpenLibrary link opens; if OL is *also* blocked, switch the map's OL entries to
+  Google Books (infra already in place).
+- `source-urls.json` also remapped (652 entries); 56 archive.org entries remain there for citations not
+  linked on the live site (inert — nothing consumes that file at build time).
+
+--- original first-pass notes below ---
+
+# Source-link readability fix — 2026-07-14 (first pass)
+
 ## Problem
 Cited source links (catalog entries + dossiers) pointed heavily at Internet
 Archive. A large share pointed at **pirate `opensource`/`community` uploads of
