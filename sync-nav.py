@@ -24,9 +24,11 @@ NAV_LINKS = [
     ("Read",      "read.html"),
     ("Compare",   "compare.html"),
     ("Build",     "build.html"),
+    ("Watch",     "watch.html"),
     ("Stats",     "stats.html"),
     ("About",     "about.html"),
     ("FAQ",       "faq.html"),
+    ("Contact",   "contact.html"),
 ]
 
 NAV_BLOCK_RE = re.compile(
@@ -104,16 +106,10 @@ def process(path: Path) -> bool:
 
 
 def main() -> None:
-    targets = []
-    for pattern in (
-        "category/*.html",
-        "read-external/*.html",
-        "read-external/bible/*.html",
-        "*.html",
-        "catalog/*.html",
-        "read/*.html",
-    ):
-        targets.extend(sorted(SITE.glob(pattern)))
+    # Every HTML page under site/ that carries a nav block (process() safely
+    # skips files without one). rglob ensures nested pages — dossiers under
+    # arguments/<source>/, catalog/, read/, category/, etc. — are all covered.
+    targets = sorted(SITE.rglob("*.html"))
 
     changed = 0
     skipped = 0
