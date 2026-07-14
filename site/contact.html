@@ -109,7 +109,8 @@
           <label for="cf-message">Message</label>
           <textarea id="cf-message" name="message" required rows="6" placeholder="Your message…"></textarea>
         </div>
-        <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <input type="hidden" name="access_key" value="d0d60793-4f70-45d9-8291-ceabe09d5765">
+        <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none">
         <button type="submit" class="btn btn-primary contact-send" id="cf-submit">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 2 11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2l-7 20-4-9-9-4 20-7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Send message</span>
@@ -129,21 +130,21 @@
   var form = document.getElementById('contact-form');
   var btn = document.getElementById('cf-submit');
   var statusEl = document.getElementById('cf-status');
-  var ENDPOINT = 'https://formsubmit.co/ajax/analyzingislam2026@gmail.com';
+  var ENDPOINT = 'https://api.web3forms.com/submit';
   var MAILTO = '<a class="contact-email" href="mailto:analyzingislam2026@gmail.com">analyzingislam2026@gmail.com</a>';
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
     statusEl.className = 'contact-status'; statusEl.textContent = '';
     if (!form.reportValidity()) return;
     var data = new FormData(form);
-    data.append('_subject', 'Analyzing Islam contact — ' + (data.get('reason') || 'message'));
-    data.append('_captcha', 'false');
-    data.append('_template', 'table');
+    data.append('subject', 'Analyzing Islam contact — ' + (data.get('reason') || 'message'));
+    data.append('from_name', 'Analyzing Islam contact form');
     var label = btn.querySelector('span'); var orig = label.textContent;
     btn.disabled = true; label.textContent = 'Sending…';
     try {
       var res = await fetch(ENDPOINT, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
-      if (!res.ok) throw new Error('bad status ' + res.status);
+      var json = await res.json().catch(function () { return {}; });
+      if (!res.ok || !json.success) throw new Error('submit failed: ' + (json.message || res.status));
       form.innerHTML = '<div class="contact-success"><strong>Thanks — your message was sent.</strong><br>' +
         'We&#x27;ll reply to the email you gave. You can also reach us any time at ' + MAILTO + '.</div>';
     } catch (err) {
