@@ -1,0 +1,1012 @@
+{
+ "_comment": "Canonical source-link map. Key = archive.org identifier currently appearing in a <a class='src-link'> href on the site. Value.url = the single best PERMANENT, READABLE, LEGAL replacement URL for that book. tier: open=fully readable no login; cdl=readable after free archive.org borrow; openlibrary/publisher=obtain page. Applied by apply-source-links.py (idempotent). Identifiers mapping to themselves are already-good canonical links kept so the linker is comprehensive. Pirate opensource/community uploads are remapped to a verified scan of the same book.",
+ "map": {
+  "the-truth-about-muhammad-robert-spencer_202605": {
+   "url": "https://archive.org/details/truthaboutmuhamm0000spen",
+   "tier": "cdl",
+   "book": "Spencer, The Truth About Muhammad",
+   "method": "sibling-verified"
+  },
+  "TheLegacyOfIslamicAntisemitismAndrewBostom": {
+   "url": "https://archive.org/details/legacyofislamica0000unse",
+   "tier": "cdl",
+   "book": "Bostom, The Legacy of Islamic Antisemitism",
+   "method": "sibling-verified"
+  },
+  "bullseyearchive4": {
+   "url": "https://archive.org/details/illusionofharmon0000edis",
+   "tier": "cdl",
+   "book": "Edis, An Illusion of Harmony",
+   "method": "sibling-verified"
+  },
+  "women-and-gender-in-islam-historical-roots-of-a-modern-debate": {
+   "url": "https://archive.org/details/womengenderinisl0000ahme",
+   "tier": "cdl",
+   "book": "Ahmed, Women and Gender in Islam",
+   "method": "sibling-verified"
+  },
+  "women-islam-debate": {
+   "url": "https://archive.org/details/womengenderinisl0000ahme",
+   "tier": "cdl",
+   "book": "Ahmed, Women and Gender in Islam",
+   "method": "sibling-verified"
+  },
+  "islam-and-science-religious-orthodoxy-and-the-battle-for-rationality-by-pervez-hoodbhoy-z-lib.org": {
+   "url": "https://archive.org/details/islamandscience",
+   "tier": "open",
+   "book": "Hoodbhoy, Islam and Science",
+   "method": "sibling-verified"
+  },
+  "the-canonization-of-al-bukhari-and-muslim-by-jonathan-brown": {
+   "url": "https://archive.org/details/bukhari.muslim_202304",
+   "tier": "open",
+   "book": "Brown, The Canonization of al-Bukhari and Muslim",
+   "method": "sibling-verified"
+  },
+  "TheSuccessionToMuhammadByWilferdMadelung": {
+   "url": "https://archive.org/details/successiontomuam0000made",
+   "tier": "cdl",
+   "book": "Madelung, The Succession to Muhammad",
+   "method": "sibling-verified"
+  },
+  "materials-for-the-history-of-the-text-of-the-quran-the-old-codices": {
+   "url": "https://archive.org/details/Jeffery1937Materials000061",
+   "tier": "open",
+   "book": "Jeffery, Materials for the History of the Text of the Quran",
+   "method": "sibling-verified"
+  },
+  "a_history_of_embryology": {
+   "url": "https://archive.org/details/historyofembryol0000need_f1t1",
+   "tier": "cdl",
+   "book": "Needham, A History of Embryology",
+   "method": "sibling-verified"
+  },
+  "keciaalimarriageandslaveryinearlyislam_201908": {
+   "url": "https://archive.org/details/KeciaAliMarriageAndSlaveryInEarlyIslam",
+   "tier": "open",
+   "book": "Ali, Marriage and Slavery in Early Islam",
+   "method": "sibling-verified"
+  },
+  "fathalbari": {
+   "url": "https://archive.org/details/fath-al-bari-selectd-sections-only",
+   "tier": "open",
+   "book": "Ibn Hajar, Fath al-Bari (selected sections)",
+   "method": "sibling-verified"
+  },
+  "QuranicStudies": {
+   "url": "https://archive.org/details/in.ernet.dli.2015.147133",
+   "tier": "open",
+   "book": "Wansbrough, Quranic Studies",
+   "method": "web-verified"
+  },
+  "Hagarism": {
+   "url": "https://archive.org/details/hagarism-the-making-of-the-islamic-world",
+   "tier": "open",
+   "book": "Crone & Cook, Hagarism",
+   "method": "web-verified"
+  },
+  "91-ClassicalIslamASourcebookOfReligiousLiterature": {
+   "url": "https://archive.org/details/classicalislamso0000unse",
+   "tier": "cdl",
+   "book": "Calder/Mojaddedi/Rippin, Classical Islam: A Sourcebook",
+   "method": "web-verified"
+  },
+  "tolerance-and-coercion-in-islam-interfaith-relations-in-the-muslim-tradition": {
+   "book": "Friedmann Tolerance & Coercion / Cook Forbidding Wrong (one id reused for two books)",
+   "method": "web-verified-split",
+   "rules": [
+    {
+     "contains": "Forbidding Wrong",
+     "url": "https://archive.org/details/forbiddingwrongi0000cook"
+    }
+   ],
+   "default_url": "https://openlibrary.org/works/OL5263569W"
+  },
+  "AnIntroductionToIslamicCosmologicalDoctrinesByNasr": {
+   "url": "https://archive.org/details/introductiontois00nasr",
+   "tier": "cdl",
+   "book": "Nasr, An Introduction to Islamic Cosmological Doctrines",
+   "method": "web-verified"
+  },
+  "shahab-ahmed-before-orthodoxy-the-satanic-verses-in-early-islam-2017-harvard-university-press": {
+   "url": "https://openlibrary.org/works/OL20055780W",
+   "tier": "openlibrary",
+   "book": "Shahab Ahmed, Before Orthodoxy",
+   "method": "web-verified"
+  },
+  "GriffithMosqueInShadow": {
+   "url": "https://archive.org/details/churchinshadowof0000grif",
+   "tier": "cdl",
+   "book": "Griffith, The Church in the Shadow of the Mosque",
+   "method": "web-verified"
+  },
+  "byoleggrabartheformationofislamicart2492042zlib.org": {
+   "url": "https://archive.org/details/formationofislam0000grab",
+   "tier": "cdl",
+   "book": "Grabar, The Formation of Islamic Art",
+   "method": "web-verified"
+  },
+  "lange-ed.-locating-hell-in-islamic-traditions-2016": {
+   "url": "https://archive.org/details/oapen-20.500.12657-32317",
+   "tier": "open",
+   "book": "Lange (ed.), Locating Hell in Islamic Traditions (Brill OA)",
+   "method": "web-verified"
+  },
+  "paradise-and-hell-in-islamic-traditions": {
+   "url": "https://openlibrary.org/works/OL20312585W",
+   "tier": "openlibrary",
+   "book": "Lange, Paradise and Hell in Islamic Traditions",
+   "method": "web-verified"
+  },
+  "how-jesus-became-god-bart-d-ehrman": {
+   "url": "https://archive.org/details/how-jesus-became-god-the-exalt-bart-d-1",
+   "tier": "open",
+   "book": "Ehrman, How Jesus Became God",
+   "method": "web-verified"
+  },
+  "the-text-of-the-new-testament-its-transmission-corruption-and-restoration-by-ehr": {
+   "url": "https://archive.org/details/the-text-of-the-new-testament-its-transmission-corruption",
+   "tier": "open",
+   "book": "Metzger & Ehrman, The Text of the New Testament (4th ed.)",
+   "method": "web-verified"
+  },
+  "Historical-Jesus": {
+   "url": "https://shop.thegreatcourses.com/the-historical-jesus",
+   "tier": "publisher",
+   "book": "Ehrman, The Historical Jesus (Great Courses lecture — no legal free full copy)",
+   "method": "web-verified"
+  },
+  "a-god-who-hates-wafa-sultan": {
+   "url": "https://archive.org/details/godwhohatescoura0000sult",
+   "tier": "cdl",
+   "book": "Wafa Sultan, A God Who Hates",
+   "method": "web-verified"
+  },
+  "lisanal-arab": {
+   "url": "https://archive.org/details/lisanalarab09ibnmuoft",
+   "tier": "open",
+   "book": "Ibn Manzur, Lisan al-Arab (Arabic, vol. 9)",
+   "method": "web-verified"
+  },
+  "161222691AlMughniHanbaliFiqhIbnQudamaMourniARABICFULL": {
+   "url": "https://archive.org/details/mghni1",
+   "tier": "open",
+   "book": "Ibn Qudama, Al-Mughni (Arabic, complete)",
+   "method": "web-verified"
+  },
+  "TabariVolume08": {
+   "url": "https://archive.org/details/victoryofislam0005taba",
+   "tier": "cdl",
+   "book": "al-Tabari, History vol. 8: The Victory of Islam (Fishbein trans.)",
+   "method": "web-verified"
+  },
+  "goldziher-muslim-studies-2cleaned": {
+   "url": "https://archive.org/details/in.ernet.dli.2015.231411",
+   "tier": "open",
+   "book": "Goldziher, Muhammedanische Studien II (German original, public domain)",
+   "method": "web-verified"
+  },
+  "the-life-of-prophet-waqidis-kitab-al-maghazi-routledge-2011_202401": {
+   "url": "https://archive.org/details/routledge-studies-in-classical-islam-rizwi-faizer-the-life-of-muhammad-al-waqidi",
+   "tier": "open",
+   "book": "al-Waqidi, Kitab al-Maghazi (Faizer trans., Routledge 2011)",
+   "method": "web-verified"
+  },
+  "milestones-sayyid-qutb": {
+   "url": "https://archive.org/details/milestones0000qutb_t4b9",
+   "tier": "cdl",
+   "book": "Sayyid Qutb, Milestones (English)",
+   "method": "web-verified"
+  },
+  "mark-r.-woodward-et-al.-1997-defenders-of-reason-in-islam-mutazilism-rational-th": {
+   "url": "https://openlibrary.org/works/OL2203660W",
+   "tier": "openlibrary",
+   "book": "Martin/Woodward/Atmaja, Defenders of Reason in Islam",
+   "method": "web-verified"
+  },
+  "SunanAbuDawudAbuDawud": {
+   "url": "https://sunnah.com/abudawud:4691",
+   "tier": "reader",
+   "book": "Sunan Abu Dawud #4691 (primary hadith → site's canonical reader)",
+   "method": "internal-reader"
+  },
+  "bullseyearchive3": {
+   "url": "https://archive.org/details/TheLifeOfMohammedGuillaume",
+   "tier": "open",
+   "book": "Guillaume trans., Ibn Ishaq's Sirat Rasul Allah (The Life of Muhammad)",
+   "method": "sibling-verified"
+  },
+  "whyiamnotmuslim0000ibnw": {
+   "url": "https://archive.org/details/whyiamnotmuslim0000ibnw",
+   "tier": "cdl",
+   "book": "Why I am not a Muslim",
+   "method": "already-good"
+  },
+  "isbn_9780813343358": {
+   "url": "https://archive.org/details/isbn_9780813343358",
+   "tier": "cdl",
+   "book": "Islam and human rights : tradition and politics",
+   "method": "already-good"
+  },
+  "womengenderinisl0000ahme": {
+   "url": "https://archive.org/details/womengenderinisl0000ahme",
+   "tier": "cdl",
+   "book": "Women and gender in Islam : historical roots of a modern debate ",
+   "method": "already-good"
+  },
+  "slaveryinarabwor0000gord": {
+   "url": "https://archive.org/details/slaveryinarabwor0000gord",
+   "tier": "cdl",
+   "book": "Slavery in the Arab world",
+   "method": "already-good"
+  },
+  "truthaboutmuhamm0000spen": {
+   "url": "https://archive.org/details/truthaboutmuhamm0000spen",
+   "tier": "cdl",
+   "book": "The truth about Muhammad : founder of the world's most intolerant reli",
+   "method": "already-good"
+  },
+  "understandingjih0000cook": {
+   "url": "https://archive.org/details/understandingjih0000cook",
+   "tier": "cdl",
+   "book": "Understanding Jihad",
+   "method": "already-good"
+  },
+  "dhimmijewschrist0000baty": {
+   "url": "https://archive.org/details/dhimmijewschrist0000baty",
+   "tier": "cdl",
+   "book": "The Dhimmi : Jews and Christians under Islam",
+   "method": "already-good"
+  },
+  "misquotingmuhamm0000brow": {
+   "url": "https://archive.org/details/misquotingmuhamm0000brow",
+   "tier": "cdl",
+   "book": "Misquoting Muhammad : the challenge and choices of interpreting the Pr",
+   "method": "already-good"
+  },
+  "legacyofjihadisl00bost": {
+   "url": "https://archive.org/details/legacyofjihadisl00bost",
+   "tier": "cdl",
+   "book": "The Legacy of Jihad",
+   "method": "already-good"
+  },
+  "godsrulegovernme0000cron": {
+   "url": "https://archive.org/details/godsrulegovernme0000cron",
+   "tier": "cdl",
+   "book": "God's rule : government and Islam ",
+   "method": "already-good"
+  },
+  "jihadinclassical00pete": {
+   "url": "https://archive.org/details/jihadinclassical00pete",
+   "tier": "cdl",
+   "book": "Jihad in classical and modern Islam : a reader",
+   "method": "already-good"
+  },
+  "islamicunderstan0000smit": {
+   "url": "https://archive.org/details/islamicunderstan0000smit",
+   "tier": "cdl",
+   "book": "The Islamic understanding of death and resurrection",
+   "method": "already-good"
+  },
+  "bwb_W9-DIL-086": {
+   "url": "https://archive.org/details/bwb_W9-DIL-086",
+   "tier": "cdl",
+   "book": "An Introduction To Islamic Law",
+   "method": "already-good"
+  },
+  "veilmaleelitefem00mernrich": {
+   "url": "https://archive.org/details/veilmaleelitefem00mernrich",
+   "tier": "cdl",
+   "book": "The veil and the male elite : a feminist interpretation of women's rig",
+   "method": "already-good"
+  },
+  "islamwest00lewi": {
+   "url": "https://archive.org/details/islamwest00lewi",
+   "tier": "cdl",
+   "book": "Islam and the West",
+   "method": "already-good"
+  },
+  "originsofkoran00ibnw": {
+   "url": "https://archive.org/details/originsofkoran00ibnw",
+   "tier": "cdl",
+   "book": "The origins of the Koran : classic essays on Islam's holy book",
+   "method": "already-good"
+  },
+  "politicallyincor0000spen": {
+   "url": "https://archive.org/details/politicallyincor0000spen",
+   "tier": "cdl",
+   "book": "The politically incorrect guide to Islam (and the Crusades) ",
+   "method": "already-good"
+  },
+  "whyiamnotmuslim0000ibnw_o7h2": {
+   "url": "https://archive.org/details/whyiamnotmuslim0000ibnw_o7h2",
+   "tier": "cdl",
+   "book": "Why I am not a Muslim",
+   "method": "already-good"
+  },
+  "islamsecularstat0000naim": {
+   "url": "https://archive.org/details/islamsecularstat0000naim",
+   "tier": "cdl",
+   "book": "Islam and the secular state : negotiating the future of Shariʻa",
+   "method": "already-good"
+  },
+  "martyrdominislam0000cook": {
+   "url": "https://archive.org/details/martyrdominislam0000cook",
+   "tier": "cdl",
+   "book": "Martyrdom in Islam ",
+   "method": "already-good"
+  },
+  "hereticwhyislamn0000hirs": {
+   "url": "https://archive.org/details/hereticwhyislamn0000hirs",
+   "tier": "cdl",
+   "book": "Heretic : why Islam needs a reformation now",
+   "method": "already-good"
+  },
+  "illusionofharmon0000edis": {
+   "url": "https://archive.org/details/illusionofharmon0000edis",
+   "tier": "cdl",
+   "book": "An illusion of harmony : science and religion in Islam",
+   "method": "already-good"
+  },
+  "legacyofislamica0000unse": {
+   "url": "https://archive.org/details/legacyofislamica0000unse",
+   "tier": "cdl",
+   "book": "The legacy of Islamic antisemitism : from sacred texts to solemn histo",
+   "method": "already-good"
+  },
+  "slaverysocialdea0000patt_a6j9": {
+   "url": "https://archive.org/details/slaverysocialdea0000patt_a6j9",
+   "tier": "cdl",
+   "book": "Slavery and social death : a comparative study",
+   "method": "already-good"
+  },
+  "thesonsofpigsape0000kres": {
+   "url": "https://archive.org/details/thesonsofpigsape0000kres",
+   "tier": "cdl",
+   "book": "\"The sons of pigs and apes\" : Muslim antisemitism and the conspiracy o",
+   "method": "already-good"
+  },
+  "fallriseofislami00feld": {
+   "url": "https://archive.org/details/fallriseofislami00feld",
+   "tier": "cdl",
+   "book": "The Fall and Rise of the Islamic State",
+   "method": "already-good"
+  },
+  "homosexualityini0000kugl": {
+   "url": "https://archive.org/details/homosexualityini0000kugl",
+   "tier": "cdl",
+   "book": "Homosexuality in Islam : critical reflection on gay, lesbian, and tran",
+   "method": "already-good"
+  },
+  "muhammadatmecca0000wmon": {
+   "url": "https://archive.org/details/muhammadatmecca0000wmon",
+   "tier": "cdl",
+   "book": "Muhammad at mecca ",
+   "method": "already-good"
+  },
+  "formativeperiodo0000watt": {
+   "url": "https://archive.org/details/formativeperiodo0000watt",
+   "tier": "cdl",
+   "book": "The formative period of Islamic thought",
+   "method": "already-good"
+  },
+  "questforhistoric00ibnw": {
+   "url": "https://archive.org/details/questforhistoric00ibnw",
+   "tier": "cdl",
+   "book": "The quest for the historical Muhammad",
+   "method": "already-good"
+  },
+  "warpeaceinlawofi0000khad": {
+   "url": "https://archive.org/details/warpeaceinlawofi0000khad",
+   "tier": "cdl",
+   "book": "War and peace in the law of Islam ",
+   "method": "already-good"
+  },
+  "whateverychristi0000whit": {
+   "url": "https://archive.org/details/whateverychristi0000whit",
+   "tier": "cdl",
+   "book": "What every Christian needs to know about the Qur'an ",
+   "method": "already-good"
+  },
+  "whichkoranvarian0000unse": {
+   "url": "https://archive.org/details/whichkoranvarian0000unse",
+   "tier": "cdl",
+   "book": "Which Koran ? : variants , manuscripts , linguistics ",
+   "method": "already-good"
+  },
+  "alqaedareader0000unse": {
+   "url": "https://archive.org/details/alqaedareader0000unse",
+   "tier": "cdl",
+   "book": "The Al Qaeda reader",
+   "method": "already-good"
+  },
+  "bwb_C0-BNY-701": {
+   "url": "https://archive.org/details/bwb_C0-BNY-701",
+   "tier": "cdl",
+   "book": "Muhammad at Medina",
+   "method": "already-good"
+  },
+  "gardenfireheaven0000rust": {
+   "url": "https://archive.org/details/gardenfireheaven0000rust",
+   "tier": "cdl",
+   "book": "The garden and the fire : heaven and hell in Islamic culture ",
+   "method": "already-good"
+  },
+  "jihdoriginofholy0000fire": {
+   "url": "https://archive.org/details/jihdoriginofholy0000fire",
+   "tier": "cdl",
+   "book": "Jihād : the origin of holy war in Islam",
+   "method": "already-good"
+  },
+  "muhammadatmedina0000wmon": {
+   "url": "https://archive.org/details/muhammadatmedina0000wmon",
+   "tier": "cdl",
+   "book": "Muhammad at medina",
+   "method": "already-good"
+  },
+  "sexualethicsisla0000alik": {
+   "url": "https://archive.org/details/sexualethicsisla0000alik",
+   "tier": "cdl",
+   "book": "Sexual ethics and Islam : feminist reflections on Qur'an, hadith, and ",
+   "method": "already-good"
+  },
+  "successiontomuam0000made": {
+   "url": "https://archive.org/details/successiontomuam0000made",
+   "tier": "cdl",
+   "book": "The succession to Muḥammad : a study of the early Caliphate",
+   "method": "already-good"
+  },
+  "hadithmuhammadsl0000brow": {
+   "url": "https://archive.org/details/hadithmuhammadsl0000brow",
+   "tier": "cdl",
+   "book": "Hadith : Muhammad's legacy in the medieval and modern world",
+   "method": "already-good"
+  },
+  "hereticwhyislamn0000hirs_f0n7": {
+   "url": "https://archive.org/details/hereticwhyislamn0000hirs_f0n7",
+   "tier": "cdl",
+   "book": "Heretic : why Islam needs a reformation now ",
+   "method": "already-good"
+  },
+  "historyofislamic0000coul": {
+   "url": "https://archive.org/details/historyofislamic0000coul",
+   "tier": "cdl",
+   "book": "A history of Islamic law",
+   "method": "already-good"
+  },
+  "isbn_2740412636739": {
+   "url": "https://archive.org/details/isbn_2740412636739",
+   "tier": "cdl",
+   "book": "Contemporary Muslim Apocalyptic Literature",
+   "method": "already-good"
+  },
+  "isisapocalypsehi0000mcca": {
+   "url": "https://archive.org/details/isisapocalypsehi0000mcca",
+   "tier": "cdl",
+   "book": "The ISIS apocalypse : the history, strategy, and doomsday vision of th",
+   "method": "already-good"
+  },
+  "islamicfinancela0000elga": {
+   "url": "https://archive.org/details/islamicfinancela0000elga",
+   "tier": "cdl",
+   "book": "Islamic finance : law, economics, and practice ",
+   "method": "already-good"
+  },
+  "lawofdesiretempo0000haer": {
+   "url": "https://archive.org/details/lawofdesiretempo0000haer",
+   "tier": "cdl",
+   "book": "Law of desire : temporary marriage in Shi'i Iran",
+   "method": "already-good"
+  },
+  "muhammadprophets0000wmon_a8w8": {
+   "url": "https://archive.org/details/muhammadprophets0000wmon_a8w8",
+   "tier": "cdl",
+   "book": "Muhammad Prophet and Statesman",
+   "method": "already-good"
+  },
+  "rebellionviolenc0000abou": {
+   "url": "https://archive.org/details/rebellionviolenc0000abou",
+   "tier": "cdl",
+   "book": "Rebellion and violence in Islamic law",
+   "method": "already-good"
+  },
+  "slaverysocialdea0000patt": {
+   "url": "https://archive.org/details/slaverysocialdea0000patt",
+   "tier": "cdl",
+   "book": "Slavery and social death : a comparative study",
+   "method": "already-good"
+  },
+  "truthaboutmuhamm0000spen_p1e4": {
+   "url": "https://archive.org/details/truthaboutmuhamm0000spen_p1e4",
+   "tier": "cdl",
+   "book": "The truth about Muhammad : founder of the world's most intolerant reli",
+   "method": "already-good"
+  },
+  "wahhabimissionsa0000comm_v9y1": {
+   "url": "https://archive.org/details/wahhabimissionsa0000comm_v9y1",
+   "tier": "cdl",
+   "book": "The Wahhabi mission and Saudi Arabia",
+   "method": "already-good"
+  },
+  "answeringislamcr00geis": {
+   "url": "https://archive.org/details/answeringislamcr00geis",
+   "tier": "cdl",
+   "book": "Answering Islam : the crescent in light of the cross",
+   "method": "already-good"
+  },
+  "believingwomenin0000barl": {
+   "url": "https://archive.org/details/believingwomenin0000barl",
+   "tier": "cdl",
+   "book": "\"Believing women\" in Islam : unreading patriarchal interpretations of ",
+   "method": "already-good"
+  },
+  "bwb_W9-CRT-663": {
+   "url": "https://archive.org/details/bwb_W9-CRT-663",
+   "tier": "cdl",
+   "book": "FREE WILL AND PREDESTINATION IN EARLY ISLAM",
+   "method": "already-good"
+  },
+  "ethicaltheoriesi0000fakh": {
+   "url": "https://archive.org/details/ethicaltheoriesi0000fakh",
+   "tier": "cdl",
+   "book": "Ethical theories in Islam ",
+   "method": "already-good"
+  },
+  "infidel0000hirs": {
+   "url": "https://archive.org/details/infidel0000hirs",
+   "tier": "cdl",
+   "book": "Infidel",
+   "method": "already-good"
+  },
+  "jewsofarablandsh0000unse": {
+   "url": "https://archive.org/details/jewsofarablandsh0000unse",
+   "tier": "cdl",
+   "book": "The Jews of Arab lands : a history and source book",
+   "method": "already-good"
+  },
+  "muhammadatmecca0000watt": {
+   "url": "https://archive.org/details/muhammadatmecca0000watt",
+   "tier": "cdl",
+   "book": "Muhammad at Mecca",
+   "method": "already-good"
+  },
+  "politicsgenderis0000spel": {
+   "url": "https://archive.org/details/politicsgenderis0000spel",
+   "tier": "cdl",
+   "book": "Politics, gender, and the Islamic past : The Legacy of ʻAʼisha bint Ab",
+   "method": "already-good"
+  },
+  "undercrescentcro0000cohe": {
+   "url": "https://archive.org/details/undercrescentcro0000cohe",
+   "tier": "cdl",
+   "book": "Under crescent and cross : the Jews in the Middle Ages",
+   "method": "already-good"
+  },
+  "aishahbelovedofm0000unse": {
+   "url": "https://archive.org/details/aishahbelovedofm0000unse",
+   "tier": "cdl",
+   "book": "Aishah, the Beloved of Mohammed",
+   "method": "already-good"
+  },
+  "apocalypseinisla0852fili_W3CSK": {
+   "url": "https://archive.org/details/apocalypseinisla0852fili_W3CSK",
+   "tier": "cdl",
+   "book": "Apocalypse in Islam",
+   "method": "already-good"
+  },
+  "bwb_t2-drr-167": {
+   "url": "https://archive.org/details/bwb_t2-drr-167",
+   "tier": "cdl",
+   "book": "The Evil eye : a folklore casebook",
+   "method": "already-good"
+  },
+  "commandingrightf0000cook": {
+   "url": "https://archive.org/details/commandingrightf0000cook",
+   "tier": "cdl",
+   "book": "Commanding right and forbidding wrong in Islamic thought",
+   "method": "already-good"
+  },
+  "declineofeastern0000baty": {
+   "url": "https://archive.org/details/declineofeastern0000baty",
+   "tier": "cdl",
+   "book": "The decline of Eastern Christianity under Islam : from Jihad to Dhimmi",
+   "method": "already-good"
+  },
+  "didmuhammadexist0000spen": {
+   "url": "https://archive.org/details/didmuhammadexist0000spen",
+   "tier": "cdl",
+   "book": "Did Muhammad exist? : an inquiry into Islam's obscure origins ",
+   "method": "already-good"
+  },
+  "floweringofmusli00essj": {
+   "url": "https://archive.org/details/floweringofmusli00essj",
+   "tier": "cdl",
+   "book": "The flowering of Muslim theology",
+   "method": "already-good"
+  },
+  "greattheftwrestl00abou": {
+   "url": "https://archive.org/details/greattheftwrestl00abou",
+   "tier": "cdl",
+   "book": "The great theft",
+   "method": "already-good"
+  },
+  "historyofembryol0000need_f1t1": {
+   "url": "https://archive.org/details/historyofembryol0000need_f1t1",
+   "tier": "cdl",
+   "book": "A history of embryology",
+   "method": "already-good"
+  },
+  "holiestwarsislam0000furn": {
+   "url": "https://archive.org/details/holiestwarsislam0000furn",
+   "tier": "cdl",
+   "book": "Holiest wars : Islamic Mahdis, their Jihads, and Osama bin Laden ",
+   "method": "already-good"
+  },
+  "isbn_9960717348_3": {
+   "url": "https://archive.org/details/isbn_9960717348_3",
+   "tier": "cdl",
+   "book": "The translation of the meanings of sahih al-bukhari",
+   "method": "already-good"
+  },
+  "islam2ndseconded0000fazl": {
+   "url": "https://archive.org/details/islam2ndseconded0000fazl",
+   "tier": "cdl",
+   "book": "Islam 2nd (second) edition Text Only",
+   "method": "already-good"
+  },
+  "islamabolitionof0000clar_o5s8": {
+   "url": "https://archive.org/details/islamabolitionof0000clar_o5s8",
+   "tier": "cdl",
+   "book": "Islam and the abolition of slavery ",
+   "method": "already-good"
+  },
+  "islamhumanrights0000maye": {
+   "url": "https://archive.org/details/islamhumanrights0000maye",
+   "tier": "cdl",
+   "book": "Islam and human rights : tradition and politics",
+   "method": "already-good"
+  },
+  "islamicmedicine0000ullm": {
+   "url": "https://archive.org/details/islamicmedicine0000ullm",
+   "tier": "cdl",
+   "book": "Islamic medicine ",
+   "method": "already-good"
+  },
+  "islamicmessianis0000sach": {
+   "url": "https://archive.org/details/islamicmessianis0000sach",
+   "tier": "cdl",
+   "book": "Islamic messianism : the idea of Mahdī in twelver Shīʻism",
+   "method": "already-good"
+  },
+  "jihadjewhatredis0000kunt": {
+   "url": "https://archive.org/details/jihadjewhatredis0000kunt",
+   "tier": "cdl",
+   "book": "Jihad and Jew-hatred : Islamism, Nazism and the roots of 9/11",
+   "method": "already-good"
+  },
+  "marginaljewrethi0001meie": {
+   "url": "https://archive.org/details/marginaljewrethi0001meie",
+   "tier": "cdl",
+   "book": "A marginal Jew : rethinking the historical Jesus",
+   "method": "already-good"
+  },
+  "muhammad0000rodi": {
+   "url": "https://archive.org/details/muhammad0000rodi",
+   "tier": "cdl",
+   "book": "Muḥammad",
+   "method": "already-good"
+  },
+  "muslimwritersonj0000adan": {
+   "url": "https://archive.org/details/muslimwritersonj0000adan",
+   "tier": "cdl",
+   "book": "Muslim writers on Judaism and the Hebrew Bible : from Ibn Rabban to Ib",
+   "method": "already-good"
+  },
+  "mythofislamictol00spen": {
+   "url": "https://archive.org/details/mythofislamictol00spen",
+   "tier": "cdl",
+   "book": "The myth of Islamic tolerance : how Islamic law treats non-Muslims",
+   "method": "already-good"
+  },
+  "originsofmuhamma0000scha": {
+   "url": "https://archive.org/details/originsofmuhamma0000scha",
+   "tier": "cdl",
+   "book": "The origins of Muhammadan Jurisprudence ",
+   "method": "already-good"
+  },
+  "religiousplurali0000emon": {
+   "url": "https://archive.org/details/religiousplurali0000emon",
+   "tier": "cdl",
+   "book": "Religious pluralism and Islamic law : \"dhimmīs\" and others in the emp",
+   "method": "already-good"
+  },
+  "sourcesofislamic0000burt": {
+   "url": "https://archive.org/details/sourcesofislamic0000burt",
+   "tier": "cdl",
+   "book": "The sources of Islamic law : Islamic theories of abrogation",
+   "method": "already-good"
+  },
+  "successioninmusl00coul": {
+   "url": "https://archive.org/details/successioninmusl00coul",
+   "tier": "cdl",
+   "book": "Succession in the Muslim family",
+   "method": "already-good"
+  },
+  "thirdchoiceislam0000duri": {
+   "url": "https://archive.org/details/thirdchoiceislam0000duri",
+   "tier": "cdl",
+   "book": "The third choice : Islam, dhimmitude and freedom",
+   "method": "already-good"
+  },
+  "understandingadd0000cook": {
+   "url": "https://archive.org/details/understandingadd0000cook",
+   "tier": "cdl",
+   "book": "Understanding and addressing suicide attacks : the faith and politics ",
+   "method": "already-good"
+  },
+  "victoryofislam0005taba": {
+   "url": "https://archive.org/details/victoryofislam0005taba",
+   "tier": "cdl",
+   "book": "The victory of Islam ",
+   "method": "already-good"
+  },
+  "answeringislamcr0000geis": {
+   "url": "https://archive.org/details/answeringislamcr0000geis",
+   "tier": "cdl",
+   "book": "Answering Islam : the crescent in light of the cross",
+   "method": "already-good"
+  },
+  "introductiontois0000scha": {
+   "url": "https://archive.org/details/introductiontois0000scha",
+   "tier": "cdl",
+   "book": "An introduction to Islamic law",
+   "method": "already-good"
+  },
+  "isbn_9780226702810": {
+   "url": "https://archive.org/details/isbn_9780226702810",
+   "tier": "cdl",
+   "book": "Islam: Second Edition",
+   "method": "already-good"
+  },
+  "jewsofarablands00stil": {
+   "url": "https://archive.org/details/jewsofarablands00stil",
+   "tier": "cdl",
+   "book": "The Jews of Arab lands : a history and source book",
+   "method": "already-good"
+  },
+  "lastyearsofproph0009abar": {
+   "url": "https://archive.org/details/lastyearsofproph0009abar",
+   "tier": "cdl",
+   "book": "The last years of the Prophet",
+   "method": "already-good"
+  },
+  "muhammadatmedina0000wmon_g5h5": {
+   "url": "https://archive.org/details/muhammadatmedina0000wmon_g5h5",
+   "tier": "cdl",
+   "book": "Muhammad at Medina",
+   "method": "already-good"
+  },
+  "office-of-film-and-literature-classification_1700065.003": {
+   "url": "https://archive.org/details/office-of-film-and-literature-classification_1700065.003",
+   "tier": "cdl",
+   "book": "Dabiq: Issue 4 (1435 Dhul-Hijjah)",
+   "method": "already-good"
+  },
+  "fath-al-bari-selectd-sections-only": {
+   "url": "https://archive.org/details/fath-al-bari-selectd-sections-only",
+   "tier": "open",
+   "book": "Fath Al Bari (selectd Sections Only)",
+   "method": "already-good"
+  },
+  "KeciaAliMarriageAndSlaveryInEarlyIslam": {
+   "url": "https://archive.org/details/KeciaAliMarriageAndSlaveryInEarlyIslam",
+   "tier": "open",
+   "book": "Marriage and Slavery in Early Islam",
+   "method": "already-good"
+  },
+  "war-and-peace-in-the-law-of-islam": {
+   "url": "https://archive.org/details/war-and-peace-in-the-law-of-islam",
+   "tier": "open",
+   "book": "WAR And PEACE In The Law Of ISLAM by MAJID KHADDURI",
+   "method": "already-good"
+  },
+  "in.ernet.dli.2015.210695": {
+   "url": "https://archive.org/details/in.ernet.dli.2015.210695",
+   "tier": "open",
+   "book": "Mohammed And The Rise Of Islam",
+   "method": "already-good"
+  },
+  "islamandscience": {
+   "url": "https://archive.org/details/islamandscience",
+   "tier": "open",
+   "book": "Islam And Science",
+   "method": "already-good"
+  },
+  "Jeffery1937Materials000061": {
+   "url": "https://archive.org/details/Jeffery1937Materials000061",
+   "tier": "open",
+   "book": "Materials for the history of the text of the quran",
+   "method": "already-good"
+  },
+  "cu31924029170236": {
+   "url": "https://archive.org/details/cu31924029170236",
+   "tier": "open",
+   "book": "Judaism and Islam. A prize essay",
+   "method": "already-good"
+  },
+  "critical-quran-robert-spencer": {
+   "url": "https://archive.org/details/critical-quran-robert-spencer",
+   "tier": "open",
+   "book": "The Critical Qur'an",
+   "method": "already-good"
+  },
+  "30779166islamandslavery": {
+   "url": "https://archive.org/details/30779166islamandslavery",
+   "tier": "open",
+   "book": "Islam And Slavery",
+   "method": "already-good"
+  },
+  "TheSyroAramaicReadingOfTheKoran": {
+   "url": "https://archive.org/details/TheSyroAramaicReadingOfTheKoran",
+   "tier": "open",
+   "book": "The Syro Aramaic Reading Of The Koran",
+   "method": "already-good"
+  },
+  "washatmohammedau00geig": {
+   "url": "https://archive.org/details/washatmohammedau00geig",
+   "tier": "open",
+   "book": "Was hat Mohammed aus dem judenthume aufgenommen?",
+   "method": "already-good"
+  },
+  "norman-l.-geisler-abdul-saleeb-answering-islam-the-crescent-in-light-of-the-cross": {
+   "url": "https://archive.org/details/norman-l.-geisler-abdul-saleeb-answering-islam-the-crescent-in-light-of-the-cross",
+   "tier": "open",
+   "book": "Norman L. Geisler, Abdul Saleeb Answering Islam The Crescent In Light ",
+   "method": "already-good"
+  },
+  "TheBibleTheQuranAndScienceMoriceBucailleEng": {
+   "url": "https://archive.org/details/TheBibleTheQuranAndScienceMoriceBucailleEng",
+   "tier": "open",
+   "book": "The Bible The Quran And Science Morice Bucaille Eng",
+   "method": "already-good"
+  },
+  "cu31924032327425": {
+   "url": "https://archive.org/details/cu31924032327425",
+   "tier": "open",
+   "book": "The life of Mahomet : with introductory chapters on the original sourc",
+   "method": "already-good"
+  },
+  "tafsir-ibn-kathir-10.-Volumes": {
+   "url": "https://archive.org/details/tafsir-ibn-kathir-10.-Volumes",
+   "tier": "open",
+   "book": "Tafsir Ibn Kathir 10 Volumes",
+   "method": "already-good"
+  },
+  "TheCollectionOfTheQuranByJohnBurton": {
+   "url": "https://archive.org/details/TheCollectionOfTheQuranByJohnBurton",
+   "tier": "open",
+   "book": "The collection of the Quran ",
+   "method": "already-good"
+  },
+  "alfirdwsiy2018_gmail_0264_201808": {
+   "url": "https://archive.org/details/alfirdwsiy2018_gmail_0264_201808",
+   "tier": "open",
+   "book": "0264 أضواء على السنة المحمدية أبو رية كتاب اقرا اونلاين",
+   "method": "already-good"
+  },
+  "bukhari.muslim_202304": {
+   "url": "https://archive.org/details/bukhari.muslim_202304",
+   "tier": "open",
+   "book": "The Canonization of Al-Bukhari & Muslim: The Formation and Function of",
+   "method": "already-good"
+  },
+  "gogandmagoginearlyeasternchristianandislamicsources": {
+   "url": "https://archive.org/details/gogandmagoginearlyeasternchristianandislamicsources",
+   "tier": "open",
+   "book": "Gog and Magog in Early Eastern Christian and Islamic Sources",
+   "method": "already-good"
+  },
+  "the-quran-in-its-historical-context-re": {
+   "url": "https://archive.org/details/the-quran-in-its-historical-context-re",
+   "tier": "open",
+   "book": "The Quran In Its Historical Context Re",
+   "method": "already-good"
+  },
+  "thecollectionofthequranbyjohnburton_201908": {
+   "url": "https://archive.org/details/thecollectionofthequranbyjohnburton_201908",
+   "tier": "open",
+   "book": "The Collection Of The Quran - John Burton",
+   "method": "already-good"
+  },
+  "Al_Jami_Ahkam_Al_Quran": {
+   "url": "https://archive.org/details/Al_Jami_Ahkam_Al_Quran",
+   "tier": "open",
+   "book": "الجامع لأحكام القرآن",
+   "method": "already-good"
+  },
+  "IqtidaAlSiratAlMustaqim": {
+   "url": "https://archive.org/details/IqtidaAlSiratAlMustaqim",
+   "tier": "open",
+   "book": "Iqtida' Al Sirat Al Mustaqim",
+   "method": "already-good"
+  },
+  "IbnAbdAlBarr": {
+   "url": "https://archive.org/details/IbnAbdAlBarr",
+   "tier": "open",
+   "book": "Ibn Abd Al Barr الدرر في اختصار المغازي و السير تأليف الإمام الحافظ اب",
+   "method": "already-good"
+  },
+  "TheAlexanderLegendInTheQuran": {
+   "url": "https://archive.org/details/TheAlexanderLegendInTheQuran",
+   "tier": "open",
+   "book": " The Alexander Legend In The Qur'an 18:83-102",
+   "method": "already-good"
+  },
+  "assarim-al-maslul-ala-shatim-arrasul": {
+   "url": "https://archive.org/details/assarim-al-maslul-ala-shatim-arrasul",
+   "tier": "open",
+   "book": "الصارم المسلول على شاتم الرسول ﷺ",
+   "method": "already-good"
+  },
+  "complete-infidels-guide-to-quran-robert-spencer_202509": {
+   "url": "https://archive.org/details/complete-infidels-guide-to-quran-robert-spencer_202509",
+   "tier": "open",
+   "book": "Complete Infidel's Guide To Quran and the Critical Quran combo",
+   "method": "already-good"
+  },
+  "jps1917": {
+   "url": "https://archive.org/details/jps1917",
+   "tier": "open",
+   "book": "JPS 1917",
+   "method": "already-good"
+  },
+  "nicolaicopernici00cope_1": {
+   "url": "https://archive.org/details/nicolaicopernici00cope_1",
+   "tier": "open",
+   "book": "Nicolai Copernici Torinensis de revolutionibus orbium coelestium libri",
+   "method": "already-good"
+  },
+  "oapen-20.500.12657-35191": {
+   "url": "https://archive.org/details/oapen-20.500.12657-35191",
+   "tier": "open",
+   "book": "Women and Muslim Family Laws in Arab States - A Comparative Overview o",
+   "method": "already-good"
+  },
+  "ritualbeliefinmo0000edwa": {
+   "url": "https://archive.org/details/ritualbeliefinmo0000edwa",
+   "tier": "open",
+   "book": "ritual and belief in morocco",
+   "method": "already-good"
+  },
+  "shsm01": {
+   "url": "https://archive.org/details/shsm01",
+   "tier": "open",
+   "book": "Al-Minhaj bi Sharh Sahih-Muslim al-Nawawi Jild-1 to 18 Complete in Ara",
+   "method": "already-good"
+  },
+  "Kindle_201604": {
+   "url": "https://archive.org/details/Kindle_201604",
+   "tier": "open",
+   "book": "أضواء على السنة المحمدية لـ الشيخ محمود أبو رية نسخة جيدة Kindle",
+   "method": "already-good"
+  },
+  "TheBibleTheQuranAndScienceTheHolyScripturesExaminedInTheLightOf": {
+   "url": "https://archive.org/details/TheBibleTheQuranAndScienceTheHolyScripturesExaminedInTheLightOf",
+   "tier": "open",
+   "book": "The Bible The Quran and Science the holy scriptures examined in the li",
+   "method": "already-good"
+  },
+  "TheLifeOfMohammedGuillaume": {
+   "url": "https://archive.org/details/TheLifeOfMohammedGuillaume",
+   "tier": "open",
+   "book": "Ibn Ishaq's Sirat Rasul Allah - The Life of Muhammad Translated by A. ",
+   "method": "already-good"
+  },
+  "muhammadatmedina029655mbp": {
+   "url": "https://archive.org/details/muhammadatmedina029655mbp",
+   "tier": "open",
+   "book": "Muhammad At Medina",
+   "method": "already-good"
+  }
+ }
+}
