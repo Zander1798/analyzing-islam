@@ -14,10 +14,10 @@
    "method": "isbn-verified"
   },
   "OL1093601W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Alan+Dundes%2C+in+The+Evil+Eye%3A+A+Casebook",
-   "tier": "gb-search",
+   "url": "https://books.google.com/books?vid=ISBN9780299133344",
+   "tier": "gb-volume",
    "book": "Alan Dundes, in The Evil Eye: A Casebook",
-   "method": "search-fallback"
+   "method": "isbn-resolved"
   },
   "OL1157036W": {
    "url": "https://books.google.com/books?vid=ISBN0195062833",
@@ -476,10 +476,10 @@
    "method": "isbn-verified"
   },
   "OL31378222W": {
-   "url": "https://www.google.com/search?tbm=bks&q=William+Montgomery+Watt%2C+in+Muhammad%3A+Prophet+and+Statesman",
-   "tier": "gb-search",
+   "url": "https://books.google.com/books?vid=ISBN9780198810780",
+   "tier": "gb-volume",
    "book": "William Montgomery Watt, in Muhammad: Prophet and Statesman",
-   "method": "search-fallback"
+   "method": "isbn-resolved"
   },
   "OL31848399W": {
    "url": "https://www.google.com/search?tbm=bks&q=Advanced+International+Studies%2C+analyses+the+classical+doctrine+in+detail+in+War+and+Peace+in+the+Law+of+Islam",
@@ -494,10 +494,10 @@
    "method": "isbn-verified"
   },
   "OL34591695W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Fazlur+Rahman%2C+Islam",
-   "tier": "gb-search",
+   "url": "https://books.google.com/books?vid=ISBN9780226702810",
+   "tier": "gb-volume",
    "book": "Fazlur Rahman, Islam",
-   "method": "search-fallback"
+   "method": "isbn-resolved"
   },
   "OL2970108W": {
    "url": "https://books.google.com/books?vid=ISBN9789004451216",
@@ -554,10 +554,10 @@
    "method": "isbn-verified"
   },
   "OL24192034W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Robert+Spencer%2C+a+prominent+critic+of+Islam%2C+notes+in+%27The+Politically+Incorrect+Guide+to+Islam",
-   "tier": "gb-search",
+   "url": "https://books.google.com/books?vid=ISBN9780895260130",
+   "tier": "gb-volume",
    "book": "Robert Spencer, a prominent critic of Islam, notes in 'The Politically",
-   "method": "search-fallback"
+   "method": "isbn-resolved"
   },
   "OL3493043W": {
    "url": "https://books.google.com/books?vid=ISBN9780231153935",
