@@ -127,7 +127,7 @@ body.embed-mode .reader-layout {
   display: flex;
   align-items: center;
   justify-content: center;
-  column-gap: 24px;
+  column-gap: 18px;
   row-gap: 4px;
   flex-wrap: wrap;
 }
@@ -161,9 +161,11 @@ body.embed-mode .reader-layout {
 
 .site-nav-links {
   display: flex;
-  /* Tightened from 36 → 28px to make room for the 8th link (Build) on
-     desktop without pushing the auth button / goat onto a new row. */
-  gap: 28px;
+  /* Tightened over time so all links + the auth button + goat stay on one
+     desktop row: 36 → 28px (8th link, Build), then 28 → 18px (11th link,
+     Contact). At 18px the 11-tab row is no wider than the old 10-tab row,
+     so the goat stays on the same line as the tabs and the account card. */
+  gap: 18px;
   align-items: center;
 }
 
