@@ -46,3 +46,8 @@ sources-processed.json
 # Remotion video sub-project
 video/node_modules/
 video/out/
+
+# Installed agent skills (reinstall: npx skills add remotion-dev/skills)
+.agents/
+.claude/skills/remotion-*
+.claude/skills/mediabunny
