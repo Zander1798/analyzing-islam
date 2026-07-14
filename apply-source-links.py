@@ -37,19 +37,24 @@ MAP = cfg["map"]              # old_archive_id -> {url, tier, ...} OR {rules:[{c
 ANCHOR = re.compile(r'(<a\s+class="src-link"\s+href=")([^"]+)("[^>]*>)(.*?)(</a>)', re.S)
 ARCHIVE_ID = re.compile(r'archive\.org/details/([A-Za-z0-9._-]+)')
 OPENLIB_ID = re.compile(r'openlibrary\.org/works/(OL\d+W)')
+OPENLIB_ISBN = re.compile(r'openlibrary\.org/isbn/(\d[\dXx]+)')
 TAGS = re.compile(r"<[^>]+>")
 
 
 def href_key(href: str):
     """The map is keyed by the identifier inside a book href: an Internet-Archive
-    item id (archive.org/details/<id>) or an OpenLibrary work id
-    (openlibrary.org/works/<OLxxxW>). Return that id, or None for other hosts."""
+    item id (archive.org/details/<id>), an OpenLibrary work id
+    (openlibrary.org/works/<OLxxxW>), or an OpenLibrary ISBN
+    (openlibrary.org/isbn/<isbn> -> "ISBN<isbn>"). Return that key, or None."""
     m = ARCHIVE_ID.search(href)
     if m:
         return m.group(1)
     m = OPENLIB_ID.search(href)
     if m:
         return m.group(1)
+    m = OPENLIB_ISBN.search(href)
+    if m:
+        return "ISBN" + m.group(1)
     return None
 
 

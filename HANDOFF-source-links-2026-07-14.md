@@ -1,5 +1,21 @@
 # Source-link readability fix — 2026-07-14
 
+## UPDATE 3 (same day) — Google Books SEARCH landed on wrong books → switched to exact ISBN volume links
+Owner reported Google Books *search* URLs opening the wrong book (a search does "found inside"
+matching, so it surfaced works that merely cite the target — e.g. Ibn Warraq's book → a review of
+it; Rustomji → Christian Lange's book citing her). Fix: link each book to its **exact Google Books
+volume** via `https://books.google.com/books?vid=ISBN<isbn>`, which redirects straight to that book.
+- ISBNs pulled from OpenLibrary editions (loads from dev machine); each candidate **verified** by
+  fetching the Google Books page and matching its title, then the 145 books resolved to
+  **128 exact ISBN volumes + 18 Title+Author searches** (classics/edge cases with no reliable ISBN).
+- Caught + downgraded 3 wrong-ISBN matches (OpenLibrary bad-ISBN data): Dundes *Evil Eye*→Elworthy,
+  Watt *Formative Period*→Ormsby, Burton *Sources of Islamic Law*→Fatoohi.
+- 4,175 hrefs rewritten. `apply-source-links.py` now also keys off `openlibrary.org/isbn/<isbn>`.
+- Spot-verified samples (incl. the two the owner flagged) land on the exact correct book.
+- Rebuild note: this pass restored the OpenLibrary-work HTML from commit 5821c2d0 first (the previous
+  Google-*search* pass had erased the stable OL ids needed to key the rewrite), then applied the ISBN map.
+- Resolver scripts (dev-machine only, not in repo): scratchpad build_gb_isbn.py / gb_isbn_map.json.
+
 ## UPDATE 2 (same day) — OpenLibrary ALSO unreachable in the owner's region → ALL book links now Google Books
 Owner tested the OpenLibrary migration: **openlibrary.org also returns a connection error for their
 region** — expected, since archive.org and openlibrary.org share Internet Archive infrastructure. So

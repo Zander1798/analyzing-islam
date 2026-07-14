@@ -1,875 +1,881 @@
 {
- "_comment": "archive.org AND openlibrary.org are both unreachable in the site owner's region (same Internet Archive infra). ALL book links now point to Google Books search built from the citation text. Keyed by OpenLibrary work id or archive id in a src-link href; idempotent via apply-source-links.py.",
+ "_comment": "Book links -> Google Books (Internet Archive family region-blocked for owner). gb-volume = exact ISBN-verified volume (books.google.com/books?vid=ISBN...); gb-search = clean Title+Author Google Books search for classics/edge cases without a reliable ISBN. Keyed by OpenLibrary work id / archive id / ISBN in a src-link href; idempotent via apply-source-links.py.",
  "map": {
-  "OL10151850W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Christoph+Luxenberg%27s+%27The+Syro-Aramaic+Reading+of+the+Koran",
-   "tier": "googlebooks",
-   "book": "Christoph Luxenberg's 'The Syro-Aramaic Reading of the Koran",
-   "method": "anchor-query"
-  },
-  "OL1018819W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Veil+and+the+Male+Elite",
-   "tier": "googlebooks",
-   "book": "The Veil and the Male Elite",
-   "method": "anchor-query"
-  },
-  "OL10232228W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Multiple+sahih+hadith+in+Bukhari",
-   "tier": "googlebooks",
-   "book": "Multiple sahih hadith in Bukhari",
-   "method": "anchor-query"
-  },
   "OL10746354W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Arthur+Jeffery%27s+%27Materials+for+the+History+of+the+Text+of+the+Qur%27an",
-   "tier": "googlebooks",
-   "book": "Arthur Jeffery's 'Materials for the History of the Text of the Qur'an",
-   "method": "anchor-query"
+   "url": "https://www.google.com/search?tbm=bks&q=Arthur+Jeffery%27s+documentary+scholarship+in+%27Materials+for+the+History+of+the+Text+of+the+Quran",
+   "tier": "gb-search",
+   "book": "Arthur Jeffery's documentary scholarship in 'Materials for the History",
+   "method": "search-fallback"
+  },
+  "OL11707625W": {
+   "url": "https://books.google.com/books?vid=ISBN9780743289689",
+   "tier": "gb-volume",
+   "book": "Infidel - Ayaan Hirsi Ali",
+   "method": "isbn-verified"
   },
   "OL1093601W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Folklore+scholar+Alan+Dundes%2C+in+The+Evil+Eye%3A+A+Casebook",
-   "tier": "googlebooks",
-   "book": "Folklore scholar Alan Dundes, in The Evil Eye: A Casebook",
-   "method": "anchor-query"
+   "url": "https://www.google.com/search?tbm=bks&q=Alan+Dundes%2C+in+The+Evil+Eye%3A+A+Casebook",
+   "tier": "gb-search",
+   "book": "Alan Dundes, in The Evil Eye: A Casebook",
+   "method": "search-fallback"
+  },
+  "OL1157036W": {
+   "url": "https://books.google.com/books?vid=ISBN0195062833",
+   "tier": "gb-volume",
+   "book": "Race and Slavery in the Middle East: An Historical Enquiry - Bernard L",
+   "method": "isbn-verified"
+  },
+  "OL12747973W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Hisham%27s+recension+and+translated+into+English+by+Alfred+Guillaume+as+The+Life+of+Muhammad",
+   "tier": "gb-search",
+   "book": "Ibn Hisham's recension and translated into English by Alfred Guillaume",
+   "method": "search-fallback"
+  },
+  "OL10151850W": {
+   "url": "https://books.google.com/books?vid=ISBN9783860932742",
+   "tier": "gb-volume",
+   "book": "Die syro-aramäische Lesart des Koran: ein Beitrag zur Entschlüsselung ",
+   "method": "isbn-verified"
   },
   "OL1096188W": {
    "url": "https://www.google.com/search?tbm=bks&q=William+Muir%2C+in+The+Life+of+Mahomet",
-   "tier": "googlebooks",
+   "tier": "gb-search",
    "book": "William Muir, in The Life of Mahomet",
-   "method": "anchor-query"
-  },
-  "OL1157026W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Bernard+Lewis%27s+%27Islam+and+the+West",
-   "tier": "googlebooks",
-   "book": "Bernard Lewis's 'Islam and the West",
-   "method": "anchor-query"
-  },
-  "OL1157036W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Bernard+Lewis%2C+Race+and+Slavery+in+the+Middle+East%3A+An+Historical+Enquiry",
-   "tier": "googlebooks",
-   "book": "Bernard Lewis, Race and Slavery in the Middle East: An Historical Enquiry",
-   "method": "anchor-query"
-  },
-  "OL11707625W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ayaan+Hirsi+Ali%27s+%27Infidel",
-   "tier": "googlebooks",
-   "book": "Ayaan Hirsi Ali's 'Infidel",
-   "method": "anchor-query"
-  },
-  "OL1179345W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Majid+Khadduri%2C+War+and+Peace+in+the+Law+of+Islam",
-   "tier": "googlebooks",
-   "book": "Majid Khadduri, War and Peace in the Law of Islam",
-   "method": "anchor-query"
-  },
-  "OL1186503W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Joseph+Needham%2C+whose+A+History+of+Embryology",
-   "tier": "googlebooks",
-   "book": "Joseph Needham, whose A History of Embryology",
-   "method": "anchor-query"
-  },
-  "OL11994348W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Nerina+Rustomji%27s+academic+studies+%E2%80%94+The+Garden+and+the+Fire",
-   "tier": "googlebooks",
-   "book": "Nerina Rustomji's academic studies — The Garden and the Fire",
-   "method": "anchor-query"
-  },
-  "OL1202819W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ehrman%2C+The+Text+of+the+New+Testament%3A+Its+Transmission%2C+Corruption%2C+and+Restoration",
-   "tier": "googlebooks",
-   "book": "Ehrman, The Text of the New Testament: Its Transmission, Corruption, and Restora",
-   "method": "anchor-query"
-  },
-  "OL12747973W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Guillaume+as+The+Life+of+Muhammad",
-   "tier": "googlebooks",
-   "book": "Guillaume as The Life of Muhammad",
-   "method": "anchor-query"
-  },
-  "OL1282729W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Moroccan+Muslim+communities+produced+Ritual+and+Belief+in+Morocco",
-   "tier": "googlebooks",
-   "book": "Moroccan Muslim communities produced Ritual and Belief in Morocco",
-   "method": "anchor-query"
-  },
-  "OL13781973W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Wafa+Sultan+in+A+God+Who+Hates",
-   "tier": "googlebooks",
-   "book": "Wafa Sultan in A God Who Hates",
-   "method": "anchor-query"
+   "method": "search-fallback"
   },
   "OL13798347W": {
    "url": "https://www.google.com/search?tbm=bks&q=Ibn+Man%E1%BA%93%C5%ABr%27s+Lis%C4%81n+al-%CA%BFArab",
-   "tier": "googlebooks",
+   "tier": "gb-search",
    "book": "Ibn Manẓūr's Lisān al-ʿArab",
-   "method": "anchor-query"
+   "method": "search-fallback"
   },
-  "OL13848120W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Crucifixion+and+the+Qur%27an",
-   "tier": "googlebooks",
-   "book": "The Crucifixion and the Qur'an",
-   "method": "anchor-query"
+  "OL1157026W": {
+   "url": "https://books.google.com/books?vid=ISBN0195076192",
+   "tier": "gb-volume",
+   "book": "Islam and the West - Bernard Lewis",
+   "method": "isbn-verified"
   },
   "OL1415399W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Watt%2C+Free+Will+and+Predestination+in+Early+Islam",
-   "tier": "googlebooks",
-   "book": "Watt, Free Will and Predestination in Early Islam",
-   "method": "anchor-query"
+   "url": "https://www.google.com/search?tbm=bks&q=Montgomery+Watt%2C+in+Free+Will+and+Predestination+in+Early+Islam",
+   "tier": "gb-search",
+   "book": "Montgomery Watt, in Free Will and Predestination in Early Islam",
+   "method": "search-fallback"
   },
-  "OL1415427W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Montgomery+Watt%27s+Muhammad+at+Medina",
-   "tier": "googlebooks",
-   "book": "Montgomery Watt's Muhammad at Medina",
-   "method": "anchor-query"
+  "OL1186503W": {
+   "url": "https://books.google.com/books?vid=ISBN0405066074",
+   "tier": "gb-volume",
+   "book": "A History of Embryology - Joseph Needham",
+   "method": "isbn-verified"
+  },
+  "OL1179345W": {
+   "url": "https://books.google.com/books?vid=ISBN9780404109257",
+   "tier": "gb-volume",
+   "book": "War and Peace in the Law of Islam - Majid Khadduri",
+   "method": "isbn-verified"
+  },
+  "OL1018819W": {
+   "url": "https://books.google.com/books?vid=ISBN0201523213",
+   "tier": "gb-volume",
+   "book": "The Veil And The Male Elite: A Feminist Interpretation Of Women&#39;s ",
+   "method": "isbn-verified"
+  },
+  "OL1202819W": {
+   "url": "https://books.google.com/books?vid=ISBN9780195161229",
+   "tier": "gb-volume",
+   "book": "The Text of the New Testament: Its Transmission, Corruption, and Resto",
+   "method": "isbn-verified"
+  },
+  "OL1282729W": {
+   "url": "https://books.google.com/books?vid=ISBN9781844530656",
+   "tier": "gb-volume",
+   "book": "Ritual and Belief in Morocco - Edward Westermarck",
+   "method": "isbn-verified"
+  },
+  "OL11994348W": {
+   "url": "https://books.google.com/books?vid=ISBN9780231140850",
+   "tier": "gb-volume",
+   "book": "The Garden and the Fire: Heaven and Hell in Islamic Culture - Nerina R",
+   "method": "isbn-verified"
   },
   "OL1415429W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Montgomery+Watt%2C+Muhammad+at+Mecca",
-   "tier": "googlebooks",
-   "book": "Montgomery Watt, Muhammad at Mecca",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780195772784",
+   "tier": "gb-volume",
+   "book": "Muhammad at Mecca - William Montgomery Watt",
+   "method": "isbn-verified"
+  },
+  "OL1415427W": {
+   "url": "https://books.google.com/books?vid=ISBN0195773071",
+   "tier": "gb-volume",
+   "book": "Muhammad at Medina - William Montgomery Watt",
+   "method": "isbn-verified"
+  },
+  "OL13848120W": {
+   "url": "https://books.google.com/books?vid=ISBN9781851686360",
+   "tier": "gb-volume",
+   "book": "The Crucifixion and the Qur&#39;an: A Study in the History of Muslim T",
+   "method": "isbn-verified"
   },
   "OL15588692W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Mark+Durie%2C+The+Third+Choice%3A+Islam%2C+Dhimmitude+and+Freedom",
-   "tier": "googlebooks",
-   "book": "Mark Durie, The Third Choice: Islam, Dhimmitude and Freedom",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780980722314",
+   "tier": "gb-volume",
+   "book": "The Third Choice: Islam, Dhimmitude and Freedom - Mark Durie",
+   "method": "isbn-verified"
+  },
+  "OL13781973W": {
+   "url": "https://books.google.com/books?vid=ISBN9781429984539",
+   "tier": "gb-volume",
+   "book": "A God Who Hates: The Courageous Woman Who Inflamed the Muslim World Sp",
+   "method": "isbn-verified"
   },
   "OL1571403W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Abraham+Geiger%2C+in+Was+hat+Mohammed+aus+dem+Judenthume+aufgenommen%3F",
-   "tier": "googlebooks",
-   "book": "Abraham Geiger, in Was hat Mohammed aus dem Judenthume aufgenommen?",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN3764803428",
+   "tier": "gb-volume",
+   "book": "Was hat Mohammed aus dem Judenthume aufgenommen? - Abraham Geiger",
+   "method": "isbn-verified"
   },
   "OL15838611W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Myth+of+Islamic+Tolerance%3A+How+Islamic+Law+Treats+Non-Muslims",
-   "tier": "googlebooks",
-   "book": "The Myth of Islamic Tolerance: How Islamic Law Treats Non-Muslims",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781591022497",
+   "tier": "gb-volume",
+   "book": "Myth of Islamic Tolerance: How Islamic Law Treats Non-Muslims",
+   "method": "isbn-verified"
   },
   "OL16026710W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Warraq%27s+%27The+Quest+for+the+Historical+Muhammad",
-   "tier": "googlebooks",
-   "book": "Ibn Warraq's 'The Quest for the Historical Muhammad",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781573927871",
+   "tier": "gb-volume",
+   "book": "Quest for the Historical Muhammad",
+   "method": "isbn-verified"
   },
   "OL16340681W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Warraq%2C+in+Which+Koran%3F",
-   "tier": "googlebooks",
-   "book": "Ibn Warraq, in Which Koran?",
-   "method": "anchor-query"
-  },
-  "OL1635075W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Arthur+Jeffery%2C+in+The+Foreign+Vocabulary+of+the+Qur%27an",
-   "tier": "googlebooks",
-   "book": "Arthur Jeffery, in The Foreign Vocabulary of the Qur'an",
-   "method": "anchor-query"
+   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Warraq%27s+edited+volume+Which+Koran%3F+Variants%2C+Manuscripts%2C+Linguistics",
+   "tier": "gb-search",
+   "book": "Ibn Warraq's edited volume Which Koran? Variants, Manuscripts, Linguis",
+   "method": "search-fallback"
   },
   "OL16462004W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Robert+Spencer%2C+Did+Muhammad+Exist%3F+An+Inquiry+into+Islam%27s+Obscure+Origins",
-   "tier": "googlebooks",
-   "book": "Robert Spencer, Did Muhammad Exist? An Inquiry into Islam's Obscure Origins",
-   "method": "anchor-query"
-  },
-  "OL16637697W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Kressel%27s+The+Sons+of+Pigs+and+Apes",
-   "tier": "googlebooks",
-   "book": "Kressel's The Sons of Pigs and Apes",
-   "method": "anchor-query"
-  },
-  "OL16815707W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Judea%2C+Pontius+Pilate.%22+He+reaffirms+the+point+in+How+Jesus+Became+God",
-   "tier": "googlebooks",
-   "book": "Judea, Pontius Pilate.\" He reaffirms the point in How Jesus Became God",
-   "method": "anchor-query"
-  },
-  "OL17079247W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Louay+Fatoohi%2C+in+Abrogation+in+the+Qur%27an+and+Islamic+Law",
-   "tier": "googlebooks",
-   "book": "Louay Fatoohi, in Abrogation in the Qur'an and Islamic Law",
-   "method": "anchor-query"
-  },
-  "OL17313043W": {
-   "url": "https://www.google.com/search?tbm=bks&q=William+McCants%2C+The+ISIS+Apocalypse%3A+The+History%2C+Strategy%2C+and+Doomsday+Vision+of+the+Islamic+State",
-   "tier": "googlebooks",
-   "book": "William McCants, The ISIS Apocalypse: The History, Strategy, and Doomsday Vision",
-   "method": "anchor-query"
-  },
-  "OL17400800W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Brown%2C+in+Hadith%3A+Muhammad%27s+Legacy+in+the+Medieval+and+Modern+World",
-   "tier": "googlebooks",
-   "book": "Brown, in Hadith: Muhammad's Legacy in the Medieval and Modern World",
-   "method": "anchor-query"
-  },
-  "OL17412656W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Astronomy%2C+in+Islam%27s+Quantum+Question%3A+Reconciling+Muslim+Tradition+and+Modern+Science",
-   "tier": "googlebooks",
-   "book": "Astronomy, in Islam's Quantum Question: Reconciling Muslim Tradition and Modern ",
-   "method": "anchor-query"
-  },
-  "OL17542051W": {
-   "url": "https://www.google.com/search?tbm=bks&q=White%27s+analysis+of+Islamic+Christology",
-   "tier": "googlebooks",
-   "book": "White's analysis of Islamic Christology",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781610170611",
+   "tier": "gb-volume",
+   "book": "Did Muhammad Exist?: An Inquiry Into Islam&#39;s Obscure Origins - Rob",
+   "method": "isbn-verified"
   },
   "OL17613840W": {
    "url": "https://www.google.com/search?tbm=bks&q=Nicolaus+Copernicus%27s+De+revolutionibus+orbium+coelestium",
-   "tier": "googlebooks",
+   "tier": "gb-search",
    "book": "Nicolaus Copernicus's De revolutionibus orbium coelestium",
-   "method": "anchor-query"
+   "method": "search-fallback"
   },
-  "OL17867272W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Brown%2C+in+Misquoting+Muhammad",
-   "tier": "googlebooks",
-   "book": "Brown, in Misquoting Muhammad",
-   "method": "anchor-query"
+  "OL1635075W": {
+   "url": "https://books.google.com/books?vid=ISBN9781406706185",
+   "tier": "gb-volume",
+   "book": "The Foreign Vocabulary of the Qurʻān - Arthur Jeffery",
+   "method": "isbn-verified"
   },
-  "OL1809527W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Wilferd+Madelung%2C+The+Succession+to+Muhammad",
-   "tier": "googlebooks",
-   "book": "Wilferd Madelung, The Succession to Muhammad",
-   "method": "anchor-query"
+  "OL16637697W": {
+   "url": "https://books.google.com/books?vid=ISBN9781597977029",
+   "tier": "gb-volume",
+   "book": "&quot;The Sons of Pigs and Apes&quot;: Muslim Antisemitism and the Con",
+   "method": "isbn-verified"
+  },
+  "OL10232228W": {
+   "url": "https://books.google.com/books?vid=ISBN9781850340300",
+   "tier": "gb-volume",
+   "book": "The Translation of the Meanings of Sahih Al-Bukhari: Arabic-English - ",
+   "method": "isbn-verified"
+  },
+  "OL17313043W": {
+   "url": "https://books.google.com/books?vid=ISBN9781250080905",
+   "tier": "gb-volume",
+   "book": "The ISIS Apocalypse: The History, Strategy, and Doomsday Vision of the",
+   "method": "isbn-verified"
+  },
+  "OL17412656W": {
+   "url": "https://books.google.com/books?vid=ISBN9781848855182",
+   "tier": "gb-volume",
+   "book": "Islam&#39;s Quantum Question: Reconciling Muslim Tradition and Modern ",
+   "method": "isbn-verified"
+  },
+  "OL16815707W": {
+   "url": "https://books.google.com/books?vid=ISBN9780061778186",
+   "tier": "gb-volume",
+   "book": "How Jesus Became God: The Exaltation of a Jewish Preacher from Galilee",
+   "method": "isbn-verified"
+  },
+  "OL17400800W": {
+   "url": "https://books.google.com/books?vid=ISBN9781851686636",
+   "tier": "gb-volume",
+   "book": "Hadith: Muhammad&#39;s Legacy in the Medieval and Modern World - Jonat",
+   "method": "isbn-verified"
   },
   "OL1833356W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Saleeb%2C+in+%27Answering+Islam",
-   "tier": "googlebooks",
-   "book": "Saleeb, in 'Answering Islam",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN0801038596",
+   "tier": "gb-volume",
+   "book": "Answering Islam: The Crescent in Light of the Cross - Norman L. Geisle",
+   "method": "isbn-verified"
   },
-  "OL18589506W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Kecia+Ali%2C+Marriage+and+Slavery+in+Early+Islam",
-   "tier": "googlebooks",
-   "book": "Kecia Ali, Marriage and Slavery in Early Islam",
-   "method": "anchor-query"
+  "OL17542051W": {
+   "url": "https://books.google.com/books?vid=ISBN9780764209765",
+   "tier": "gb-volume",
+   "book": "What Every Christian Needs to Know About the Qur&#39;an - James R. Whi",
+   "method": "isbn-verified"
   },
-  "OL18734392W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Jean-Pierre+Filiu%2C+in+Apocalypse+in+Islam",
-   "tier": "googlebooks",
-   "book": "Jean-Pierre Filiu, in Apocalypse in Islam",
-   "method": "anchor-query"
+  "OL17867272W": {
+   "url": "https://books.google.com/books?vid=ISBN9781780744209",
+   "tier": "gb-volume",
+   "book": "Misquoting Muhammad: The Challenge and Choices of Interpreting the Pro",
+   "method": "isbn-verified"
   },
-  "OL1933622W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Islamic+Understanding+of+Death+and+Resurrection",
-   "tier": "googlebooks",
-   "book": "The Islamic Understanding of Death and Resurrection",
-   "method": "anchor-query"
+  "OL1809527W": {
+   "url": "https://books.google.com/books?vid=ISBN9780521561815",
+   "tier": "gb-volume",
+   "book": "The Succession to Muhammad: A Study of the Early Caliphate - Wilferd M",
+   "method": "isbn-verified"
   },
-  "OL19585996W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Classical+Islam%3A+A+Sourcebook+of+Religious+Literature",
-   "tier": "googlebooks",
-   "book": "Classical Islam: A Sourcebook of Religious Literature",
-   "method": "anchor-query"
-  },
-  "OL1959507W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Leila+Ahmed%27s+%27Women+and+Gender+in+Islam",
-   "tier": "googlebooks",
-   "book": "Leila Ahmed's 'Women and Gender in Islam",
-   "method": "anchor-query"
-  },
-  "OL1990170W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Orlando+Patterson%27s+foundational+%27Slavery+and+Social+Death",
-   "tier": "googlebooks",
-   "book": "Orlando Patterson's foundational 'Slavery and Social Death",
-   "method": "anchor-query"
+  "OL17079247W": {
+   "url": "https://www.google.com/search?tbm=bks&q=John+Burton%2C+in+The+Sources+of+Islamic+Law%3A+Islamic+Theories+of+Abrogation",
+   "tier": "gb-search",
+   "book": "John Burton, in The Sources of Islamic Law: Islamic Theories of Abroga",
+   "method": "search-fallback"
   },
   "OL19986724W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Lives+of+Muhammad",
-   "tier": "googlebooks",
-   "book": "The Lives of Muhammad",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780674735514",
+   "tier": "gb-volume",
+   "book": "The Lives of Muhammad - Kecia Ali",
+   "method": "isbn-verified"
   },
-  "OL20055780W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Shahab+Ahmed%2C+Before+Orthodoxy%3A+The+Satanic+Verses+in+Early+Islam",
-   "tier": "googlebooks",
-   "book": "Shahab Ahmed, Before Orthodoxy: The Satanic Verses in Early Islam",
-   "method": "anchor-query"
+  "OL18589506W": {
+   "url": "https://books.google.com/books?vid=ISBN9780674059177",
+   "tier": "gb-volume",
+   "book": "Marriage and Slavery in Early Islam - Kecia Ali",
+   "method": "isbn-verified"
+  },
+  "OL19585996W": {
+   "url": "https://books.google.com/books?vid=ISBN0415240328",
+   "tier": "gb-volume",
+   "book": "Classical Islam: A Sourcebook of Religious Literature",
+   "method": "isbn-verified"
+  },
+  "OL1990170W": {
+   "url": "https://books.google.com/books?vid=ISBN9780674916135",
+   "tier": "gb-volume",
+   "book": "Slavery and Social Death: A Comparative Study, With a New Preface - Or",
+   "method": "isbn-verified"
+  },
+  "OL1959507W": {
+   "url": "https://books.google.com/books?vid=ISBN9780300257311",
+   "tier": "gb-volume",
+   "book": "Women and Gender in Islam: Historical Roots of a Modern Debate - Leila",
+   "method": "isbn-verified"
   },
   "OL20175001W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Barbara+Freyer+Stowasser%2C+in+Women+in+the+Qur%27an%2C+Traditions%2C+and+Interpretation",
-   "tier": "googlebooks",
-   "book": "Barbara Freyer Stowasser, in Women in the Qur'an, Traditions, and Interpretation",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780199761838",
+   "tier": "gb-volume",
+   "book": "Women in the Qur&#39;an, Traditions, and Interpretation - Barbara Frey",
+   "method": "isbn-verified"
+  },
+  "OL20055780W": {
+   "url": "https://books.google.com/books?vid=ISBN9780674047426",
+   "tier": "gb-volume",
+   "book": "Before Orthodoxy: The Satanic Verses in Early Islam - Shahab Ahmed",
+   "method": "isbn-verified"
+  },
+  "OL18734392W": {
+   "url": "https://books.google.com/books?vid=ISBN9780520264311",
+   "tier": "gb-volume",
+   "book": "Apocalypse in Islam - Jean-Pierre Filiu",
+   "method": "isbn-verified"
   },
   "OL20245338W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ayaan+Hirsi+Ali%2C+in+%27Heretic",
-   "tier": "googlebooks",
-   "book": "Ayaan Hirsi Ali, in 'Heretic",
-   "method": "anchor-query"
-  },
-  "OL20312585W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Locating+Hell+in+Islamic+Traditions",
-   "tier": "googlebooks",
-   "book": "Locating Hell in Islamic Traditions",
-   "method": "anchor-query"
-  },
-  "OL20345553W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Emon%2C+Religious+Pluralism+and+Islamic+Law%3A+Dhimm%C4%ABs+and+Others+in+the+Empire+of+Law",
-   "tier": "googlebooks",
-   "book": "Emon, Religious Pluralism and Islamic Law: Dhimmīs and Others in the Empire of L",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781460702758",
+   "tier": "gb-volume",
+   "book": "Heretic - Ayaan Hirsi Ali",
+   "method": "isbn-verified"
   },
   "OL20477151W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Collins%2C+The+Apocalyptic+Imagination%3A+An+Introduction+to+Jewish+Apocalyptic+Literature",
-   "tier": "googlebooks",
-   "book": "Collins, The Apocalyptic Imagination: An Introduction to Jewish Apocalyptic Lite",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780802872791",
+   "tier": "gb-volume",
+   "book": "The Apocalyptic Imagination: An Introduction to Jewish Apocalyptic Lit",
+   "method": "isbn-verified"
   },
   "OL20547040W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Scott+Kugle%27s+%27Homosexuality+in+Islam",
-   "tier": "googlebooks",
-   "book": "Scott Kugle's 'Homosexuality in Islam",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781851687022",
+   "tier": "gb-volume",
+   "book": "Homosexuality in Islam: Critical Reflection on Gay, Lesbian, and Trans",
+   "method": "isbn-verified"
   },
-  "OL20592054W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Milka+Levy-Rubin%2C+Non-Muslims+in+the+Early+Islamic+Empire",
-   "tier": "googlebooks",
-   "book": "Milka Levy-Rubin, Non-Muslims in the Early Islamic Empire",
-   "method": "anchor-query"
+  "OL1933622W": {
+   "url": "https://books.google.com/books?vid=ISBN0873955064",
+   "tier": "gb-volume",
+   "book": "The Islamic Understanding of Death and Resurrection - Jane I. Smith, Y",
+   "method": "isbn-verified"
+  },
+  "OL20312585W": {
+   "url": "https://books.google.com/books?vid=ISBN9781139014847",
+   "tier": "gb-volume",
+   "book": "Paradise and Hell in Islamic Traditions - Christian Lange",
+   "method": "isbn-verified"
+  },
+  "OL21158900W": {
+   "url": "https://books.google.com/books?vid=ISBN9781786073082",
+   "tier": "gb-volume",
+   "book": "Hadith: Muhammad&#39;s Legacy in the Medieval and Modern World - Jonat",
+   "method": "isbn-verified"
+  },
+  "OL21228578W": {
+   "url": "https://books.google.com/books?vid=ISBN9780815631958",
+   "tier": "gb-volume",
+   "book": "Contemporary Muslim Apocalyptic Literature - David Cook",
+   "method": "isbn-verified"
+  },
+  "OL20345553W": {
+   "url": "https://books.google.com/books?vid=ISBN9780198722021",
+   "tier": "gb-volume",
+   "book": "Religious Pluralism and Islamic Law: Dhimmis and Others in the Empire ",
+   "method": "isbn-verified"
+  },
+  "OL20926283W": {
+   "url": "https://books.google.com/books?vid=ISBN9780415491693",
+   "tier": "gb-volume",
+   "book": "The Qur&#39;an in Its Historical Context",
+   "method": "isbn-verified"
+  },
+  "OL21340365W": {
+   "url": "https://books.google.com/books?vid=ISBN9780465034536",
+   "tier": "gb-volume",
+   "book": "In The Path Of God - Pipes",
+   "method": "isbn-verified"
   },
   "OL20916796W": {
    "url": "https://www.google.com/search?tbm=bks&q=Coulson%2C+in+Succession+in+the+Muslim+Family",
-   "tier": "googlebooks",
+   "tier": "gb-search",
    "book": "Coulson, in Succession in the Muslim Family",
-   "method": "anchor-query"
-  },
-  "OL20926283W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Bladel%2C+in+%22The+Alexander+Legend+in+the+Quran+18%3A83-102",
-   "tier": "googlebooks",
-   "book": "Bladel, in \"The Alexander Legend in the Quran 18:83-102",
-   "method": "anchor-query"
-  },
-  "OL21158900W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Brown%2C+Hadith%3A+Muhammad%27s+Legacy+in+the+Medieval+and+Modern+World",
-   "tier": "googlebooks",
-   "book": "Brown, Hadith: Muhammad's Legacy in the Medieval and Modern World",
-   "method": "anchor-query"
-  },
-  "OL21228578W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Cook%27s+Contemporary+Muslim+Apocalyptic+Literature",
-   "tier": "googlebooks",
-   "book": "Cook's Contemporary Muslim Apocalyptic Literature",
-   "method": "anchor-query"
+   "method": "search-fallback"
   },
   "OL21266012W": {
-   "url": "https://www.google.com/search?tbm=bks&q=David+S.+Powers%2C+in+Zayd",
-   "tier": "googlebooks",
-   "book": "David S. Powers, in Zayd",
-   "method": "anchor-query"
-  },
-  "OL21311904W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Maria+De+Cillis%27s+Free+Will+and+Predestination+in+Islamic+Thought",
-   "tier": "googlebooks",
-   "book": "Maria De Cillis's Free Will and Predestination in Islamic Thought",
-   "method": "anchor-query"
-  },
-  "OL21340365W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Daniel+Pipes%2C+in+In+the+Path+of+God",
-   "tier": "googlebooks",
-   "book": "Daniel Pipes, in In the Path of God",
-   "method": "anchor-query"
-  },
-  "OL21493585W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Noah+Feldman%2C+in+The+Fall+and+Rise+of+the+Islamic+State",
-   "tier": "googlebooks",
-   "book": "Noah Feldman, in The Fall and Rise of the Islamic State",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780812209952",
+   "tier": "gb-volume",
+   "book": "Zayd - David S. Powers",
+   "method": "isbn-verified"
   },
   "OL2203660W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Atmaja%2C+Defenders+of+Reason+in+Islam%3A+Mu%27tazilism+from+Medieval+School+to+Modern+Symbol",
-   "tier": "googlebooks",
-   "book": "Atmaja, Defenders of Reason in Islam: Mu'tazilism from Medieval School to Modern",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781786070241",
+   "tier": "gb-volume",
+   "book": "Defenders of Reason in Islam: Mu&#39;tazililism from Medieval School t",
+   "method": "isbn-verified"
   },
-  "OL2214228W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Search+for+Beauty+in+Islam",
-   "tier": "googlebooks",
-   "book": "The Search for Beauty in Islam",
-   "method": "anchor-query"
+  "OL21493585W": {
+   "url": "https://books.google.com/books?vid=ISBN9781400824076",
+   "tier": "gb-volume",
+   "book": "The Fall and Rise of the Islamic State - Noah Feldman",
+   "method": "isbn-verified"
   },
   "OL2214230W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Khaled+Abou+El+Fadl+in+%27Speaking+in+God%27s+Name",
-   "tier": "googlebooks",
-   "book": "Khaled Abou El Fadl in 'Speaking in God's Name",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781851682621",
+   "tier": "gb-volume",
+   "book": "Speaking in God&#39;s Name: Islamic Law, Authority and Women - Khaled ",
+   "method": "isbn-verified"
   },
-  "OL2214232W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Khaled+Abou+El+Fadl%2C+The+Great+Theft%3A+Wrestling+Islam+from+the+Extremists",
-   "tier": "googlebooks",
-   "book": "Khaled Abou El Fadl, The Great Theft: Wrestling Islam from the Extremists",
-   "method": "anchor-query"
+  "OL2214228W": {
+   "url": "https://books.google.com/books?vid=ISBN0742550931",
+   "tier": "gb-volume",
+   "book": "The Search for Beauty in Islam: A Conference of the Books - Khaled Abo",
+   "method": "isbn-verified"
   },
   "OL2214234W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Khaled+Abou+El+Fadl%2C+in+%27Rebellion+and+Violence+in+Islamic+Law",
-   "tier": "googlebooks",
-   "book": "Khaled Abou El Fadl, in 'Rebellion and Violence in Islamic Law",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780521030571",
+   "tier": "gb-volume",
+   "book": "Rebellion and Violence in Islamic Law - Khaled Abou El Fadl",
+   "method": "isbn-verified"
+  },
+  "OL21311904W": {
+   "url": "https://books.google.com/books?vid=ISBN9781317937036",
+   "tier": "gb-volume",
+   "book": "Free Will and Predestination in Islamic Thought: Theoretical Compromis",
+   "method": "isbn-verified"
+  },
+  "OL2214232W": {
+   "url": "https://books.google.com/books?vid=ISBN9780061189036",
+   "tier": "gb-volume",
+   "book": "The Great Theft: Wrestling Islam from the Extremists - Khaled M. Abou ",
+   "method": "isbn-verified"
   },
   "OL2234477W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Addressing+Suicide+Attacks%3A+The+Faith+and+Politics+of+Martyrdom+Operations",
-   "tier": "googlebooks",
-   "book": "Addressing Suicide Attacks: The Faith and Politics of Martyrdom Operations",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780275992606",
+   "tier": "gb-volume",
+   "book": "Understanding and Addressing Suicide Attacks: The Faith and Politics o",
+   "method": "isbn-verified"
   },
   "OL2234493W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Cook%2C+Martyrdom+in+Islam",
-   "tier": "googlebooks",
-   "book": "Cook, Martyrdom in Islam",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780521850407",
+   "tier": "gb-volume",
+   "book": "Martyrdom in Islam - David Cook",
+   "method": "isbn-verified"
   },
   "OL2234501W": {
-   "url": "https://www.google.com/search?tbm=bks&q=David+Cook%27s+%27Understanding+Jihad",
-   "tier": "googlebooks",
-   "book": "David Cook's 'Understanding Jihad",
-   "method": "anchor-query"
-  },
-  "OL24192034W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Politically+Incorrect+Guide+to+Islam",
-   "tier": "googlebooks",
-   "book": "The Politically Incorrect Guide to Islam",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780520287310",
+   "tier": "gb-volume",
+   "book": "Understanding Jihad - David Cook",
+   "method": "isbn-verified"
   },
   "OL2435028W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ann+Mayer%2C+in+Islam+and+Human+Rights",
-   "tier": "googlebooks",
-   "book": "Ann Mayer, in Islam and Human Rights",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780813321301",
+   "tier": "gb-volume",
+   "book": "Islam and Human Rights: Tradition and Politics - Ann Elizabeth Mayer",
+   "method": "isbn-verified"
   },
   "OL24415777W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Abraham+Geiger%27s+%27Judaism+and+Islam",
-   "tier": "googlebooks",
-   "book": "Abraham Geiger's 'Judaism and Islam",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780344594786",
+   "tier": "gb-volume",
+   "book": "Judaism and Islam. a Prize Essay - Abraham Geiger, F. M. Young",
+   "method": "isbn-verified"
   },
   "OL2451365W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Nahum+Sarna%2C+Genesis%3A+The+JPS+Torah+Commentary",
-   "tier": "googlebooks",
-   "book": "Nahum Sarna, Genesis: The JPS Torah Commentary",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780814726686",
+   "tier": "gb-volume",
+   "book": "Genesis: World of Myths and Patriarchs - Ada Feyerick, Cyrus H. Gordon",
+   "method": "isbn-verified"
   },
   "OL2490697W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Dome+of+the+Rock",
-   "tier": "googlebooks",
-   "book": "The Dome of the Rock",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780674023130",
+   "tier": "gb-volume",
+   "book": "The Dome of the Rock - Oleg Grabar",
+   "method": "isbn-verified"
   },
   "OL2490703W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Oleg+Grabar%2C+The+Formation+of+Islamic+Art",
-   "tier": "googlebooks",
-   "book": "Oleg Grabar, The Formation of Islamic Art",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780300021875",
+   "tier": "gb-volume",
+   "book": "The Formation of Islamic Art - Oleg Grabar",
+   "method": "isbn-verified"
   },
-  "OL25613757W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Majid+Fakhry%27s+Ethical+Theories+in+Islam",
-   "tier": "googlebooks",
-   "book": "Majid Fakhry's Ethical Theories in Islam",
-   "method": "anchor-query"
+  "OL20592054W": {
+   "url": "https://books.google.com/books?vid=ISBN9781108449618",
+   "tier": "gb-volume",
+   "book": "Non-Muslims in the Early Islamic Empire: From Surrender to Coexistence",
+   "method": "isbn-verified"
   },
   "OL25762551W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Nerina+Rustomji%27s+The+Beauty+of+the+Houri",
-   "tier": "googlebooks",
-   "book": "Nerina Rustomji's The Beauty of the Houri",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780190249342",
+   "tier": "gb-volume",
+   "book": "The Beauty of the Houri: Heavenly Virgins, Feminine Ideals - Nerina Ru",
+   "method": "isbn-verified"
   },
-  "OL26599619W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Robert+Spencer%27s+The+Critical+Qur%27an",
-   "tier": "googlebooks",
-   "book": "Robert Spencer's The Critical Qur'an",
-   "method": "anchor-query"
-  },
-  "OL26754927W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Emilie+Savage-Smith%2C+in+Magic+and+Divination+in+Early+Islam",
-   "tier": "googlebooks",
-   "book": "Emilie Savage-Smith, in Magic and Divination in Early Islam",
-   "method": "anchor-query"
-  },
-  "OL2693599W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Judith+Tucker%2C+Women%2C+Family%2C+and+Gender+in+Islamic+Law",
-   "tier": "googlebooks",
-   "book": "Judith Tucker, Women, Family, and Gender in Islamic Law",
-   "method": "anchor-query"
+  "OL25613757W": {
+   "url": "https://books.google.com/books?vid=ISBN9789004451131",
+   "tier": "gb-volume",
+   "book": "Ethical Theories in Islam - Majid F. Fakhry",
+   "method": "isbn-verified"
   },
   "OL27083896W": {
-   "url": "https://www.google.com/search?tbm=bks&q=David+Cook%27s+%27Studies+in+Muslim+Apocalyptic",
-   "tier": "googlebooks",
-   "book": "David Cook's 'Studies in Muslim Apocalyptic",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9783959941204",
+   "tier": "gb-volume",
+   "book": "Studies in Muslim Apocalyptic - David Cook",
+   "method": "isbn-verified"
   },
-  "OL27825507W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Schmidt%2C+%27Gog+and+Magog+in+Early+Eastern+Christian+and+Islamic+Sources",
-   "tier": "googlebooks",
-   "book": "Schmidt, 'Gog and Magog in Early Eastern Christian and Islamic Sources",
-   "method": "anchor-query"
-  },
-  "OL2927929W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Crime+and+Punishment+in+Islamic+Law",
-   "tier": "googlebooks",
-   "book": "Crime and Punishment in Islamic Law",
-   "method": "anchor-query"
-  },
-  "OL2927930W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Rudolph+Peters%27s+%27Jihad+in+Classical+and+Modern+Islam",
-   "tier": "googlebooks",
-   "book": "Rudolph Peters's 'Jihad in Classical and Modern Islam",
-   "method": "anchor-query"
-  },
-  "OL2970108W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Muslim+Writers+on+Judaism+and+the+Hebrew+Bible%3A+From+Ibn+Rabban+to+Ibn+Hazm",
-   "tier": "googlebooks",
-   "book": "Muslim Writers on Judaism and the Hebrew Bible: From Ibn Rabban to Ibn Hazm",
-   "method": "anchor-query"
-  },
-  "OL2972149W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Decline+of+Eastern+Christianity+under+Islam%3A+From+Jihad+to+Dhimmitude",
-   "tier": "googlebooks",
-   "book": "The Decline of Eastern Christianity under Islam: From Jihad to Dhimmitude",
-   "method": "anchor-query"
-  },
-  "OL2972150W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Bat+Ye%27or%27s+The+Dhimmi",
-   "tier": "googlebooks",
-   "book": "Bat Ye'or's The Dhimmi",
-   "method": "anchor-query"
+  "OL26599619W": {
+   "url": "https://books.google.com/books?vid=ISBN9781642939507",
+   "tier": "gb-volume",
+   "book": "The Critical Qur&#39;an: Explained from Key Islamic Commentaries and .",
+   "method": "isbn-verified"
   },
   "OL31378222W": {
    "url": "https://www.google.com/search?tbm=bks&q=William+Montgomery+Watt%2C+in+Muhammad%3A+Prophet+and+Statesman",
-   "tier": "googlebooks",
+   "tier": "gb-search",
    "book": "William Montgomery Watt, in Muhammad: Prophet and Statesman",
-   "method": "anchor-query"
+   "method": "search-fallback"
   },
   "OL31848399W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Majid+Khadduri%27s+%27War+and+Peace+in+the+Law+of+Islam",
-   "tier": "googlebooks",
-   "book": "Majid Khadduri's 'War and Peace in the Law of Islam",
-   "method": "anchor-query"
+   "url": "https://www.google.com/search?tbm=bks&q=Advanced+International+Studies%2C+analyses+the+classical+doctrine+in+detail+in+War+and+Peace+in+the+Law+of+Islam",
+   "tier": "gb-search",
+   "book": "Advanced International Studies, analyses the classical doctrine in det",
+   "method": "search-fallback"
   },
-  "OL3297253W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ormsby%2C+Theodicy+in+Islamic+Thought",
-   "tier": "googlebooks",
-   "book": "Ormsby, Theodicy in Islamic Thought",
-   "method": "anchor-query"
+  "OL27825507W": {
+   "url": "https://books.google.com/books?vid=ISBN9789047427629",
+   "tier": "gb-volume",
+   "book": "Gog and Magog in Early Eastern Christian and Islamic Sources: Sallam&#",
+   "method": "isbn-verified"
   },
   "OL34591695W": {
    "url": "https://www.google.com/search?tbm=bks&q=Fazlur+Rahman%2C+Islam",
-   "tier": "googlebooks",
+   "tier": "gb-search",
    "book": "Fazlur Rahman, Islam",
-   "method": "anchor-query"
+   "method": "search-fallback"
   },
-  "OL3493043W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Spellberg%2C+in+Politics%2C+Gender%2C+and+the+Islamic+Past%3A+The+Legacy+of+%CA%BF%C4%80%CA%BEisha+bint+Ab%C4%AB+Bakr",
-   "tier": "googlebooks",
-   "book": "Spellberg, in Politics, Gender, and the Islamic Past: The Legacy of ʿĀʾisha bint",
-   "method": "anchor-query"
+  "OL2970108W": {
+   "url": "https://books.google.com/books?vid=ISBN9789004451216",
+   "tier": "gb-volume",
+   "book": "Muslim Writers on Judaism and the Hebrew Bible: From Ibn Rabban to Ibn",
+   "method": "isbn-verified"
+  },
+  "OL2927930W": {
+   "url": "https://books.google.com/books?vid=ISBN9781558763814",
+   "tier": "gb-volume",
+   "book": "Jihad in Classical and Modern Islam: A Reader - Rudolph Peters",
+   "method": "isbn-verified"
+  },
+  "OL2972149W": {
+   "url": "https://books.google.com/books?vid=ISBN0838636780",
+   "tier": "gb-volume",
+   "book": "The Decline of Eastern Christianity Under Islam: From Jihad to Dhimmit",
+   "method": "isbn-verified"
+  },
+  "OL26754927W": {
+   "url": "https://books.google.com/books?vid=ISBN9781351921015",
+   "tier": "gb-volume",
+   "book": "Magic and Divination in Early Islam",
+   "method": "isbn-verified"
+  },
+  "OL3297253W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Montgomery+Watt%2C+in+The+Formative+Period+of+Islamic+Thought",
+   "tier": "gb-search",
+   "book": "Montgomery Watt, in The Formative Period of Islamic Thought",
+   "method": "search-fallback"
+  },
+  "OL2972150W": {
+   "url": "https://books.google.com/books?vid=ISBN0838632335",
+   "tier": "gb-volume",
+   "book": "The Dhimmi: Jews and Christians Under Islam - Bat Yeʼor",
+   "method": "isbn-verified"
+  },
+  "OL2927929W": {
+   "url": "https://books.google.com/books?vid=ISBN9780511345371",
+   "tier": "gb-volume",
+   "book": "Crime and Punishment in Islamic Law: Theory and Practice from the Sixt",
+   "method": "isbn-verified"
   },
   "OL3515750W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Jews.%27+Matthias+K%C3%BCntzel%2C+in+Jihad+and+Jew-Hatred%3A+Islamism%2C+Nazism+and+the+Roots+of+9%2F11",
-   "tier": "googlebooks",
-   "book": "Jews.' Matthias Küntzel, in Jihad and Jew-Hatred: Islamism, Nazism and the Roots",
-   "method": "anchor-query"
-  },
-  "OL3589862W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Collection+of+the+Qur%27an",
-   "tier": "googlebooks",
-   "book": "The Collection of the Qur'an",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780914386360",
+   "tier": "gb-volume",
+   "book": "Jihad and Jew-hatred: Islamism, Nazism and the Roots of 9/11 - Matthia",
+   "method": "isbn-verified"
   },
   "OL3593867W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Brown%2C+Slavery+and+Islam",
-   "tier": "googlebooks",
-   "book": "Brown, Slavery and Islam",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781081750312",
+   "tier": "gb-volume",
+   "book": "Islam, Black Nationalism and Slavery: A Detailed History",
+   "method": "isbn-verified"
   },
-  "OL36397789W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Maurice+Bucaille%27s+The+Bible%2C+the+Qur%27an+and+Science",
-   "tier": "googlebooks",
-   "book": "Maurice Bucaille's The Bible, the Qur'an and Science",
-   "method": "anchor-query"
+  "OL24192034W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Robert+Spencer%2C+a+prominent+critic+of+Islam%2C+notes+in+%27The+Politically+Incorrect+Guide+to+Islam",
+   "tier": "gb-search",
+   "book": "Robert Spencer, a prominent critic of Islam, notes in 'The Politically",
+   "method": "search-fallback"
   },
-  "OL3733159W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Lynn+Welchman%2C+Women+and+Muslim+Family+Laws+in+Arab+States",
-   "tier": "googlebooks",
-   "book": "Lynn Welchman, Women and Muslim Family Laws in Arab States",
-   "method": "anchor-query"
+  "OL3493043W": {
+   "url": "https://books.google.com/books?vid=ISBN9780231153935",
+   "tier": "gb-volume",
+   "book": "Politics, Gender, and the Islamic Past: The Legacy of &#39;A&#39;isha ",
+   "method": "isbn-verified"
   },
   "OL3742373W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Asma+Barlas%2C+in+%22Believing+Women%22+in+Islam%3A+Unreading+Patriarchal+Interpretations+of+the+Qur%27an",
-   "tier": "googlebooks",
-   "book": "Asma Barlas, in \"Believing Women\" in Islam: Unreading Patriarchal Interpretation",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781477315927",
+   "tier": "gb-volume",
+   "book": "Believing Women in Islam: Unreading Patriarchal Interpretations of the",
+   "method": "isbn-verified"
   },
-  "OL3746582W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Origins+of+the+Koran",
-   "tier": "googlebooks",
-   "book": "The Origins of the Koran",
-   "method": "anchor-query"
+  "OL36397789W": {
+   "url": "https://books.google.com/books?vid=ISBN9781502508874",
+   "tier": "gb-volume",
+   "book": "The Bible , the Quran and Science - Maurice Bucaille",
+   "method": "isbn-verified"
+  },
+  "OL3589862W": {
+   "url": "https://books.google.com/books?vid=ISBN0521214394",
+   "tier": "gb-volume",
+   "book": "The Collection of the Qur&#39;an - John Burton",
+   "method": "isbn-verified"
   },
   "OL3746587W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Warraq%27s+analysis+of+this+episode",
-   "tier": "googlebooks",
-   "book": "Ibn Warraq's analysis of this episode",
-   "method": "anchor-query"
-  },
-  "OL3846941W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Norman+Stillman%2C+The+Jews+of+Arab+Lands%3A+A+History+and+Source+Book",
-   "tier": "googlebooks",
-   "book": "Norman Stillman, The Jews of Arab Lands: A History and Source Book",
-   "method": "anchor-query"
-  },
-  "OL3856616W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ess%2C+The+Flowering+of+Muslim+Theology",
-   "tier": "googlebooks",
-   "book": "Ess, The Flowering of Muslim Theology",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781591020110",
+   "tier": "gb-volume",
+   "book": "Why I Am Not a Muslim - Ibn Warraq",
+   "method": "isbn-verified"
   },
   "OL39142220W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Amina+Wadud%2C+in+%27Qur%27an+and+Woman",
-   "tier": "googlebooks",
-   "book": "Amina Wadud, in 'Qur'an and Woman",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780198029434",
+   "tier": "gb-volume",
+   "book": "Qur&#39;an and Woman: Rereading the Sacred Text from a Woman&#39;s Per",
+   "method": "isbn-verified"
   },
-  "OL3954438W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Cohen%2C+Under+Crescent+and+Cross%3A+The+Jews+in+the+Middle+Ages",
-   "tier": "googlebooks",
-   "book": "Cohen, Under Crescent and Cross: The Jews in the Middle Ages",
-   "method": "anchor-query"
+  "OL3733159W": {
+   "url": "https://books.google.com/books?vid=ISBN9789053569740",
+   "tier": "gb-volume",
+   "book": "Women and Muslim Family Laws in Arab States: A Comparative Overview of",
+   "method": "isbn-verified"
   },
   "OL40130027W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Sachiko+Murata%2C+Muta%27%3A+Temporary+Marriage+in+Islamic+Law",
-   "tier": "googlebooks",
-   "book": "Sachiko Murata, Muta': Temporary Marriage in Islamic Law",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781979007290",
+   "tier": "gb-volume",
+   "book": "Muta&#39;, Temporary Marriage in Islamic Law - Sachiko Murata",
+   "method": "isbn-verified"
+  },
+  "OL3954438W": {
+   "url": "https://books.google.com/books?vid=ISBN9780691010823",
+   "tier": "gb-volume",
+   "book": "Under Crescent and Cross: The Jews in the Middle Ages - Mark R. Cohen",
+   "method": "isbn-verified"
   },
   "OL4080880W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Anchor+Bible+scholar+whose+five-volume+A+Marginal+Jew%3A+Rethinking+the+Historical+Jesus",
-   "tier": "googlebooks",
-   "book": "Anchor Bible scholar whose five-volume A Marginal Jew: Rethinking the Historical",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN0385264259",
+   "tier": "gb-volume",
+   "book": "A Marginal Jew: The roots of the problem and the person - John P. Meie",
+   "method": "isbn-verified"
+  },
+  "OL3846941W": {
+   "url": "https://books.google.com/books?vid=ISBN9780827607651",
+   "tier": "gb-volume",
+   "book": "The Jews of Arab Lands in Modern Times - Norman A. Stillman",
+   "method": "isbn-verified"
   },
   "OL4097712W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Pervez+Hoodbhoy%27s+Islam+and+Science",
-   "tier": "googlebooks",
-   "book": "Pervez Hoodbhoy's Islam and Science",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781856490252",
+   "tier": "gb-volume",
+   "book": "Islam and Science: Religious Orthodoxy and the Battle for Rationality ",
+   "method": "isbn-verified"
+  },
+  "OL3856616W": {
+   "url": "https://books.google.com/books?vid=ISBN0674022084",
+   "tier": "gb-volume",
+   "book": "The Flowering of Muslim Theology - Josef van Ess",
+   "method": "isbn-verified"
+  },
+  "OL2693599W": {
+   "url": "https://books.google.com/books?vid=ISBN9780521830447",
+   "tier": "gb-volume",
+   "book": "Women, Family, and Gender in Islamic Law - Judith E. Tucker",
+   "method": "isbn-verified"
   },
   "OL44539632W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Guessoum%2C+in+Islam%27s+Quantum+Question",
-   "tier": "googlebooks",
-   "book": "Guessoum, in Islam's Quantum Question",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780857730756",
+   "tier": "gb-volume",
+   "book": "Islam&#39;s Quantum Question: Reconciling Muslim Tradition and Modern ",
+   "method": "isbn-verified"
   },
-  "OL4623510W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Gordon+Newby%2C+in+A+History+of+the+Jews+of+Arabia",
-   "tier": "googlebooks",
-   "book": "Gordon Newby, in A History of the Jews of Arabia",
-   "method": "anchor-query"
+  "OL3746582W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Warraq%27s+edited+volume+The+Origins+of+the+Koran",
+   "tier": "gb-search",
+   "book": "Ibn Warraq's edited volume The Origins of the Koran",
+   "method": "search-fallback"
   },
   "OL4645914W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Murray+Gordon%27s+Slavery+in+the+Arab+World",
-   "tier": "googlebooks",
-   "book": "Murray Gordon's Slavery in the Arab World",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780914533306",
+   "tier": "gb-volume",
+   "book": "Slavery in the Arab World - Murray Gordon",
+   "method": "isbn-verified"
   },
-  "OL4648053W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Patricia+Crone+and+Michael+Cook%27s+%27Hagarism",
-   "tier": "googlebooks",
-   "book": "Patricia Crone and Michael Cook's 'Hagarism",
-   "method": "anchor-query"
-  },
-  "OL4648056W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Patricia+Crone%27s+God%27s+Rule",
-   "tier": "googlebooks",
-   "book": "Patricia Crone's God's Rule",
-   "method": "anchor-query"
+  "OL4623510W": {
+   "url": "https://books.google.com/books?vid=ISBN0872495582",
+   "tier": "gb-volume",
+   "book": "A History of the Jews of Arabia: From Ancient Times to Their Eclipse U",
+   "method": "isbn-verified"
   },
   "OL475324W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Tabari%27s+History+Vol.+8",
-   "tier": "googlebooks",
-   "book": "Tabari's History Vol. 8",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN0791431495",
+   "tier": "gb-volume",
+   "book": "Tabari's History Vol. 8 (Fishbein trans., SUNY Press, 1997)",
+   "method": "isbn-override"
+  },
+  "OL4648056W": {
+   "url": "https://books.google.com/books?vid=ISBN9780231132916",
+   "tier": "gb-volume",
+   "book": "God&#39;s Rule: Government and Islam - Patricia Crone",
+   "method": "isbn-verified"
+  },
+  "OL4648053W": {
+   "url": "https://books.google.com/books?vid=ISBN0521211336",
+   "tier": "gb-volume",
+   "book": "Hagarism: The Making of the Islamic World - Patricia Crone, Michael Co",
+   "method": "isbn-verified"
   },
   "OL4774373W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Shahla+Haeri%2C+Law+of+Desire%3A+Temporary+Marriage+in+Shi%26%23x2018%3Bi+Iran",
-   "tier": "googlebooks",
-   "book": "Shahla Haeri, Law of Desire: Temporary Marriage in Shi&#x2018;i Iran",
-   "method": "anchor-query"
-  },
-  "OL4786437W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Abdullahi+Ahmed+An-Na%27im%27s+%27Islam+and+the+Secular+State",
-   "tier": "googlebooks",
-   "book": "Abdullahi Ahmed An-Na'im's 'Islam and the Secular State",
-   "method": "anchor-query"
-  },
-  "OL4979743W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Islamic+Messianism%3A+The+Idea+of+the+Mahdi+in+Twelver+Shi%CA%BFism",
-   "tier": "googlebooks",
-   "book": "Islamic Messianism: The Idea of the Mahdi in Twelver Shiʿism",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780815652946",
+   "tier": "gb-volume",
+   "book": "Law of Desire: Temporary Marriage in Shi’i Iran, Revised Edition - Sha",
+   "method": "isbn-verified"
   },
   "OL5100704W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Studies+in+Qur%CA%BE%C4%81n+and+%E1%B8%A4ad%C4%ABth%3A+The+Formation+of+the+Islamic+Law+of+Inheritance",
-   "tier": "googlebooks",
-   "book": "Studies in Qurʾān and Ḥadīth: The Formation of the Islamic Law of Inheritance",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN0520055586",
+   "tier": "gb-volume",
+   "book": "Studies in Qurʼan and Ḥadīth: The Formation of the Islamic Law of Inhe",
+   "method": "isbn-verified"
+  },
+  "OL4979743W": {
+   "url": "https://books.google.com/books?vid=ISBN0873954424",
+   "tier": "gb-volume",
+   "book": "Islamic Messianism: The Idea of Mahdi in Twelver Shi&#39;ism - Abdulaz",
+   "method": "isbn-verified"
   },
   "OL5121621W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Canonization+of+al-Bukhari+and+Muslim",
-   "tier": "googlebooks",
-   "book": "The Canonization of al-Bukhari and Muslim",
-   "method": "anchor-query"
-  },
-  "OL5263569W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Friedmann%2C+Tolerance+and+Coercion+in+Islam",
-   "tier": "googlebooks",
-   "book": "Friedmann, Tolerance and Coercion in Islam",
-   "method": "anchor-query"
-  },
-  "OL5359452W": {
-   "url": "https://www.google.com/search?tbm=bks&q=William+Gervase+Clarence-Smith%2C+Islam+and+the+Abolition+of+Slavery",
-   "tier": "googlebooks",
-   "book": "William Gervase Clarence-Smith, Islam and the Abolition of Slavery",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9789004158399",
+   "tier": "gb-volume",
+   "book": "The Canonization of Al-Bukh?r? and Muslim: The Formation and Function ",
+   "method": "isbn-verified"
   },
   "OL5411631W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Joseph+Schacht%27s+An+Introduction+to+Islamic+Law",
-   "tier": "googlebooks",
-   "book": "Joseph Schacht's An Introduction to Islamic Law",
-   "method": "anchor-query"
+   "url": "https://www.google.com/search?tbm=bks&q=Joseph+Schacht%2C+whose+An+Introduction+to+Islamic+Law",
+   "tier": "gb-search",
+   "book": "Joseph Schacht, whose An Introduction to Islamic Law",
+   "method": "search-fallback"
+  },
+  "OL4786437W": {
+   "url": "https://books.google.com/books?vid=ISBN9780674033764",
+   "tier": "gb-volume",
+   "book": "Islam and the Secular State: Negotiating the Future of Shari`a - Abdul",
+   "method": "isbn-verified"
   },
   "OL5411632W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Joseph+Schacht%27s+Origins+of+Muhammadan+Jurisprudence",
-   "tier": "googlebooks",
-   "book": "Joseph Schacht's Origins of Muhammadan Jurisprudence",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781597401180",
+   "tier": "gb-volume",
+   "book": "The Origins of Muhammadan Jurisprudence - Joseph Schacht",
+   "method": "isbn-verified"
   },
-  "OL5414483W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Coulson%2C+A+History+of+Islamic+Law",
-   "tier": "googlebooks",
-   "book": "Coulson, A History of Islamic Law",
-   "method": "anchor-query"
-  },
-  "OL5722249W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Timothy+Furnish%2C+in+Holiest+Wars%3A+Islamic+Mahdis%2C+Their+Jihads%2C+and+Osama+bin+Laden",
-   "tier": "googlebooks",
-   "book": "Timothy Furnish, in Holiest Wars: Islamic Mahdis, Their Jihads, and Osama bin La",
-   "method": "anchor-query"
+  "OL5359452W": {
+   "url": "https://books.google.com/books?vid=ISBN9781787383388",
+   "tier": "gb-volume",
+   "book": "Islam and the Abolition of Slavery - William Gervase Clarence-Smith",
+   "method": "isbn-verified"
   },
   "OL582352W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Nasr%2C+An+Introduction+to+Islamic+Cosmological+Doctrines",
-   "tier": "googlebooks",
-   "book": "Nasr, An Introduction to Islamic Cosmological Doctrines",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN0877731284",
+   "tier": "gb-volume",
+   "book": "An Introduction to Islamic Cosmological Doctrines: Conceptions of Natu",
+   "method": "isbn-verified"
+  },
+  "OL5414483W": {
+   "url": "https://books.google.com/books?vid=ISBN8175340703",
+   "tier": "gb-volume",
+   "book": "A History of Islamic Law - Noel James Coulson",
+   "method": "isbn-verified"
+  },
+  "OL5722249W": {
+   "url": "https://books.google.com/books?vid=ISBN0275983838",
+   "tier": "gb-volume",
+   "book": "Holiest Wars: Islamic Mahdis, Their Jihads, and Osama Bin Laden - Timo",
+   "method": "isbn-verified"
+  },
+  "OL5263569W": {
+   "url": "https://books.google.com/books?vid=ISBN9780521026994",
+   "tier": "gb-volume",
+   "book": "Tolerance and Coercion in Islam: Interfaith Relations in the Muslim Tr",
+   "method": "isbn-verified"
   },
   "OL5826028W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Robert+Spencer%2C+in+The+Complete+Infidel%27s+Guide+to+the+Koran",
-   "tier": "googlebooks",
-   "book": "Robert Spencer, in The Complete Infidel's Guide to the Koran",
-   "method": "anchor-query"
-  },
-  "OL5826039W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Truth+About+Muhammad",
-   "tier": "googlebooks",
-   "book": "The Truth About Muhammad",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781596981041",
+   "tier": "gb-volume",
+   "book": "The Complete Infidel&#39;s Guide to the Koran - Robert Spencer",
+   "method": "isbn-verified"
   },
   "OL5829147W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Taner+Edis%27s+%27An+Illusion+of+Harmony",
-   "tier": "googlebooks",
-   "book": "Taner Edis's 'An Illusion of Harmony",
-   "method": "anchor-query"
-  },
-  "OL5856486W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Bernard+Lewis%2C+in+%27The+Crisis+of+Islam",
-   "tier": "googlebooks",
-   "book": "Bernard Lewis, in 'The Crisis of Islam",
-   "method": "anchor-query"
-  },
-  "OL6547110W": {
-   "url": "https://www.google.com/search?tbm=bks&q=David+Margoliouth%27s+%27Mohammed+and+the+Rise+of+Islam",
-   "tier": "googlebooks",
-   "book": "David Margoliouth's 'Mohammed and the Rise of Islam",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781591024491",
+   "tier": "gb-volume",
+   "book": "An Illusion of Harmony: Science and Religion in Islam - Taner Edis",
+   "method": "isbn-verified"
   },
   "OL6628403W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Forbidding+Wrong+in+Islam",
-   "tier": "googlebooks",
-   "book": "Forbidding Wrong in Islam",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780521536028",
+   "tier": "gb-volume",
+   "book": "Forbidding Wrong in Islam: An Introduction - M. A. Cook, Michael Cook",
+   "method": "isbn-verified"
+  },
+  "OL5856486W": {
+   "url": "https://books.google.com/books?vid=ISBN9780786257348",
+   "tier": "gb-volume",
+   "book": "The Crisis of Islam: Holy War and Unholy Terror - Bernard Lewis",
+   "method": "isbn-verified"
   },
   "OL7200006W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Nabia+Abbott%2C+in+the+first+dedicated+English-language+biography%2C+Aishah%3A+The+Beloved+of+Mohammed",
-   "tier": "googlebooks",
-   "book": "Nabia Abbott, in the first dedicated English-language biography, Aishah: The Bel",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780863561085",
+   "tier": "gb-volume",
+   "book": "Aishah: The Beloved of Mohammed - Nabia Abbott",
+   "method": "isbn-verified"
+  },
+  "OL6547110W": {
+   "url": "https://books.google.com/books?vid=ISBN9780836967784",
+   "tier": "gb-volume",
+   "book": "Mohammed and the Rise of Islam - David Samuel Margoliouth",
+   "method": "isbn-verified"
   },
   "OL8052976W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Raymond+Ibrahim%2C+in+%27The+Al+Qaeda+Reader",
-   "tier": "googlebooks",
-   "book": "Raymond Ibrahim, in 'The Al Qaeda Reader",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780767922623",
+   "tier": "gb-volume",
+   "book": "The Al Qaeda Reader: The Essential Texts of Osama Bin Laden&#39;s Terr",
+   "method": "isbn-verified"
   },
   "OL8053018W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Siege+of+Mecca",
-   "tier": "googlebooks",
-   "book": "The Siege of Mecca",
-   "method": "anchor-query"
-  },
-  "OL8223558W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Griffith%2C+in+The+Church+in+the+Shadow+of+the+Mosque",
-   "tier": "googlebooks",
-   "book": "Griffith, in The Church in the Shadow of the Mosque",
-   "method": "anchor-query"
-  },
-  "OL8332554W": {
-   "url": "https://www.google.com/search?tbm=bks&q=El-Gamal%27s+%27Islamic+Finance%3A+Law%2C+Economics%2C+and+Practice",
-   "tier": "googlebooks",
-   "book": "El-Gamal's 'Islamic Finance: Law, Economics, and Practice",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780141919805",
+   "tier": "gb-volume",
+   "book": "The Siege of Mecca: The Forgotten Uprising in Islam&#39;s Holiest Shri",
+   "method": "isbn-verified"
   },
   "OL8359040W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Tabari%27s+History",
-   "tier": "googlebooks",
-   "book": "Tabari's History",
-   "method": "anchor-query"
-  },
-  "OL8481442W": {
-   "url": "https://www.google.com/search?tbm=bks&q=David+Commins+in+The+Wahhabi+Mission+and+Saudi+Arabia",
-   "tier": "googlebooks",
-   "book": "David Commins in The Wahhabi Mission and Saudi Arabia",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9780791472507",
+   "tier": "gb-volume",
+   "book": "Set - History of al-Tabari: Volumes 1-40 (Includes Index)",
+   "method": "isbn-verified"
   },
   "OL8978467W": {
-   "url": "https://www.google.com/search?tbm=bks&q=John+Wansbrough%27s+Quranic+Studies",
-   "tier": "googlebooks",
-   "book": "John Wansbrough's Quranic Studies",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781591022015",
+   "tier": "gb-volume",
+   "book": "Quranic Studies: Sources and Methods of Scriptural Interpretation - Jo",
+   "method": "isbn-verified"
   },
-  "OL8978493W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Andrew+Bostom%27s+The+Legacy+of+Jihad",
-   "tier": "googlebooks",
-   "book": "Andrew Bostom's The Legacy of Jihad",
-   "method": "anchor-query"
+  "OL8481442W": {
+   "url": "https://books.google.com/books?vid=ISBN9780857731357",
+   "tier": "gb-volume",
+   "book": "The Wahhabi Mission and Saudi Arabia - David Commins",
+   "method": "isbn-verified"
+  },
+  "OL8223558W": {
+   "url": "https://books.google.com/books?vid=ISBN9781400834020",
+   "tier": "gb-volume",
+   "book": "The Church in the Shadow of the Mosque: Christians and Muslims in the ",
+   "method": "isbn-verified"
+  },
+  "OL5826039W": {
+   "url": "https://books.google.com/books?vid=ISBN9781596980280",
+   "tier": "gb-volume",
+   "book": "The Truth About Muhammad: Founder of the World&#39;s Most Intolerant R",
+   "method": "isbn-verified"
   },
   "OL9036315W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Sexual+Ethics+and+Islam",
-   "tier": "googlebooks",
-   "book": "Sexual Ethics and Islam",
-   "method": "anchor-query"
-  },
-  "OL9087782W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+hadith+appears+in+Sahih+Muslim",
-   "tier": "googlebooks",
-   "book": "The hadith appears in Sahih Muslim",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781780748535",
+   "tier": "gb-volume",
+   "book": "Sexual Ethics and Islam: Feminist Reflections on Qur&#39;an, Hadith, a",
+   "method": "isbn-verified"
   },
   "OL9253290W": {
-   "url": "https://www.google.com/search?tbm=bks&q=The+Legacy+of+Islamic+Antisemitism",
-   "tier": "googlebooks",
-   "book": "The Legacy of Islamic Antisemitism",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781615920112",
+   "tier": "gb-volume",
+   "book": "Legacy of Islamic Antisemitism - Andrew G. Bostom",
+   "method": "isbn-verified"
+  },
+  "OL8978493W": {
+   "url": "https://books.google.com/books?vid=ISBN9781591023074",
+   "tier": "gb-volume",
+   "book": "Legacy Of Jihad: Islamic Holy War and the Fate of Non-Muslims",
+   "method": "isbn-verified"
   },
   "OL9875908W": {
-   "url": "https://www.google.com/search?tbm=bks&q=Ibn+Hajar+al-Asqalani%27s+Fath+al-Bari",
-   "tier": "googlebooks",
-   "book": "Ibn Hajar al-Asqalani's Fath al-Bari",
-   "method": "anchor-query"
+   "url": "https://books.google.com/books?vid=ISBN9781902350042",
+   "tier": "gb-volume",
+   "book": "Selections from the Fatḥ Al-Bārī (commentary on Ṣaḥı̄ḥ Al-Bukhārı̄ ...",
+   "method": "isbn-verified"
+  },
+  "OL9087782W": {
+   "url": "https://www.google.com/search?tbm=bks&q=Al-Nawawi%2C+in+Al-Minhaj+bi+Sharh+Sahih+Muslim",
+   "tier": "gb-search",
+   "book": "Al-Nawawi, in Al-Minhaj bi Sharh Sahih Muslim",
+   "method": "search-fallback"
+  },
+  "OL8332554W": {
+   "url": "https://books.google.com/books?vid=ISBN9780521864145",
+   "tier": "gb-volume",
+   "book": "Islamic Finance: Law, Economics, and Practice",
+   "method": "isbn-verified"
+  },
+  "ISBN9781587433948": {
+   "url": "https://books.google.com/books?vid=ISBN9781587433948",
+   "tier": "gb-volume",
+   "book": "Adam and the Genome",
+   "method": "isbn-verified"
   }
  }
 }
