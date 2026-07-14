@@ -51,3 +51,6 @@ video/out/
 .agents/
 .claude/skills/remotion-*
 .claude/skills/mediabunny
+
+video/capture/shots/
+video/capture/node_modules/
