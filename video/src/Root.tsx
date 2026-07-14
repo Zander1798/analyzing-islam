@@ -2,6 +2,7 @@ import React from "react";
 import { Composition } from "remotion";
 import { TheQuestion } from "./ads/TheQuestion";
 import { WorkflowTour } from "./ads/WorkflowTour";
+import { Proof } from "./ads/Proof";
 
 const RATIOS = [
   { suffix: "Vertical", width: 1080, height: 1920 },
@@ -11,6 +12,14 @@ const RATIOS = [
 
 export const Root: React.FC = () => (
   <>
+    <Composition
+      id="Proof"
+      component={Proof}
+      durationInFrames={478}
+      fps={60}
+      width={1080}
+      height={1920}
+    />
     {RATIOS.map((r) => (
       <Composition
         key={`q-${r.suffix}`}
