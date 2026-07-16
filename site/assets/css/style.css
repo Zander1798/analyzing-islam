@@ -277,37 +277,6 @@ code {
   background: none;
 }
 
-/* ===== Hero wordmark: tawaf footage masked into the title ===== */
-/* Real <h1> stays white in the DOM (accessible, correct font); the video
-   sits on top with mix-blend-mode:multiply so on the pure-black background
-   it shows only through the white letterforms. */
-.hero-wordmark {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 28px;
-  isolation: isolate;      /* keep the blend local to this wordmark */
-  background: #000000;     /* black floor so multiply blacks out everything outside the letters */
-}
-.hero-wordmark h1 {
-  margin-bottom: 0;
-  color: #ffffff;          /* pure white letters = full-strength footage via multiply */
-}
-.hero-wordmark__video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  z-index: 1;
-}
-/* Respect reduced-motion and provide a graceful no-video fallback:
-   the plain white title on black remains. */
-@media (prefers-reduced-motion: reduce) {
-  .hero-wordmark__video { display: none; }
-}
-
 .hero-tagline {
   font-size: 16px;
   color: var(--text-muted);
