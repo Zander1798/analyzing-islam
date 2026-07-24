@@ -123,17 +123,17 @@ body.embed-mode .reader-layout {
 .site-nav-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 10px 32px 10px;
+  padding: 8px 24px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   column-gap: 18px;
   row-gap: 4px;
   flex-wrap: wrap;
 }
 
 .site-nav-inner .site-nav-links {
-  margin-left: 0;
+  margin-left: auto;
 }
 
 .site-nav-inner .goat-scream {
@@ -144,13 +144,13 @@ body.embed-mode .reader-layout {
   font-family: var(--serif);
   font-weight: 700;
   font-style: normal;
-  font-size: 33px;
+  font-size: 22px;
   color: var(--text);
   letter-spacing: -0.02em;
   white-space: nowrap;
   flex-shrink: 0;
-  flex-basis: 100%;
-  text-align: center;
+  flex-basis: auto;
+  text-align: left;
   order: 0;
 }
 
@@ -161,11 +161,11 @@ body.embed-mode .reader-layout {
 
 .site-nav-links {
   display: flex;
-  /* Tightened over time so all links + the auth button + goat stay on one
-     desktop row: 36 → 28px (8th link, Build), then 28 → 18px (11th link,
-     Contact). At 18px the 11-tab row is no wider than the old 10-tab row,
-     so the goat stays on the same line as the tabs and the account card. */
-  gap: 18px;
+  /* Tightened so brand + all 11 links + auth button + goat share one desktop
+     row. The brand now sits on this row too (was its own full-width row), so
+     gap + letter-spacing are pulled in to keep headroom inside the 1200px bar
+     even when signed in (the account pill is wider than "Sign in"). */
+  gap: 12px;
   align-items: center;
 }
 
@@ -175,7 +175,7 @@ body.embed-mode .reader-layout {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   transition: color 0.2s;
 }
 
@@ -1057,8 +1057,12 @@ blockquote {
 
 @media (max-width: 768px) {
   .site-brand {
-    flex-basis: auto;
+    flex-basis: 100%;
     text-align: center;
+    font-size: 28px;
+  }
+  .site-nav-inner {
+    justify-content: center;
   }
   .site-nav-inner .auth-button {
     margin-left: 16px;
