@@ -1321,6 +1321,10 @@ blockquote {
   font-weight: 500;
 }
 
+/* The `hidden` attribute must win over `display: block` above, otherwise
+   gated items (e.g. the creator-only Dashboard link) show for everyone. */
+.auth-menu-item[hidden] { display: none; }
+
 .auth-menu-item:hover {
   background: rgba(255, 255, 255, 0.04);
   color: var(--accent);

@@ -4,6 +4,11 @@
 (function () {
   "use strict";
 
+  // The single account allowed to see and open the creator dashboard. The card
+  // is revealed only when the signed-in email matches this AND the server's
+  // is_creator() check passes, so no other account can ever see it.
+  var OWNER_EMAIL = "zandervv0610@icloud.com";
+
   function assetPrefix() {
     const el = document.querySelector('link[href*="assets/"], script[src*="assets/"]');
     if (el) {
@@ -74,13 +79,16 @@
       '<button type="button" class="auth-menu-item auth-signout" role="menuitem">Sign out</button>';
     wrap.appendChild(menu);
 
-    // Show the creator dashboard link only when the server confirms admin
-    // status — and flag this browser so the analytics beacon (track.js) stops
-    // counting the creator's own visits. The flag persists across sessions.
+    // Show the creator dashboard link only for the owner account: the signed-in
+    // email must match OWNER_EMAIL *and* the server's is_creator() must confirm
+    // admin status. Also flag this browser so the analytics beacon (track.js)
+    // stops counting the creator's own visits. The flag persists across sessions.
     try {
       if (window.__supabase && sess && sess.user) {
+        var isOwnerEmail =
+          String(sess.user.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase();
         window.__supabase.rpc("is_creator").then(function (res) {
-          if (res && res.data === true) {
+          if (isOwnerEmail && res && res.data === true) {
             var link = menu.querySelector(".auth-menu-admin");
             if (link) link.hidden = false;
             try { localStorage.setItem("aig:no-track", "1"); } catch (_) {}
