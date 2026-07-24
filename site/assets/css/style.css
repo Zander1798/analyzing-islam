@@ -863,6 +863,8 @@ blockquote {
   text-transform: uppercase;
   letter-spacing: 0.18em;
   font-weight: 500;
+  /* Anchor for the goat, which lives in the footer's bottom-right corner. */
+  position: relative;
 }
 
 .site-footer a {
@@ -912,13 +914,12 @@ blockquote {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
-  /* Fixed floating mascot: bottom-right corner of the viewport on every page.
-     z-index sits above page content but below modals (500+) and the mobile
-     nav dropdown (200), so dialogs still cover it. */
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  z-index: 60;
+  /* The goat lives in the footer's bottom-right corner on every page. It scrolls
+     away with the page (it is not pinned to the viewport). */
+  position: absolute;
+  right: 24px;
+  bottom: 8px;
+  z-index: 2;
   overflow: visible;
 }
 

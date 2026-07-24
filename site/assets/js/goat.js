@@ -41,10 +41,12 @@
   }
 
   function init() {
-    // Floating mascot: pinned to the bottom-right of every page (CSS
-    // `position: fixed`). Lives on <body>, independent of the nav.
+    // The goat lives in the footer's bottom-right corner on every page (CSS
+    // `position: absolute` inside .site-footer), so it scrolls away with the
+    // page rather than staying pinned to the screen.
     if (document.querySelector(".goat-scream")) return;
-    if (!document.body) return;
+    const host = document.querySelector(".site-footer") || document.body;
+    if (!host) return;
 
     const btn = document.createElement("button");
     btn.type = "button";
@@ -52,7 +54,7 @@
     btn.setAttribute("aria-label", "Goat page");
     btn.title = "Click me for the Goat page";
     btn.appendChild(buildNavGoatSvg());
-    document.body.appendChild(btn);
+    host.appendChild(btn);
 
     // Anyone can click (or keyboard-activate) through to the goat page.
     btn.addEventListener("click", function (e) {
@@ -155,7 +157,11 @@
     var footer = document.querySelector(".site-footer");
     if (!footer) return;
     var fact = FOOTER_FACTS[Math.floor(Math.random() * FOOTER_FACTS.length)];
+    // Preserve the goat (which init() appends to the footer) when swapping in
+    // the random fact — resetting innerHTML would otherwise delete it.
+    var goat = footer.querySelector(".goat-scream");
     footer.innerHTML = '<span class="cf-footer-fact">' + fact + "</span>";
+    if (goat) footer.appendChild(goat);
   }
 
   if (document.readyState === "loading") {
