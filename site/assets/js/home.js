@@ -125,8 +125,6 @@
     function go(i) { cur = (i + slides.length) % slides.length; paint(); restart(); }
     function restart() { if (timer) clearInterval(timer); if (!reduce) timer = setInterval(function () { cur = (cur + 1) % slides.length; paint(); }, 6000); }
     btns.forEach(function (b, i) { b.onclick = function () { go(i); }; });
-    stage.addEventListener("mouseenter", function () { if (timer) { clearInterval(timer); timer = null; } });
-    stage.addEventListener("mouseleave", function () { restart(); });
     paint(); restart();
   });
 
