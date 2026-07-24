@@ -138,18 +138,14 @@ body.embed-mode .reader-layout {
   flex-wrap: wrap;
 }
 
-/* Goat temporarily removed from the nav on all tabs. The goat SYSTEM stays
-   fully intact (goat.js still injects + animates the button, goat-skins.js,
-   goat.html, the quiz, skin selection). To bring the nav goat back, delete
-   this single rule. */
-.goat-scream { display: none !important; }
+/* The goat lives in the bottom-right corner of every page as a fixed floating
+   button (see the .goat-scream rule further down + goat.js). It is no longer in
+   the nav. Hide it inside Compare-page embeds. */
+html.embed-mode .goat-scream,
+body.embed-mode .goat-scream { display: none !important; }
 
 .site-nav-inner .site-nav-links {
   margin-left: auto;
-}
-
-.site-nav-inner .goat-scream {
-  margin-left: 8px;
 }
 
 .site-brand {
@@ -912,12 +908,17 @@ blockquote {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  order: 99;
   transition: transform 0.12s ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
-  position: relative;
+  /* Fixed floating mascot: bottom-right corner of the viewport on every page.
+     z-index sits above page content but below modals (500+) and the mobile
+     nav dropdown (200), so dialogs still cover it. */
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
   overflow: visible;
 }
 
@@ -1090,8 +1091,10 @@ blockquote {
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .goat-scream {
-    width: 65px;
-    height: 65px;
+    width: 72px;
+    height: 72px;
+    right: 12px;
+    bottom: 12px;
   }
 
   .hero {

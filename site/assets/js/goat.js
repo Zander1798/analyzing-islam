@@ -41,9 +41,10 @@
   }
 
   function init() {
-    const navInner = document.querySelector(".site-nav-inner");
-    if (!navInner) return;
-    if (navInner.querySelector(".goat-scream")) return;
+    // Floating mascot: pinned to the bottom-right of every page (CSS
+    // `position: fixed`). Lives on <body>, independent of the nav.
+    if (document.querySelector(".goat-scream")) return;
+    if (!document.body) return;
 
     const btn = document.createElement("button");
     btn.type = "button";
@@ -51,12 +52,10 @@
     btn.setAttribute("aria-label", "Goat page");
     btn.title = "Click me for the Goat page";
     btn.appendChild(buildNavGoatSvg());
-    navInner.appendChild(btn);
+    document.body.appendChild(btn);
 
-    btn.addEventListener("pointerdown", function (e) {
-      if (e.button !== 0) return;
-      var session = window.__session;
-      if (!session || !session.user) return;
+    // Anyone can click (or keyboard-activate) through to the goat page.
+    btn.addEventListener("click", function (e) {
       e.preventDefault();
       window.location.href = (assetPrefix() || "") + "goat.html";
     });
