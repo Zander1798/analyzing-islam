@@ -51,25 +51,27 @@
   if (strip) strip.innerHTML = cats.map(tile).join("").repeat(2);
 
   // ---- Today's arguments: deterministic daily shuffle of 3 from a pool ----
+  // [category, title, description, entry URL] — each links to the specific catalog entry.
   var pool = [
-    ["Logic", "The Islamic Dilemma", "The Quran affirms the previous scriptures, contradicts them, and claims Allah's words cannot be changed. Every escape route breaks at least one."],
-    ["Child Marriage", "Aisha at six and nine", "The canonical collections place the contract at six and consummation at nine — reported approvingly, in the sources Sunni jurisprudence treats as authoritative."],
-    ["Scripture", "Uthman's variant-burning", "The caliph standardised one reading and burned the rest — awkward for a claim of perfect, untouched preservation."],
-    ["Jesus", "Denial of the crucifixion", "The Quran denies the crucifixion. Every contemporary source — Christian, Jewish, Roman, pagan — affirms it. No serious historian disputes it."],
-    ["Warfare", "The Sword Verse (9:5)", "“Kill the polytheists wherever you find them.” Classical commentators hold it abrogates over 100 conciliatory verses."],
-    ["Prophet", "The Zaynab affair (33:37)", "A revelation authorises Muhammad's marriage to his adopted son's divorced wife — after he had admired her."],
-    ["Contradiction", "“No contradiction” (4:82)", "The Quran claims its lack of contradictions proves divine origin. The book contains dozens. The self-test fails by its own terms."],
-    ["Abrogation", "The Abrogation Verse (2:106)", "Allah replaces verses with “better” ones — but an omniscient author's first draft should already be optimal."],
-    ["Women", "“Deficient in intellect”", "A sound hadith has the Prophet call women deficient in intelligence and religion — cited to justify a woman's half-testimony."],
-    ["Science", "The sun prostrates", "A sound hadith has the sun travel each night to prostrate beneath the Throne before being permitted to rise again."]
+    ["Logic", "The Islamic Dilemma", "The Quran affirms the previous scriptures, contradicts them, and claims Allah's words cannot be changed. Every escape route breaks at least one.", "catalog/quran.html#the-islamic-dilemma-the-quran-traps-itself-between-the-bible-12cdc43a"],
+    ["Child Marriage", "Aisha at six and nine", "The canonical collections place the contract at six and consummation at nine — reported approvingly, in the sources Sunni jurisprudence treats as authoritative.", "catalog/abu-dawud.html#aisha-s-consummation-at-nine-the-swing-the-preparation-the-h-3c215117"],
+    ["Scripture", "Uthman's variant-burning", "The caliph standardised one reading and burned the rest — awkward for a claim of perfect, untouched preservation.", "catalog/bukhari.html#uthman-burned-all-quran-manuscripts-except-his-standardized-368135b4"],
+    ["Jesus", "Denial of the crucifixion", "The Quran denies the crucifixion. Every contemporary source — Christian, Jewish, Roman, pagan — affirms it. No serious historian disputes it.", "catalog/quran.html#jesus-was-not-crucified-someone-else-was-substituted-e7011545"],
+    ["Warfare", "The Sword Verse (9:5)", "“Kill the polytheists wherever you find them.” Classical commentators hold it abrogates over 100 conciliatory verses.", "catalog/quran.html#the-sword-verse-kill-the-polytheists-wherever-you-find-them-8b577325"],
+    ["Prophet", "The Zaynab affair (33:37)", "A revelation authorises Muhammad's marriage to his adopted son's divorced wife — after he had admired her.", "catalog/quran.html#zaynab-affair-allah-engineers-muhammad-s-marriage-to-his-ado-d1a100b2"],
+    ["Contradiction", "“No contradiction” (4:82)", "The Quran claims its lack of contradictions proves divine origin. The book contains dozens. The self-test fails by its own terms.", "catalog/quran.html#no-contradiction-the-verse-that-sets-the-test-then-fails-it-09fb0e2d"],
+    ["Abrogation", "The Abrogation Verse (2:106)", "Allah replaces verses with “better” ones — but an omniscient author's first draft should already be optimal.", "catalog/quran.html#q2-106-the-abrogation-verse-creates-cascading-problems-for-a-d34ebf0a"],
+    ["Women", "“Deficient in intellect”", "A sound hadith has the Prophet call women deficient in intelligence and religion — cited to justify a woman's half-testimony.", "catalog/bukhari.html#women-are-deficient-in-intelligence-and-religion-most-of-hel-480b1975"],
+    ["Science", "The sun prostrates", "A sound hadith has the sun travel each night to prostrate beneath the Throne before being permitted to rise again.", "catalog/bukhari.html#the-sun-prostrates-beneath-allah-s-throne-nightly-dfb0bdf8"]
   ];
   var stageEl = document.querySelector("[data-daily]");
   if (stageEl) {
     var day = Math.floor(Date.now() / 864e5), n = pool.length, offs = [0, 4, 7], html = "";
     for (var k = 0; k < 3; k++) {
       var p = pool[((day * 3) + offs[k]) % n];
-      html += '<div class="slide' + (k === 0 ? ' active' : '') + '"><span class="k">Today · ' +
-              esc(p[0]) + '</span><h3>' + esc(p[1]) + '</h3><p>' + esc(p[2]) + '</p></div>';
+      html += '<a class="slide' + (k === 0 ? ' active' : '') + '" href="' + p[3] + '">' +
+              '<span class="k">Today · ' + esc(p[0]) + '</span><h3>' + esc(p[1]) + '</h3><p>' + esc(p[2]) +
+              '</p><span class="slide-go">Read this argument →</span></a>';
     }
     stageEl.innerHTML = html;
   }
@@ -123,6 +125,8 @@
     function go(i) { cur = (i + slides.length) % slides.length; paint(); restart(); }
     function restart() { if (timer) clearInterval(timer); if (!reduce) timer = setInterval(function () { cur = (cur + 1) % slides.length; paint(); }, 6000); }
     btns.forEach(function (b, i) { b.onclick = function () { go(i); }; });
+    stage.addEventListener("mouseenter", function () { if (timer) { clearInterval(timer); timer = null; } });
+    stage.addEventListener("mouseleave", function () { restart(); });
     paint(); restart();
   });
 

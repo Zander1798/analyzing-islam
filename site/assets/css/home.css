@@ -113,3 +113,12 @@ body.aig-home{margin:0;background:var(--bg);color:var(--text);font-family:var(--
 .aig-home .hero{text-align:left;padding:0;}
 .aig-home .btn{text-transform:none;letter-spacing:normal;}
 .aig-home main > section + section{margin-top:0;}
+
+/* ===== Today's Arguments: clickable slides linking to the entry ===== */
+.aig-home a.slide{text-decoration:none;color:var(--text);cursor:pointer;}
+.aig-home .slide.active{pointer-events:auto;}
+.aig-home .slide h3{transition:color .3s var(--ease);}
+.aig-home a.slide:hover h3{color:var(--accent-hi);}
+.aig-home .slide-go{color:var(--accent);font-size:.82rem;letter-spacing:.03em;margin-top:1.2rem;
+  display:inline-flex;align-items:center;gap:.5rem;transition:gap .3s var(--ease);}
+.aig-home a.slide:hover .slide-go{gap:.95rem;}
