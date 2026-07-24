@@ -14,8 +14,14 @@
   --text-muted: #9a9a9a;
   --muted: #9a9a9a;
   --text-dim: #5a5a5a;
-  --accent: #7aa2f7;
-  --accent-hover: #9ab5ff;
+  /* UI / interaction accent — Strong red. Used for hovers, active nav,
+     counts, verse refs, quote stripes, buttons, focus, etc. */
+  --accent: #e53935;
+  --accent-hover: #ff6b6b;
+  /* Inline content links inside entries/prose stay BLUE (cite-link, src-link,
+     interlinear-link, .ref a, and the default <a>). */
+  --link: #7aa2f7;
+  --link-hover: #9ab5ff;
   --basic: #4caf50;
   --moderate: #ff9800;
   --strong: #e53935;
@@ -80,13 +86,13 @@ body.splitter-dragging iframe {
 .splitter-ghost.is-visible { display: block; }
 
 a {
-  color: var(--accent);
+  color: var(--link);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 a:hover {
-  color: var(--accent-hover);
+  color: var(--link-hover);
 }
 
 /* ===== Embed mode =====
@@ -751,8 +757,8 @@ input[type="file"]::file-selector-button:focus {
 }
 
 .ref a:hover {
-  color: var(--accent-hover);
-  border-bottom-color: var(--accent-hover);
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
   border-bottom-style: solid;
 }
 
@@ -760,15 +766,15 @@ input[type="file"]::file-selector-button:focus {
    paragraphs, blockquotes, list items). Dotted blue underline so they read
    as links without disrupting body prose. */
 a.cite-link {
-  color: var(--accent);
+  color: var(--link);
   text-decoration: none;
-  border-bottom: 1px dotted var(--accent);
+  border-bottom: 1px dotted var(--link);
   transition: color 0.15s, border-bottom-style 0.15s;
 }
 
 a.cite-link:hover {
-  color: var(--accent-hover);
-  border-bottom-color: var(--accent-hover);
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
   border-bottom-style: solid;
 }
 
@@ -776,30 +782,30 @@ a.cite-link:hover {
    cite-links but they open the source itself (archive.org, DOI, publisher…)
    in a new tab. */
 a.src-link {
-  color: var(--accent);
+  color: var(--link);
   text-decoration: none;
-  border-bottom: 1px dotted var(--accent);
+  border-bottom: 1px dotted var(--link);
   transition: color 0.15s, border-bottom-style 0.15s;
 }
 
 a.src-link:hover {
-  color: var(--accent-hover);
-  border-bottom-color: var(--accent-hover);
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
   border-bottom-style: solid;
 }
 
 /* Interlinear word deep-links — distinct from cite-links; italic Arabic terms
    that open the word panel in the Interlinear Quran on click. */
 a.interlinear-link {
-  color: var(--accent);
+  color: var(--link);
   text-decoration: none;
-  border-bottom: 1px dashed var(--accent);
+  border-bottom: 1px dashed var(--link);
   transition: color 0.15s, border-bottom-style 0.15s;
 }
 
 a.interlinear-link:hover {
-  color: var(--accent-hover);
-  border-bottom-color: var(--accent-hover);
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
   border-bottom-style: solid;
 }
 
