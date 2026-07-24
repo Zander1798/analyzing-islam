@@ -11,9 +11,9 @@
 /* ===== homepage-only: full-bleed main + transparent nav over the hero ===== */
 body.aig-home{margin:0;background:#000;color:var(--text);overflow-x:hidden;}
 .aig-home main{max-width:none;margin:0;padding:0;}
-.aig-home .site-nav{position:fixed;top:0;left:0;width:100%;background:transparent;border-bottom-color:transparent;
-  transition:background .4s var(--ease),border-color .4s var(--ease),transform .25s ease;z-index:100;}
-.aig-home .site-nav.scrolled{background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border-bottom-color:var(--border);}
+.aig-home .site-nav{position:fixed;top:0;left:0;width:100%;background:#000;border-bottom:1px solid var(--border);
+  transition:transform .25s ease;z-index:100;}
+.aig-home .site-nav.scrolled{background:#000;border-bottom-color:var(--border);}
 .aig-home .site-footer{border-top:1px solid var(--border);}
 
 .aig-home *{box-sizing:border-box;}
