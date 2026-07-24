@@ -121,9 +121,9 @@ body.embed-mode .reader-layout {
 .site-nav.is-hidden { transform: translateY(-100%); }
 
 .site-nav-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 8px 24px;
+  max-width: none;
+  margin: 0;
+  padding: 10px clamp(20px, 3vw, 48px);
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -131,6 +131,12 @@ body.embed-mode .reader-layout {
   row-gap: 4px;
   flex-wrap: wrap;
 }
+
+/* Goat temporarily removed from the nav on all tabs. The goat SYSTEM stays
+   fully intact (goat.js still injects + animates the button, goat-skins.js,
+   goat.html, the quiz, skin selection). To bring the nav goat back, delete
+   this single rule. */
+.goat-scream { display: none !important; }
 
 .site-nav-inner .site-nav-links {
   margin-left: auto;
