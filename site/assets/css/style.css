@@ -16,8 +16,8 @@
   --text-dim: #5a5a5a;
   /* UI / interaction accent — Strong red. Used for hovers, active nav,
      counts, verse refs, quote stripes, buttons, focus, etc. */
-  --accent: #e53935;
-  --accent-hover: #ff6b6b;
+  --accent: #c62828;
+  --accent-hover: #ef5350;
   /* Inline content links inside entries/prose stay BLUE (cite-link, src-link,
      interlinear-link, .ref a, and the default <a>). */
   --link: #7aa2f7;
