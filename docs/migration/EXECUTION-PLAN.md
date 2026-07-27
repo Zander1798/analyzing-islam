@@ -26,10 +26,23 @@ Owner actions are marked **[ZANDER]**. Everything else runs from this workstatio
    ```
    POOLER_URL='postgresql://postgres.cndmksrilytnpgstvmxb:PASSWORD@aws-0-eu-west-1.pooler.supabase.com:5432/postgres'
    ```
-2. **[ZANDER] JWT secret + signing scheme** (dashboard → Settings → API). Copy the
-   JWT Secret, and record whether the project uses a **legacy shared HS256 secret**
-   or **asymmetric signing keys**. Legacy → sessions likely survive; asymmetric →
-   plan to tell the 6 users to log in again (refresh tokens may still save them).
+2. ~~**[ZANDER] JWT secret + signing scheme**~~ — **RESOLVED 2026-07-27, no longer
+   needed.** Answered empirically from the project's own public JWKS endpoint:
+   ```bash
+   curl -s https://cndmksrilytnpgstvmxb.supabase.co/auth/v1/.well-known/jwks.json
+   # -> {"keys":[{"alg":"ES256","kty":"EC","crv":"P-256", ... }]}
+   ```
+   The project signs user access tokens with an **ES256 asymmetric key**, whose
+   private half Supabase holds and never exposes. Three consequences:
+   - **Reusing the legacy JWT secret cannot preserve sessions** — the entire Stage 3b
+     "everyone stays logged in" mitigation is void for this project. Do not chase it.
+   - **We therefore do not need Zander's JWT secret at all.** The randomly generated
+     `JWT_SECRET` already on the VPS is correct and final. No swap before Stage 4.
+   - **Sessions should still survive, by a different mechanism:** refresh tokens are
+     opaque **database rows**, not signed tokens. All 79 restore. When a client's
+     ES256 access token fails against the self-hosted stack, supabase-js silently
+     refreshes, GoTrue looks the refresh token up in the restored table and mints a
+     new HS256 token. Expected to be seamless — **verify at Stage 9d, do not assume.**
 3. **[ZANDER] Cloudflare API token**, scoped to Zone → DNS → Edit for
    `analyzingislam.com` (dash.cloudflare.com → My Profile → API Tokens). This lets the
    plan do staging DNS, the zero-downtime pre-issued certificate (Stage 9e), and the
@@ -125,8 +138,14 @@ Also record from `docker-compose.yml`:
 
 ### 3b. `.env`
 
-- `JWT_SECRET` — the value from Part A item 2 (reuse costs nothing and can only help;
-  whether sessions survive depends on the signing scheme recorded there)
+- `JWT_SECRET` — **a freshly generated random secret. Do NOT chase the cloud one.**
+  Cloud signs with ES256 asymmetric keys (see Part A item 2), so reusing its legacy
+  HS256 secret preserves nothing. Mint `ANON_KEY`/`SERVICE_ROLE_KEY` as HS256 JWTs
+  (`{"role":"anon"|"service_role","iss":"supabase","iat":…,"exp":…}`) against it.
+- **Also randomize `SUPABASE_PUBLISHABLE_KEY` and `SUPABASE_SECRET_KEY`.** The
+  `.env.example` ships placeholder values that `volumes/api/kong.yml` registers as
+  **live Kong credentials** — leaving them means publicly-known keys authenticate
+  against your API the moment it is reachable.
 - `POSTGRES_PASSWORD` — new strong password
 - `DASHBOARD_USERNAME` / `DASHBOARD_PASSWORD`
 - `SITE_URL=https://analyzingislam.com`
@@ -225,15 +244,54 @@ Same query both sides, `diff` must be empty (see runbook 4c for the SQL). Baseli
 `auth.users` 6, `auth.refresh_tokens` 73, `public.profiles` 5, `storage.objects` 26,
 `public.pageviews` 858. Do not proceed on a mismatch.
 
-### 4d. Replay the 18 schema files (public-schema grants)
+### 4d. Replay the schema files (public-schema grants)
+
+> ### ⚠ CORRECTION #6 — "replay all 18 files" is DESTRUCTIVE. Learned the hard way.
+>
+> `supabase/` is not 18 files of idempotent DDL. Replaying the whole directory on
+> 2026-07-27 **deleted a real row and inserted five fake ones**, and the row-count
+> check is what caught it:
+>
+> - **`analytics-verify.sql` is a manual test script, not schema.** It seeds fake
+>   pageviews, calls the creator RPCs (the three `ERROR: forbidden` lines are the
+>   admin gate working correctly), then cleans up with
+>   `delete from public.search_queries where q = 'aisha'`. The database's one real
+>   search row *was* `q='aisha'` — `search_queries` went 1 → 0. **Never replay this
+>   file.**
+> - **`community-schema.sql:684` carries a demo seed block** inserting six
+>   communities `on conflict (slug) do nothing`. Five landed: `communities` 2 → 7,
+>   and the owner-membership trigger took `community_members` 4 → 9.
+>
+> **So: exclude `analytics-verify.sql`, and expect the community seed.** Reconcile
+> after replaying, then re-check counts — a clean diff is the only proof.
 
 ```bash
-scp -r supabase/ deploy@72.60.17.245:~/schema/
-# on the VPS:
-for f in ~/schema/*.sql; do echo "=== $f"; \
-  docker exec -i supabase-db psql -U supabase_admin -d postgres < "$f"; \
+scp -r supabase/ deploy@72.60.17.245:~/schema-src/
+# on the VPS — every file EXCEPT the test script:
+for f in ~/schema-src/*.sql; do
+  [ "$(basename $f)" = "analytics-verify.sql" ] && { echo "SKIP (test script): $f"; continue; }
+  echo "=== $f"
+  docker exec -i supabase-db psql -U supabase_admin -d postgres -v ON_ERROR_STOP=0 < "$f"
 done 2>&1 | tee ~/schema-replay.log
 ```
+
+Then remove the demo seed and restore parity (community ids 8 `general` and
+9 `warfare` are the only legitimate ones as of this dump — re-derive from the dump
+if it has moved):
+
+```bash
+docker exec -i supabase-db psql -U supabase_admin -d postgres <<'SQL'
+begin;
+delete from public.community_members where community_id not in (8,9);
+delete from public.communities        where id           not in (8,9);
+commit;
+select setval('public.communities_id_seq', 9, true);      -- seed advanced it to 15
+select setval('public.search_queries_id_seq', 1, true);
+SQL
+```
+
+`policy "…" already exists` errors during replay are expected; anything else in
+`schema-replay.log` deserves a read.
 `policy "…" already exists` errors are expected; anything else in the log deserves a
 read. Then restart the API layer so no schema cache is stale:
 
@@ -501,6 +559,40 @@ This is the deliberate abandonment of the rollback path.
 
 ---
 
+## Execution log — what actually happened (2026-07-27)
+
+**Stages 2, 3, 4, 8 are DONE and verified.** Remaining: 5 (storage files), 6 (URL
+rewrites), 7 (SMTP), 9 (staging DNS/certs/tests), 10 (cutover), 11, 12.
+
+- **Stage 2 ✅** deploy user + key-only SSH, root login refused, ufw 22/80/443, Docker.
+- **Stage 3 ✅** 11 containers healthy. All published ports loopback-bound; external
+  scan of 3000/8000/8443/5432/6543 from off-box: all refused. `pgvector` enabled.
+  GoTrue `v2.189.0`, Postgres `17.6.1.136` — **same 17.6 major/minor as cloud**.
+- **Stage 4 ✅** dump 396K, restored as `supabase_admin`, ownership/grants repaired,
+  schema replayed, seed damage reconciled. **All 53 cloud tables match exactly**
+  (`auth.users` 6, `refresh_tokens` 79, `profiles` 5, `pageviews` 860,
+  `storage.objects` 26). Only VPS-side extras are two empty `storage.iceberg_*`
+  tables from the newer storage-api. API checks: `public_profiles` 200,
+  `rpc/is_creator` 200, `profiles` 200, anon `pageviews` insert 201, storage 200,
+  auth health 200.
+- **Stage 8 ✅** 746MB rsynced with `--exclude config.js`; nginx serving; `/about`
+  (extensionless) returns 200.
+
+**The GoTrue version-skew risk (old Stage 4e) is closed.** Cloud carried exactly one
+migration the pinned GoTrue lacked (`20260625000000`), whose only schema effect is an
+additive `custom_claims_allowlist text[] DEFAULT '{}'` column on
+`auth.custom_oauth_providers` — a table this site never uses. GoTrue logged
+*"Migrations already up to date, nothing to apply"* against the restored cloud schema
+and came up healthy. No image bump was needed.
+
+**Environment surprise:** the VPS shipped with **Dokploy** preinstalled — Traefik held
+80/443 and an unclaimed admin panel was exposed on `:3000`. Removed with the owner's
+approval. Note that `docker swarm leave` broke Docker's embedded DNS for the running
+compose stack (Kong could not resolve `auth`, PostgREST could not resolve `db`); a
+`docker compose down && up -d` rebuilt the network and everything returned healthy.
+
+---
+
 ## Appendix — corrections vs the original runbook (all verified 2026-07-27)
 
 1. **Loopback-bind all Docker-published ports (Stage 3a).** ufw does not govern
@@ -519,6 +611,16 @@ This is the deliberate abandonment of the rollback path.
 5. **Backup script fixed (11a).** Original tarred `/var/lib/docker/volumes` (wrong
    path — storage is a bind mount), as a user who couldn't read it, with the failure
    swallowed by `|| true`, and never pruned the tars.
+6. **"Replay all 18 schema files" is destructive (4d).** `analytics-verify.sql` is a
+   test script whose cleanup deletes the real `search_queries` row; and
+   `community-schema.sql` carries a six-community demo seed. Proven by row-count diff
+   during the real restore, then repaired. Exclude the test script; reconcile the seed.
+7. **The cloud project uses ES256 asymmetric signing (Part A item 2, Stage 3b).**
+   Proven from its public JWKS endpoint. Reusing the legacy JWT secret cannot keep
+   anyone logged in, so the secret is not needed at all; session continuity instead
+   rides on the 79 restored refresh-token rows.
+8. **`.env.example`'s publishable/secret keys are live Kong credentials (3b).**
+   Shipping defaults would let publicly-known keys authenticate. Randomize both.
 
 Plus: every restore is followed by `docker compose restart auth rest storage`
 (schema-cache insurance); the final sync re-runs grants, URL rewrites **and** the
