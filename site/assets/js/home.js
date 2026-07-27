@@ -134,6 +134,38 @@
     var onScroll = function () { nav.classList.toggle("scrolled", window.scrollY > window.innerHeight * 0.7); };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
+
+    // Publish the nav's real height so the mobile hero can sit directly under
+    // it (see the max-width:768px block in home.css). The nav is fixed and its
+    // links wrap onto a variable number of rows, so this has to be measured —
+    // and re-measured whenever the auth control changes the nav's contents.
+    var heroInner = document.querySelector(".hero .inner");
+    var cta = document.querySelector(".hero .cta");
+    var setNavH = function () {
+      var h = nav.offsetHeight;
+      if (h) document.documentElement.style.setProperty("--nav-h", h + "px");
+      if (!heroInner || !cta) return;
+      // Decide whether the hero needs the compact treatment. Always measure the
+      // *untightened* layout (class off first) so the result can't oscillate
+      // between the two states on successive passes.
+      document.body.classList.remove("hero-tight");
+      void heroInner.offsetHeight; // force reflow before measuring
+      if (cta.getBoundingClientRect().bottom > window.innerHeight - 8) {
+        document.body.classList.add("hero-tight");
+      }
+    };
+    setNavH();
+    window.addEventListener("resize", setNavH);
+    window.addEventListener("orientationchange", setNavH);
+    // auth-ui.js injects the Sign in / account control asynchronously (after
+    // the first session check), which can add a nav row. A ResizeObserver
+    // catches that, plus font swaps and username changes, without polling.
+    if (window.ResizeObserver) {
+      new ResizeObserver(setNavH).observe(nav);
+    } else {
+      window.addEventListener("auth-state", function () { setTimeout(setNavH, 0); });
+      window.addEventListener("profile-state", function () { setTimeout(setNavH, 0); });
+    }
   }
 
   } catch (e) {

@@ -20,7 +20,7 @@ FAVICON_BLOCK = """
 <link rel="icon" href="/assets/icons/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/assets/icons/site.webmanifest">
-<meta name="theme-color" content="#0a0a0a">"""
+<meta name="theme-color" content="#000000">"""
 
 # Insert right after the <meta name="description"> tag. Covers the vast
 # majority of the generated pages; any without a description meta get

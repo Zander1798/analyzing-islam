@@ -114,6 +114,42 @@ body.aig-home{margin:0;background:var(--bg);color:var(--text);font-family:var(--
 .aig-home .btn{text-transform:none;letter-spacing:normal;}
 .aig-home main > section + section{margin-top:0;}
 
+/* ===== Mobile hero: sit flush under the nav, and flush with the browser chrome =====
+   1. The hero block (h1 + sub + CTAs) is bottom-aligned on desktop, which on a
+      phone left a dead gap under the nav and pushed the buttons behind Safari's
+      bottom toolbar. On mobile we top-align it instead and offset it by the
+      *measured* nav height (--nav-h, set by home.js) so the gap is a fixed
+      2.4rem no matter how many rows the nav links wrap onto.
+   2. The very top of the hero fades from solid #000 — the same colour the
+      browser paints its status/address bar from <meta name="theme-color"> — so
+      the page reads as one continuous surface instead of the video starting
+      abruptly below a separate black block. */
+@media (max-width: 768px) {
+  .aig-home .hero { align-items: flex-start; }
+  .aig-home .hero .inner {
+    padding-top: calc(var(--nav-h, 190px) + 2.4rem);
+    padding-bottom: clamp(2rem, 6vh, 4rem);
+  }
+  .aig-home .hero .grade {
+    background: linear-gradient(180deg,
+      #000 0%,
+      rgba(0, 0, 0, .95) 5%,
+      rgba(0, 0, 0, .62) 16%,
+      rgba(0, 0, 0, .3) 40%,
+      rgba(0, 0, 0, .55) 72%,
+      #000 100%);
+  }
+
+  /* Short phones (iPhone SE class): the nav alone eats ~200px, so tighten the
+     hero block until it clears the fold. home.js adds .hero-tight only when it
+     has measured that the natural layout would overflow. */
+  .aig-home.hero-tight .hero .inner { padding-top: calc(var(--nav-h, 190px) + 1rem); }
+  .aig-home.hero-tight .hero h1 { font-size: clamp(2.4rem, 10.5vw, 3.4rem); }
+  .aig-home.hero-tight .hero .sub { margin-top: 1rem; font-size: 1rem; }
+  .aig-home.hero-tight .hero .cta { margin-top: 1.3rem; gap: .7rem; }
+  .aig-home.hero-tight .hero .btn { padding: .75rem 1.4rem; }
+}
+
 /* ===== Today's Arguments: clickable slides linking to the entry ===== */
 .aig-home a.slide{text-decoration:none;color:var(--text);cursor:pointer;}
 .aig-home .slide.active{pointer-events:auto;}

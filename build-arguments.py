@@ -269,7 +269,7 @@ def head_block(title: str, description: str, prefix: str, og_url_path: str) -> s
 <link rel="icon" href="{prefix}assets/icons/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="{prefix}assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="{prefix}assets/icons/site.webmanifest">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#000000">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Analyzing Islam">
 <meta property="og:title" content="{escape(title, quote=True)}">
