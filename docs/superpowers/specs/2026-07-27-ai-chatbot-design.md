@@ -390,6 +390,16 @@ broad appeal invites a well-read Muslim to produce a counter-citation, and the s
 loses credibility it would have kept by claiming less. The narrow claim is
 unassailable; the broad one is not worth making.
 
+Two corollaries for the system prompt:
+
+1. **Never attribute a position to a named scholar without a source for it.** Where
+   the bot wants to invoke a scholar, it states the documented position, not an
+   inferred one. See cluster G for the worked example.
+2. **When a critical scholar is cited against the Bible, ask whether the same method
+   has been applied to the Islamic sources — then apply it.** This is the highest-value
+   reply in the whole taxonomy, because the site's corpus already holds the evidence and
+   the asymmetry is genuine rather than rhetorical.
+
 **E. Salvation**
 - Original sin — why bear Adam's guilt?
 - Is substitutionary atonement just?
@@ -398,6 +408,33 @@ unassailable; the broad one is not worth making.
 
 **F. Comparative**
 - How the two faiths actually differ; why Christians do not keep the Mosaic law
+
+**G. Asymmetric standards — the method-consistency reply**
+
+A distinct move, applicable across clusters B–E rather than a topic of its own. Dawah
+routinely imports a critical scholar's conclusions about the Bible while exempting
+Islamic sources from the same method. The reply is never "that scholar is wrong" — it
+is that the method, applied consistently, is far harsher on the Quran than on the
+Gospels.
+
+| Argument imported against the Bible | The same standard, applied to Islamic sources |
+|---|---|
+| Ehrman on transmission variants | Ehrman treats the crucifixion as among the most certain facts of ancient history — which Q4:157 denies. The historical-critical method applied to a 7th-century source with no independent attestation and no chain to eyewitnesses does not yield the Quranic Jesus. |
+| Manuscript variants prove corruption | Uthman standardised one reading and burned the rest — the site has an entry on this |
+| Gospels written 35–65 years after the events | Canonical hadith collected 200+ years after Muhammad |
+| Gospels are anonymous | Isnad chains accepted at face value without comparable scrutiny |
+| No autograph manuscripts of the Bible survive | No autograph of the Quran survives either |
+| Christianity absorbed pagan material | The Pre-Islamic Borrowings category holds 96 entries |
+
+This cluster is where the site's existing corpus is strongest, so retrieval should
+find supporting entries readily. It needs its own reference documents chiefly to
+teach the *shape* of the reply.
+
+**The narrow-claim rule applies to this cluster too, and it bites.** Do not assert
+what a named scholar thinks about the Quran without a citation for it. "Ehrman
+rejects the Quran as a historical source" is an over-claim. "Ehrman treats the
+crucifixion as among the most certain facts of ancient history, which Q4:157 denies"
+is documented, and is the stronger sentence anyway.
 
 ### Al-Zutt — a worked example of correct behaviour
 
