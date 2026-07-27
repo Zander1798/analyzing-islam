@@ -125,20 +125,32 @@ batch-embed corpus text. It is not on the request path.
 | Dossiers | 147 | yes | yes | Thesis-level; primary tier for thematic questions |
 | Entries | 1,524 | yes | yes | Passage-level evidence |
 | Quran verses | 6,236 | yes | yes | Needed for verses no entry wraps (e.g. Q112:3) |
+| Bible (OT + NT) | ~31,100 | yes | yes | **Required, not optional** — see below |
 | Doctrine refs | ~30–50 | yes | yes | Authored; see §7 |
 | Video chunks | ~21,000 | yes | yes | ~250-word passages with start timestamps |
 
-**Deliberately excluded from phase 1:** the full 34K-hadith corpus and the external
-texts (Bible, Tanakh, Talmud, Mishnah, Ibn Kathir, Josephus, Enoch, apocryphal
-gospels). Every entry already carries its hadith's text verbatim in its blockquote,
-so any hadith the site argues from is already indexed as part of that entry.
-The readers are split per-chapter HTML with `anchors.json` ID→page maps, so this is
-a real parse job, not a JSON import.
+**The Bible is required in phase 1.** An earlier draft deferred it; that was a
+defect. Under D2, a claim about what John 14:17 or Deut 34:10 says must resolve to a
+site source. Without the Bible indexed, the bot cannot make the Muhammad-in-the-Bible
+argument at all — it would hit the gap flow on one of the most-asked questions in the
+§7 taxonomy. Every rebuttal in cluster D is won from the biblical text itself rather
+than from authority, so the text must be citable.
+
+**Deliberately excluded from phase 1:** the full 34K-hadith corpus and the remaining
+external texts (Talmud, Mishnah, Ibn Kathir, Josephus, Enoch, apocryphal gospels).
+Every entry already carries its hadith's text verbatim in its blockquote, so any
+hadith the site argues from is already indexed as part of that entry. The readers are
+split per-chapter HTML with `anchors.json` ID→page maps, so this is a real parse job,
+not a JSON import.
 
 **Trigger to revisit:** if the gap-rate log (§8) shows the bot repeatedly answering
-"not covered" on questions whose answer *is* in an uncited hadith or Bible passage,
-that earns the ingest. The NT is the most likely first addition, since Christian
-doctrine questions lean on it.
+"not covered" on questions whose answer *is* in an uncited hadith, that earns the
+ingest.
+
+**Storage consequence.** ~39,000 non-video documents plus ~21,000 video chunks is
+roughly 92MB of vectors before text bodies and FTS indexes — call it 250–300MB
+total. That fits the free tier's 500MB only barely, and strengthens the §8
+conclusion that Supabase Pro is required rather than optional.
 
 ### Schema
 
@@ -345,6 +357,39 @@ Muslim–Christian apologetics:
 **D. Muhammad in the Bible**
 - Paraclete (Jn 14:16); Deut 18:18; Song of Songs 5:16 "Muhammadim"; Isaiah 29:12
 
+Every rebuttal in this cluster is won **from the biblical text itself**, not from
+scholarly authority — which is what makes it persuasive to a Muslim who will not
+grant Christian scholars, and what makes it citable under D2:
+
+- *Paraclete* — Jn 14:17 and 14:26 name the term ("the Spirit of truth", "the
+  Paraclete, the Holy Spirit"); 14:17 says he "will be in you"; 16:7 places the
+  arrival within the disciples' lifetimes. The secondary *periklytos* ≈ *Ahmad*
+  claim has no manuscript support: no Greek NT manuscript reads *periklytos*.
+- *Deut 18:18* — "from among their brothers" is settled by 18:15, addressed to
+  Israel, and by Deut 34:10, "no prophet has arisen in Israel like Moses".
+- *Song 5:16* — *maḥămaddim* is a common noun with a plural-of-intensity ending,
+  "altogether desirable", from a root used elsewhere for desirable objects. Not a
+  proper name.
+- *Isaiah 29:12* — sits in a judgment oracle where 29:11 has the *literate* man
+  equally unable to read because the scroll is sealed. A metaphor for
+  incomprehension, not a prophecy of an illiterate prophet.
+
+### The narrow-claim rule
+
+On any topic where the argument touches biblical scholarship, the bot makes the
+**narrow** claim, never the broad one.
+
+- Sound: "No critical scholar of any confessional stance reads Deut 18:18 as
+  referring to Muhammad, and here is what the passage itself says."
+- Unsound: "Scholarship supports the Christian position."
+
+The reason is specific to this site. The Islamic Dilemma argument leans on mainstream
+biblical scholarship, and dawah cites Ehrman for exactly the same reason — mainstream
+critical scholarship is not uniformly friendly to conservative Christian claims. A
+broad appeal invites a well-read Muslim to produce a counter-citation, and the site
+loses credibility it would have kept by claiming less. The narrow claim is
+unassailable; the broad one is not worth making.
+
 **E. Salvation**
 - Original sin — why bear Adam's guilt?
 - Is substitutionary atonement just?
@@ -493,8 +538,12 @@ Sequenced so cost commitments come last.
 **Phase 1 — ingest and retrieval. Zero API cost, free tier.**
 `build-kb.py`, `kb_docs`, `match_corpus()`, the recall fixture. Front-loads the real
 technical risk: does retrieval actually find the right material for "Is Allah a
-father?" If not, nothing downstream matters. Entries, dossiers, Quran and the
+father?" If not, nothing downstream matters. Entries, dossiers, Quran, Bible and the
 doctrine layer first; the 2–3 hour video ingest once retrieval is proven.
+
+The Bible parse reads `site/read-external/bible/*.html` — 66 per-book files using
+standard abbreviations (`1ch`, `1jn`, `2co`), so it is a straightforward per-book
+parse rather than the chapter-split-plus-`anchors.json` shape the hadith readers use.
 
 **Phase 2 — Edge Function and chat path. ~$5 of API credit.**
 Owner-only testing of answer quality, tone and the grounding rule against real
@@ -517,7 +566,10 @@ point commits to a monthly bill.
   confident dead links. Deep-indexing vetted channels is better at every point.
   Web search may later be worth revisiting for a *different* job — checking whether
   a claim has recent scholarly support — but not for recommendations.
-- **Full hadith and external-text ingest.** See §5 for the trigger to revisit.
+- **Full hadith ingest and the remaining external texts** (Talmud, Mishnah, Ibn
+  Kathir's 114-surah tafsir, Josephus, Enoch, apocryphal gospels). The Bible is
+  *not* in this list — it moved into phase 1 as required, since cluster D of the
+  §7 taxonomy is unanswerable without it. See §5 for the trigger to revisit the rest.
 - **Whisper transcription fallback.** See §5.
 - **Reading memory and guided learning path.** Deferred; own spec if wanted.
 - **Anonymous access.** Sign-in is the rate-limit anchor.
