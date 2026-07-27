@@ -133,3 +133,37 @@ def test_parse_dossier_ignores_index_pages():
     """arguments/bukhari.html is a table of contents, not a dossier."""
     p = SITE / "arguments" / "bukhari.html"
     assert kb.parse_dossier(p.read_text(encoding="utf-8"), "arguments/bukhari.html") is None
+
+
+@pytest.fixture(scope="module")
+def surah1():
+    html = (SITE / "read" / "quran" / "1.html").read_text(encoding="utf-8")
+    return kb.parse_quran_page(html, 1)
+
+
+def test_quran_parses_all_verses_of_al_fatiha(surah1):
+    assert len(surah1) == 7
+
+
+def test_quran_verse_shape(surah1):
+    v = surah1[1]
+    assert v["kind"] == "verse"
+    assert v["source"] == "quran"
+    assert v["slug"] == "quran/1:2"
+    assert v["ref"] == "Quran 1:2"
+    assert v["url"] == "read/quran/1.html#s1v2"
+    assert "praise" in v["body"].lower()
+
+
+def test_quran_body_excludes_arabic(surah1):
+    """Arabic script would pollute the English tsvector and the embedding."""
+    joined = " ".join(v["body"] for v in surah1)
+    assert not re.search(r"[؀-ۿ]", joined)
+
+
+def test_quran_112_3_is_findable():
+    """The single most-cited verse in the Christian-doctrine taxonomy."""
+    html = (SITE / "read" / "quran" / "112.html").read_text(encoding="utf-8")
+    verses = kb.parse_quran_page(html, 112)
+    v = next(v for v in verses if v["ref"] == "Quran 112:3")
+    assert "begets" in v["body"].lower() or "begotten" in v["body"].lower()

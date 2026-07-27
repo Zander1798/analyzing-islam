@@ -110,3 +110,37 @@ def parse_dossier(html: str, rel_path: str) -> dict | None:
         "body": body,
         "embed_text": _compose_embed_text(title, ref, [], body),
     }
+
+
+def parse_quran_page(html: str, surah: int) -> list[dict]:
+    """Parse one surah page from site/read/quran/<surah>.html."""
+    soup = BeautifulSoup(html, "html.parser")
+    docs: list[dict] = []
+
+    for li in soup.select("li[id^='s']"):
+        text_el = li.select_one(".verse-text")
+        if not text_el:
+            continue
+        ayah = li.get("value") or ""
+        if not ayah.isdigit():
+            continue
+
+        body = _clean(text_el.get_text())
+        if not body:
+            continue
+
+        ref = f"Quran {surah}:{ayah}"
+        docs.append({
+            "kind": "verse",
+            "slug": f"quran/{surah}:{ayah}",
+            "title": ref,
+            "ref": ref,
+            "source": "quran",
+            "categories": [],
+            "strength": None,
+            "url": f"read/quran/{surah}.html#{li['id']}",
+            "body": body,
+            "embed_text": _compose_embed_text(ref, None, [], body),
+        })
+
+    return docs
