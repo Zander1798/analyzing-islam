@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analyzing Islam — Design Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --page: #f3ede3;
+  --ink: #14201a;
+  --accent: #1A6B5C;
+  --accent-bright: #22917b;
+  --white: #ffffff;
+  --muted: rgba(20,32,26,0.38);
+  --rule: rgba(20,32,26,0.12);
+  --nav-h: 60px;
+  --max: 1080px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: 0.4;
+}
+::selection { background: var(--accent); color: var(--white); }
+
+/* NAV */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h);
+  background: rgba(243,237,227,0.94);
+  border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px;
+  backdrop-filter: blur(8px);
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; letter-spacing: 3px; color: var(--ink);
+  cursor: pointer; flex-shrink: 0;
+}
+.nav-logo em { color: var(--accent); font-style: normal; }
+.nav-links { display: flex; gap: 22px; list-style: none; }
+.nav-links a {
+  font-size: 10px; font-weight: 500; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  text-decoration: none; transition: color 0.2s; cursor: pointer;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--ink); }
+.nav-goat { font-size: 20px; cursor: default; flex-shrink: 0; }
+
+/* PAGE SYSTEM */
+.page { display: none; }
+.page.active { display: block; }
+
+/* LAYOUT */
+.manifesto-wrap { max-width: var(--max); margin: 0 auto; padding: 0 48px; }
+.m-section { padding: 100px 0; border-top: 1px solid var(--rule); }
+.m-section:first-child { border-top: none; }
+
+.m-eyebrow {
+  font-size: 10px; font-weight: 500; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 48px;
+  display: flex; align-items: center; gap: 16px;
+}
+.m-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+/* DECLARATIONS */
+.decl { font-family: 'Bebas Neue', sans-serif; line-height: 0.92; letter-spacing: -1px; color: var(--ink); }
+.decl-xl { font-size: clamp(88px, 12vw, 160px); }
+.decl-lg { font-size: clamp(56px, 8vw, 108px); }
+.decl-md { font-size: clamp(38px, 5.5vw, 72px); }
+.decl-sm { font-size: clamp(26px, 4vw, 48px); }
+.decl em { color: var(--accent); font-style: normal; }
+.indent-1 { padding-left: 8%; }
+.indent-2 { padding-left: 18%; }
+.indent-3 { padding-left: 30%; }
+
+.m-body { font-size: 15px; font-weight: 300; line-height: 1.85; color: rgba(20,32,26,0.65); max-width: 540px; }
+.m-body.wide { max-width: 780px; }
+.gap-sm { height: 28px; }
+.gap-md { height: 52px; }
+.gap-lg { height: 80px; }
+
+.m-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11px; font-weight: 500; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--accent);
+  text-decoration: none; cursor: pointer;
+  margin-top: 32px; transition: gap 0.2s;
+}
+.m-cta:hover { gap: 16px; }
+.m-cta::after { content: '→'; }
+
+.teal-rule { width: 48px; height: 3px; background: var(--accent); margin: 32px 0; }
+
+.pull-quote { border-left: 3px solid var(--accent); padding: 4px 0 4px 28px; margin: 60px 0 60px 18%; }
+.pull-quote-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(22px, 3vw, 34px); font-weight: 600; font-style: italic;
+  line-height: 1.3; color: var(--ink);
+}
+.pull-quote-attr { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 14px; font-weight: 500; }
+
+/* ARCHIVE LIST */
+.archive-list { list-style: none; }
+.archive-item { display: flex; align-items: baseline; gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--rule); cursor: pointer; transition: all 0.2s; }
+.archive-item:hover .archive-title { color: var(--accent); }
+.archive-num { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 2px; color: var(--muted); flex-shrink: 0; width: 36px; }
+.archive-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(20px, 2.5vw, 30px); letter-spacing: 0.5px; color: var(--ink); flex: 1; transition: color 0.2s; line-height: 1; }
+.archive-meta { font-size: 11px; color: var(--muted); letter-spacing: 1px; flex-shrink: 0; }
+.archive-tag { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); background: rgba(26,107,92,0.07); padding: 2px 8px; flex-shrink: 0; }
+
+/* STAT ROW */
+.stat-row { display: flex; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin: 80px 0; }
+.stat-cell { flex: 1; padding: 32px 0; border-right: 1px solid var(--rule); }
+.stat-cell:last-child { border-right: none; }
+.stat-cell-num { font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1; color: var(--ink); }
+.stat-cell-num em { color: var(--accent); }
+.stat-cell-label { font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+
+/* HERO */
+.hero-wrap { padding-top: calc(var(--nav-h) + 80px); padding-bottom: 100px; max-width: var(--max); margin: 0 auto; padding-left: 48px; padding-right: 48px; }
+.hero-overline { font-size: 10px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 40px; display: flex; align-items: center; gap: 14px; }
+.hero-overline::before { content: ''; width: 32px; height: 2px; background: var(--accent); }
+
+/* DARK SECTIONS */
+.m-dark { background: var(--ink); color: var(--white); padding: 100px 0; }
+.m-dark .decl { color: var(--white); }
+.m-dark .m-body { color: rgba(255,255,255,0.5); }
+.m-dark .m-eyebrow { color: rgba(255,255,255,0.3); }
+.m-dark .m-eyebrow::after { background: rgba(255,255,255,0.1); }
+.m-dark .archive-item { border-bottom-color: rgba(255,255,255,0.08); }
+.m-dark .archive-title { color: var(--white); }
+.m-dark .archive-meta { color: rgba(255,255,255,0.3); }
+.m-dark .archive-num { color: rgba(255,255,255,0.2); }
+.m-dark .pull-quote-text { color: var(--white); }
+.m-dark .pull-quote-attr { color: rgba(255,255,255,0.3); }
+.m-dark .stat-cell { border-right-color: rgba(255,255,255,0.08); }
+.m-dark .stat-row { border-color: rgba(255,255,255,0.08); }
+.m-dark .stat-cell-num { color: var(--white); }
+.m-dark .stat-cell-label { color: rgba(255,255,255,0.3); }
+.m-dark .m-cta { color: var(--accent-bright); }
+.m-dark .teal-rule { background: var(--accent-bright); }
+
+/* PAGE HEADER */
+.page-header { padding-top: calc(var(--nav-h) + 64px); padding-bottom: 64px; border-bottom: 1px solid var(--rule); }
+.page-header-inner { max-width: var(--max); margin: 0 auto; padding: 0 48px; }
+.page-header-overline { font-size: 10px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 14px; }
+.page-header-overline::before { content: ''; width: 32px; height: 2px; background: var(--accent); }
+.page-header-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(64px, 8vw, 100px); letter-spacing: -2px; line-height: 0.9; color: var(--ink); }
+
+/* CATEGORY GRID */
+.cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+.cat-item { padding: 24px 20px 24px 0; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); cursor: pointer; transition: all 0.2s; }
+.cat-item:nth-child(3n) { border-right: none; padding-right: 0; }
+.cat-item:hover .cat-title { color: var(--accent); }
+.cat-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(18px, 2vw, 26px); color: var(--ink); transition: color 0.2s; line-height: 1; margin-bottom: 6px; }
+.cat-count { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.cat-desc { font-size: 12px; font-weight: 300; color: rgba(20,32,26,0.55); line-height: 1.6; }
+
+/* READER CARDS */
+.reader-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 52px; }
+.reader-card { border: 1px solid var(--rule); padding: 40px; cursor: pointer; transition: border-color 0.2s; }
+.reader-card:hover { border-color: var(--accent); }
+.reader-card-label { font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.reader-card-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 4vw, 56px); letter-spacing: -1px; line-height: 0.9; color: var(--ink); margin-bottom: 20px; }
+.reader-card-body { font-size: 14px; font-weight: 300; color: rgba(20,32,26,0.6); line-height: 1.7; }
+
+/* TOOL GRID */
+.tool-desc { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 52px; }
+
+/* FAQ */
+.faq-list { list-style: none; }
+.faq-item { padding: 28px 0; border-bottom: 1px solid var(--rule); cursor: pointer; }
+.faq-q { font-family: 'Bebas Neue', sans-serif; font-size: clamp(22px, 2.5vw, 32px); color: var(--ink); margin-bottom: 12px; transition: color 0.2s; }
+.faq-item:hover .faq-q { color: var(--accent); }
+.faq-a { font-size: 14px; font-weight: 300; color: rgba(20,32,26,0.6); line-height: 1.75; max-width: 680px; }
+
+/* FOOTER */
+footer { background: var(--ink); color: var(--white); padding: 80px 48px 40px; }
+.footer-inner { max-width: var(--max); margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 56px; }
+.footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--white); line-height: 1.1; }
+.footer-brand em { color: var(--accent-bright); font-style: normal; }
+.footer-tagline { font-size: 12px; font-weight: 300; color: rgba(255,255,255,0.3); margin-top: 12px; line-height: 1.7; max-width: 240px; }
+.footer-col-title { font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 18px; }
+.footer-links { list-style: none; }
+.footer-links li { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.45); padding: 5px 0; cursor: pointer; transition: color 0.2s; }
+.footer-links li:hover { color: var(--white); }
+.footer-bottom { max-width: var(--max); margin: 0 auto; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; justify-content: space-between; align-items: center; }
+.footer-copy { font-size: 11px; color: rgba(255,255,255,0.2); }
+.footer-mark { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 3px; color: var(--accent-bright); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo" onclick="showPage('home')">ANALYZING <em>ISLAM</em></div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
+    <li><a onclick="showPage('catalog')" id="nav-catalog">Catalog</a></li>
+    <li><a onclick="showPage('dossiers')" id="nav-dossiers">Dossiers</a></li>
+    <li><a onclick="showPage('read')" id="nav-read">Read</a></li>
+    <li><a onclick="showPage('compare')" id="nav-compare">Compare</a></li>
+    <li><a onclick="showPage('build')" id="nav-build">Build</a></li>
+    <li><a onclick="showPage('stats')" id="nav-stats">Stats</a></li>
+    <li><a onclick="showPage('about')" id="nav-about">About</a></li>
+    <li><a onclick="showPage('faq')" id="nav-faq">FAQ</a></li>
+  </ul>
+  <div class="nav-goat">🐐</div>
+</nav>
+
+<!-- ═══ HOME ═══ -->
+<div id="page-home" class="page active">
+  <div class="hero-wrap">
+    <div class="hero-overline">Textual · Historical · Moral · Logical · 1,642 Entries</div>
+    <div class="decl decl-xl">EVERY CLAIM</div>
+    <div class="decl decl-xl indent-1">DESERVES</div>
+    <div class="decl decl-xl indent-2"><em>SCRUTINY.</em></div>
+    <div class="gap-lg"></div>
+    <div class="m-body wide">A systematic, filterable review of textual, moral, historical, and logical problems in the Quran and the canonical Sunni hadith collections. Built from Muslim-approved sources — no hostile translations, no fringe reports.</div>
+    <div class="gap-md"></div>
+    <div class="decl decl-sm indent-1" style="color:var(--muted);">1,642 entries · 30 categories · Saheeh International</div>
+    <span class="m-cta" onclick="showPage('catalog')">Browse the catalog</span>
+  </div>
+
+  <div class="m-dark">
+    <div class="manifesto-wrap">
+      <div class="m-section" style="border-top:none;">
+        <div class="m-eyebrow">I · The Method</div>
+        <div class="decl decl-lg">MUSLIM-APPROVED</div>
+        <div class="decl decl-xl indent-1">SOURCES. <em>ONLY.</em></div>
+        <div class="gap-md"></div>
+        <div class="m-body indent-1">Every Quranic verse is quoted from the Saheeh International translation — the Saudi-sanctioned mainstream Sunni edition. Every hadith is drawn from the six canonical collections that Sunni jurisprudence itself treats as authoritative. This removes the easy dismissal of hostile translation or fringe report.</div>
+        <span class="m-cta" onclick="showPage('about')">How this works</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="manifesto-wrap">
+    <div class="stat-row">
+      <div class="stat-cell">
+        <div class="stat-cell-num">1,<em>642</em></div>
+        <div class="stat-cell-label">Entries</div>
+      </div>
+      <div class="stat-cell" style="padding-left:40px;">
+        <div class="stat-cell-num"><em>30</em></div>
+        <div class="stat-cell-label">Categories</div>
+      </div>
+      <div class="stat-cell" style="padding-left:40px;">
+        <div class="stat-cell-num">6,<em>236</em></div>
+        <div class="stat-cell-label">Quran verses reviewed</div>
+      </div>
+      <div class="stat-cell" style="padding-left:40px;">
+        <div class="stat-cell-num">34<em>K</em></div>
+        <div class="stat-cell-label">Hadiths reviewed</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">II · The Standard</div>
+      <div class="decl decl-sm" style="color:var(--muted);">Every entry cites</div>
+      <div class="decl decl-lg">A SPECIFIC VERSE.</div>
+      <div class="gap-sm"></div>
+      <div class="decl decl-xl indent-2"><em>VERIFY</em></div>
+      <div class="decl decl-xl indent-1">BEFORE</div>
+      <div class="decl decl-lg">YOU CITE IT.</div>
+      <div class="gap-md"></div>
+      <div class="teal-rule"></div>
+      <div class="m-body indent-2">Each entry explains what the passage says in plain language, builds a philosophical or moral argument, and — where relevant — provides the standard Muslim apologetical response and pushes back on it.</div>
+      <span class="m-cta" onclick="showPage('dossiers')">Explore the dossiers</span>
+    </div>
+  </div>
+
+  <div class="manifesto-wrap">
+    <div class="pull-quote">
+      <div class="pull-quote-text">"Using Muslim-approved sources removes the easy dismissal of hostile translation or fringe report."</div>
+      <div class="pull-quote-attr">— Analyzing Islam</div>
+    </div>
+  </div>
+
+  <div class="m-dark">
+    <div class="manifesto-wrap">
+      <div class="m-section" style="border-top:none;">
+        <div class="m-eyebrow">III · The Strongest Arguments</div>
+        <div class="decl decl-md" style="color:rgba(255,255,255,0.3);">Start here.</div>
+        <div class="decl decl-xl">THE ISLAMIC</div>
+        <div class="decl decl-xl indent-1"><em>DILEMMA.</em></div>
+        <div class="gap-md"></div>
+        <div class="m-body indent-1">The Quran affirms the Torah and Gospel, contradicts them, and claims Allah's words cannot be changed. All three cannot hold simultaneously. Every escape route breaks at least one pillar of the faith.</div>
+        <span class="m-cta" onclick="showPage('catalog')">Read the entry</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">Top Entries by Strength</div>
+      <div class="decl decl-md" style="margin-bottom:48px;">The Strongest Arguments</div>
+      <ul class="archive-list">
+        <li class="archive-item"><span class="archive-num">01</span><span class="archive-title">The Islamic Dilemma</span><span class="archive-tag">Contradiction</span><span class="archive-meta">Strong</span></li>
+        <li class="archive-item"><span class="archive-num">02</span><span class="archive-title">The Abrogation Verse (2:106)</span><span class="archive-tag">Abrogation</span><span class="archive-meta">Strong</span></li>
+        <li class="archive-item"><span class="archive-num">03</span><span class="archive-title">Denial of the Crucifixion (4:157)</span><span class="archive-tag">Christology</span><span class="archive-meta">Strong</span></li>
+        <li class="archive-item"><span class="archive-num">04</span><span class="archive-title">The Zaynab Affair (33:37)</span><span class="archive-tag">Prophetic Character</span><span class="archive-meta">Strong</span></li>
+        <li class="archive-item"><span class="archive-num">05</span><span class="archive-title">"No Contradiction" Claim (4:82)</span><span class="archive-tag">Logic</span><span class="archive-meta">Strong</span></li>
+        <li class="archive-item"><span class="archive-num">06</span><span class="archive-title">The Sword Verse (9:5)</span><span class="archive-tag">Warfare</span><span class="archive-meta">Strong</span></li>
+      </ul>
+      <span class="m-cta" onclick="showPage('catalog')">Browse all 1,642 entries</span>
+    </div>
+  </div>
+
+  <div class="m-dark">
+    <div class="manifesto-wrap">
+      <div class="m-section" style="border-top:none; text-align:right;">
+        <div class="m-eyebrow" style="justify-content:flex-end;">IV · The Commitment</div>
+        <div class="decl decl-lg" style="color:rgba(255,255,255,0.3);">Every claim stands or falls</div>
+        <div class="decl decl-xl">ON THE</div>
+        <div class="decl decl-xl"><em>TEXT.</em></div>
+        <div class="gap-lg"></div>
+        <div style="display:flex;justify-content:flex-end;">
+          <span class="m-cta" onclick="showPage('read')" style="color:rgba(255,255,255,0.8);">Read the sources</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">ANALYZING<br><em>ISLAM</em></div><div class="footer-tagline">A systematic analysis of the Quran and Sunni hadith collections. Built from Muslim-approved sources.</div></div>
+      <div><div class="footer-col-title">Navigate</div><ul class="footer-links"><li onclick="showPage('catalog')">Catalog</li><li onclick="showPage('dossiers')">Dossiers</li><li onclick="showPage('read')">Read</li><li onclick="showPage('stats')">Stats</li></ul></div>
+      <div><div class="footer-col-title">Tools</div><ul class="footer-links"><li onclick="showPage('compare')">Compare</li><li onclick="showPage('build')">Build</li><li onclick="showPage('about')">About</li><li onclick="showPage('faq')">FAQ</li></ul></div>
+      <div><div class="footer-col-title">Sources</div><ul class="footer-links"><li>Saheeh International</li><li>Sahih al-Bukhari</li><li>Sahih Muslim</li><li>Abu Dawud</li></ul></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-copy">Analyzing Islam · Every entry references a specific verse — verify before citing.</div><div class="footer-mark">TEXTUAL · HISTORICAL · MORAL</div></div>
+  </footer>
+</div>
+
+<!-- ═══ CATALOG ═══ -->
+<div id="page-catalog" class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-overline">1,642 Entries · 30 Categories</div>
+      <div class="page-header-title">Catalog</div>
+    </div>
+  </div>
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">All Categories</div>
+      <div class="decl decl-lg" style="margin-bottom:52px;">The Complete <em>Archive.</em></div>
+      <div class="cat-grid">
+        <div class="cat-item"><div class="cat-title">Prophetic Character</div><div class="cat-count">408 entries</div><div class="cat-desc">Muhammad's conduct — marriages, warfare, personal dealings, unremorseful violence.</div></div>
+        <div class="cat-item"><div class="cat-title">Women</div><div class="cat-count">376 entries</div><div class="cat-desc">Inheritance, testimony, veiling, beating, polygamy, "deficient in intellect."</div></div>
+        <div class="cat-item"><div class="cat-title">Strange / Obscure</div><div class="cat-count">712 entries</div><div class="cat-desc">Talking ants, sleepers for 300 years, worm eats Solomon's staff.</div></div>
+        <div class="cat-item"><div class="cat-title">Contradictions</div><div class="cat-count">301 entries</div><div class="cat-desc">Verses that directly contradict each other. 4:82 fails its own self-test.</div></div>
+        <div class="cat-item"><div class="cat-title">Logical Inconsistency</div><div class="cat-count">268 entries</div><div class="cat-desc">Internal logical problems. The Islamic Dilemma. Claims of clarity requiring interpretation.</div></div>
+        <div class="cat-item"><div class="cat-title">Disbelievers</div><div class="cat-count">211 entries</div><div class="cat-desc">Polemic, exclusion, hostility toward non-Muslims — curses, Sword Verse logic.</div></div>
+        <div class="cat-item"><div class="cat-title">Warfare &amp; Jihad</div><div class="cat-count">132 entries</div><div class="cat-desc">Banu Qurayza, night raids, Ka'b assassination, "victorious with terror."</div></div>
+        <div class="cat-item"><div class="cat-title">Moral Problems</div><div class="cat-count">123 entries</div><div class="cat-desc">Fatalism, collective punishment, eternal disproportion, pre-Islamic damnation.</div></div>
+        <div class="cat-item"><div class="cat-title">Cosmology</div><div class="cat-count">107 entries</div><div class="cat-desc">Sun under the Throne, seven heavens, flat-earth imagery, 60-cubit Adam.</div></div>
+        <div class="cat-item"><div class="cat-title">Governance</div><div class="cat-count">104 entries</div><div class="cat-desc">Twelve Quraysh caliphs, dhimmi rules, jizya humiliation.</div></div>
+        <div class="cat-item"><div class="cat-title">Magic &amp; Occult</div><div class="cat-count">87 entries</div><div class="cat-desc">Evil eye, jinn possession, the Prophet bewitched by a Jewish sorcerer.</div></div>
+        <div class="cat-item"><div class="cat-title">Ritual Absurdities</div><div class="cat-count">93 entries</div><div class="cat-desc">Dog-saliva seven washes, yawn from Satan, spit three times left.</div></div>
+        <div class="cat-item"><div class="cat-title">Sexual Issues</div><div class="cat-count">91 entries</div><div class="cat-desc">Mut'ah, adult breastfeeding, azl with captives, thighing.</div></div>
+        <div class="cat-item"><div class="cat-title">Eschatology</div><div class="cat-count">82 entries</div><div class="cat-desc">Dajjal, Gog and Magog, sun rising from the west.</div></div>
+        <div class="cat-item"><div class="cat-title">Hudud</div><div class="cat-count">74 entries</div><div class="cat-desc">Stoning, hand amputation, 80 lashes for wine, alternate-side amputation.</div></div>
+        <div class="cat-item"><div class="cat-title">Pre-Islamic Borrowings</div><div class="cat-count">63 entries</div><div class="cat-desc">Dajjal from Christian apocalyptic, Buraq, Sleepers of Ephesus.</div></div>
+        <div class="cat-item"><div class="cat-title">Slavery &amp; Captives</div><div class="cat-count">63 entries</div><div class="cat-desc">"Right hand possesses," Safiyya, 8 Abu Dawud chapters on captives.</div></div>
+        <div class="cat-item"><div class="cat-title">Jesus / Christology</div><div class="cat-count">60 entries</div><div class="cat-desc">Denial of crucifixion, portrait of Mary, misunderstanding of the Trinity.</div></div>
+        <div class="cat-item"><div class="cat-title">Gross / Vile</div><div class="cat-count">59 entries</div><div class="cat-desc">Camel urine as medicine, dip the fly in your drink.</div></div>
+        <div class="cat-item"><div class="cat-title">Allah's Character</div><div class="cat-count">55 entries</div><div class="cat-desc">Anthropomorphism, "best of deceivers," sealed hearts.</div></div>
+        <div class="cat-item"><div class="cat-title">Paradise</div><div class="cat-count">54 entries</div><div class="cat-desc">Houris, hollow-pearl tents 60 miles wide, rivers of wine.</div></div>
+        <div class="cat-item"><div class="cat-title">Hell</div><div class="cat-count">52 entries</div><div class="cat-desc">Skin roasted and replaced, molar size of Mount Uhud, 999-out-of-1000 damned.</div></div>
+        <div class="cat-item"><div class="cat-title">Scripture Integrity</div><div class="cat-count">49 entries</div><div class="cat-desc">"Lost" verses, Uthman's variant-burning, preservation claims vs tahrif.</div></div>
+        <div class="cat-item"><div class="cat-title">Abrogation</div><div class="cat-count">44 entries</div><div class="cat-desc">Verses that cancel earlier verses. The doctrine of naskh and its problems.</div></div>
+        <div class="cat-item"><div class="cat-title">Antisemitism</div><div class="cat-count">44 entries</div><div class="cat-desc">Gharqad hadith, Jews as apes and pigs, Ezra slander.</div></div>
+        <div class="cat-item"><div class="cat-title">Prophetic Privileges</div><div class="cat-count">42 entries</div><div class="cat-desc">More than four wives, hiba women, Zaynab authorization.</div></div>
+        <div class="cat-item"><div class="cat-title">Apostasy &amp; Blasphemy</div><div class="cat-count">35 entries</div><div class="cat-desc">"Kill whoever changes his religion," Ali burning apostates.</div></div>
+        <div class="cat-item"><div class="cat-title">LGBTQ / Gender</div><div class="cat-count">23 entries</div><div class="cat-desc">"Kill the active and passive partner," mukhannath exile.</div></div>
+        <div class="cat-item"><div class="cat-title">Child Marriage</div><div class="cat-count">22 entries</div><div class="cat-desc">Aisha at six and nine, Quran 65:4, dolls and playmates.</div></div>
+        <div class="cat-item"><div class="cat-title">Incest</div><div class="cat-count">16 entries</div><div class="cat-desc">Zaynab bint Jahsh, adult breastfeeding as kinship workaround.</div></div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">ANALYZING<br><em>ISLAM</em></div><div class="footer-tagline">Systematic analysis from Muslim-approved sources.</div></div>
+      <div><div class="footer-col-title">Navigate</div><ul class="footer-links"><li onclick="showPage('home')">Home</li><li onclick="showPage('dossiers')">Dossiers</li><li onclick="showPage('read')">Read</li></ul></div>
+      <div><div class="footer-col-title">Tools</div><ul class="footer-links"><li onclick="showPage('compare')">Compare</li><li onclick="showPage('build')">Build</li><li onclick="showPage('stats')">Stats</li></ul></div>
+      <div><div class="footer-col-title">Info</div><ul class="footer-links"><li onclick="showPage('about')">About</li><li onclick="showPage('faq')">FAQ</li></ul></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-copy">Analyzing Islam · Verify before citing.</div><div class="footer-mark">TEXTUAL · HISTORICAL · MORAL</div></div>
+  </footer>
+</div>
+
+<!-- ═══ DOSSIERS ═══ -->
+<div id="page-dossiers" class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-overline">Curated Argument Collections</div>
+      <div class="page-header-title">Dossiers</div>
+    </div>
+  </div>
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">Thematic Collections</div>
+      <div class="decl decl-sm" style="color:var(--muted); margin-bottom:12px;">Arguments built around a single question.</div>
+      <div class="decl decl-lg" style="margin-bottom:52px;">Build Your <em>Case.</em></div>
+      <ul class="archive-list">
+        <li class="archive-item"><span class="archive-num">01</span><span class="archive-title">Is Muhammad a Reliable Prophet?</span><span class="archive-tag">Prophethood</span><span class="archive-meta">18 entries</span></li>
+        <li class="archive-item"><span class="archive-num">02</span><span class="archive-title">Is the Quran Preserved?</span><span class="archive-tag">Scripture</span><span class="archive-meta">12 entries</span></li>
+        <li class="archive-item"><span class="archive-num">03</span><span class="archive-title">Did Jesus Die on the Cross?</span><span class="archive-tag">Christology</span><span class="archive-meta">9 entries</span></li>
+        <li class="archive-item"><span class="archive-num">04</span><span class="archive-title">Is Aisha's Age Defensible?</span><span class="archive-tag">Child Marriage</span><span class="archive-meta">11 entries</span></li>
+        <li class="archive-item"><span class="archive-num">05</span><span class="archive-title">The Sword Verse and Its Classical Interpretation</span><span class="archive-tag">Warfare</span><span class="archive-meta">14 entries</span></li>
+        <li class="archive-item"><span class="archive-num">06</span><span class="archive-title">Women in Islamic Law: The Full Picture</span><span class="archive-tag">Women</span><span class="archive-meta">22 entries</span></li>
+        <li class="archive-item"><span class="archive-num">07</span><span class="archive-title">Slavery in the Quran and Hadith</span><span class="archive-tag">Slavery</span><span class="archive-meta">16 entries</span></li>
+        <li class="archive-item"><span class="archive-num">08</span><span class="archive-title">The Science of the Quran: Cosmological Claims</span><span class="archive-tag">Cosmology</span><span class="archive-meta">13 entries</span></li>
+        <li class="archive-item"><span class="archive-num">09</span><span class="archive-title">The Zaynab Affair: A Closer Reading</span><span class="archive-tag">Privileges</span><span class="archive-meta">7 entries</span></li>
+        <li class="archive-item"><span class="archive-num">10</span><span class="archive-title">Apostasy: What the Sources Actually Say</span><span class="archive-tag">Apostasy</span><span class="archive-meta">8 entries</span></li>
+      </ul>
+      <span class="m-cta" onclick="showPage('build')">Build your own dossier</span>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">ANALYZING<br><em>ISLAM</em></div><div class="footer-tagline">Systematic analysis from Muslim-approved sources.</div></div>
+      <div><div class="footer-col-title">Navigate</div><ul class="footer-links"><li onclick="showPage('home')">Home</li><li onclick="showPage('catalog')">Catalog</li><li onclick="showPage('read')">Read</li></ul></div>
+      <div><div class="footer-col-title">Tools</div><ul class="footer-links"><li onclick="showPage('compare')">Compare</li><li onclick="showPage('build')">Build</li></ul></div>
+      <div><div class="footer-col-title">Info</div><ul class="footer-links"><li onclick="showPage('about')">About</li><li onclick="showPage('faq')">FAQ</li></ul></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-copy">Analyzing Islam · Verify before citing.</div><div class="footer-mark">TEXTUAL · HISTORICAL · MORAL</div></div>
+  </footer>
+</div>
+
+<!-- ═══ READ ═══ -->
+<div id="page-read" class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-overline">Full-Text Interlinear Readers</div>
+      <div class="page-header-title">Read</div>
+    </div>
+  </div>
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">Primary Sources</div>
+      <div class="decl decl-sm" style="color:var(--muted); margin-bottom:12px;">Read the texts yourself.</div>
+      <div class="decl decl-lg">The Sources, <em>Unedited.</em></div>
+      <div class="reader-cards">
+        <div class="reader-card">
+          <div class="reader-card-label">Word-by-word interlinear</div>
+          <div class="reader-card-title">THE QURAN</div>
+          <div class="reader-card-body">All 114 surahs. Arabic original with word-for-word English gloss, transliteration, root lexicon, Lane's definitions, and full concordance. Click any word to explore its morphology and every other occurrence in the Quran.</div>
+          <span class="m-cta" style="margin-top:24px;">Open Quran reader</span>
+        </div>
+        <div class="reader-card">
+          <div class="reader-card-label">Six canonical collections</div>
+          <div class="reader-card-title">THE HADITH</div>
+          <div class="reader-card-body">Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasa'i, Ibn Majah — the authoritative Sunni corpus. Full-text searchable. Every hadith the catalog references can be read here in context.</div>
+          <span class="m-cta" style="margin-top:24px;">Open Hadith reader</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="m-dark">
+    <div class="manifesto-wrap">
+      <div class="m-section" style="border-top:none;">
+        <div class="m-eyebrow">Why Read the Sources?</div>
+        <div class="decl decl-xl">DON'T TAKE</div>
+        <div class="decl decl-xl indent-1">OUR <em>WORD</em></div>
+        <div class="decl decl-lg indent-2">FOR IT.</div>
+        <div class="gap-md"></div>
+        <div class="m-body indent-1">Every catalog entry cites chapter and verse. You can verify any claim in seconds. The readers are open to everyone — no account required.</div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">ANALYZING<br><em>ISLAM</em></div><div class="footer-tagline">Systematic analysis from Muslim-approved sources.</div></div>
+      <div><div class="footer-col-title">Navigate</div><ul class="footer-links"><li onclick="showPage('home')">Home</li><li onclick="showPage('catalog')">Catalog</li><li onclick="showPage('dossiers')">Dossiers</li></ul></div>
+      <div><div class="footer-col-title">Tools</div><ul class="footer-links"><li onclick="showPage('compare')">Compare</li><li onclick="showPage('build')">Build</li></ul></div>
+      <div><div class="footer-col-title">Info</div><ul class="footer-links"><li onclick="showPage('about')">About</li><li onclick="showPage('faq')">FAQ</li></ul></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-copy">Analyzing Islam · Verify before citing.</div><div class="footer-mark">TEXTUAL · HISTORICAL · MORAL</div></div>
+  </footer>
+</div>
+
+<!-- ═══ COMPARE ═══ -->
+<div id="page-compare" class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-overline">Translation Comparison Tool</div>
+      <div class="page-header-title">Compare</div>
+    </div>
+  </div>
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">Side-by-Side Translations</div>
+      <div class="decl decl-xl">SEE WHAT</div>
+      <div class="decl decl-xl indent-1">EVERY <em>TRANSLATOR</em></div>
+      <div class="decl decl-lg indent-2">CHOSE.</div>
+      <div class="gap-lg"></div>
+      <div class="m-body wide">Select any Quranic verse and compare up to six English translations simultaneously — Saheeh International, Pickthall, Yusuf Ali, Arberry, Hilali-Khan, and Shakir. Translation choices are not neutral. Some verses are rendered very differently across editions.</div>
+      <div class="gap-md"></div>
+      <div class="teal-rule"></div>
+      <div class="m-body wide">The comparison tool makes euphemistic or evasive renderings immediately visible. When a verse about slavery becomes "those whom your right hands possess" in one edition and "captive women" in another, the interpretive gap is worth examining.</div>
+      <span class="m-cta">Open Compare tool</span>
+    </div>
+  </div>
+  <div class="m-dark">
+    <div class="manifesto-wrap">
+      <div class="m-section" style="border-top:none;">
+        <div class="m-eyebrow">Translation Is Interpretation</div>
+        <div class="decl decl-md" style="color:rgba(255,255,255,0.3);">Every word choice is</div>
+        <div class="decl decl-xl">A <em>DECISION.</em></div>
+        <div class="gap-md"></div>
+        <div class="m-body indent-1">Six translators, one verse, sometimes six very different readings. The compare tool puts every choice in front of you at once.</div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">ANALYZING<br><em>ISLAM</em></div><div class="footer-tagline">Systematic analysis from Muslim-approved sources.</div></div>
+      <div><div class="footer-col-title">Navigate</div><ul class="footer-links"><li onclick="showPage('home')">Home</li><li onclick="showPage('catalog')">Catalog</li><li onclick="showPage('read')">Read</li></ul></div>
+      <div><div class="footer-col-title">Tools</div><ul class="footer-links"><li onclick="showPage('build')">Build</li><li onclick="showPage('stats')">Stats</li></ul></div>
+      <div><div class="footer-col-title">Info</div><ul class="footer-links"><li onclick="showPage('about')">About</li><li onclick="showPage('faq')">FAQ</li></ul></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-copy">Analyzing Islam · Verify before citing.</div><div class="footer-mark">TEXTUAL · HISTORICAL · MORAL</div></div>
+  </footer>
+</div>
+
+<!-- ═══ BUILD ═══ -->
+<div id="page-build" class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-overline">Argument Builder</div>
+      <div class="page-header-title">Build</div>
+    </div>
+  </div>
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">Build Your Own Dossier</div>
+      <div class="decl decl-xl">YOUR</div>
+      <div class="decl decl-xl indent-1"><em>ARGUMENT.</em></div>
+      <div class="decl decl-lg indent-2">YOUR WAY.</div>
+      <div class="gap-lg"></div>
+      <div class="m-body wide">Save entries, write private notes, and assemble your own argument collections from the catalog. Build a focused dossier on a single topic — chain the entries, add your own commentary, share it as a link.</div>
+      <div class="tool-desc">
+        <div>
+          <div class="m-eyebrow" style="margin-bottom:24px;">What you can do</div>
+          <ul class="archive-list">
+            <li class="archive-item"><span class="archive-num">—</span><span class="archive-title">Save entries to collections</span></li>
+            <li class="archive-item"><span class="archive-num">—</span><span class="archive-title">Write private notes per entry</span></li>
+            <li class="archive-item"><span class="archive-num">—</span><span class="archive-title">Reorder and chain arguments</span></li>
+            <li class="archive-item"><span class="archive-num">—</span><span class="archive-title">Share collections via link</span></li>
+            <li class="archive-item"><span class="archive-num">—</span><span class="archive-title">Export as formatted document</span></li>
+          </ul>
+          <span class="m-cta">Sign in to start building</span>
+        </div>
+        <div>
+          <div class="m-eyebrow" style="margin-bottom:24px;">Requires an account</div>
+          <div class="m-body" style="max-width:100%;">The builder requires a free account. The catalog, readers, and compare tool are open to everyone — no sign-in required. Saved collections and private notes are account-only.</div>
+          <div class="gap-md"></div>
+          <div class="teal-rule"></div>
+          <div class="decl decl-sm">Free. <em>Always.</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">ANALYZING<br><em>ISLAM</em></div><div class="footer-tagline">Systematic analysis from Muslim-approved sources.</div></div>
+      <div><div class="footer-col-title">Navigate</div><ul class="footer-links"><li onclick="showPage('home')">Home</li><li onclick="showPage('catalog')">Catalog</li><li onclick="showPage('dossiers')">Dossiers</li></ul></div>
+      <div><div class="footer-col-title">Tools</div><ul class="footer-links"><li onclick="showPage('read')">Read</li><li onclick="showPage('compare')">Compare</li></ul></div>
+      <div><div class="footer-col-title">Info</div><ul class="footer-links"><li onclick="showPage('about')">About</li><li onclick="showPage('faq')">FAQ</li></ul></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-copy">Analyzing Islam · Verify before citing.</div><div class="footer-mark">TEXTUAL · HISTORICAL · MORAL</div></div>
+  </footer>
+</div>
+
+<!-- ═══ STATS ═══ -->
+<div id="page-stats" class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-overline">By the Numbers</div>
+      <div class="page-header-title">Stats</div>
+    </div>
+  </div>
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">The Scope of the Project</div>
+      <div class="decl decl-xl">THE <em>NUMBERS</em></div>
+      <div class="decl decl-lg indent-1">DON'T LIE.</div>
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-cell-num">1,<em>642</em></div><div class="stat-cell-label">Total entries</div></div>
+        <div class="stat-cell" style="padding-left:40px;"><div class="stat-cell-num"><em>30</em></div><div class="stat-cell-label">Categories</div></div>
+        <div class="stat-cell" style="padding-left:40px;"><div class="stat-cell-num">6,<em>236</em></div><div class="stat-cell-label">Quran verses reviewed</div></div>
+        <div class="stat-cell" style="padding-left:40px;"><div class="stat-cell-num">34<em>K</em></div><div class="stat-cell-label">Hadiths reviewed</div></div>
+      </div>
+      <div class="m-eyebrow">Entries by Category — Top 10</div>
+      <ul class="archive-list">
+        <li class="archive-item"><span class="archive-num">01</span><span class="archive-title">Strange / Obscure</span><span class="archive-tag">Hadith-heavy</span><span class="archive-meta">712 entries</span></li>
+        <li class="archive-item"><span class="archive-num">02</span><span class="archive-title">Prophetic Character</span><span class="archive-tag">Mixed</span><span class="archive-meta">408 entries</span></li>
+        <li class="archive-item"><span class="archive-num">03</span><span class="archive-title">Women</span><span class="archive-tag">Mixed</span><span class="archive-meta">376 entries</span></li>
+        <li class="archive-item"><span class="archive-num">04</span><span class="archive-title">Contradictions</span><span class="archive-tag">Quran-heavy</span><span class="archive-meta">301 entries</span></li>
+        <li class="archive-item"><span class="archive-num">05</span><span class="archive-title">Logical Inconsistency</span><span class="archive-tag">Quran-heavy</span><span class="archive-meta">268 entries</span></li>
+        <li class="archive-item"><span class="archive-num">06</span><span class="archive-title">Disbelievers</span><span class="archive-tag">Mixed</span><span class="archive-meta">211 entries</span></li>
+        <li class="archive-item"><span class="archive-num">07</span><span class="archive-title">Warfare &amp; Jihad</span><span class="archive-tag">Mixed</span><span class="archive-meta">132 entries</span></li>
+        <li class="archive-item"><span class="archive-num">08</span><span class="archive-title">Moral Problems</span><span class="archive-tag">Mixed</span><span class="archive-meta">123 entries</span></li>
+        <li class="archive-item"><span class="archive-num">09</span><span class="archive-title">Cosmology</span><span class="archive-tag">Quran-heavy</span><span class="archive-meta">107 entries</span></li>
+        <li class="archive-item"><span class="archive-num">10</span><span class="archive-title">Governance</span><span class="archive-tag">Mixed</span><span class="archive-meta">104 entries</span></li>
+      </ul>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">ANALYZING<br><em>ISLAM</em></div><div class="footer-tagline">Systematic analysis from Muslim-approved sources.</div></div>
+      <div><div class="footer-col-title">Navigate</div><ul class="footer-links"><li onclick="showPage('home')">Home</li><li onclick="showPage('catalog')">Catalog</li><li onclick="showPage('dossiers')">Dossiers</li></ul></div>
+      <div><div class="footer-col-title">Tools</div><ul class="footer-links"><li onclick="showPage('read')">Read</li><li onclick="showPage('compare')">Compare</li><li onclick="showPage('build')">Build</li></ul></div>
+      <div><div class="footer-col-title">Info</div><ul class="footer-links"><li onclick="showPage('about')">About</li><li onclick="showPage('faq')">FAQ</li></ul></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-copy">Analyzing Islam · Verify before citing.</div><div class="footer-mark">TEXTUAL · HISTORICAL · MORAL</div></div>
+  </footer>
+</div>
+
+<!-- ═══ ABOUT ═══ -->
+<div id="page-about" class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-overline">The Project</div>
+      <div class="page-header-title">About</div>
+    </div>
+  </div>
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">I · What This Is</div>
+      <div class="decl decl-md">Not polemic.</div>
+      <div class="decl decl-xl"><em>ANALYSIS.</em></div>
+      <div class="gap-md"></div>
+      <div class="m-body wide">A systematic, filterable review of textual, moral, historical, and logical problems in the Quran and the canonical Sunni hadith collections. Every entry cites a specific passage, explains what it says in plain language, and builds a philosophical or historical argument for why it presents a problem.</div>
+    </div>
+    <div class="m-section">
+      <div class="m-eyebrow">II · The Sources</div>
+      <div class="decl decl-lg">ONLY MUSLIM-</div>
+      <div class="decl decl-xl indent-1">APPROVED <em>TEXTS.</em></div>
+      <div class="gap-md"></div>
+      <div class="m-body indent-1">Quranic verses are quoted from the Saheeh International translation — the Saudi-sanctioned mainstream Sunni edition. Hadiths are drawn from the six canonical collections that Sunni jurisprudence itself treats as authoritative: Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasa'i, and Ibn Majah. Using Muslim-approved sources removes the easy dismissal of hostile translation or fringe report.</div>
+    </div>
+    <div class="m-section">
+      <div class="m-eyebrow">III · The Standard</div>
+      <div class="decl decl-sm" style="color:var(--muted);">We are not trying to</div>
+      <div class="decl decl-lg">DEFEAT AN ARGUMENT.</div>
+      <div class="decl decl-xl indent-2"><em>WE ARE</em></div>
+      <div class="decl decl-lg indent-1">MAKING ONE.</div>
+      <div class="gap-md"></div>
+      <div class="m-body wide">Where relevant, entries also provide the standard Muslim apologetical response and push back on it. The strongest entries are those where the apologetic response itself generates deeper problems, or where answering the critique requires abandoning a core Islamic claim.</div>
+    </div>
+  </div>
+  <div class="m-dark">
+    <div class="manifesto-wrap">
+      <div class="m-section" style="border-top:none;">
+        <div class="m-eyebrow">IV · The Commitment</div>
+        <div class="decl decl-xl">EVERY CLAIM</div>
+        <div class="decl decl-xl indent-1">STANDS ON THE</div>
+        <div class="decl decl-xl indent-2"><em>TEXT.</em></div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">ANALYZING<br><em>ISLAM</em></div><div class="footer-tagline">Systematic analysis from Muslim-approved sources.</div></div>
+      <div><div class="footer-col-title">Navigate</div><ul class="footer-links"><li onclick="showPage('home')">Home</li><li onclick="showPage('catalog')">Catalog</li><li onclick="showPage('dossiers')">Dossiers</li></ul></div>
+      <div><div class="footer-col-title">Tools</div><ul class="footer-links"><li onclick="showPage('read')">Read</li><li onclick="showPage('compare')">Compare</li><li onclick="showPage('build')">Build</li></ul></div>
+      <div><div class="footer-col-title">Info</div><ul class="footer-links"><li onclick="showPage('faq')">FAQ</li></ul></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-copy">Analyzing Islam · Verify before citing.</div><div class="footer-mark">TEXTUAL · HISTORICAL · MORAL</div></div>
+  </footer>
+</div>
+
+<!-- ═══ FAQ ═══ -->
+<div id="page-faq" class="page">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-overline">Frequently Asked Questions</div>
+      <div class="page-header-title">FAQ</div>
+    </div>
+  </div>
+  <div class="manifesto-wrap">
+    <div class="m-section">
+      <div class="m-eyebrow">Common Questions</div>
+      <div class="decl decl-lg" style="margin-bottom:52px;">The <em>Answers.</em></div>
+      <ul class="faq-list">
+        <li class="faq-item">
+          <div class="faq-q">Isn't this just anti-Islamic propaganda?</div>
+          <div class="faq-a">Every entry is sourced to Muslim-approved texts. The arguments are philosophical, historical, and textual — not rhetorical. If a source is incorrect, it can be verified and corrected. Propaganda doesn't cite its sources.</div>
+        </li>
+        <li class="faq-item">
+          <div class="faq-q">Why use only Sunni sources?</div>
+          <div class="faq-a">The catalog focuses on mainstream Sunni Islam — the largest Muslim denomination globally, with the most developed canonical textual corpus. Using the sources Sunni jurisprudence treats as authoritative eliminates the objection that we're using fringe texts.</div>
+        </li>
+        <li class="faq-item">
+          <div class="faq-q">What does "Strong" on an entry mean?</div>
+          <div class="faq-a">Strong entries are those where the apologetic response itself generates a deeper problem, or where answering the critique requires abandoning a core Islamic claim. They're the arguments most resistant to standard deflection techniques.</div>
+        </li>
+        <li class="faq-item">
+          <div class="faq-q">Is a Muslim response included?</div>
+          <div class="faq-a">Where a standard apologetical response exists, many entries include it and address it directly. The goal is to engage the strongest version of the Muslim position, not misrepresent it.</div>
+        </li>
+        <li class="faq-item">
+          <div class="faq-q">Do I need an account to use the site?</div>
+          <div class="faq-a">No. The catalog, all readers, and the compare tool are open to everyone. An account is only required for the Build tool — saving collections, writing private notes, and sharing dossiers.</div>
+        </li>
+        <li class="faq-item">
+          <div class="faq-q">Can I cite entries from this site?</div>
+          <div class="faq-a">Every entry cites its primary source. You should cite the primary source directly — not this site. The entry gives you the reference; the reader lets you verify it. Verify before citing.</div>
+        </li>
+        <li class="faq-item">
+          <div class="faq-q">How is entry strength rated?</div>
+          <div class="faq-a">Entries are rated Basic, Moderate, or Strong based on how resistant the argument is to standard apologetical responses. Strong entries require abandoning a core Islamic claim to refute.</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">ANALYZING<br><em>ISLAM</em></div><div class="footer-tagline">Systematic analysis from Muslim-approved sources.</div></div>
+      <div><div class="footer-col-title">Navigate</div><ul class="footer-links"><li onclick="showPage('home')">Home</li><li onclick="showPage('catalog')">Catalog</li><li onclick="showPage('dossiers')">Dossiers</li></ul></div>
+      <div><div class="footer-col-title">Tools</div><ul class="footer-links"><li onclick="showPage('read')">Read</li><li onclick="showPage('compare')">Compare</li><li onclick="showPage('build')">Build</li></ul></div>
+      <div><div class="footer-col-title">Info</div><ul class="footer-links"><li onclick="showPage('about')">About</li></ul></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-copy">Analyzing Islam · Verify before citing.</div><div class="footer-mark">TEXTUAL · HISTORICAL · MORAL</div></div>
+  </footer>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const target = document.getElementById('page-' + id);
+  const navLink = document.getElementById('nav-' + id);
+  if (target) { target.classList.add('active'); window.scrollTo(0, 0); }
+  if (navLink) navLink.classList.add('active');
+}
+</script>
+</body>
+</html>

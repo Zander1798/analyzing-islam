@@ -4,6 +4,8 @@ import { TheQuestion } from "./ads/TheQuestion";
 import { WorkflowTour } from "./ads/WorkflowTour";
 import { Proof } from "./ads/Proof";
 import { ScrollDemo } from "./ads/ScrollDemo";
+import { CinematicAd } from "./ads/CinematicAd";
+import { KineticAd } from "./ads/KineticAd";
 
 const RATIOS = [
   { suffix: "Vertical", width: 1080, height: 1920 },
@@ -17,6 +19,22 @@ export const Root: React.FC = () => (
       id="Proof"
       component={Proof}
       durationInFrames={478}
+      fps={60}
+      width={1080}
+      height={1920}
+    />
+    <Composition
+      id="KineticAd"
+      component={KineticAd}
+      durationInFrames={1508}
+      fps={60}
+      width={1080}
+      height={1920}
+    />
+    <Composition
+      id="CinematicAd"
+      component={CinematicAd}
+      durationInFrames={628}
       fps={60}
       width={1080}
       height={1920}
