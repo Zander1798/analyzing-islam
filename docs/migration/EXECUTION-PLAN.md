@@ -561,8 +561,20 @@ This is the deliberate abandonment of the rollback path.
 
 ## Execution log — what actually happened (2026-07-27)
 
-**Stages 2, 3, 4, 8 are DONE and verified.** Remaining: 5 (storage files), 6 (URL
-rewrites), 7 (SMTP), 9 (staging DNS/certs/tests), 10 (cutover), 11, 12.
+**Stages 2, 3, 4, 5, 6, 8 and 9c are DONE and verified.** Remaining and **blocked only
+on two credentials from Zander**: 7 (SMTP — Gmail app password), 9a/9b/9e (staging DNS
++ certs — Cloudflare token), 10 (cutover — Cloudflare), then 11 and 12.
+
+End-to-end through nginx on the VPS, exactly as a browser would hit it: homepage 200,
+extensionless `/about` 200, `config.js` 200 serving the self-hosted URL and a
+correctly-formatted JWT anon key, `api.` vhost → auth health 200, avatar via the `api.`
+vhost 200. Box is comfortable: 1.6GB of 7.8GB RAM, 13GB of 96GB disk.
+
+> **Trap worth remembering: `docker exec` without `-i` silently discards stdin.**
+> A heredoc of SQL piped into `docker exec supabase-db psql` (no `-i`) runs psql with
+> no input, prints nothing, and **exits 0** — so an `UPDATE` appears to succeed while
+> doing nothing. This bit the first Stage 6 attempt; only re-reading a sample row
+> caught it. Always `docker exec -i` when feeding SQL, and verify by re-querying.
 
 - **Stage 2 ✅** deploy user + key-only SSH, root login refused, ufw 22/80/443, Docker.
 - **Stage 3 ✅** 11 containers healthy. All published ports loopback-bound; external
@@ -575,8 +587,19 @@ rewrites), 7 (SMTP), 9 (staging DNS/certs/tests), 10 (cutover), 11, 12.
   tables from the newer storage-api. API checks: `public_profiles` 200,
   `rpc/is_creator` 200, `profiles` 200, anon `pageviews` insert 201, storage 200,
   auth health 200.
+- **Stage 5 ✅** all 26 objects across the four buckets re-uploaded through the Storage
+  API with `x-upsert: true` (never `docker cp`): 26 uploaded, 0 failed, 26 files on
+  disk, 26 `storage.objects` rows — disk and metadata consistent.
+- **Stage 6 ✅** absolute-URL sweep run; all four counts (`profiles.avatar_url`,
+  `profiles.banner_url`, `communities.icon_url`, `communities.banner_url`) now **0**,
+  and a rewritten avatar URL fetches 200 from the self-hosted stack. Note
+  `communities.banner_url` did hold one — the community sweep was not optional.
 - **Stage 8 ✅** 746MB rsynced with `--exclude config.js`; nginx serving; `/about`
   (extensionless) returns 200.
+- **Stage 9c ✅** the exclude means `config.js` was **never copied** to the VPS — the
+  site there had no Supabase config at all until it was written by hand. It now points
+  at `https://api.analyzingislam.com` with the self-hosted JWT `ANON_KEY`. The repo
+  copy still points at Supabase Cloud, deliberately, until Stage 12.
 
 **The GoTrue version-skew risk (old Stage 4e) is closed.** Cloud carried exactly one
 migration the pinned GoTrue lacked (`20260625000000`), whose only schema effect is an
