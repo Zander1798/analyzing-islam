@@ -60,6 +60,25 @@ Both would pass every test and fail weeks later. Both are handled in-line below.
 
 ---
 
+## Baseline row counts (captured 2026-07-27 — Stage 4 must match these exactly)
+
+| Table | Rows | | Table | Rows |
+|---|---:|---|---|---:|
+| `auth.users` | **6** | | `public.shared_builds` | 5 |
+| `auth.identities` | 6 | | `public.community_members` | 4 |
+| `auth.sessions` | 10 | | `public.community_posts` | 2 |
+| `auth.refresh_tokens` | 73 | | `public.communities` | 2 |
+| `public.profiles` | 5 | | `public.community_join_requests` | 2 |
+| `public.pageviews` | 858 | | `public.post_comments` | 8 |
+| `storage.objects` | 26 | | `public.post_votes` | 1 |
+| `storage.buckets` | 5 | | `public.bookmarks` | 1 |
+| `public.admins` | 1 | | `public.notes` | 1 |
+| `public.quiz_progress` | 1 | | `public.friendships` | 1 |
+| `public.search_queries` | 1 | | `public.direct_threads` / `direct_messages` | 1 / 1 |
+
+26 of 52 tables carry data. Total dump 401KB — this is a small database, so restores
+are fast and mistakes are cheap to redo.
+
 ## Stage 0 — Local tooling
 
 On your Windows machine.
@@ -121,30 +140,44 @@ grep -c "auth\.users" supabase-backup-*.sql        # MUST be > 0
 ```
 If `auth.users` is 0, the auth schema did not dump — stop and fix before continuing.
 
-### 1c. Download the avatar files
+### 1c. Download the storage files
 
-The bucket is public (the code calls `getPublicUrl`), so files are fetchable over
-HTTP. Get the object paths from the database, then download each.
+> **There are FOUR buckets with files, not one.** `avatars` (16), `community-icons`
+> (2), `community-banners` (2), `community-post-images` (6) — 26 objects, 3.8MB.
+> A fifth bucket, `dm-attachments`, exists but is empty. All five are `public = t`,
+> so plain HTTP fetch works with no auth.
+>
+> **⚠ CRLF trap — this will bite on every stage that writes a file with `psql.exe`.**
+> The Windows `psql.exe` writes files with CRLF line endings. Feed such a file into
+> a `while read` loop and every value carries a trailing `\r`, which silently
+> corrupts URLs and filenames. The first attempt here failed all 26 downloads for
+> exactly this reason while the URLs themselves were fine (verified HTTP 200).
+> **Always pipe through `tr -d '\r'` after any `psql.exe > file` redirect.**
 
 ```bash
-psql "SESSION_POOLER_URL" -At -c \
-  "select name from storage.objects where bucket_id = 'avatars'" \
-  > avatar-paths.txt
+PGPASSWORD='PASSWORD' psql -h aws-0-eu-west-1.pooler.supabase.com -p 5432 \
+  -U postgres.cndmksrilytnpgstvmxb -d postgres -At \
+  -c "select bucket_id || '/' || name from storage.objects" \
+  > storage-paths.txt
 
-mkdir -p storage-backup/avatars
-while read -r p; do
-  curl -sfL --create-dirs \
-    "https://cndmksrilytnpgstvmxb.supabase.co/storage/v1/object/public/avatars/$p" \
-    -o "storage-backup/avatars/$p" || echo "FAILED: $p"
-done < avatar-paths.txt
+tr -d '\r' < storage-paths.txt > tmp && mv tmp storage-paths.txt   # CRLF fix — required
+
+BASE="https://cndmksrilytnpgstvmxb.supabase.co/storage/v1/object/public"
+mkdir -p storage-backup
+while IFS= read -r p; do
+  [ -z "$p" ] && continue
+  curl -sfL --create-dirs -o "storage-backup/$p" "$BASE/$p" || echo "FAILED: $p"
+done < storage-paths.txt
 ```
 
-**Verify:** the file count matches the row count.
+**Verify:** file count matches row count, and no `FAILED:` lines.
 ```bash
-wc -l < avatar-paths.txt
-find storage-backup/avatars -type f | wc -l
+grep -c '' storage-paths.txt          # expect 26
+find storage-backup -type f | wc -l   # must match
+du -sh storage-backup                 # expect ~3.8MB
 ```
-Investigate any `FAILED:` lines before proceeding.
+
+**Actual result 2026-07-27:** 26/26 downloaded, 0 failed, 3.8MB.
 
 ### 1d. Record the JWT secret
 
