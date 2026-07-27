@@ -592,7 +592,7 @@ git commit -m "feat(chatbot): parse catalog entries into kb docs"
 - Consumes: `_clean`, `_compose_embed_text` from Task 3.
 - Produces: `parse_dossier(html: str, rel_path: str) -> dict | None`.
 
-Confirmed markup: `article.arg-article` containing `h2.arg-title`, `div.arg-ref`, `div.arg-verse-box`, `div.arg-context`, `div.arg-conclusion-box`, `div.arg-responses` with `div.arg-response-item`. One dossier per file.
+Confirmed markup: `article.arg-article` containing `h2.arg-title`, `div.arg-ref`, `div.arg-verse-box`, `div.arg-context`, `ol.arg-premises`, `div.arg-conclusion-box`, `div.arg-responses` with `div.arg-response-item`. One dossier per file.
 
 - [ ] **Step 1: Write the failing test**
 

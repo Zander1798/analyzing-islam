@@ -18,6 +18,14 @@ def _clean(text: str) -> str:
     return re.sub(r"\s+", " ", text or "").strip()
 
 
+def _block_text(node) -> str:
+    """Extract readable text from a node: separate inline tags, then repair
+    the space this inserts before punctuation."""
+    text = node.get_text(" ")
+    text = re.sub(r"\s+([,.;:!?])", r"\1", text)
+    return _clean(text)
+
+
 def _compose_embed_text(title: str, ref: str | None, categories: list[str], body: str) -> str:
     head = " · ".join(p for p in [title, ref or "", " ".join(categories)] if p)
     return f"{head}\n{body}"[:EMBED_CHAR_LIMIT]
@@ -44,7 +52,7 @@ def parse_entries(html: str, source: str) -> list[dict]:
         parts: list[str] = []
         for section in div.select("section"):
             for node in section.find_all(["blockquote", "h4", "p"], recursive=True):
-                text = _clean(node.get_text())
+                text = _block_text(node)
                 if not text:
                     continue
                 parts.append(f"## {text}" if node.name == "h4" else text)
@@ -85,14 +93,18 @@ def parse_dossier(html: str, rel_path: str) -> dict | None:
     for sel, prefix in [
         (".arg-verse-box", "Source: "),
         (".arg-context", ""),
+        (".arg-premises", "Premises: "),
         (".arg-conclusion-box", "Conclusion: "),
         (".arg-responses", "Muslim responses: "),
     ]:
         for node in article.select(sel):
-            text = _clean(node.get_text(" "))
+            text = _block_text(node)
             if text:
                 parts.append(prefix + text)
     body = "\n".join(parts)
+
+    if not rel_path.startswith("arguments/"):
+        raise ValueError(f"rel_path must start with 'arguments/', got: {rel_path!r}")
 
     # 'arguments/bukhari/b01-aisha-age.html' -> 'bukhari/b01-aisha-age'
     slug = rel_path[len("arguments/"):].removesuffix(".html")
@@ -241,6 +253,8 @@ def parse_doctrine(md: str, filename: str) -> dict:
         "source": "doctrine",
         "categories": [f"cluster-{cluster}"] if cluster else [],
         "strength": None,
+        # Deliberate: site/doctrine/ doesn't exist yet — those pages are built
+        # in a later phase. Do not "fix" this to point elsewhere.
         "url": f"doctrine/{slug}.html",
         "body": body,
         "embed_text": _compose_embed_text(title, None, [], body),

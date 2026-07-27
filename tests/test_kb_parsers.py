@@ -18,6 +18,11 @@ def _load():
 
 kb = _load()
 
+EXPECTED_KEYS = frozenset({
+    "kind", "slug", "title", "ref", "source", "categories",
+    "strength", "url", "body", "embed_text",
+})
+
 
 @pytest.fixture(scope="module")
 def entries():
@@ -91,6 +96,18 @@ def test_slugs_unique(entries):
     assert len(slugs) == len(set(slugs))
 
 
+def test_entry_body_has_no_glue_across_inline_tags():
+    """get_text() with no separator glues text across adjacent inline tags:
+    '...1 Corinthians 15:52</a>both describe...' becomes '15:52both', making
+    the word 'both' unsearchable. _block_text must insert a real word
+    boundary there instead."""
+    html = (SITE / "catalog" / "quran.html").read_text(encoding="utf-8")
+    docs = kb.parse_entries(html, "quran")
+    e = next(d for d in docs if d["slug"].startswith("single-trumpet-blast"))
+    assert "15:52both" not in e["body"]
+    assert re.search(r"\bboth\b", e["body"])
+
+
 def test_entry_missing_optional_fields_fall_back_to_none_and_empty():
     """Not every entry div is guaranteed to carry data-category, data-strength
     or a .ref span. Exercise those fallback branches directly with a minimal
@@ -124,15 +141,33 @@ def test_parse_dossier_returns_one_doc():
 
 
 def test_dossier_body_includes_responses():
+    """Assert a distinctive, stable phrase from each captured section actually
+    survives into the body — not just an overall length threshold, which stays
+    green even when a whole section (e.g. the premises) is silently dropped."""
     p = SITE / "arguments" / "bukhari" / "b01-aisha-age.html"
     doc = kb.parse_dossier(p.read_text(encoding="utf-8"), "arguments/bukhari/b01-aisha-age.html")
-    assert len(doc["body"]) > 800, "a dossier is thesis-length, not a stub"
+    body = doc["body"]
+    assert len(body) > 800, "a dossier is thesis-length, not a stub"
+    assert "Umm Ruman" in body  # arg-verse-box
+    assert "Fath al-Bari" in body  # arg-context
+    assert "corroborating biographical details" in body  # arg-premises
+    assert "Aisha Dilemma" in body  # arg-conclusion-box
+    assert "T.O. Shanavas" in body  # arg-responses
 
 
 def test_parse_dossier_ignores_index_pages():
     """arguments/bukhari.html is a table of contents, not a dossier."""
     p = SITE / "arguments" / "bukhari.html"
     assert kb.parse_dossier(p.read_text(encoding="utf-8"), "arguments/bukhari.html") is None
+
+
+def test_parse_dossier_rejects_rel_path_without_arguments_prefix():
+    """A caller passing 'site/arguments/...' or a Windows path must fail loudly
+    instead of silently producing a garbage slug/source via the blind slice."""
+    p = SITE / "arguments" / "bukhari" / "b01-aisha-age.html"
+    html = p.read_text(encoding="utf-8")
+    with pytest.raises(ValueError, match="site/arguments/bukhari/b01-aisha-age.html"):
+        kb.parse_dossier(html, "site/arguments/bukhari/b01-aisha-age.html")
 
 
 @pytest.fixture(scope="module")
@@ -242,3 +277,33 @@ def test_parse_doctrine_raises_on_unclosed_frontmatter():
     md = "---\nslug: broken\ntitle: Broken doc\n\nNo closing fence below this line.\n"
     with pytest.raises(ValueError):
         kb.parse_doctrine(md, "broken.md")
+
+
+@pytest.fixture(scope="module")
+def representative_docs(entries, surah1, john):
+    """One parsed doc per parser, reusing the module-scoped fixtures already
+    defined above (John in particular is a 3.2MB fixture — parse it once)."""
+    dossier_html = (SITE / "arguments" / "bukhari" / "b01-aisha-age.html").read_text(encoding="utf-8")
+    dossier_doc = kb.parse_dossier(dossier_html, "arguments/bukhari/b01-aisha-age.html")
+
+    doctrine_md = (ROOT / "kb-doctrine" / "trinity-not-three-gods.md").read_text(encoding="utf-8")
+    doctrine_doc = kb.parse_doctrine(doctrine_md, "trinity-not-three-gods.md")
+
+    return {
+        "entry": entries[0],
+        "dossier": dossier_doc,
+        "quran-verse": surah1[0],
+        "bible-verse": john[0],
+        "doctrine": doctrine_doc,
+    }
+
+
+@pytest.mark.parametrize("kind_label", ["entry", "dossier", "quran-verse", "bible-verse", "doctrine"])
+def test_all_parsers_honor_the_ten_key_contract(kind_label, representative_docs):
+    """All five parsers must return exactly the ten documented keys and a
+    bounded embed_text. Nothing else asserts this across every parser, so a
+    later change that adds a key to one parser would otherwise go undetected
+    until a fixed-schema database insert fails on tens of thousands of rows."""
+    doc = representative_docs[kind_label]
+    assert set(doc) == EXPECTED_KEYS
+    assert len(doc["embed_text"]) <= 1800
