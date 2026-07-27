@@ -199,6 +199,25 @@ the first ~350 tokens of the argument — and `gte-small`'s 512-token truncation
 never reached. Non-video vectors total ~12MB (7,957 docs × 384 dims × 4 bytes);
 video chunks add ~32MB of vectors on top.
 
+> **Known risk, measured during Phase 1 — carry into Task 10.**
+> The 1800-character `embed_text` cap truncates **100% of entries and 100% of
+> dossiers**. Dossier bodies have a median length of ~9,500 characters, so the
+> vector leg sees title, ref and the opening source quote — and *never* the
+> premises, conclusion or Muslim responses.
+>
+> This matters because dossiers are the primary tier for thematic questions
+> (`caps.dossier = 4`). A question like "what do Muslims say about the Aisha
+> hadith" matches semantically against `.arg-responses` text that sits outside
+> the embedded window in all 140 cases, so recall falls entirely to the keyword
+> leg.
+>
+> This is a head-slice *policy*, not a bug, and the retrieval recall fixture that
+> would quantify it is Task 10. **Do not treat poor dossier recall in Task 10 as a
+> mystery — check this first.** Two candidate mitigations, in preference order:
+> chunk dossiers into several documents (matching how videos are already chunked),
+> or compose `embed_text` from a strided sample across the body rather than
+> `body[:1800]`.
+
 ### Ingest scripts
 
 **`build-kb.py`** — parses `site/catalog/*.html`, `site/arguments/**/*.html` and the
