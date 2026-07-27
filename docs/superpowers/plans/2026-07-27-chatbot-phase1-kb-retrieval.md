@@ -1467,7 +1467,7 @@ Expected, approximately:
 
 ```
   entries      1524
-  dossiers      147
+  dossiers      140
   quran        6236
   bible       31100
   doctrine        3
@@ -1969,7 +1969,7 @@ Phase 1 is done when all of these hold:
 
 - [ ] `pytest tests/test_kb_parsers.py` — all pass, no database needed
 - [ ] `pytest tests/test_kb_retrieval.py` — all pass against a loaded corpus
-- [ ] `select kind, count(*) from kb_docs group by kind` returns roughly: entry 1524, dossier 147, verse ~37300, doctrine 3, video ~21000
+- [ ] `select kind, count(*) from kb_docs group by kind` returns roughly: entry 1524, dossier 140, verse ~37300, doctrine 3, video ~21000
 - [ ] `select count(*) from kb_docs where embedding is null` returns 0
 - [ ] Re-running `build-kb.py` writes 0 rows (idempotent)
 - [ ] A sampled video URL opens YouTube at the right moment

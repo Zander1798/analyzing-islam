@@ -7,7 +7,7 @@ Status: approved design, not yet implemented
 
 A signed-in-only chatbot on analyzingislam.com that answers questions about Islam
 from a philosophical and polemical standpoint, grounded in the site's own corpus:
-1,524 catalog entries, 147 dossiers, the Quran, the vetted video library, and a new
+1,524 catalog entries, 140 dossiers, the Quran, the vetted video library, and a new
 authored Christian-doctrine reference layer.
 
 It answers in prose first and links second. Every claim about what a text says
@@ -122,7 +122,7 @@ batch-embed corpus text. It is not on the request path.
 
 | Tier | Count | Vector | FTS | Notes |
 |---|---|---|---|---|
-| Dossiers | 147 | yes | yes | Thesis-level; primary tier for thematic questions |
+| Dossiers | 140 | yes | yes | Thesis-level; primary tier for thematic questions |
 | Entries | 1,524 | yes | yes | Passage-level evidence |
 | Quran verses | 6,236 | yes | yes | Needed for verses no entry wraps (e.g. Q112:3) |
 | Bible (OT + NT) | ~31,100 | yes | yes | **Required, not optional** — see below |
@@ -558,7 +558,7 @@ narrates progress, switching to the **Detective** skin while searching and back 
 the user's skin to answer:
 
 ```
-✓ Searched 1,524 entries and 147 dossiers
+✓ Searched 1,524 entries and 140 dossiers
 ✓ Found Quran 112:3, Quran 19:88–92
 ▸ Reading 6 sources
 · Writing
