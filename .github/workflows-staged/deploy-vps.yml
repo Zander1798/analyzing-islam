@@ -1,0 +1,74 @@
+# ===========================================================================
+# STAGE 12 REPLACEMENT DEPLOY — DELIBERATELY NOT ENABLED.
+#
+# This file lives in .github/workflows-staged/, NOT .github/workflows/, so
+# GitHub never reads it. That is intentional: GitHub Pages is still serving
+# analyzingislam.com and is the rollback target, and `pages.yml` must keep
+# working until the VPS has been live and clean for two weeks.
+#
+# TO ENABLE, AT STAGE 12 AND NOT BEFORE (EXECUTION-PLAN.md Stage 12 order
+# matters — retiring Pages comes FIRST so the config.js commit cannot
+# accidentally deploy to the old site):
+#
+#   1. Two weeks live on the VPS, backups running AND one test-restored
+#      (scripts/vps/test-restore.sh — this gate is already cleared).
+#   2. Add repository secrets:  VPS_SSH_KEY (private key for deploy@VPS),
+#      VPS_HOST (72.60.17.245), VPS_USER (deploy).
+#   3. git mv .github/workflows-staged/deploy-vps.yml .github/workflows/
+#   4. git rm .github/workflows/pages.yml
+#   5. Commit site/assets/js/config.js pointing at the self-hosted API, and
+#      DELETE the --exclude line below in the same commit.
+#   6. Remove site/CNAME and disable GitHub Pages in repo settings.
+#   7. Re-check config.js on the live site after the first deploy.
+# ===========================================================================
+name: Deploy site to VPS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/deploy-vps.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: "vps-deploy"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Load deploy key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Rsync site to the VPS
+        # --exclude='assets/js/config.js' is TRAP-3 PROTECTION and must stay
+        # until step 5 above is done in the same commit that commits config.js.
+        # The repo copy still points at Supabase Cloud so GitHub Pages keeps
+        # working as the rollback target; shipping it would break the VPS.
+        run: |
+          rsync -az --delete \
+            --exclude='assets/js/config.js' \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
+            site/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/analyzingislam/"
+
+      - name: Verify the deploy actually landed
+        # A deploy that reports success while serving the wrong Supabase config
+        # is worse than a failed one. Assert both, every time.
+        run: |
+          set -e
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://analyzingislam.com/about)
+          [ "$code" = "200" ] || { echo "extensionless /about returned $code"; exit 1; }
+          cfg=$(curl -s https://analyzingislam.com/assets/js/config.js)
+          echo "$cfg" | grep -q 'api.analyzingislam.com' \
+            || { echo "config.js is NOT pointing at the self-hosted API:"; echo "$cfg"; exit 1; }
+          echo "$cfg" | grep -q 'cndmksrilytnpgstvmxb' \
+            && { echo "config.js still references Supabase Cloud"; exit 1; }
+          echo "deploy verified: /about 200, config.js -> self-hosted API"
