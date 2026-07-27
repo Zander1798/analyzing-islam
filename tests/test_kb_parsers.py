@@ -26,7 +26,7 @@ def entries():
 
 
 def test_parses_many_entries(entries):
-    assert len(entries) > 100
+    assert len(entries) == 181  # confirmed exact count against catalog-entries.json
 
 
 def test_entry_has_required_fields(entries):
@@ -176,7 +176,10 @@ def john():
 
 
 def test_bible_parses_every_verse_in_john(john):
-    assert len(john) > 800   # John has 879 verses
+    # John has 878 verses in this interlinear, not the 879 most people expect:
+    # critical Greek texts (e.g. NA28) omit John 5:4 as a late scribal addition,
+    # and this reader is built on one, so the count is one short by design.
+    assert len(john) == 878
 
 
 def test_bible_verse_shape(john):
