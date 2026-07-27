@@ -206,3 +206,36 @@ def parse_bible_book(html: str, book_code: str) -> list[dict]:
             })
 
     return docs
+
+
+def parse_doctrine(md: str, filename: str) -> dict:
+    """Parse an authored doctrine markdown file with `---` frontmatter."""
+    meta: dict[str, str] = {}
+    body = md
+
+    if md.startswith("---"):
+        end = md.find("\n---", 3)
+        if end != -1:
+            for line in md[3:end].strip().splitlines():
+                if ":" in line:
+                    k, _, v = line.partition(":")
+                    meta[k.strip()] = v.strip().strip('"')
+            body = md[end + 4:]
+
+    body = body.strip()
+    slug = meta.get("slug") or filename.removesuffix(".md")
+    title = meta.get("title") or slug.replace("-", " ").capitalize()
+    cluster = meta.get("cluster", "").strip().lower()
+
+    return {
+        "kind": "doctrine",
+        "slug": slug,
+        "title": title,
+        "ref": None,
+        "source": "doctrine",
+        "categories": [f"cluster-{cluster}"] if cluster else [],
+        "strength": None,
+        "url": f"doctrine/{slug}.html",
+        "body": body,
+        "embed_text": _compose_embed_text(title, None, [], body),
+    }

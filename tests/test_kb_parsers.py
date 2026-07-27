@@ -202,3 +202,23 @@ def test_bible_paraclete_verse_present(john):
     """John 14:17 is load-bearing for the Muhammad-in-the-Bible cluster."""
     v = next(v for v in john if v["ref"] == "John 14:17")
     assert "spirit" in v["body"].lower()
+
+
+def test_parse_doctrine_reads_frontmatter():
+    md = (ROOT / "kb-doctrine" / "trinity-not-three-gods.md").read_text(encoding="utf-8")
+    doc = kb.parse_doctrine(md, "trinity-not-three-gods.md")
+    assert doc["kind"] == "doctrine"
+    assert doc["slug"] == "trinity-not-three-gods"
+    assert doc["source"] == "doctrine"
+    assert doc["url"] == "doctrine/trinity-not-three-gods.html"
+    assert "cluster-a" in doc["categories"]
+    assert len(doc["body"]) > 200
+    assert "---" not in doc["body"], "frontmatter must be stripped from the body"
+
+
+def test_all_doctrine_files_parse():
+    files = [p for p in sorted((ROOT / "kb-doctrine").glob("*.md")) if p.name != "README.md"]
+    assert len(files) >= 3, "kb-doctrine/ should contain the seed documents (loop must not run vacuously)"
+    for p in files:
+        doc = kb.parse_doctrine(p.read_text(encoding="utf-8"), p.name)
+        assert doc["title"], f"{p.name} has no title in frontmatter"
