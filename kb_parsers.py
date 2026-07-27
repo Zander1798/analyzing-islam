@@ -144,3 +144,65 @@ def parse_quran_page(html: str, surah: int) -> list[dict]:
         })
 
     return docs
+
+
+BIBLE_BOOKS = {
+    "gen": "Genesis", "exo": "Exodus", "lev": "Leviticus", "num": "Numbers",
+    "deu": "Deuteronomy", "jos": "Joshua", "jdg": "Judges", "rut": "Ruth",
+    "1sa": "1 Samuel", "2sa": "2 Samuel", "1ki": "1 Kings", "2ki": "2 Kings",
+    "1ch": "1 Chronicles", "2ch": "2 Chronicles", "ezr": "Ezra", "neh": "Nehemiah",
+    "est": "Esther", "job": "Job", "psa": "Psalms", "pro": "Proverbs",
+    "ecc": "Ecclesiastes", "sng": "Song of Songs", "isa": "Isaiah", "jer": "Jeremiah",
+    "lam": "Lamentations", "ezk": "Ezekiel", "dan": "Daniel", "hos": "Hosea",
+    "jol": "Joel", "amo": "Amos", "oba": "Obadiah", "jon": "Jonah", "mic": "Micah",
+    "nam": "Nahum", "hab": "Habakkuk", "zep": "Zephaniah", "hag": "Haggai",
+    "zec": "Zechariah", "mal": "Malachi",
+    "mat": "Matthew", "mrk": "Mark", "luk": "Luke", "jhn": "John", "act": "Acts",
+    "rom": "Romans", "1co": "1 Corinthians", "2co": "2 Corinthians",
+    "gal": "Galatians", "eph": "Ephesians", "php": "Philippians",
+    "col": "Colossians", "1th": "1 Thessalonians", "2th": "2 Thessalonians",
+    "1ti": "1 Timothy", "2ti": "2 Timothy", "tit": "Titus", "phm": "Philemon",
+    "heb": "Hebrews", "jas": "James", "1pe": "1 Peter", "2pe": "2 Peter",
+    "1jn": "1 John", "2jn": "2 John", "3jn": "3 John", "jud": "Jude",
+    "rev": "Revelation",
+}
+
+
+def parse_bible_book(html: str, book_code: str) -> list[dict]:
+    """Parse one interlinear book page from site/read-external/bible/<code>.html.
+
+    English is reconstructed from .w-gloss spans, so word order follows the
+    source language (Greek/Hebrew), not natural English syntax. This is a
+    known limitation: it degrades FTS/embedding quality relative to the
+    Quran reader, which carries a real translation. If Bible recall proves
+    poor downstream, the fix is a proper translation source, not this parser.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    book_name = BIBLE_BOOKS.get(book_code, book_code.upper())
+    docs: list[dict] = []
+
+    for chapter in soup.select("article.bible-chapter[data-c]"):
+        cnum = chapter["data-c"]
+        for li in chapter.select("li.bible-verse[data-v]"):
+            vnum = li["data-v"]
+            glosses = [g.get_text() for g in li.select(".w-gloss")]
+            body = _clean(" ".join(glosses))
+            if not body:
+                continue
+
+            ref = f"{book_name} {cnum}:{vnum}"
+            anchor = li.get("id") or f"{book_code}-{cnum}-{vnum}"
+            docs.append({
+                "kind": "verse",
+                "slug": f"bible/{anchor}",
+                "title": ref,
+                "ref": ref,
+                "source": "bible",
+                "categories": [],
+                "strength": None,
+                "url": f"read-external/bible/{book_code}.html#{anchor}",
+                "body": body,
+                "embed_text": _compose_embed_text(ref, None, [], body),
+            })
+
+    return docs

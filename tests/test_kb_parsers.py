@@ -167,3 +167,35 @@ def test_quran_112_3_is_findable():
     verses = kb.parse_quran_page(html, 112)
     v = next(v for v in verses if v["ref"] == "Quran 112:3")
     assert "begets" in v["body"].lower() or "begotten" in v["body"].lower()
+
+
+@pytest.fixture(scope="module")
+def john():
+    html = (SITE / "read-external" / "bible" / "jhn.html").read_text(encoding="utf-8")
+    return kb.parse_bible_book(html, "jhn")
+
+
+def test_bible_parses_every_verse_in_john(john):
+    assert len(john) > 800   # John has 879 verses
+
+
+def test_bible_verse_shape(john):
+    v = next(v for v in john if v["ref"] == "John 1:1")
+    assert v["kind"] == "verse"
+    assert v["source"] == "bible"
+    assert v["slug"] == "bible/jhn-1-1"
+    assert v["url"] == "read-external/bible/jhn.html#jhn-1-1"
+    assert "beginning" in v["body"].lower()
+    assert "word" in v["body"].lower()
+
+
+def test_bible_body_excludes_greek(john):
+    """Only the gloss is kept — Greek and transliteration pollute the index."""
+    joined = " ".join(v["body"] for v in john[:50])
+    assert not re.search(r"[Ͱ-Ͽ]", joined)
+
+
+def test_bible_paraclete_verse_present(john):
+    """John 14:17 is load-bearing for the Muhammad-in-the-Bible cluster."""
+    v = next(v for v in john if v["ref"] == "John 14:17")
+    assert "spirit" in v["body"].lower()
