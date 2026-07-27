@@ -1,4 +1,4 @@
-# Handoff — migrating Analyzing Islam to Hostinger
+# Migration Plan — Analyzing Islam to Hostinger
 
 **For:** whoever is taking over the migration
 **From:** prior session, 2026-07-27
@@ -28,6 +28,10 @@ Supabase, DNS on Cloudflare).
 ---
 
 ## Start here
+
+**`docs/migration/EXECUTION-PLAN.md`** — the executable version: VPS provisioned
+(72.60.17.245), executor moved to Hein's Linux workstation, five verified corrections
+folded in. The runbook below remains the reference for rationale and contingencies.
 
 **`docs/migration/2026-07-27-supabase-github-to-hostinger-runbook.md`**
 
