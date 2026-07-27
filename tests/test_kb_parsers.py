@@ -217,8 +217,28 @@ def test_parse_doctrine_reads_frontmatter():
 
 
 def test_all_doctrine_files_parse():
+    expected_titles = {
+        "trinity-not-three-gods.md": "The Trinity is not three gods",
+        "begets-not-eternal-generation.md": '"Begets not" and what eternal generation means',
+        "what-is-the-injeel.md": "What is the Injeel?",
+    }
     files = [p for p in sorted((ROOT / "kb-doctrine").glob("*.md")) if p.name != "README.md"]
     assert len(files) >= 3, "kb-doctrine/ should contain the seed documents (loop must not run vacuously)"
     for p in files:
         doc = kb.parse_doctrine(p.read_text(encoding="utf-8"), p.name)
         assert doc["title"], f"{p.name} has no title in frontmatter"
+        assert doc["title"].count('"') % 2 == 0, (
+            f"{p.name} title has a stray quote: {doc['title']!r}"
+        )
+        if p.name in expected_titles:
+            assert doc["title"] == expected_titles[p.name], (
+                f"{p.name}: expected {expected_titles[p.name]!r}, got {doc['title']!r}"
+            )
+
+
+def test_parse_doctrine_raises_on_unclosed_frontmatter():
+    """A file that opens with '---' but never closes it must fail loudly, not
+    silently index the raw frontmatter lines as prose body text."""
+    md = "---\nslug: broken\ntitle: Broken doc\n\nNo closing fence below this line.\n"
+    with pytest.raises(ValueError):
+        kb.parse_doctrine(md, "broken.md")

@@ -215,12 +215,18 @@ def parse_doctrine(md: str, filename: str) -> dict:
 
     if md.startswith("---"):
         end = md.find("\n---", 3)
-        if end != -1:
-            for line in md[3:end].strip().splitlines():
-                if ":" in line:
-                    k, _, v = line.partition(":")
-                    meta[k.strip()] = v.strip().strip('"')
-            body = md[end + 4:]
+        if end == -1:
+            raise ValueError(
+                f"{filename}: frontmatter opened with '---' but no closing '---' found"
+            )
+        for line in md[3:end].strip().splitlines():
+            if ":" in line:
+                k, _, v = line.partition(":")
+                v = v.strip()
+                if len(v) >= 2 and v[0] == v[-1] == '"':
+                    v = v[1:-1]
+                meta[k.strip()] = v
+        body = md[end + 4:]
 
     body = body.strip()
     slug = meta.get("slug") or filename.removesuffix(".md")
