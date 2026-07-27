@@ -216,6 +216,39 @@ adding an API-level verify alongside the `psql`-level one.
 
 ---
 
+## Two open questions closed from public endpoints (2026-07-27)
+
+Both answered without any credentials. Verify either yourself in one command.
+
+### Signing scheme: ASYMMETRIC (ES256). Sessions will NOT survive.
+
+```bash
+curl -s https://cndmksrilytnpgstvmxb.supabase.co/auth/v1/.well-known/jwks.json
+```
+Returns an EC P-256 key, `alg ES256`, `kid eee256ab-8d14-4704-8040-9ee7ff92d7a3`.
+So the project uses asymmetric JWT signing keys, not a legacy HS256 shared secret.
+Self-hosted GoTrue signs HS256 from `JWT_SECRET` and cannot reproduce that signature.
+
+**All 6 users are logged out at cutover and log in once.** Accounts and passwords are
+unaffected. The runbook's Stage 1d dashboard check is no longer needed — take the
+asymmetric row of its table. Tell the owner beforehand so it reads as expected rather
+than as a fault.
+
+### Email confirmation is ON, so SMTP is blocking
+
+```bash
+curl -s https://cndmksrilytnpgstvmxb.supabase.co/auth/v1/settings   -H "apikey: sb_publishable_9rJKQFSBSA12YijYfGtD5g_7h4WD8wa"
+```
+Returns `"mailer_autoconfirm": false` — confirmation required. **Until SMTP works on
+the new server, no signup can complete**; the confirmation mail never arrives.
+Password reset is equally dead. Stage 7 is critical path, not a finishing touch.
+
+Same response also confirms `"disable_signup": false` (signups open) and that **email
+is the only auth provider** — every OAuth provider is `false`, so there are no
+external redirect URLs to migrate.
+
+---
+
 ## Gotchas found the hard way
 
 - **Windows `psql.exe` writes CRLF.** Any `psql.exe > file` redirect produces

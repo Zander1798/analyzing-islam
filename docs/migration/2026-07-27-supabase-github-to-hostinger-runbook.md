@@ -77,12 +77,29 @@ All four are handled in-line below.
    break the day it is deleted. Fixed in Stage 6, **re-run after Stage 10a**.
 
 2. **The API key is not a JWT, so "reuse the secret and nobody is logged out" is
-   unproven.** `config.js:7` holds `sb_publishable_9rJKQFSBSA12YijYfGtD5g_7h4WD8wa` —
+   ~~unproven~~ — SETTLED 2026-07-27: it cannot work. Plan for the logout.**
+   `config.js:7` holds `sb_publishable_9rJKQFSBSA12YijYfGtD5g_7h4WD8wa` —
    one segment, no dots, no `eyJ` prefix. That is Supabase's newer publishable-key
-   format, **not** a legacy JWT anon key. So (a) `config.js` needs both lines changed,
-   not one, and (b) the dashboard's legacy "JWT Secret" may not be what signs live
-   sessions at all, since newer projects can use asymmetric signing keys. Checked and
-   handled in Stage 3b — **verify before relying on it**.
+   format, **not** a legacy JWT anon key. So `config.js` needs both lines changed,
+   not one.
+
+   **The signing-scheme question is now answered empirically, no dashboard check
+   required.** The project's public JWKS endpoint,
+   `https://cndmksrilytnpgstvmxb.supabase.co/auth/v1/.well-known/jwks.json`,
+   returns:
+
+   ```json
+   {"keys":[{"alg":"ES256","kty":"EC","crv":"P-256","use":"sig",
+             "kid":"eee256ab-8d14-4704-8040-9ee7ff92d7a3", ...}]}
+   ```
+
+   An **ES256 elliptic-curve key pair** — asymmetric JWT signing keys, not a legacy
+   HS256 shared secret. Self-hosted GoTrue signs HS256 from `JWT_SECRET` and cannot
+   reproduce an ES256 signature from a cloud-managed private key.
+
+   **Therefore: all 6 users are logged out at cutover and log in once.** Accounts and
+   passwords are unaffected. Take the second row of Stage 1d's table, not the first.
+   Tell the owner in advance so it reads as expected rather than as a fault.
 
 3. **`config.js` diverges between repo and server, and any content deploy silently
    reverts it.** Stage 9c edits it on the VPS; Stage 8a's `rsync --delete` overwrites
@@ -221,18 +238,28 @@ du -sh storage-backup                 # expect ~3.8MB
 
 **Actual result 2026-07-27:** 26/26 downloaded, 0 failed, 3.8MB.
 
-### 1d. Record the JWT secret — and determine which signing scheme is in use
+### 1d. Record the JWT secret — signing scheme ALREADY DETERMINED
+
+> **✅ ANSWERED 2026-07-27 — this project uses ASYMMETRIC signing keys (ES256).**
+> No dashboard check needed. The public JWKS endpoint
+> `/auth/v1/.well-known/jwks.json` returns an EC P-256 key
+> (`kid eee256ab-8d14-4704-8040-9ee7ff92d7a3`, `alg ES256`). Verify yourself in one
+> command if you want — it needs no credentials:
+> ```bash
+> curl -s https://cndmksrilytnpgstvmxb.supabase.co/auth/v1/.well-known/jwks.json
+> ```
+> **Take the second row of the table below. Sessions will not survive. Plan the
+> re-login rather than trying to prevent it.**
 
 Dashboard → **Settings → API**.
 
 - [ ] Copy the **JWT Secret** somewhere safe (password manager, not a file in the
       repo). Stage 3 needs it.
-- [ ] **Also record which signing scheme this project uses.** Look for a JWT
-      Keys / Signing Keys panel. Note whether the project is on a **legacy shared
-      HS256 secret** or on **asymmetric signing keys** (ECC/RSA key pair).
+- [ ] ~~Also record which signing scheme this project uses.~~ Already determined —
+      see the box above.
 
-That second item is not optional bookkeeping — it decides whether Stage 3b's
-"everyone stays logged in" mitigation can work at all:
+The scheme decides whether Stage 3b's "everyone stays logged in" mitigation can work
+at all. For this project it cannot:
 
 | Scheme | Consequence of reusing the secret |
 |---|---|
@@ -633,6 +660,29 @@ Every count must be **0**.
 ---
 
 ## Stage 7 — Auth email (SMTP)
+
+> **⚠ SMTP IS BLOCKING, NOT A FINISHING TOUCH — verified 2026-07-27.**
+>
+> `https://cndmksrilytnpgstvmxb.supabase.co/auth/v1/settings` returns
+> **`"mailer_autoconfirm": false`**, meaning **email confirmation is REQUIRED** on
+> this project. Until SMTP works on the new server, **no signup can complete at
+> all** — the confirmation mail never arrives and the account stays unconfirmed.
+> Password reset is equally dead.
+>
+> Do not schedule this stage after cutover, and do not let Stage 9's signup test be
+> the thing that discovers it. Verify with a real signup and a real password reset.
+>
+> Same endpoint, same check, no credentials needed:
+> ```bash
+> curl -s https://cndmksrilytnpgstvmxb.supabase.co/auth/v1/settings >   -H "apikey: sb_publishable_9rJKQFSBSA12YijYfGtD5g_7h4WD8wa"
+> ```
+>
+> Two further settings from it, to mirror on the new server:
+> - `"disable_signup": false` — signups are open
+> - **Email is the only auth provider.** Every OAuth provider is `false`, so there
+>   are no external redirect URLs to migrate. (`ADDITIONAL_REDIRECT_URLS` is still
+>   needed for the staging domain — that is a different concern.)
+
 
 Self-hosted GoTrue sends nothing until SMTP is configured. Password reset and email
 confirmation silently do nothing without this.
