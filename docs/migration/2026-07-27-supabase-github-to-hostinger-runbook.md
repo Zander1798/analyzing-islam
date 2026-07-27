@@ -1,19 +1,32 @@
 # Migration runbook — GitHub Pages + Supabase Cloud → Hostinger VPS
 
 Date: 2026-07-27
-Status: not started
+Last revised: 2026-07-27 (post-review — see "Four silent-breakage traps" below)
+Status: **Stages 0 and 1 complete. Stage 2 is next and needs a VPS.**
+
+> **If you have read an earlier copy of this file, re-read Stage 3b and Stage 4.**
+> Two claims in the original were wrong — the anon key is not a JWT, and
+> `--no-privileges` silently drops every GRANT — and two further traps were missed.
+> Corrections are marked inline.
 
 ## What this migrates
 
 | From | To |
 |---|---|
-| GitHub Pages (static site, 995 pages) | nginx on a Hostinger VPS |
+| GitHub Pages (static site, 989 pages, 746MB) | nginx on a Hostinger VPS |
 | Supabase Cloud Postgres | Self-hosted Postgres (Docker) |
 | Supabase Cloud Auth (GoTrue) | Self-hosted GoTrue |
 | Supabase Cloud REST API (PostgREST) | Self-hosted PostgREST |
 | Supabase Cloud Storage (avatars) | Self-hosted Storage |
-| Supabase Cloud Realtime (messenger) | Self-hosted Realtime |
+| Supabase Cloud Realtime | **Nothing — unused, see below** |
 | Cloudflare DNS → GitHub IPs | Cloudflare DNS → VPS IP |
+
+**Realtime is not used by the site.** Verified by grep: zero `.channel()` calls
+anywhere under `site/`. The community and messenger front ends that once used it were
+deleted in commit `19456d24 "Remove community feature entirely"`. You may drop the
+Realtime container from the self-hosted stack — one fewer service to run, monitor and
+patch. Its database tables still restore, harmlessly, so the feature can come back
+later.
 
 **Not migrated:** the domain registration itself. You never touch your registrar.
 Only Cloudflare DNS changes.
@@ -39,24 +52,53 @@ Every stage below ends with a **Verify** step. Do not proceed past a failed veri
   needed, no 24-hour wait. Rollback reaches everyone in ~5 minutes.
 - Cloudflare proxy is **off** (grey cloud) — GitHub's real IPs are visible through it.
 - **No MX records.** No email on this domain, so DNS changes cannot break mail.
-- Only **one** file hardcodes the Supabase URL: `site/assets/js/config.js` line 6.
-  Everything else reads `window.SUPABASE_CONFIG`.
+- Only **one site file** hardcodes the Supabase URL: `site/assets/js/config.js` line 6.
+  Everything else reads `window.SUPABASE_CONFIG`. (`backup-supabase.py` also contains
+  the project ref, but it is a local script, never shipped to the browser.)
+- **`config.js` needs BOTH lines changed** — the URL *and* the key. The key is not a
+  JWT; see trap 2 below.
 - The Supabase CLI's `storage` command has **`ls` only, no `cp`** — file migration
   goes over HTTP.
+- **Realtime is unused** (zero `.channel()` calls in `site/`). The front end calls
+  GoTrue, PostgREST and Storage only.
 
-## Two silent-breakage traps found before starting
+## Four silent-breakage traps found before starting
 
-Both would pass every test and fail weeks later. Both are handled in-line below.
+Each one passes the verification this runbook would otherwise run, and fails later.
+All four are handled in-line below.
 
-1. **Avatar URLs are absolute and point at the old project.** `auth.js:382` and
-   `:426` call `storage.from("avatars").getPublicUrl(path)`, which returns a full
-   `https://cndmksrilytnpgstvmxb.supabase.co/...` URL, and `:430` writes it into
-   `profiles.avatar_url`. After cutover these still resolve — because the old project
-   is deliberately still running — and break the day it is deleted. Fixed in Stage 6.
+1. **Avatar AND banner URLs are absolute and point at the old project.**
+   `auth.js:382` (banner) and `:426` (avatar) both call
+   `storage.from("avatars").getPublicUrl(path)`, which returns a full
+   `https://cndmksrilytnpgstvmxb.supabase.co/...` URL. That string is written into
+   `profiles.banner_url` (via `updateProfile` at `:386`) and `profiles.avatar_url`
+   (at `:430`). **Both columns are confirmed affected, not suspected.** After cutover
+   these still resolve — because the old project is deliberately still running — and
+   break the day it is deleted. Fixed in Stage 6, **re-run after Stage 10a**.
 
-2. **A new JWT secret logs everyone out.** Sessions are signed with the project's
-   JWT secret. Generate a fresh one and every active session dies at cutover. Fixed
-   in Stage 3 by reusing the existing secret.
+2. **The API key is not a JWT, so "reuse the secret and nobody is logged out" is
+   unproven.** `config.js:7` holds `sb_publishable_9rJKQFSBSA12YijYfGtD5g_7h4WD8wa` —
+   one segment, no dots, no `eyJ` prefix. That is Supabase's newer publishable-key
+   format, **not** a legacy JWT anon key. So (a) `config.js` needs both lines changed,
+   not one, and (b) the dashboard's legacy "JWT Secret" may not be what signs live
+   sessions at all, since newer projects can use asymmetric signing keys. Checked and
+   handled in Stage 3b — **verify before relying on it**.
+
+3. **`config.js` diverges between repo and server, and any content deploy silently
+   reverts it.** Stage 9c edits it on the VPS; Stage 8a's `rsync --delete` overwrites
+   it; `.github/workflows/pages.yml` auto-deploys on any push touching `site/**`.
+   Deploy a content change and the server silently points back at Supabase Cloud —
+   which still works, so nobody notices, while new user data lands in the old
+   database. Fixed in Stage 9c by committing the change immediately, plus an rsync
+   `--exclude`. **This is the likeliest of the four to fire**, because pushing a
+   content update is the most routine thing that happens to this repo.
+
+4. **`pg_dump --no-privileges` drops every GRANT, and a row-count check cannot see
+   it.** RLS policies survive a `pg_dump`; GRANTs do not. The schema has 10+ explicit
+   grants, including `grant execute on function public.is_creator() to anon,
+   authenticated` (`analytics.sql:27` — the admin-dashboard gate). The restore can
+   produce a perfect row-count diff while PostgREST returns permission-denied. Fixed
+   in Stage 4d.
 
 ---
 
@@ -179,12 +221,33 @@ du -sh storage-backup                 # expect ~3.8MB
 
 **Actual result 2026-07-27:** 26/26 downloaded, 0 failed, 3.8MB.
 
-### 1d. Record the JWT secret
+### 1d. Record the JWT secret — and determine which signing scheme is in use
 
-Dashboard → **Settings → API → JWT Settings → JWT Secret**. Copy it somewhere safe
-(password manager, not a file in the repo). Stage 3 needs it.
+Dashboard → **Settings → API**.
 
-- [ ] Copy the backup, the storage folder and `avatar-paths.txt` somewhere off this
+- [ ] Copy the **JWT Secret** somewhere safe (password manager, not a file in the
+      repo). Stage 3 needs it.
+- [ ] **Also record which signing scheme this project uses.** Look for a JWT
+      Keys / Signing Keys panel. Note whether the project is on a **legacy shared
+      HS256 secret** or on **asymmetric signing keys** (ECC/RSA key pair).
+
+That second item is not optional bookkeeping — it decides whether Stage 3b's
+"everyone stays logged in" mitigation can work at all:
+
+| Scheme | Consequence of reusing the secret |
+|---|---|
+| Legacy shared HS256 secret | Self-hosted GoTrue can validate existing tokens. Sessions likely survive. |
+| Asymmetric signing keys | Self-hosted GoTrue signs HS256 with `JWT_SECRET`. Existing access tokens will **not** validate. Plan for sessions to end. |
+
+Either way the 73 restored `auth.refresh_tokens` rows give clients a chance to
+recover silently on their next refresh. Treat that as a *maybe*, verify at Stage 9d,
+and if the project is on asymmetric keys, tell the six users to expect one re-login
+rather than letting it surprise them.
+
+- [ ] Also copy the current **publishable/anon key** from this page for reference. You
+      will be **replacing** it in `config.js` with the self-hosted `ANON_KEY`, not
+      reusing it.
+- [ ] Copy the backup, the storage folder and `storage-paths.txt` somewhere off this
       PC — cloud drive or external disk.
 
 ---
@@ -271,14 +334,40 @@ cp .env.example .env
 > https://supabase.com/docs/guides/self-hosting/docker alongside this runbook and
 > prefer its current instructions where they differ.
 
+**Before going further, record two things from `docker-compose.yml`:**
+
+- [ ] The pinned **GoTrue / `supabase/gotrue` image tag**. Stage 4e needs it, and it
+      is the single most likely cause of a failed auth restore.
+- [ ] Whether you are keeping the **`realtime`** service. The site makes zero
+      `.channel()` calls, so you may comment it out. If you do, also drop its entry
+      from the Kong config so the gateway does not route to a dead upstream.
+
+**Optionally also add `pgvector` now.** The chatbot's Phase 1 needs it, and enabling
+the extension on a database with 401KB of data is trivial today and fiddlier once the
+site is live on it. `create extension if not exists vector;` — the Supabase Postgres
+image already ships the binary.
+
 ### 3b. Set the secrets in `.env`
 
 **`JWT_SECRET` — paste the value from Stage 1d, not a new one.**
 
-This is what keeps everyone logged in. It also means your existing `ANON_KEY` and
-`SERVICE_ROLE_KEY` remain valid, because those are themselves JWTs signed with that
-secret — so `config.js` may need only its URL changed. Confirm during Stage 8 rather
-than assuming.
+This gives existing sessions their best chance of surviving cutover. **It is not a
+guarantee** — whether it works depends on the signing scheme you recorded at Stage 1d.
+Re-read that table now if you skipped it. Reusing the secret costs nothing and can
+only help, so do it regardless.
+
+> ### ⚠ Correction to an earlier draft — read this
+>
+> An earlier version of this runbook said the existing `ANON_KEY` and
+> `SERVICE_ROLE_KEY` "remain valid, because those are themselves JWTs signed with that
+> secret", making `config.js` a one-line change. **That is wrong for this project.**
+>
+> `config.js:7` holds `sb_publishable_9rJKQFSBSA12YijYfGtD5g_7h4WD8wa` — a single
+> segment, no dots, no `eyJ` prefix. It is a **publishable key**, not a JWT, and it is
+> meaningless to the self-hosted stack.
+>
+> **Use the `ANON_KEY` that this `.env` generates.** `config.js` is a two-line change:
+> URL *and* key. Do not carry the old key across.
 
 Also set:
 - `POSTGRES_PASSWORD` — a new strong password
@@ -286,6 +375,23 @@ Also set:
 - `SITE_URL=https://analyzingislam.com`
 - `API_EXTERNAL_URL=https://api.analyzingislam.com`
 - `SUPABASE_PUBLIC_URL=https://api.analyzingislam.com`
+- **`ADDITIONAL_REDIRECT_URLS=https://new.analyzingislam.com/**`** — required, see below
+
+Record the generated `ANON_KEY` and `SERVICE_ROLE_KEY` from this `.env`. Stage 9c
+needs the `ANON_KEY`. The `SERVICE_ROLE_KEY` never leaves the server.
+
+> **Why `ADDITIONAL_REDIRECT_URLS` matters at Stage 9.** `auth.js:180` and `:208` build
+> their redirect targets from `location.origin`:
+>
+> ```js
+> redirectTo: new URL("reset-password.html", location.origin + location.pathname)
+> ```
+>
+> On the staging domain that resolves to `https://new.analyzingislam.com/reset-password.html`,
+> which does **not** match `SITE_URL`. GoTrue rejects redirect targets that are not
+> allow-listed, so **password reset and email confirmation will fail at Stage 9d for a
+> reason that looks like broken SMTP but isn't.** Add the staging domain here now. You
+> can remove it after Stage 10.
 
 ### 3c. Start
 
@@ -339,27 +445,138 @@ docker exec -i supabase-db psql -U postgres -d postgres -f - < rowcounts.sql > c
 
 **Verify:** `diff counts-cloud.txt counts-vps.txt` — must be empty.
 Pay closest attention to `auth.users`, `public.profiles`, `public.bookmarks`,
-`public.highlights`, `public.notes`. **Do not proceed on a mismatch.**
+`public.notes`. **Do not proceed on a mismatch.**
+
+(`public.highlights` exists — `supabase/highlights.sql` — but is empty, so it will not
+appear in `pg_stat_user_tables` output. Its absence from the diff is expected, not a
+failure.)
+
+> ### ⚠ A clean row-count diff does NOT mean the restore is good
+>
+> This check proves the **data** arrived. It cannot see **permissions**, and the dump
+> was taken with `--no-privileges`. Do Stage 4d before you believe this stage passed.
+
+### 4d. Re-apply the schema files — silent-breakage fix #4
+
+`pg_dump --no-privileges` omits every `GRANT`. RLS policies survive a dump; grants do
+not. The schema depends on at least ten explicit grants, including:
+
+- `supabase/analytics.sql:27` — `grant execute on function public.is_creator() to anon, authenticated` — **this is the admin-dashboard gate**
+- `supabase/profile-community-extensions.sql:156` — `grant select on public.public_profiles to anon, authenticated`
+- `supabase/friendships.sql:154`, `supabase/profile-extensions.sql:89`,
+  `supabase/messenger-schema.sql:185` and `:208`, and others
+
+Without them the database has every row in the right place and the browser gets
+`permission denied`. Row counts will not tell you.
+
+Copy the schema directory up and replay all 18 files:
+
+```bash
+scp -r supabase/ deploy@VPS_IP:~/schema/
+```
+On the VPS, in filename order:
+```bash
+for f in ~/schema/*.sql; do
+  echo "=== $f"
+  docker exec -i supabase-db psql -U postgres -d postgres -v ON_ERROR_STOP=0 < "$f"
+done 2>&1 | tee ~/schema-replay.log
+```
+
+The files are written to be re-runnable (`create table if not exists`,
+`create or replace function`, `add column if not exists`, and grants, which are
+idempotent). **Expect — and ignore — errors of the form `policy "..." already
+exists`**, because `create policy` has no `if not exists` form. Anything else in
+`schema-replay.log` deserves a read.
+
+**Verify — at the API level, not just in psql.** This is the check that would have
+caught the missing grants:
+
+```bash
+ANON='<ANON_KEY from ~/supabase-selfhost/.env>'
+
+# anon read of a view that should be publicly selectable
+curl -s -w '\n-> %{http_code}\n' \
+  -H "apikey: $ANON" -H "Authorization: Bearer $ANON" \
+  "http://localhost:8000/rest/v1/public_profiles?select=username&limit=1"
+
+# the admin-dashboard RPC — must not fail on its grant
+curl -s -w '\n-> %{http_code}\n' \
+  -H "apikey: $ANON" -H "Authorization: Bearer $ANON" \
+  -H "Content-Type: application/json" -d '{}' \
+  "http://localhost:8000/rest/v1/rpc/is_creator"
+```
+Both must return 2xx. A `401`, `403` or a body containing `permission denied for
+function` means the grants did not land — do not proceed.
+
+### 4e. If the auth restore fights you — GoTrue version skew
+
+You are restoring a Supabase **Cloud** `auth` schema into a **self-hosted** GoTrue
+pinned to whatever tag you recorded at Stage 3a. Cloud generally runs a newer GoTrue.
+When `auth.schema_migrations` records migrations the pinned GoTrue does not know
+about, the usual symptoms are:
+
+- the `supabase-auth` container restart-looping at startup
+- log lines about migrations failing, or a dirty/unknown migration version
+- login returning 500 while the database itself looks perfectly healthy
+
+This stage either preserves or destroys all 6 accounts, so do not improvise. In
+rough order of preference:
+
+1. **Bump GoTrue** in `docker-compose.yml` to a tag at or above what Cloud used, then
+   `docker compose up -d auth`. Usually sufficient on its own.
+2. **Let GoTrue own its own schema.** Restore `public` and `storage` first, start the
+   stack so GoTrue creates a clean `auth` schema at its own version, then load *only
+   the auth table data* (not the DDL, not `auth.schema_migrations`) from the dump.
+3. **Last resort — recreate the six accounts by hand** via the Admin API and have
+   users reset their passwords. Six accounts makes this survivable. Note it loses the
+   password hashes, so warn the users first.
+
+**Do not** hand-edit `auth.schema_migrations` to make an error go away. That produces
+an auth server that starts and then misbehaves subtly.
+
+**Verify:** `docker compose ps` shows `supabase-auth` healthy and *stable* — check it
+twice, sixty seconds apart, to catch a restart loop. Then `select count(*) from
+auth.users;` must return **6**.
 
 ---
 
 ## Stage 5 — Restore storage files
 
+> **Restore all four buckets, not just `avatars`.** An earlier draft of this stage
+> copied `storage-backup/avatars` only, contradicting Stage 1c which correctly found
+> **four** buckets holding files: `avatars` (16), `community-icons` (2),
+> `community-banners` (2), `community-post-images` (6).
+>
+> The three community buckets are currently orphaned — the front end that displayed
+> them was deleted in commit `19456d24` — so skipping them breaks nothing visible
+> today. Restore them anyway: it is 3.8MB total, `storage.objects` has 26 rows that
+> should have 26 matching files, and if the community feature ever returns you will
+> not be hunting for images that quietly never made the trip.
+
 ```bash
-scp -r storage-backup/avatars deploy@VPS_IP:~/
-docker cp ~/avatars supabase-storage:/var/lib/storage/stub/stub/avatars
+scp -r storage-backup deploy@VPS_IP:~/
+```
+On the VPS — copy every bucket directory, not one:
+```bash
+for b in avatars community-icons community-banners community-post-images; do
+  [ -d ~/storage-backup/$b ] && docker cp ~/storage-backup/$b \
+    supabase-storage:/var/lib/storage/stub/stub/$b
+done
 ```
 
 The exact container path depends on the storage backend configured in `.env`
 (`STORAGE_BACKEND=file`). Check `docker exec supabase-storage ls /var/lib/storage`
 and place files to match the structure already there.
 
-**Verify:** file count matches Stage 1c, and one avatar loads in a browser via the
-new API URL.
+**Verify:** total file count matches Stage 1c's 26, and one avatar loads in a browser
+via the new API URL.
+```bash
+docker exec supabase-storage sh -c 'find /var/lib/storage -type f | wc -l'   # expect 26
+```
 
 ---
 
-## Stage 6 — Rewrite the avatar URLs (silent-breakage fix #1)
+## Stage 6 — Rewrite the avatar AND banner URLs (silent-breakage fix #1)
 
 Existing rows point at the old project. Rewrite them to the new host.
 
@@ -379,13 +596,39 @@ set avatar_url = replace(avatar_url,
 where avatar_url like '%cndmksrilytnpgstvmxb.supabase.co%';
 ```
 
-Repeat for `banner_url` if that column also stores absolute URLs — check first:
+**`banner_url` is affected too — this is confirmed, not conditional.** `auth.js:382`
+resolves a public URL exactly like the avatar path and `:386` writes it to
+`profiles.banner_url`. Rewrite it as well:
+
 ```sql
-select count(*) from public.profiles where banner_url like '%supabase.co%';
+update public.profiles
+set banner_url = replace(banner_url,
+      'https://cndmksrilytnpgstvmxb.supabase.co',
+      'https://api.analyzingislam.com')
+where banner_url like '%cndmksrilytnpgstvmxb.supabase.co%';
 ```
 
-**Verify:** zero rows still matching the old host, and an avatar renders in the
-staging site at Stage 8.
+Do the same sweep on the community tables. They are orphaned (no front end since
+commit `19456d24`) but the rows are still there and cost nothing to fix:
+
+```sql
+update public.communities
+set icon_url   = replace(icon_url,   'https://cndmksrilytnpgstvmxb.supabase.co', 'https://api.analyzingislam.com'),
+    banner_url = replace(banner_url, 'https://cndmksrilytnpgstvmxb.supabase.co', 'https://api.analyzingislam.com')
+where icon_url like '%cndmksrilytnpgstvmxb.supabase.co%'
+   or banner_url like '%cndmksrilytnpgstvmxb.supabase.co%';
+```
+
+**Verify:** nothing anywhere still references the old host, and an avatar renders on
+the staging site at Stage 9.
+
+```sql
+select 'profiles.avatar_url' src, count(*) from public.profiles where avatar_url like '%cndmksrilytnpgstvmxb%'
+union all select 'profiles.banner_url',   count(*) from public.profiles    where banner_url like '%cndmksrilytnpgstvmxb%'
+union all select 'communities.icon_url',  count(*) from public.communities where icon_url   like '%cndmksrilytnpgstvmxb%'
+union all select 'communities.banner_url',count(*) from public.communities where banner_url like '%cndmksrilytnpgstvmxb%';
+```
+Every count must be **0**.
 
 ---
 
@@ -426,13 +669,36 @@ sudo chown -R deploy:deploy /var/www/analyzingislam
 ```
 From your PC:
 ```bash
-rsync -avz --delete "site/" deploy@VPS_IP:/var/www/analyzingislam/
+rsync -avz --delete --exclude='assets/js/config.js' \
+  "site/" deploy@VPS_IP:/var/www/analyzingislam/
 ```
+
+> **The `--exclude` is the fix for trap 3. Do not drop it before Stage 12.**
+>
+> Without it, every content deploy overwrites the server's `config.js` and silently
+> points the live site back at Supabase Cloud — which keeps working, because the old
+> project is deliberately still running, while new user data lands in the wrong
+> database.
+>
+> **Why not just commit the new URL to the repo instead?** Because GitHub Pages
+> deploys from the repo on every push to `site/**`, and Pages is your rollback target.
+> A repo whose `config.js` points at the VPS gives you a rollback that fails the same
+> way the thing you are rolling back from failed. The repo must keep pointing at
+> Supabase Cloud for as long as the rollback window is open. **The divergence is
+> correct and intentional; it was simply unprotected.** It is resolved at Stage 12,
+> when rollback is abandoned.
+>
+> Consequence to remember: while the exclude is in place, a genuine change to
+> `config.js` must be copied up by hand.
+
+`site/` is **746MB** (435MB `assets/`, 178MB `read-external/`, 74MB `read/`). The
+first sync takes a while; later ones are incremental and quick. Run it inside `tmux`
+or `screen` so a dropped SSH session does not kill it halfway.
 
 ### 8b. nginx — must replicate GitHub Pages' URL behaviour
 
 GitHub Pages serves `/about` and `/about.html` interchangeably. nginx does not by
-default, and 995 pages of internal links depend on it.
+default, and 989 pages of internal links depend on it.
 
 `/etc/nginx/sites-available/analyzingislam`:
 ```nginx
@@ -494,37 +760,86 @@ sudo certbot --nginx -d new.analyzingislam.com -d api.analyzingislam.com
 
 ### 9c. Point the staging site at the new backend
 
-On the VPS only — not in the repo yet:
+On the VPS only — **deliberately not in the repo yet**, because GitHub Pages still
+serves production from the repo and is your rollback target. See the note at Stage 8a.
+
 ```bash
 sudo nano /var/www/analyzingislam/assets/js/config.js
 ```
-Change `url` to `https://api.analyzingislam.com`. Leave `anonKey` as-is initially
-(it should still validate, since the JWT secret was reused). If auth fails, replace
-it with the `ANON_KEY` from `.env`.
+
+**Change both lines:**
+
+```js
+window.SUPABASE_CONFIG = {
+  url: "https://api.analyzingislam.com",
+  anonKey: "<the ANON_KEY from ~/supabase-selfhost/.env>",
+};
+```
+
+> **Do not keep the existing `anonKey`.** An earlier draft said to leave it as-is
+> because "it should still validate, since the JWT secret was reused". It will not.
+> The current key is `sb_publishable_…` — a publishable key, not a JWT — and the
+> self-hosted stack has never heard of it. Replace it now rather than debugging a
+> confusing 401 later.
+
+**Post-deploy check — run this after every rsync during the migration window.** It is
+two seconds and it is the thing that catches trap 3 if the exclude is ever lost:
+
+```bash
+curl -s https://new.analyzingislam.com/assets/js/config.js | grep -o 'url: "[^"]*"'
+```
+Must print `url: "https://api.analyzingislam.com"`. If it prints the
+`cndmksrilytnpgstvmxb` URL, the exclude was dropped — restore the file and fix the
+rsync before doing anything else.
 
 ### 9d. Test matrix — every one, on `https://new.analyzingislam.com`
 
+**Static site**
 - [ ] Home, catalog, a category page, an entry page, a dossier
 - [ ] Read pages: Quran, a hadith collection, Bible
-- [ ] Extensionless URL (`/about`) resolves
+- [ ] Extensionless URL (`/about`) resolves — proves Stage 8b
+- [ ] Goat skins, favicon, sitemap.xml, robots.txt
+- [ ] Mobile viewport
+- [ ] `config.js` serves the **new** URL and the **new** key — proves trap 3 is held
+
+**Auth** — the highest-risk group
 - [ ] **Sign up** a brand-new test account
-- [ ] **Log in** as an existing account (proves the auth data migrated)
-- [ ] **Password reset** — email actually arrives (proves Stage 7)
+- [ ] **Log in** as an existing account — proves the auth data migrated (Stage 4e)
+- [ ] **Password reset — email actually arrives and the link works.** Proves Stage 7
+      (SMTP) *and* the `ADDITIONAL_REDIRECT_URLS` entry from Stage 3b. If the mail
+      arrives but the link is rejected, that is the redirect allow-list, not SMTP.
+- [ ] **Were you logged out?** Note whether a session that was live before cutover
+      survived. This is the Stage 1d signing-scheme question answered empirically —
+      record the answer either way.
+
+**Data**
 - [ ] Bookmark an entry; confirm it appears on Saved
 - [ ] Create a highlight and a note
 - [ ] Quiz progress saves
-- [ ] Profile: change username, **upload a new avatar**
-- [ ] **Existing avatars render** (proves Stage 6)
-- [ ] Build editor: create and share a build
-- [ ] Community pages
-- [ ] Messenger — send a message, confirm realtime delivery
-- [ ] Admin dashboard loads for the owner account and is refused for others
-- [ ] Contact form
-- [ ] Goat skins, favicon, sitemap.xml, robots.txt
-- [ ] Mobile viewport
+- [ ] Build editor: create and share a build; open the share link signed out
+
+**Profiles and storage**
+- [ ] Change username
+- [ ] **Upload a new avatar** and a new banner
+- [ ] **Existing avatars and banners render** — proves Stage 6
+
+**Permissions** — proves Stage 4d
+- [ ] Admin dashboard loads for the owner account
+- [ ] Admin dashboard is **refused** for a non-admin account (test both directions —
+      a dashboard that loads for everyone is a failure, not a pass)
+- [ ] Anonymous pageview tracking still writes
+- [ ] Contact form (FormSubmit — external, should be unaffected)
 
 **Do not proceed to cutover until every box is ticked.** This is where problems are
 free to fix.
+
+> **Removed from this matrix:** earlier drafts listed "Community pages" and
+> "Messenger — send a message, confirm realtime delivery". **Those features no longer
+> exist** — commit `19456d24 "Remove community feature entirely"` deleted 19 community
+> JS modules and 5 community pages, and there is no messenger front end. There is
+> nothing to test and no Realtime in use. If you find yourself hunting for these
+> pages, stop: they are gone by design. Their database tables remain and restore
+> harmlessly.
 
 ---
 
@@ -548,10 +863,20 @@ On the VPS:
 ```bash
 cat final-sync.sql | docker exec -i supabase-db psql -U postgres -d postgres
 ```
-Then **re-run Stage 6** (the avatar URL rewrite) — the fresh restore reintroduces
-the old URLs.
+The re-restore undoes two earlier stages. **Re-run both, in this order:**
 
-**Verify:** row counts match again.
+1. **Re-run Stage 4d** — the dump is still `--no-privileges` and the restore still
+   uses `--clean --if-exists`, so it drops and recreates the objects and **the grants
+   are lost again**. Replay the schema files and re-run the two `curl` permission
+   checks.
+2. **Re-run Stage 6** — the fresh restore reintroduces the old absolute avatar and
+   banner URLs. Run the full four-table verification query; every count must be 0.
+
+Skipping either silently undoes work you already verified, which is exactly the class
+of failure this runbook exists to prevent.
+
+**Verify:** row counts match again, both `curl` permission checks return 2xx, and the
+Stage 6 verification query returns all zeros.
 
 ### 10b. Flip DNS
 
@@ -630,15 +955,39 @@ not from a user.
 
 ## Stage 12 — Decommission (two weeks after cutover, not before)
 
+Reaching this stage means **you are giving up the rollback path**. Everything below
+assumes that is a deliberate decision, not a drift.
+
 - [ ] Confirm two weeks of clean operation
-- [ ] Confirm backups have been running and one has been **test-restored**
-- [ ] Commit the `config.js` URL change to the repo (until now it exists only on the
-      server)
+- [ ] Confirm backups have been running and one has been **test-restored** — an
+      untested backup is a hope, not a backup
+
+**Then close the `config.js` divergence — these three go together, in this order:**
+
+- [ ] Retire the Pages deploy first: update `.github/workflows/pages.yml` to rsync to
+      the VPS instead, or delete it. Do this **before** the next item, so committing
+      the new config cannot trigger a Pages deploy.
+- [ ] Commit the `config.js` change to the repo — **both lines**, URL and key. Until
+      now it has existed only on the server, deliberately (see Stage 8a).
+- [ ] **Remove the `--exclude='assets/js/config.js'` from the rsync command**, and
+      from any deploy script you wrote. Repo and server now agree, so the exclude is
+      no longer protecting anything — it is just a trap for the next person, who will
+      change `config.js`, deploy, and watch nothing happen.
+
 - [ ] Remove `site/CNAME` and disable GitHub Pages
-- [ ] Update `.github/workflows/pages.yml` — replace the Pages deploy with an rsync
-      deploy to the VPS, or retire it
+- [ ] Verify the live site still serves the correct `config.js` after the first
+      post-Stage-12 deploy. This is the last chance for trap 3 to bite.
 - [ ] **Only now** consider pausing the Supabase Cloud project. Keep the Stage 1
       backup permanently regardless.
+
+> **Before pausing Supabase Cloud, do one final check for absolute URLs:**
+> ```sql
+> select count(*) from public.profiles
+> where avatar_url like '%cndmksrilytnpgstvmxb%' or banner_url like '%cndmksrilytnpgstvmxb%';
+> ```
+> Must be 0. If anyone uploaded an avatar between the Stage 10a sync and now — before
+> the client was pointed at the new host — this catches it. Zero here is what makes
+> deleting the old project safe.
 
 ---
 
@@ -647,19 +996,47 @@ not from a user.
 | Trap | Consequence | Handled in |
 |---|---|---|
 | New JWT secret | Everyone logged out at cutover | Stage 3b |
-| Absolute avatar URLs | Images break when old project is deleted | Stage 6, re-run at 10a |
+| **Assuming the anon key is a JWT** | **Auth 401s; `config.js` needs both lines changed** | **Stage 1d, 3b, 9c** |
+| **`--no-privileges` drops all GRANTs** | **Row counts pass, PostgREST returns permission-denied** | **Stage 4d, re-run at 10a** |
+| **GoTrue version skew on auth restore** | **Auth container restart-loops; 6 accounts at risk** | **Stage 3a, 4e** |
+| **`config.js` clobbered by a content deploy** | **Live site silently writes to the OLD database** | **Stage 8a exclude + 9c check** |
+| Absolute avatar **and banner** URLs | Images break when old project is deleted | Stage 6, re-run at 10a |
+| Staging domain not in `ADDITIONAL_REDIRECT_URLS` | Password reset fails, looks like broken SMTP | Stage 3b |
 | No SMTP | Password reset silently does nothing | Stage 7 |
-| nginx default routing | Extensionless links 404 across 995 pages | Stage 8b |
+| nginx default routing | Extensionless links 404 across 989 pages | Stage 8b |
 | Transaction pooler for pg_dump | Dump fails partway | Stage 1a |
 | Dump omits `auth` schema | Every user account lost | Stage 1b |
+| Only `avatars` restored, not all 4 buckets | 10 orphaned files silently absent | Stage 5 |
 | Final sync skipped | Data written during migration lost | Stage 10a |
-| Avatar rewrite not repeated after final sync | Fix silently undone | Stage 10a |
+| Avatar rewrite **or grant replay** not repeated after final sync | Verified fixes silently undone | Stage 10a |
 | Backups only on the VPS | One disk failure loses everything | Stage 11a |
+| `--exclude` left in place after Stage 12 | Future `config.js` changes never deploy | Stage 12 |
 | Supabase project deleted early | No rollback | Stage 12 |
 
 ## Open questions
 
-1. VPS not yet purchased at time of writing — Stage 2a is the first blocker.
-2. `banner_url` may or may not store absolute URLs; Stage 6 checks before assuming.
-3. Whether the existing `ANON_KEY` validates against the self-hosted stack — expected
-   yes given JWT secret reuse, confirmed empirically at Stage 9c.
+1. **VPS not yet purchased** at time of writing — Stage 2a is the first blocker and
+   nothing downstream can be tested without it.
+2. **Which JWT signing scheme the Cloud project uses** — legacy shared HS256 secret,
+   or asymmetric signing keys. This decides whether Stage 3b's "everyone stays logged
+   in" mitigation can work at all. **Answer it at Stage 1d, from the dashboard, before
+   relying on it.** The presence of an `sb_publishable_…` key suggests the project is
+   on the newer API-key system, which makes asymmetric signing plausible — but that is
+   an inference, not a verified fact.
+3. **Whether existing sessions survive cutover.** Follows from (2). Answered
+   empirically at Stage 9d — the test matrix now asks you to record it either way.
+   Six users, so a forced re-login is survivable if you warn them.
+4. **Whether the pinned self-hosted GoTrue can accept the Cloud auth schema.** Cannot
+   be tested without the VPS. Contingencies are at Stage 4e.
+5. **Whether Supabase's default privileges backfill any of the dropped GRANTs.** They
+   may, for tables in `public`. Stage 4d does not depend on the answer — it replays
+   the schema files regardless, which is cheap insurance either way.
+
+## Resolved — previously open, now settled
+
+- ~~`banner_url` may or may not store absolute URLs~~ — **it does.** `auth.js:382`
+  resolves a public URL and `:386` writes it to `profiles.banner_url`. Stage 6 rewrites
+  it unconditionally.
+- ~~Whether the existing `ANON_KEY` validates against the self-hosted stack~~ —
+  **it will not.** It is not a JWT. Replace it at Stage 9c.
+- ~~Whether Realtime is needed~~ — **it is not.** Zero `.channel()` calls in `site/`.

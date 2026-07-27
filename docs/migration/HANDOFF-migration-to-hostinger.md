@@ -2,7 +2,15 @@
 
 **For:** whoever is taking over the migration
 **From:** prior session, 2026-07-27
+**Revised:** 2026-07-27, after a review that checked every claim against the code
 **Owner:** Zander (non-specialist — explain rather than assume)
+
+> **If you were sent an earlier copy of this file, use this one.** The review found
+> that two load-bearing claims in the original were wrong (the anon key is not a JWT;
+> `pg_dump --no-privileges` silently drops every GRANT), that two further silent-
+> breakage traps had been missed, and that the feature list described a community and
+> messenger front end that was deleted from the site months ago. All corrected below
+> and in the runbook, marked inline.
 
 ---
 
@@ -35,7 +43,7 @@ Read that runbook before doing anything. This file is only orientation.
 
 | Thing | Where it is now |
 |---|---|
-| Static site, 995 pages | GitHub Pages, from `site/` in this repo, deployed by `.github/workflows/pages.yml` |
+| Static site, 989 pages (746MB) | GitHub Pages, from `site/` in this repo, deployed by `.github/workflows/pages.yml` |
 | Database, auth, storage, realtime | Supabase Cloud, project ref `cndmksrilytnpgstvmxb`, region **eu-west-1** |
 | DNS | **Cloudflare** (`dell.ns.cloudflare.com`, `zahir.ns.cloudflare.com`) — owner has access |
 | Domain registrar | Unknown, and **irrelevant** — the cutover only touches Cloudflare |
@@ -101,36 +109,106 @@ The owner has been told not to paste credentials into chat. Please keep that up.
 
 ---
 
-## Two silent-breakage traps already identified
+## Four silent-breakage traps already identified
 
-Both would pass every test and fail weeks later. Both are handled in the runbook —
-do not skip them.
+Each one passes the verification the runbook would otherwise run, and fails later.
+All four are handled in the runbook — do not skip them.
 
-### 1. Avatar URLs are absolute and point at the old project
+### 1. Avatar and banner URLs are absolute and point at the old project
 
-`site/assets/js/auth.js:382` and `:426` call
+`site/assets/js/auth.js:382` (banner) and `:426` (avatar) both call
 `storage.from("avatars").getPublicUrl(path)`, which returns a full
-`https://cndmksrilytnpgstvmxb.supabase.co/...` URL, and `:430` writes that string
-into `profiles.avatar_url`.
+`https://cndmksrilytnpgstvmxb.supabase.co/...` URL. That string is then written into
+`profiles.banner_url` (via `updateProfile` at `:386`) and `profiles.avatar_url`
+(at `:430`).
+
+**Both columns are affected — this is confirmed, not suspected.**
 
 After cutover these **still resolve**, because the old Supabase project is
 deliberately left running as rollback. They break the day it is deleted — weeks
 later, with nothing linking the failure to the migration.
 
-Runbook Stage 6 rewrites them. **It must be re-run after the Stage 10a final sync**,
-because the re-restore reintroduces the old URLs.
+Runbook Stage 6 rewrites both columns. **It must be re-run after the Stage 10a final
+sync**, because the re-restore reintroduces the old URLs.
 
-Also check `banner_url`, which may store absolute URLs the same way.
+### 2. The API keys are NOT JWTs — so "reuse the secret and nobody is logged out" is unproven
 
-### 2. A fresh JWT secret logs every user out
+An earlier draft of this handoff claimed the existing `ANON_KEY` is a JWT signed with
+the project's JWT secret, and that reusing the secret would therefore keep every
+session alive and make `config.js` a one-line change. **That is wrong for this
+project.**
 
-Sessions are signed with the project's JWT secret. Generate a new one for the
-self-hosted stack and every active session dies at cutover.
+`site/assets/js/config.js:7` holds:
 
-Runbook Stage 3b reuses the existing secret (Supabase dashboard → Settings → API →
-JWT Secret). A side effect worth confirming empirically: the existing `ANON_KEY`
-should also stay valid, since it is itself a JWT signed with that secret — which
-would make `config.js` a one-line change.
+```
+sb_publishable_9rJKQFSBSA12YijYfGtD5g_7h4WD8wa
+```
+
+One segment, no dots, no `eyJ` prefix. That is Supabase's **newer publishable-key
+format**, not a legacy JWT anon key. Two consequences:
+
+- **`config.js` needs both lines changed**, not one. The self-hosted stack issues
+  legacy JWT-format `ANON_KEY` / `SERVICE_ROLE_KEY` from its `.env`. Use those.
+- **More important:** being on the new key system means the dashboard's legacy "JWT
+  Secret" may no longer be what signs live user sessions. Newer projects can use
+  asymmetric signing keys instead of the shared HS256 secret. Runbook Stage 3b's
+  entire "reuse the secret and nobody gets logged out" mitigation rests on that
+  assumption.
+
+**Check this at the Supabase dashboard before relying on it** (Settings → API →
+JWT Keys — note whether the project is on a legacy shared secret or on asymmetric
+signing keys). If it is on asymmetric keys, plan for sessions to end at cutover and
+tell users, rather than being surprised.
+
+Softener worth knowing: the 73 rows in `auth.refresh_tokens` do get restored, so even
+if access tokens stop validating, clients may recover silently on their next refresh.
+That is a *maybe*, not a guarantee. Verify at Stage 9, do not assume.
+
+### 3. `config.js` diverges between repo and server, and any content deploy silently reverts it
+
+This is the likeliest of the four to actually fire, because it is triggered by the
+most routine thing that happens to this repo: pushing a content update.
+
+The mechanism:
+
+- Stage 9c edits `config.js` **on the VPS only**, deliberately not in the repo.
+- Stage 8a deploys with `rsync -avz --delete "site/"` — which overwrites it.
+- `.github/workflows/pages.yml` auto-deploys on any push touching `site/**`.
+
+So the repo's `config.js` points at Supabase Cloud while the server's points at the
+VPS. Deploy any content change in that window and the server's copy is overwritten
+with the Cloud URL.
+
+**The site does not break when this happens** — the old Supabase project is
+deliberately still running. New signups, bookmarks and notes simply flow into the
+*old* database while the VPS database sits idle. Nobody notices. Then Stage 12 pauses
+the old project and breakage plus data loss arrive together, with nothing pointing at
+the cause.
+
+**Fixed by an rsync `--exclude='assets/js/config.js'` at Stage 8a**, plus a two-second
+`curl` check after every deploy at Stage 9c.
+
+Note the fix is *not* "commit the change to the repo early". That looks obvious and is
+wrong: GitHub Pages deploys from the repo, and Pages is the rollback target. A repo
+pointing at the VPS gives you a rollback that fails the same way the thing you are
+rolling back from failed. **The divergence is correct and intentional — it was simply
+unprotected.** It gets resolved at Stage 12, when rollback is deliberately abandoned,
+and the `--exclude` is removed at the same time.
+
+### 4. `pg_dump --no-privileges` drops every GRANT, and a row-count check cannot see it
+
+The Stage 1b dump command uses `--no-privileges`. RLS policies survive a `pg_dump`;
+**GRANTs do not**. The schema in `supabase/` contains at least ten explicit grants,
+including:
+
+- `supabase/analytics.sql:27` — `grant execute on function public.is_creator() to anon, authenticated` (this is the admin-dashboard gate)
+- `supabase/profile-community-extensions.sql:156` — `grant select on public.public_profiles to anon, authenticated`
+
+So the restore can produce a **perfectly clean row-count diff** — which is Stage 4c's
+only check — while PostgREST returns permission-denied to the browser.
+
+Fixed at Stage 4d by re-applying the 18 files in `supabase/` after the restore, and by
+adding an API-level verify alongside the `psql`-level one.
 
 ---
 
@@ -151,7 +229,21 @@ would make `config.js` a one-line change.
   `pg_dump`.
 - **Four buckets have files**, not one: `avatars` (16), `community-icons` (2),
   `community-banners` (2), `community-post-images` (6). `dm-attachments` exists but
-  is empty. All five are public.
+  is empty. All five are public. Only `avatars` is still reachable from the live site
+  (see "Features that no longer exist" below) — restore all four anyway, they are 3.8MB.
+- **GoTrue version skew is a real risk at Stage 4** and is not something we could test
+  without the VPS. You are restoring a Supabase *Cloud* `auth` schema into a
+  *self-hosted* GoTrue whose docker-compose pins an older version. If
+  `auth.schema_migrations` disagrees with what that GoTrue expects, the container can
+  fail to start or fail its own migrations. This is the stage that either preserves or
+  destroys all 6 accounts — see Stage 4e for the contingency.
+- **The site loads `@supabase/supabase-js@2` from jsDelivr** — a floating major tag.
+  The client library can change under a pinned self-hosted server at any time. Pin it
+  to an exact version for the duration of the migration so you are not debugging a
+  moving target.
+- **`site/` is 746MB** (435MB `assets/`, 178MB `read-external/`, 74MB `read/`). Size
+  the VPS disk for it and expect the first rsync to take a while. Subsequent ones are
+  incremental and fast.
 
 ---
 
@@ -159,48 +251,100 @@ would make `config.js` a one-line change.
 
 Supabase is Postgres **plus** GoTrue (auth), PostgREST (the REST API the browser
 talks to), Storage and Realtime. Every page loads `supabase-js`, which calls
-PostgREST with a JWT issued by GoTrue.
+PostgREST with a token issued by GoTrue.
 
 Move only the database and the site breaks completely — sign-in, bookmarks,
-highlights, notes, quiz progress, saved builds, community, messenger, profiles and
-the admin dashboard all stop. There would be a database with the data in it and
-nothing able to serve it.
+highlights, notes, quiz progress, saved builds, profiles and the admin dashboard all
+stop. There would be a database with the data in it and nothing able to serve it.
 
 Self-hosting the full stack keeps all 18 SQL files in `supabase/`, every RLS policy
-and every `auth.uid()` call working unchanged. Only `site/assets/js/config.js` needs
-to change — it is the **only** file that hardcodes the Supabase URL.
+and every `auth.uid()` call working unchanged.
+
+**What the front end actually calls** (verified by grep across `site/`, not assumed):
+
+| Service | Used? | Evidence |
+|---|---|---|
+| GoTrue (auth) | **Yes** | 8 `client.auth.*` call sites |
+| PostgREST (REST) | **Yes** | `from()` and `rpc()` call sites |
+| Storage | **Yes** | 2 `storage.from("avatars")` call sites, both in `auth.js` |
+| Realtime | **No** | **zero `.channel()` calls anywhere in `site/`** |
+
+**Realtime can be dropped from the self-hosted stack.** Nothing on the live site
+subscribes to it. That is one fewer container to run, monitor, back up and patch. If
+the community/messenger feature is ever restored (see below), add it back then.
+
+`site/assets/js/config.js` is the only *site* file that hardcodes the Supabase URL —
+`backup-supabase.py` also contains the project ref, but it is a local script, not
+shipped to the browser. **`config.js` needs both of its lines changed, not just the
+URL** — see trap #2 above.
 
 ---
 
 ## Site features that must all still work after cutover
 
-Runbook Stage 9 has the full test matrix. Summary of what exists:
+Runbook Stage 9 has the full test matrix. Summary of what exists **on the live site
+today**:
 
 Auth (signup, login, **password reset via email**), profiles with avatar and banner
 upload, bookmarks, notes, highlights, quiz progress, build editor with shareable
-builds, communities (posts, comments, votes, join requests), direct messenger
-(**realtime**), friendships, creator analytics dashboard gated by an `admins` table
-and `is_creator()` RPC, anonymous pageview tracking, contact form via FormSubmit.
+builds, creator analytics dashboard gated by an `admins` table and `is_creator()`
+RPC, anonymous pageview tracking, contact form via FormSubmit.
 
 **Password reset is the one most likely to be silently broken.** Self-hosted GoTrue
 sends nothing until SMTP is configured (Stage 7). Test it with a real reset, do not
 assume.
 
+### Features that no longer exist — do not go looking for them
+
+An earlier draft of this handoff listed communities, direct messenger and friendships
+as live features that must keep working. **They were removed from the site.** Commit
+`19456d24 "Remove community feature entirely"` deleted 19 community JS modules and 5
+community HTML pages. There is no messenger front end either.
+
+What this means for you:
+
+- There are **no community or messenger pages to test.** An earlier Stage 9d test
+  matrix asked you to verify them; those rows have been removed. A matrix with rows
+  that cannot be ticked honestly is worse than a shorter one.
+- **Realtime is unused** — see the table above. Consider dropping the container.
+- The DB tables and their rows (2 communities, 8 comments, 1 direct message, etc.)
+  **still exist and still restore.** That is harmless — leave them. Restoring them
+  costs nothing and keeps the option open.
+- The SQL files (`community-schema.sql`, `messenger-schema.sql`, `friendships.sql`
+  and friends) are still in `supabase/` and should still be applied at Stage 4d. They
+  define tables the dump expects.
+
+If anyone is quoting this job from the old feature list, the scope is smaller than it
+looked.
+
 ---
 
-## A judgement call worth revisiting with the owner
+## Why this migration is worth doing — the real reason
 
-The database is **small**: 6 user accounts, 5 profiles, 1 bookmark, 1 note, 401KB.
+The decision is made: everything moves to the VPS. This section exists so you
+understand *why*, because an earlier draft framed it in a way that undersold it.
 
-Full self-hosting means the owner takes on 13 Docker containers, an auth server,
-SMTP, backups and uptime — to protect six accounts. That may still be right for the
-control and ownership reasons, and he has been clear he wants it.
+The user-data argument is weak on its own. The database is **small**: 6 user accounts,
+5 profiles, 1 bookmark, 1 note, 401KB. Taking on ~12 Docker containers, an auth
+server, SMTP, backups and uptime to protect six accounts is a poor trade read purely
+on those numbers.
 
-But a smaller option was offered and declined, and is worth re-raising if the
-migration stalls: **move the site to Hostinger and leave Supabase where it is.**
-Runbook stages 2, 8, 9, 10 only. An afternoon rather than a multi-day project. It
-delivers consolidation and web-tier control; Supabase keeps doing auth, backups and
-uptime free. Self-hosting the rest stays possible later.
+**The stronger argument is the chatbot.** Phase 1 needs `pgvector` and, later, an
+embedding model running next to the database. Tasks 1, 2, 8, 9 and 10 of that plan are
+already parked pending this migration precisely because they target whichever Postgres
+wins (see "Unrelated work in flight" below). That is the workload Supabase's hosted
+tiers would actually constrain, and it is the reason to size the box at 16GB rather
+than 8GB.
+
+So: this is a migration about the chatbot's future home and about cost, control and
+consolidation — not about six user accounts. Plan and size it accordingly.
+
+**Fallback if the migration stalls badly.** A smaller option exists and remains
+available: move the site to Hostinger and leave Supabase where it is — runbook stages
+2, 8, 9, 10 only, an afternoon rather than a multi-day project. It delivers
+consolidation and web-tier control while Supabase keeps doing auth, backups and uptime
+free. It does **not** solve the `pgvector` problem, so treat it as a retreat position,
+not the plan.
 
 ---
 
@@ -228,8 +372,8 @@ local to the owner's machine).
 
 | Path | What it is |
 |---|---|
-| `site/` | The entire static site, 995 pages. Deployed as-is. |
-| `site/assets/js/config.js` | **The only file hardcoding the Supabase URL** |
+| `site/` | The entire static site, 989 pages, 746MB. Deployed as-is. |
+| `site/assets/js/config.js` | The only *site* file hardcoding the Supabase URL. **Both lines change** — URL and key. See trap #2. |
 | `supabase/*.sql` | 18 schema files — tables, RLS, RPCs. Apply to the new Postgres. |
 | `docs/migration/` | The runbook and this handoff |
 | `build-*.py` | Site generators. **Do not run casually** — `build-catalog-pages.py` reverts a site-only strength reclassification. |
