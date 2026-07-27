@@ -561,9 +561,31 @@ This is the deliberate abandonment of the rollback path.
 
 ## Execution log — what actually happened (2026-07-27)
 
-**Stages 2, 3, 4, 5, 6, 8 and 9c are DONE and verified.** Remaining and **blocked only
-on two credentials from Zander**: 7 (SMTP — Gmail app password), 9a/9b/9e (staging DNS
-+ certs — Cloudflare token), 10 (cutover — Cloudflare), then 11 and 12.
+**Stages 2, 3, 4, 5, 6, 7, 8 and 9c are DONE and verified.** Remaining and **blocked on
+one credential**: 9a/9b/9e (staging DNS + certs) and 10 (cutover) need the **Cloudflare
+DNS-edit API token**. Then 11 and 12.
+
+- **Stage 7 ✅** SMTP configured against Gmail. Verified in two independent ways: a
+  direct `smtplib` STARTTLS login (Gmail accepted the app password), then a **real
+  signup through GoTrue** which returned `confirmation_sent_at` and logged
+  `user_confirmation_requested` with no SMTP error. Test user deleted afterwards;
+  `auth.users` back to **6**. `ENABLE_EMAIL_AUTOCONFIRM=false`, so signups do send mail.
+
+> ### ⚠ CORRECTION #9 — reset links on the staging domain would point at the OLD site
+>
+> GoTrue logs: *"Request received external host in … Host headers, but the values have
+> not been added to GOTRUE_MAILER_EXTERNAL_HOSTS and will not be used."* Unlisted hosts
+> are ignored and GoTrue falls back to `SITE_URL`. At Stage 9d that means a password-
+> reset email triggered from `new.analyzingislam.com` would carry a link to
+> **`analyzingislam.com` — the old GitHub Pages site** — so the tester "receives the
+> email, clicks, and lands somewhere that works", proving nothing.
+>
+> Fixed: `GOTRUE_MAILER_EXTERNAL_HOSTS` added to the auth service, fed by
+> `MAILER_EXTERNAL_HOSTS=analyzingislam.com,www.analyzingislam.com,new.analyzingislam.com`.
+> Note this is a **different setting** from `ADDITIONAL_REDIRECT_URLS`
+> (`GOTRUE_URI_ALLOW_LIST`): the allow-list decides whether a redirect is *permitted*,
+> the external-hosts list decides which host the link is *built from*. Stage 9d needs
+> both, and they fail in different ways.
 
 End-to-end through nginx on the VPS, exactly as a browser would hit it: homepage 200,
 extensionless `/about` 200, `config.js` 200 serving the self-hosted URL and a
