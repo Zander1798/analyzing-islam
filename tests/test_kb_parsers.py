@@ -1,5 +1,6 @@
 # tests/test_kb_parsers.py
 import importlib.util
+import re
 from pathlib import Path
 
 import pytest
@@ -44,8 +45,16 @@ def test_entry_title_is_unescaped(entries):
 
 
 def test_entry_url_points_at_its_anchor(entries):
-    e = entries[0]
-    assert e["url"] == f"catalog/abu-dawud.html#{e['slug']}"
+    """Every entry's url fragment must be an id that actually exists in the raw
+    fixture file — found independently of the parser (regex over raw HTML), so
+    this doesn't just prove the parser is self-consistent with itself."""
+    raw_html = (SITE / "catalog" / "abu-dawud.html").read_text(encoding="utf-8")
+    real_ids = set(re.findall(r'<div class="entry" id="([^"]+)"', raw_html))
+    assert len(real_ids) > 100  # sanity: the regex actually found entries
+    for e in entries:
+        assert e["url"] == f"catalog/abu-dawud.html#{e['slug']}"
+        fragment = e["url"].split("#", 1)[1]
+        assert fragment in real_ids
 
 
 def test_entry_body_includes_quote_and_argument(entries):
@@ -65,6 +74,40 @@ def test_embed_text_is_bounded(entries):
     assert all(len(e["embed_text"]) <= 1800 for e in entries)
 
 
+def test_embed_text_contains_title_ref_and_category(entries):
+    """embed_text is the field the embedding model actually consumes. A
+    regression that collapses _compose_embed_text to `body` alone (dropping
+    title/ref/categories from the head) must fail here even though length
+    checks alone wouldn't catch it."""
+    e = next(e for e in entries if e["slug"].startswith("allah-seals-the-heart"))
+    assert e["title"] in e["embed_text"]
+    assert e["ref"] and e["ref"] in e["embed_text"]
+    assert e["categories"]
+    assert any(c in e["embed_text"] for c in e["categories"])
+
+
 def test_slugs_unique(entries):
     slugs = [e["slug"] for e in entries]
     assert len(slugs) == len(set(slugs))
+
+
+def test_entry_missing_optional_fields_fall_back_to_none_and_empty():
+    """Not every entry div is guaranteed to carry data-category, data-strength
+    or a .ref span. Exercise those fallback branches directly with a minimal
+    inline fixture (parser stays pure — no file I/O needed for this case)."""
+    html = """
+    <div class="entry" id="bare-entry-no-optional-fields">
+      <div class="entry-header">
+        <span class="entry-title">A bare entry with no optional fields</span>
+      </div>
+      <section>
+        <p>Just a body paragraph.</p>
+      </section>
+    </div>
+    """
+    docs = kb.parse_entries(html, "abu-dawud")
+    assert len(docs) == 1
+    e = docs[0]
+    assert e["ref"] is None
+    assert e["categories"] == []
+    assert e["strength"] is None
