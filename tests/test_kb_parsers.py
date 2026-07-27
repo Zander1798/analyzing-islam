@@ -111,3 +111,25 @@ def test_entry_missing_optional_fields_fall_back_to_none_and_empty():
     assert e["ref"] is None
     assert e["categories"] == []
     assert e["strength"] is None
+
+
+def test_parse_dossier_returns_one_doc():
+    p = SITE / "arguments" / "bukhari" / "b01-aisha-age.html"
+    doc = kb.parse_dossier(p.read_text(encoding="utf-8"), "arguments/bukhari/b01-aisha-age.html")
+    assert doc is not None
+    assert doc["kind"] == "dossier"
+    assert doc["slug"] == "bukhari/b01-aisha-age"
+    assert doc["url"] == "arguments/bukhari/b01-aisha-age.html"
+    assert len(doc["title"]) > 5
+
+
+def test_dossier_body_includes_responses():
+    p = SITE / "arguments" / "bukhari" / "b01-aisha-age.html"
+    doc = kb.parse_dossier(p.read_text(encoding="utf-8"), "arguments/bukhari/b01-aisha-age.html")
+    assert len(doc["body"]) > 800, "a dossier is thesis-length, not a stub"
+
+
+def test_parse_dossier_ignores_index_pages():
+    """arguments/bukhari.html is a table of contents, not a dossier."""
+    p = SITE / "arguments" / "bukhari.html"
+    assert kb.parse_dossier(p.read_text(encoding="utf-8"), "arguments/bukhari.html") is None

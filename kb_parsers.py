@@ -64,3 +64,49 @@ def parse_entries(html: str, source: str) -> list[dict]:
         })
 
     return docs
+
+
+def parse_dossier(html: str, rel_path: str) -> dict | None:
+    """Parse one dossier page. Returns None for index/TOC pages with no article."""
+    soup = BeautifulSoup(html, "html.parser")
+    article = soup.select_one("article.arg-article")
+    if not article:
+        return None
+
+    title_el = article.select_one(".arg-title")
+    if not title_el:
+        return None
+    title = _clean(title_el.get_text())
+
+    ref_el = article.select_one(".arg-ref")
+    ref = _clean(ref_el.get_text()) if ref_el else None
+
+    parts: list[str] = []
+    for sel, prefix in [
+        (".arg-verse-box", "Source: "),
+        (".arg-context", ""),
+        (".arg-conclusion-box", "Conclusion: "),
+        (".arg-responses", "Muslim responses: "),
+    ]:
+        for node in article.select(sel):
+            text = _clean(node.get_text(" "))
+            if text:
+                parts.append(prefix + text)
+    body = "\n".join(parts)
+
+    # 'arguments/bukhari/b01-aisha-age.html' -> 'bukhari/b01-aisha-age'
+    slug = rel_path[len("arguments/"):].removesuffix(".html")
+    source = slug.split("/")[0]
+
+    return {
+        "kind": "dossier",
+        "slug": slug,
+        "title": title,
+        "ref": ref,
+        "source": source,
+        "categories": [],
+        "strength": None,
+        "url": rel_path,
+        "body": body,
+        "embed_text": _compose_embed_text(title, ref, [], body),
+    }
