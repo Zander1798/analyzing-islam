@@ -856,7 +856,13 @@ blockquote {
 /* ===== Footer ===== */
 .site-footer {
   border-top: 1px solid var(--border);
-  padding: 40px 32px;
+  /* The side padding keeps the centred footer text clear of the goat, which is
+     absolutely positioned in the bottom-right corner (72px + 24px offset) and
+     can swing outside that box during the chew/stretch animations. Symmetric,
+     so the text stays centred. Narrow viewports are handled in the mobile
+     block instead — reserving a side gutter there would leave too little room
+     for the text, so the goat is given vertical clearance below it. */
+  padding: 40px 116px;
   text-align: center;
   color: var(--text-dim);
   font-size: 11px;
@@ -1096,6 +1102,18 @@ blockquote {
     height: 60px;
     right: 12px;
     bottom: 12px;
+  }
+
+  /* On a phone there isn't room for a side gutter next to the goat, so give it
+     a lane of its own underneath the text: the extra bottom padding lifts the
+     footer fact clear of the goat's 60px box (bottom: 12px) plus the headroom
+     the chew/stretch rotations need to swing into. */
+  .site-footer {
+    padding: 32px 20px 104px;
+  }
+
+  .cf-footer-fact {
+    font-size: 12.5px;
   }
 
   .hero {
