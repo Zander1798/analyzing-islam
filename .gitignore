@@ -56,3 +56,6 @@ video/capture/shots/
 video/capture/node_modules/
 
 video/public/site/
+
+# Visual brainstorming companion sessions
+.superpowers/

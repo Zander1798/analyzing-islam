@@ -520,19 +520,105 @@ which for a public chatbot means it is down until someone wakes it, and the vide
 corpus puts storage at ~170MB against a 500MB ceiling. **This decision is deferred
 to the Phase 4 gate** (§11) — nothing before it commits to a monthly bill.
 
-## 9. UI
+## 9. Front end
 
-New `/chat.html` plus an "Ask" nav tab. `sync-nav.py` propagates the tab across all
-995 pages.
+Mockups from the design session are kept at
+`.superpowers/brainstorm/940-1785151385/content/` (gitignored).
 
-- Signed out: explainer and sign-in CTA, reusing `auth-ui.js`.
-- Signed in: conversation sidebar plus message pane, dark theme consistent with the
-  site, sidebar collapsing to a drawer on mobile — where the traffic is.
-- Answers stream token-by-token.
-- Citations render as inline markers backed by `cited_text` spans, with a **Sources**
-  block beneath deep-linking each cited entry/dossier, and a separate **Watch** block
-  for video chunks with timestamps.
-- Gap state gets its own treatment plus the **Suggest this as an entry** button.
+**Name: The Goat.** The mascot already has ten skins, its own page and a footer
+sprite; the chatbot adopts it. The division of labour matters — **the goat carries
+the brand and the waiting; the prose stays sober.** Goat as identity and loading
+state, never as a voice that quips. Someone quietly asking whether apostasy carries
+a death penalty gets a serious answer, delivered by the goat but not in a jokey
+register.
+
+### Entry and exit
+
+New `/chat.html` plus an **Ask** nav tab; `sync-nav.py` propagates it across all 995
+pages. Dedicated page rather than a slide-over panel — long cited answers need the
+room, and the conversation sidebar has to live somewhere.
+
+Chosen over a floating launcher partly because the goat already occupies the
+bottom-right of the footer, which is where such a launcher conventionally sits.
+
+Signed out: explainer and sign-in CTA, reusing `auth-ui.js`.
+
+### Empty state
+
+Centred goat in the user's selected skin, the line "Ask the Goat", a one-sentence
+statement of what it is grounded in, and three suggested-question chips drawn from
+the §7 taxonomy ("Was Jesus a Muslim?", "Is Allah a father?", "What is the Injeel?").
+The chips exist because a blank input is the highest-drop-off screen in any chat
+product.
+
+### Loading — staged, not decorative
+
+Retrieval plus generation takes several seconds. Rather than a spinner, the goat
+narrates progress, switching to the **Detective** skin while searching and back to
+the user's skin to answer:
+
+```
+✓ Searched 1,524 entries and 147 dossiers
+✓ Found Quran 112:3, Quran 19:88–92
+▸ Reading 6 sources
+· Writing
+```
+
+This is the highest-value piece of the front end. The wait stops being dead time and
+becomes evidence — the user watches it consult sources before answering, which
+demonstrates the grounding claim rather than asserting it. Stages are driven by real
+events in the Edge Function, not faked timers.
+
+### Citations
+
+Tinted span **plus** superscript number. The span shows exactly which words are
+sourced — which is literally what Claude's `cited_text` returns — and the number
+gives an unambiguous tap target on touch, where there is no hover.
+
+Beneath every answer: a **Sources** block (number, title, kind, reference, deep link)
+and a separate **Watch** block for video chunks with channel and timestamp. Videos
+stay visually distinct from citations and always open in a new tab — that is YouTube
+leaving the site.
+
+### The peek sheet
+
+Tapping an inline number or a Sources row slides the source up over the conversation
+(bottom sheet on mobile, right-hand docked panel on desktop — same component, two
+breakpoints).
+
+This is the core interaction of the product. The pitch is "don't take my word, check
+the passage"; if checking costs a page navigation and a hunt back to your place,
+people won't, and citations degrade into decoration. The sheet makes the verification
+loop nearly free.
+
+| Behaviour | Detail |
+|---|---|
+| Two ways in | The inline number, or any Sources row. Both persist for the life of the answer — an answer from last week still opens. |
+| Stepper | `‹ ›` moves through all sources without dismissing ("Source 2 of 6"), so the whole answer is checkable in one session. |
+| Three ways out | Swipe the grab handle, tap ✕, or hardware back. |
+| Android back | The sheet **must** push a history entry when it opens, so back closes the sheet rather than ejecting the user from the conversation. |
+| Restores position | Reopening returns to where the user left off in a long source. |
+| Escape hatch | "Open full entry →" navigates to the real page, chat saved behind. |
+
+**Architectural consequence.** The sheet needs the cited document bodies client-side.
+They are already retrieved server-side to build the answer, so the Edge Function
+emits them as a single SSE event alongside the token stream — roughly 20KB, no extra
+fetch, no extra query. This must be built into the streaming protocol from the start
+rather than retrofitted.
+
+**Sequencing note.** If Phase 3 runs long, the "Open full entry" navigation alone is
+a valid first ship. The sheet is strictly additive over it, so adding it later is an
+upgrade rather than a rewrite.
+
+### Gap state
+
+Its own visual treatment plus the **Suggest this as an entry** button (§6).
+
+### Design tokens
+
+Inherited from the site, not reinvented: `#000` ground, `#050505` panel, `#1c1c1c`
+border, `#f5f5f5` text, `#9a9a9a` muted, `#c62828` accent, Didot/Playfair serif for
+headings, system sans for body.
 
 ### Failure modes
 
@@ -587,7 +673,10 @@ Owner-only testing of answer quality, tone and the grounding rule against real
 questions. Per-turn cost measured here and §8 updated.
 
 **Phase 3 — UI.**
-`chat.html`, nav tab, streaming, citation rendering, conversation sidebar.
+`chat.html`, Ask nav tab, streaming, staged loading, citation rendering, conversation
+sidebar, peek sheet. The cited-documents SSE event (§9) is part of the Phase 2
+streaming protocol, not Phase 3 — retrofitting it later would mean reopening the
+Edge Function.
 
 **Phase 4 — decision gate.**
 Quotas, budget caps, admin panel, Supabase Pro, public launch. Nothing before this
