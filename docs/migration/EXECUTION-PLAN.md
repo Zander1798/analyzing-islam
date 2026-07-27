@@ -435,22 +435,58 @@ curl -s https://new.analyzingislam.com/assets/js/config.js | grep -o 'url: "[^"]
 # must print https://api.analyzingislam.com — if it prints cndmksri…, the exclude was lost
 ```
 
-### 9d. Test matrix — every box, on https://new.analyzingislam.com
+### 9d. Test matrix — **DONE 2026-07-27, 104/104, without DNS**
 
-- [ ] Home, catalog, category, entry, dossier; Quran/hadith/Bible readers
-- [ ] Extensionless `/about` resolves; goat skins, favicon, sitemap, robots; mobile
-- [ ] `config.js` serves new URL **and** new key
-- [ ] Sign up new test account · log in as existing account · **password reset email
-      arrives and its link works** (link rejected → redirect allow-list, not SMTP)
-- [ ] Note whether a pre-existing session survived (answers the signing-scheme question
-      empirically — record it either way)
-- [ ] Bookmark, note, highlight, quiz progress; build editor create + share link
-      opened signed-out
-- [ ] Change username; upload new avatar + banner; **existing avatars/banners render**
-- [ ] Admin dashboard loads for owner, **refused** for non-admin (test both ways)
-- [ ] Anonymous pageview writes; contact form
-- Community/messenger pages: **do not test — they were deleted from the site**
-  (commit `19456d24`). Nothing to tick.
+Executed against `https://new.analyzingislam.com` and `https://api.analyzingislam.com`
+— the *real* production origins — by pointing the workstation's `/etc/hosts` at
+72.60.17.245 and serving a throwaway self-signed cert. Both were reverted afterwards
+(see "Temporary test rig" below). Harnesses: a 50-check API suite and a 54-check
+Playwright suite driving real Chromium, so **supabase-js itself** was exercised, not
+just curl. Re-run after the Stage 10a rehearsal: still 104/104.
+
+- [x] Home, catalog, arguments, compare, faq, sources, entry, dossier; Quran/hadith/
+      Bible/interlinear readers; goat, play, stats, build, login, signup,
+      forgot-password, contact, profile, saved — **21 pages, all 200 with real content**
+- [x] Extensionless `/about` resolves; sitemap, robots, favicons, webmanifest; custom
+      404 returns HTTP 404 *and* renders; mobile 390px with zero horizontal overflow
+- [x] `config.js` serves new URL **and** new JWT key, and no longer mentions Cloud
+- [x] Sign up (`confirmation_sent_at` set, SMTP path exercised) · **log in** ·
+      password-reset link built on the staging host, accepted, establishes a session
+- [x] Bookmark, note, highlight, quiz progress, build; share link **opened signed-out**
+- [x] Change own username; **cannot** change someone else's; existing avatars and
+      banners decode in the browser from the rewritten `api.` URLs
+- [x] Admin dashboard **loads for the admin and bounces the non-admin** —
+      `creator_kpis()` returns data for one and `403 forbidden` for the other and
+      for anon. Tested in both directions, in a real browser.
+- [x] Anonymous pageview insert; anon reads of `public_profiles` / `shared_builds`
+- Community/messenger pages: not tested — deleted from the site (`19456d24`).
+
+**Two things worth stating plainly, because they are the questions this stage existed
+to answer.**
+
+**1. Migrated passwords work.** All six real users carry Cloud-produced `$2a$10$`
+bcrypt hashes. We cannot know their passwords, so instead a throwaway user was given
+an *externally generated* `$2a$10$` hash — same algorithm, same cost, produced outside
+GoTrue — and logging in with it succeeded, while a wrong password was rejected. No
+real user's password or data was touched at any point, and every table was verified
+back at its exact baseline afterwards.
+
+**2. Session continuity — the ES256 question — had a real defect. See correction #14.**
+
+### 9d-bis. Temporary test rig — added and REVERTED the same session
+
+Recorded so nobody hunts for leftovers, and so this is repeatable:
+
+| Added | Removed |
+|---|---|
+| `/etc/hosts` on the **workstation**: `72.60.17.245 new. api.` | yes — `new.analyzingislam.com` is NXDOMAIN again |
+| `/etc/nginx/sites-{available,enabled}/staging-tls-TEMP` (443 vhosts) | yes |
+| `/etc/ssl/analyzingislam-staging-TEMP/` (self-signed, 30d) | yes |
+
+Verified after removal: nothing listens on 443, no nginx config mentions `ssl`, and
+no `*analyzingislam*` cert material exists under `/etc/ssl` or `/etc/letsencrypt`.
+**Stage 9b/9e certbot therefore starts from a clean slate** — which was the whole
+point of not leaving a self-signed cert in the path.
 
 ### 9e. Pre-issue the LIVE certificate — before any DNS flip (correction #4)
 
@@ -471,20 +507,47 @@ This removes the original runbook's minutes-long TLS-mismatch window at 10b/10c.
 
 ## Stage 10 — Cutover
 
-### 10a. Final sync — then re-run everything the restore undoes
+### 10a. Final sync — **now a single rehearsed script. Do not do this by hand.**
 
-Freeze content deploys from here to Stage 10d. Fresh dump from the workstation,
-restore on the VPS as `supabase_admin` (Stage 4a/4b commands). Then **in order**:
+Freeze content deploys from here to Stage 10d. Then, from the workstation:
 
-1. Re-run **4b2** (ownership/grants — the fresh `--clean` restore dropped them again)
-2. Re-run **4d** (schema replay + the three `curl` checks)
-3. Re-run **Stage 6** (URL rewrites; four-way verify all zeros)
-4. Re-run **Stage 5's loop** (restored metadata carries Cloud version IDs again, and
-   any file uploaded since the last sync exists only in Cloud)
-5. `docker compose restart auth rest storage`
+```bash
+./scripts/stage10a-final-sync.sh            # dump → ship → sync → verify → shred
+./scripts/stage10a-final-sync.sh --dry-run  # dump + ship only, no restore
+```
 
-**Verify:** row counts match, the three curls return 2xx, Stage 6 query all zeros,
-one avatar serves via `https://api.analyzingislam.com`.
+**Rehearsed end to end four times on 2026-07-27.** Last two runs: **29s and 31s** on
+the VPS, plus ~48s for the dump and ship — call it **under three minutes**, idempotent,
+and it exits non-zero rather than half-finishing.
+
+The manual sequence this replaces is preserved below for understanding, but running it
+by hand is how this goes wrong: corrections **#11, #12 and #13** are all defects in
+that sequence, and all three were found only by rehearsing it. Two of them
+(no privileges restored; Kong pointing at a dead container IP) produce a stack that
+is broken for *users* while every row count looks perfect.
+
+What the script does, in order — each step verified before the next runs:
+
+0. Preflight: dump has an `auth.users` COPY block and is >100KB; schema sources present
+1. **Safety backup of the current state first** — refuses to restore over unbacked-up data
+2. Restore as `supabase_admin`; only a documented, asserted set of errors is tolerated
+3. Ownership **and privileges** repair (correction #12), verified by role, over TCP
+   (correction #11)
+4. Schema replay, **excluding `analytics-verify.sql`** by name, always
+5. Seed reconcile — derives the real community id set from the fresh dump instead of
+   hardcoding "keep 8 and 9", then **fails** if any other table drifted
+6. URL rewrite across **every text column in `public`**, not four named ones
+7. Restart `auth rest storage` **then `kong`**, and assert Kong resolves storage to
+   the current container IP (correction #13)
+8. Storage re-upload through the API, then **read every object back** — the POST
+   status is what the API claimed; the read-back is what a browser will get
+9. Verify: REST, RPC, auth health, storage, zero Cloud URLs, row counts == Cloud
+
+Post-sync, the full 9d matrix was re-run against the result: **104/104**.
+
+> One known behaviour: each run writes a new object version, so the storage directory
+> grows (~4MB per run; it was 25MB for 4MB of live data after four rehearsals, on 79GB
+> free). Harmless, but do not mistake it for corruption.
 
 ### 10b. Flip DNS (Cloudflare, token or [ZANDER])
 
@@ -508,7 +571,32 @@ Live again in ~5 minutes (300s TTL). The old stack was never touched.
 
 ---
 
-## Stage 11 — Own what Supabase used to do (within 24h)
+## Stage 11 — Own what Supabase used to do — **DONE 2026-07-27**
+
+Everything in Stage 11 is implemented, cronned and proven. The scripts are in the
+repo (`scripts/vps/`) and deployed to the VPS.
+
+| Item | State | Evidence |
+|---|---|---|
+| Backup script | `scripts/vps/backup.sh`, cron `03:15` daily | runs in 0.8s; DB 431KB + roles + 26-file storage tar |
+| Failure paths | **tested, not assumed** | empty dump → exit 1, `FAIL` in `LAST_RUN`, no `.partial` left; missing bind mount → same |
+| Prune | both `*.sql` **and** `*.tar.gz`, 14 days | correction #5 |
+| **Test-restore** | `scripts/vps/test-restore.sh`, cron Sunday `03:45` | **55/55 tables, 1245 rows, and 546 schema objects identical** |
+| Off-box copy | workstation cron `04:10`, **pull** not push | 60-day retention; warns if the newest copy is >2 days old |
+| `restart: unless-stopped` | all 11 containers | verified by inspection |
+| **Reboot survival** | **proven** | VPS rebooted; SSH back in ~40s, **11/11 healthy in ~30s, no intervention**; swap, nginx, fail2ban all back |
+| Swap | 4GB `/swapfile`, `vm.swappiness=10`, in `/etc/fstab` | survived the reboot |
+| `unattended-upgrades` | enabled + active | `20auto-upgrades` present |
+| `fail2ban` | enabled + active, `sshd` jail | `fail2ban-client status` |
+| External port scan | re-verified **after** the reboot | 3000/4000/5432/6543/8000/8443/9999/2375/2376 all refused; only 22/80/443 answer |
+
+The test-restore is the one that matters most: row counts can match while every index
+and RLS policy is missing, so it diffs **schema objects by name** too — 180 indexes,
+89 RLS policies, 204 functions, 24 triggers, 1 view, 48 RLS-enabled tables. Zero
+missing. **This clears the Stage 12 "one test-restored backup" gate.**
+
+> Uptime monitoring: probe `https://api.analyzingislam.com/auth/v1/.well-known/jwks.json`,
+> **not** `/auth/v1/health` — see correction #10.
 
 ### 11a. Backups (correction #5)
 
@@ -556,6 +644,81 @@ This is the deliberate abandonment of the rollback path.
 - [ ] First post-Stage-12 deploy: re-check `config.js` on the live site
 - [ ] Final absolute-URL sweep (runbook Stage 12 SQL) — must be 0
 - [ ] Only now pause the Supabase Cloud project. Keep Zander's Stage 1 backup forever.
+
+---
+
+## STATUS — 2026-07-27, end of the autonomous session
+
+### What is proven
+
+| Stage | State |
+|---|---|
+| 2, 3, 4, 5, 6, 7, 8, 9c | done and verified (earlier session) |
+| **9d — full test matrix** | **DONE, 104/104, twice** (once before and once after the 10a rehearsal), in a real browser against the production origins, without touching DNS |
+| **10a — final sync** | **scripted and rehearsed 4× end to end**, 29–31s, idempotent, self-verifying. Three real defects in the documented procedure found and fixed. |
+| **11 — survivability** | **DONE.** Backups cronned, failure paths tested, **backup test-restored** (55 tables / 1245 rows / 546 schema objects identical), off-box copy running, **VPS rebooted and the whole stack returned healthy unattended in ~30s** |
+| **12 groundwork** | rsync deploy workflow written to `.github/workflows-staged/`, deliberately **not** enabled |
+| **Chatbot Phase 1** | tasks 1–2 landed on the VPS; **the blocker is cleared** — `gte-small` works on the self-hosted edge runtime and semantic retrieval returns the right document |
+| Hardening | `unattended-upgrades`, `fail2ban` (sshd jail), 4GB swap; external port scan clean after reboot |
+
+Throughout: **the live site was never touched.** `analyzingislam.com` still resolves
+to the four `185.199.*` GitHub Pages IPs, `www` still CNAMEs to `zander1798.github.io`,
+and no DNS record was created, edited or deleted anywhere. Supabase Cloud was read
+only — `pg_dump` and `psql SELECT`, nothing else. No real user's password, session or
+data was modified; after every test run the database was verified back at its exact
+baseline across all 17 tracked tables.
+
+### What failed, honestly
+
+1. **Session continuity was half-broken** (correction #14) — the one thing Stage 9d
+   existed to answer. A returning user holding a *non-expired* Cloud token gets a UI
+   that says signed-in while nothing loads, for up to an hour. Fixed on a branch,
+   proven fixed on the VPS, **not merged** — merging deploys to the live site.
+2. **The documented Stage 10a would have failed at cutover** in three separate ways
+   (corrections #11, #12, #13). All three are now fixed in the script. Worth sitting
+   with: every one of them was invisible to a row-count check, and two of them produce
+   a stack that is broken for users while every count looks perfect.
+3. **The embed Edge Function was reachable with the anon key** (fixed: it now checks
+   the role claim itself, because the runtime's `verify_jwt` only checks the
+   *signature*, not the role).
+4. Nothing else failed. Where a check could not be run, it is listed below rather than
+   quietly dropped.
+
+### What could NOT be tested, and why
+
+- **Real email delivery.** The reset link was proven to be built on the correct host,
+  accepted, and to establish a session — but nobody read the Gmail inbox. Stage 7
+  already proved SMTP separately (real STARTTLS login + a real signup returning
+  `confirmation_sent_at`). Test mail went to `analyzingislam2026+migtest-*@gmail.com`,
+  the project's own mailbox.
+- **A real user's refresh token surviving.** Using one *rotates and revokes* it, which
+  would disturb a real person's session. The mechanism was proven end to end on a
+  throwaway user instead (rotation is ON: the old row is marked revoked on use).
+- **Real cutover DNS behaviour, TLS from a public CA, and CDN/edge caching.** All
+  require the Cloudflare token.
+- **Contact form delivery** (needs the inbox).
+- Avatar upload size *was* a latent 413: the `api.` vhost had no
+  `client_max_body_size`, so nginx's 1MB default applied and any decent-sized photo
+  would have failed after cutover. **Found and fixed this session** —
+  `client_max_body_size 50m;` added to the `api.` block, verified by pushing a 3MB
+  object through the vhost (200; previously 413). The Storage API still enforces the
+  real per-bucket limit.
+
+### The shortest list of things a human must still do
+
+1. **Get the Cloudflare DNS-edit API token from Zander** for `analyzingislam.com`.
+   This is the only thing blocking everything else. (The key in
+   `~/secrets/analyzingislam/cloudflare.ini` is a *different* account — 11 zones, none
+   of them this domain.) Then Stages **9a, 9b, 9e** and **10** are mechanical.
+2. **Decide on `fix/session-continuity-guard`.** Merging it to `main` deploys to the
+   live site, so it is a human call. It is a no-op on the live site today. Cutting
+   over *without* it means correction #14 happens to real users.
+3. **Rotate the Supabase Cloud database password** after the Stage 10a final sync — it
+   was pasted into a chat window.
+4. **At cutover**, run `./scripts/stage10a-final-sync.sh`, then flip DNS (10b). Do not
+   perform the sync by hand.
+
+Everything else is done, cronned, and proven.
 
 ---
 
@@ -668,6 +831,135 @@ compose stack (Kong could not resolve `auth`, PostgREST could not resolve `db`);
    Shipping defaults would let publicly-known keys authenticate. Randomize both.
 
 Plus: every restore is followed by `docker compose restart auth rest storage`
-(schema-cache insurance); the final sync re-runs grants, URL rewrites **and** the
-storage upload loop; `ADDITIONAL_REDIRECT_URLS` covers the staging domain so password
-reset is testable at 9d.
+(schema-cache insurance — but see correction #13, the ordering was wrong); the final
+sync re-runs grants, URL rewrites **and** the storage upload loop;
+`ADDITIONAL_REDIRECT_URLS` covers the staging domain so password reset is testable
+at 9d.
+
+---
+
+## Corrections 10–15 — found by *rehearsing* Stage 10a and by real-browser 9d testing
+
+Corrections 1–8 came from reading the runbook against the official sources.
+These six came from running the thing. Each was measured on the VPS.
+
+### 10. `/auth/v1/health` is **not** an unauthenticated endpoint on this stack
+
+Stage 11b says "the auth health endpoint returns 200 unauthenticated". It does not:
+Kong's `kong.yml` opens only `/auth/v1/verify`, `/callback`, `/authorize`,
+`/.well-known/jwks.json` and the SAML routes. `/auth/v1/health` falls through to the
+authenticated `auth-v1` service and returns **401 `{"message":"No API key found in
+request"}`**. An uptime monitor pointed at it would alert forever.
+
+Use either `https://api.analyzingislam.com/auth/v1/.well-known/jwks.json` (genuinely
+open, 200) or send the `apikey` header. Note the JWKS body is `{"keys":[]}` — correct
+and expected, because the self-hosted stack signs HS256 with a symmetric secret.
+
+### 11. Stage 4b2's own verify command can never succeed
+
+```bash
+docker exec supabase-db psql -U supabase_auth_admin -d postgres -c 'select …'
+# FATAL: Peer authentication failed for user "supabase_auth_admin"
+```
+
+`docker exec` runs as **root** inside the container, and the image's `pg_hba.conf` is:
+
+```
+local all supabase_admin  trust
+local all all             peer map=supabase_map
+host  all all 127.0.0.1/32 trust
+```
+
+so a unix-socket connection as `supabase_auth_admin` fails *peer authentication* —
+which reads exactly like the grants failure the check is looking for, but is not.
+**Add `-h 127.0.0.1`** and the check becomes meaningful (it then returns 6).
+
+### 12. Stage 4b2 restores ownership but **not privileges** — and privileges are what break
+
+This is the big one. `--clean` emits `DROP SCHEMA IF EXISTS "auth"` and `"storage"`,
+and the dump is `--no-privileges`, so after a restore both schemas come back owned by
+the restoring superuser with an **empty ACL**. Reassigning ownership does not bring
+back a single `GRANT`. Two consequences, both silent in a row-count diff:
+
+- `anon` and `authenticated` lose `USAGE ON SCHEMA auth`. Every RLS policy in the
+  database calls `auth.uid()`. Without schema USAGE they cannot.
+- The storage API loses its table grants. Measured: **26/26 uploads failed** with
+  `permission denied for table buckets` (Postgres hint: *"Grant the required
+  privileges to the current role with: GRANT SELECT ON storage.buckets TO
+  service_role"*).
+
+The fix is in `scripts/vps/stage10a-sync.sh` step 3, with values taken verbatim from
+the `supabase/postgres` image's own `init-scripts`. Granting the API roles table
+access on `storage` is what a fresh self-host does and is safe: `service_role` has
+`BYPASSRLS`, and `anon`/`authenticated` are gated by the 12 RLS policies on
+`storage.objects` (`storage.buckets` has RLS on with **no** policies, so clients
+cannot enumerate buckets). Both facts were verified, not assumed.
+
+### 13. The restart is in the wrong place, and Kong must be restarted too
+
+Stage 10a lists `docker compose restart auth rest storage` as step 5 — *after* the
+storage upload loop. Two things are wrong:
+
+- **It must come before.** `storage-api` caches its schema/connection view; against a
+  freshly `--clean`-restored database every upload fails until it is restarted.
+- **Kong must be restarted as well.** `docker compose restart` gives each container a
+  **new IP** on the bridge network and Kong caches the old one in its DNS resolver.
+  Measured in `kong` error log: `connect() failed (111: Connection refused) while
+  connecting to upstream, upstream: "http://172.19.0.9:5000/..."` while storage had
+  moved to `172.19.0.7`. The symptom is *bursts* of 502s that no amount of retrying
+  clears until Kong's DNS TTL happens to expire — which at cutover is intermittent
+  502s on the live API. This is the same failure class already recorded for
+  `docker swarm leave` breaking Docker's embedded DNS.
+
+Measured effect of getting this right, over four consecutive rehearsals:
+
+| Configuration | Storage uploads |
+|---|---|
+| no restart before upload | 0/26 |
+| restart storage, no retry | 11/26 |
+| restart storage, 4 tries, 1–3s backoff | 25/26 |
+| **restart storage + kong, DNS asserted** | **26/26, no retries consumed** |
+
+The script now asserts `kong`'s resolution of `storage` equals the container's
+current IP rather than discovering it one 502 at a time.
+
+### 14. supabase-js does **not** recover from an unexpired foreign-issuer token
+
+Correction #7 established that Cloud signs ES256, so sessions must ride on the
+restored refresh-token rows, and said *"verify at Stage 9d, do not assume."* Verified
+— and it half-failed:
+
+| Returning user's stored access token | Result |
+|---|---|
+| Cloud ES256, **already expired** | supabase-js refreshes silently → HS256 → everything works |
+| Cloud ES256, **not yet expired** | **broken** |
+
+In the second case supabase-js sees a non-expired token and keeps presenting it.
+`getSession()` reports a live session and the nav renders "Account", while every
+request fails: PostgREST `No suitable key or wrong key type`, GoTrue `invalid JWT:
+… signing method ES256 is invalid`. A 401 is not a refresh trigger, so the account
+looks signed in and nothing loads — for up to a full token lifetime (1 hour).
+
+Blast radius is small (only users active in the hour before cutover) but it lands on
+the most engaged users at the worst moment. Fix on branch
+**`fix/session-continuity-guard`** (`site/assets/js/auth.js`): if the stored token's
+`iss` host differs from the configured API host, mark the session expired so
+supabase-js takes the refresh path. It is a no-op when they agree, which is the case
+on the live site today, so it is safe to ship before cutover as well as after.
+
+**Not merged to main:** any push to `main` touching `site/**` deploys to GitHub Pages,
+which is still the live site and the rollback target. Merging is a human decision.
+The VPS copy already carries the guard, and with it the stale-token case goes from
+`{alg: ES256, error: "No suitable key…", rows: -1}` to
+`{alg: HS256, error: null, rows: 2}`.
+
+### 15. Two smaller findings
+
+- **`public.bookmarks` and `public.notes` have no foreign key to `auth.users`.** All
+  28 other user-owned tables cascade on user delete; these two orphan their rows
+  forever. Pre-existing and identical on Cloud, so not a migration defect — but any
+  cleanup script must sweep them explicitly, and it is worth fixing one day.
+- **The favicons 404 on the *live* site and serve fine from the VPS.**
+  `/assets/icons/favicon.ico`, `-32.png`, `apple-touch-icon.png` and
+  `site.webmanifest` are all tracked in git and all return 404 from GitHub Pages
+  today. The migration silently fixes this; it is not a regression to chase.
