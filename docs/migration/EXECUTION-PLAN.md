@@ -813,8 +813,16 @@ baseline across all 17 tracked tables.
    > ```
    > Merging the branch is what makes this go away permanently. Until then, treat
    > `auth.js` like `config.js`: a hand-managed file on the server.
-3. **Rotate the Supabase Cloud database password** after the Stage 10a final sync — it
-   was pasted into a chat window.
+3. **Rotate two credentials that were pasted into chat windows in cleartext.**
+   Both work and are in use, so this is hygiene, not an emergency — but neither
+   should outlive the migration.
+   - **Supabase Cloud database password** — rotate *after* the Stage 10a final sync,
+     not before: `stage10a-final-sync.sh` reads `POOLER_URL` from
+     `~/secrets/analyzingislam/pooler.env` to take the dump. Rotate first and the
+     sync fails at step 1 on cutover night. Update that file in the same breath.
+   - **Cloudflare API token** — revoke after Stage 10 is complete and stable.
+     Zander: My Profile → API Tokens → "…" → Delete. It is scoped to DNS on one
+     zone with no expiry, so it stays live until someone deletes it.
 4. **At cutover**, run `./scripts/stage10a-final-sync.sh`, then flip DNS (10b). Do not
    perform the sync by hand.
 
