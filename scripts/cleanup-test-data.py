@@ -4,7 +4,6 @@ is back to its pre-test baseline. Touches only rows the harness created.
 
 PRE-CUTOVER ONLY — see the pageview sweep comment below.
 """
-back to its pre-test baseline.  Touches only rows this session created."""
 import json, os, subprocess, sys
 import requests
 
