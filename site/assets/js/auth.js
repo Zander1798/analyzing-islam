@@ -26,6 +26,41 @@
     return;
   }
 
+  // Backend-move guard. A returning browser can hold an access token minted by a
+  // *different* Supabase instance than the one config.js now points at (this happens
+  // for one token lifetime after the backend moves). That token is not expired, so
+  // supabase-js keeps presenting it, and every request fails "invalid JWT" while the
+  // nav still says signed in. The refresh token is an opaque database row and does
+  // migrate, so the cure is to force the refresh path: mark the stored session
+  // expired and let supabase-js exchange the refresh token for a valid access token.
+  // No-op whenever the token's issuer already matches the configured API host.
+  (function reconcileForeignSession() {
+    const KEY = "analyzing-islam-auth";
+    try {
+      const raw = window.localStorage.getItem(KEY);
+      if (!raw) return;
+      const sess = JSON.parse(raw);
+      if (!sess || !sess.access_token || !sess.refresh_token) return;
+      const part = sess.access_token.split(".")[1];
+      const claims = JSON.parse(
+        atob(part.replace(/-/g, "+").replace(/_/g, "/"))
+      );
+      const issuerHost = new URL(claims.iss).host;
+      const configHost = new URL(window.SUPABASE_CONFIG.url).host;
+      if (issuerHost === configHost) return; // same backend — nothing to do
+      sess.expires_at = 0;
+      sess.expires_in = 0;
+      window.localStorage.setItem(KEY, JSON.stringify(sess));
+      console.warn(
+        "[auth] stored session was issued by " + issuerHost +
+        " but the API is now " + configHost + " — forcing a token refresh."
+      );
+    } catch (e) {
+      // Unparseable token or no iss claim: leave it alone. supabase-js will
+      // expire it on its own schedule; this guard must never make things worse.
+    }
+  })();
+
   const { createClient } = window.supabase;
   const client = createClient(
     window.SUPABASE_CONFIG.url,
