@@ -771,6 +771,31 @@ During propagation there was no breakage: resolvers still holding the old `www`
 CNAME sent visitors to GitHub Pages, which 301-redirected to the apex — and the
 apex was already the VPS.
 
+### Confirmed by a REAL user on production, 2026-07-28 10:36 UTC
+
+The last genuine unknown — do the migrated password hashes work for real people —
+is closed, and the audit log shows **both** continuity paths working on a real
+account before any of it was asked for:
+
+| Time (UTC) | Event | Proves |
+|---|---|---|
+| 10:35:29 | `token_refreshed` → `token_revoked` | the returning user's **existing** session was recovered — correction #14's guard firing on a real account |
+| 10:36:19 | `logout` | user signed out deliberately to test |
+| 10:36:24 | `login`, new refresh token, `is_rotation=false` | **fresh password auth against the migrated `$2a$10$` Cloud hash** |
+
+Corroborated in nginx: real Windows Chrome over HTTP/2 on `analyzingislam.com`,
+fetching that user's own profile row (200) and `rpc/is_creator` (correctly
+`false` — they are not the admin). So RLS-scoped reads and the admin gate both
+work for a real signed-in user on production.
+
+Everything before this proved auth with an *externally generated* hash on a
+throwaway account. That was a sound proxy, but a proxy. This is the real thing.
+
+> Note for whoever reads the audit log next: `last_sign_in_at` and the `login`
+> entry appear only when the password grant completes. Querying a minute early
+> shows nothing and looks alarmingly like a failed login. Widen the window
+> before concluding anything.
+
 ### Immediately outstanding
 
 1. **Rotate the Supabase Cloud database password.** It was pasted into a chat
