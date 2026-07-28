@@ -414,10 +414,19 @@ Add `A new → 72.60.17.245` and `A api → 72.60.17.245`, both DNS-only. **Touc
 nothing else.**
 
 ### 9b. Staging certs
+
+**Already installed 2026-07-27** — certbot 2.9.0, `python3-certbot-nginx`,
+`python3-certbot-dns-cloudflare`; `certbot plugins` lists both `nginx` and
+`dns-cloudflare`; `certbot.timer` is enabled and active (so renewal will actually
+happen); no certificates exist yet. So this stage is one command once DNS resolves:
+
 ```bash
-sudo apt install certbot python3-certbot-nginx python3-certbot-dns-cloudflare
 sudo certbot --nginx -d new.analyzingislam.com -d api.analyzingislam.com
 ```
+
+> Note the VPS currently has **no 443 server block and no 80→443 redirect at all** —
+> the self-signed rig used for 9d testing was removed. `certbot --nginx` writes the
+> staging ones itself; the apex/www block at 9e is hand-written per that stage.
 (nginx needs a `server_name new.analyzingislam.com` block serving the same root —
 add it beside the apex block.)
 
