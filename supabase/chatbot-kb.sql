@@ -127,14 +127,29 @@ as $$
   -- chunks all rank well cannot crowd the candidate list below what fusion
   -- expects.
   --
-  -- ⚠ NOT YET VERIFIED ON THE BOX. Task 1's original verification proved
-  -- `Index Scan using idx_kb_embed`. This rewrite adds a join and filters
-  -- alongside the ANN order-by, which can make the planner abandon HNSW for a
-  -- sequential scan — correct results, bad latency, and invisible without
-  -- looking. Re-run EXPLAIN against a populated kb_chunks and confirm
-  -- idx_kb_chunks_embed is used. If it is not, pgvector 0.8+ iterative scans
-  -- (`set hnsw.iterative_scan = relaxed_order`) are the intended fix for
-  -- filtered ANN; raising `hnsw.ef_search` is the cruder one.
+  -- VERIFIED ON THE BOX 2026-07-28 against 500 docs / 2000 chunks. The planner
+  -- keeps the HNSW index despite the join and the filters — it drives a Nested
+  -- Loop *from* idx_kb_chunks_embed into kb_docs_pkey. Three plan shapes checked
+  -- (bare ANN, join + null filters, join + real filter): 3/3 index scans, 0
+  -- sequential scans of kb_chunks. The over-fetch delivers what it promises:
+  -- 240 chunks in, exactly 60 documents out of DISTINCT ON.
+  --
+  -- On a NARROW filter (5 of 500 documents) the planner deliberately switches
+  -- to idx_kb_kind -> idx_kb_chunks_doc and sorts exactly, rather than using
+  -- HNSW — and returns all 5. That is the right call (an exact scan of ~20
+  -- chunks beats an approximate index search) and it is the case this filter
+  -- placement exists to protect: filters inside the ANN, so a narrow filter
+  -- cannot come back empty.
+  --
+  -- Re-verify after the first real ingest — 2000 synthetic vectors are not
+  -- 80,000 real ones, and `analyze` matters. If HNSW is ever abandoned on the
+  -- broad path, pgvector 0.8+ iterative scans
+  -- (`set hnsw.iterative_scan = relaxed_order`) are the intended fix; raising
+  -- `hnsw.ef_search` is the cruder one.
+  --
+  -- Watch out when testing: give every chunk a DISTINCT vector. A generator
+  -- that reuses one vector per document makes HNSW return ~148 rows for a
+  -- LIMIT 240 and looks exactly like a recall bug. It is a test-data artefact.
   vec as (
     select s.id, row_number() over () as rank
     from (
