@@ -2,6 +2,25 @@
 
 **The Cloudflare blocker is gone. Stage 9a is done. You are unblocked on 9b, 9e and 10.**
 
+> ## Update — Stage 9b is now DONE (2026-07-28, later the same day)
+>
+> **Do not run the `certbot --nginx` command below again** — the certificate is
+> already issued and Let's Encrypt rate-limits duplicates.
+>
+> - Real LE certificate covering `new.` + `api.`, expires 2026-10-26
+> - HTTP→HTTPS redirect live on both; apex and `www` deliberately untouched
+> - **`certbot renew --dry-run` passes** and `certbot.timer` is active
+> - Full 9d matrix re-run against the real cert with TLS validation ON:
+>   **50/50 API, 54/54 browser**
+>
+> Two things had to be fixed before certbot would have behaved — the three
+> hostnames shared one nginx `server` block, and `api.` proxies ACME challenges
+> to Kong. Both are written up in EXECUTION-PLAN.md Stage 9b.
+>
+> **What is actually left for you: get the token onto this workstation and the
+> VPS** (section below), which unblocks 9e. Then 9e, then Stage 10 is a human
+> decision.
+
 Context lives in `EXECUTION-PLAN.md` (stage detail, the 15 corrections, the execution
 log). This file is only: what changed today, what to do with the token, and your next
 commands in order.
