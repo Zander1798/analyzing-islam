@@ -85,8 +85,10 @@ shared doc, not a group chat. Delete the message once Hein confirms it works.
 
 ### Afterwards
 
-Once the site is live on the new server and has been stable for a couple of weeks,
-delete the token: **My Profile → API Tokens → the "…" menu next to it → Delete**.
+Please **leave the token in place for now**. It is what renews the site's HTTPS
+certificate automatically every 60 days, so deleting it would eventually take the
+site's padlock away. Hein will tell you when it is safe to remove, after switching
+the renewal over to a method that does not need it.
 
 ### One thing to be aware of
 
@@ -147,8 +149,13 @@ Both machines, because the two stages that need it run in different places:
 
 9e is the one that forces the token onto the VPS: it proves the apex certificate
 *before* DNS points at the new server, which is what removes the several-minute
-TLS-mismatch window the original runbook had. Copy it to
-`/home/deploy/secrets-cloudflare.ini` (`chmod 600`) and delete it after Stage 10.
+TLS-mismatch window the original runbook had. It lives at `/home/deploy/secrets/cloudflare.ini` (mode 600) on the VPS.
+
+> **Do NOT delete it after Stage 10.** certbot binds the apex certificate's
+> renewal to that exact path (`authenticator = dns-cloudflare`), so removing it
+> breaks renewal silently — the first symptom is an expired certificate on the
+> live site ~60 days later. See EXECUTION-PLAN correction #16 for the
+> switch-to-HTTP-01-then-revoke order if you want it gone.
 
 ### What happens the moment it lands
 

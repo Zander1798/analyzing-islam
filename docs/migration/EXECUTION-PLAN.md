@@ -565,22 +565,42 @@ no `*analyzingislam*` cert material exists under `/etc/ssl` or `/etc/letsencrypt
 **Stage 9b/9e certbot therefore starts from a clean slate** — which was the whole
 point of not leaving a self-signed cert in the path.
 
-### 9e. Pre-issue the LIVE certificate — before any DNS flip (correction #4)
+### 9e. Pre-issue the LIVE certificate — **DONE 2026-07-28**
 
 ```bash
 sudo certbot certonly --dns-cloudflare \
-  --dns-cloudflare-credentials ~/secrets-cloudflare.ini \
-  -d analyzingislam.com -d www.analyzingislam.com
+  --dns-cloudflare-credentials /home/deploy/secrets/cloudflare.ini \
+  --dns-cloudflare-propagation-seconds 30 \
+  -d analyzingislam.com -d www.analyzingislam.com \
+  --non-interactive --agree-tos -m ai@velocityfibre.co.za --no-eff-email
 ```
-Add the 443 server block for apex+www (same root/try_files, plus 80→443 redirect),
-`nginx -t && reload`. **Verify without touching DNS:**
-```bash
-curl --resolve analyzingislam.com:443:72.60.17.245 -sI https://analyzingislam.com/about
-# 200 with a valid certificate — the live vhost is proven BEFORE cutover
-```
-This removes the original runbook's minutes-long TLS-mismatch window at 10b/10c.
 
----
+Certificate covers `analyzingislam.com` + `www`, expires 2026-10-26. The apex/www
+443 vhost is live on the VPS (same root and `try_files`, plus an 80→443 redirect).
+
+**The proof that matters — the live vhost works BEFORE any DNS change:**
+
+```
+curl --resolve analyzingislam.com:443:72.60.17.245 https://analyzingislam.com/about
+  /            200  verify=0        www/about    200  verify=0
+  /about       200  verify=0        80 -> 443    301
+  /catalog     200  verify=0
+  cert: issuer Let's Encrypt YE1, SAN = analyzingislam.com, www.analyzingislam.com
+```
+
+Meanwhile the real `analyzingislam.com` still resolves to the four `185.199.*`
+Pages IPs and serves from GitHub with GitHub's own certificate. **Cutover is now a
+pure DNS change with no TLS window** — which is the entire reason correction #4
+moved this ahead of the flip.
+
+DNS-01 left the zone clean: 7 records before, 7 after, no stale `_acme-challenge`,
+apex and `www` byte-for-byte unchanged.
+
+> **nginx 1.24 gotcha:** the standalone `http2 on;` directive is nginx **1.25.1+**.
+> On 1.24 it fails `nginx -t` with `unknown directive "http2"`; use
+> `listen 443 ssl http2;`. nginx kept serving the previous config throughout, so a
+> bad `nginx -t` is not an outage — but never pipe `nginx -t` into anything, or
+> `set -e` sees the pipeline's exit code and reloads anyway.
 
 ## Stage 10 — Cutover
 
@@ -820,9 +840,12 @@ baseline across all 17 tracked tables.
      not before: `stage10a-final-sync.sh` reads `POOLER_URL` from
      `~/secrets/analyzingislam/pooler.env` to take the dump. Rotate first and the
      sync fails at step 1 on cutover night. Update that file in the same breath.
-   - **Cloudflare API token** — revoke after Stage 10 is complete and stable.
-     Zander: My Profile → API Tokens → "…" → Delete. It is scoped to DNS on one
-     zone with no expiry, so it stays live until someone deletes it.
+   - **Cloudflare API token** — **do NOT simply revoke it.** The apex certificate
+     renews via DNS-01 against `/home/deploy/secrets/cloudflare.ini` on the VPS, so
+     revoking or deleting it breaks renewal silently and the first symptom is an
+     expired certificate on the live site. Follow the switch-then-revoke order in
+     **correction #16**. Simplest safe option: leave it in place — it is scoped to
+     DNS on one zone and does nothing else.
 4. **At cutover**, run `./scripts/stage10a-final-sync.sh`, then flip DNS (10b). Do not
    perform the sync by hand.
 
@@ -1065,6 +1088,39 @@ which is still the live site and the rollback target. Merging is a human decisio
 The VPS copy already carries the guard, and with it the stale-token case goes from
 `{alg: ES256, error: "No suitable key…", rows: -1}` to
 `{alg: HS256, error: null, rows: 2}`.
+
+### 16. Revoking the Cloudflare token would silently break apex renewal
+
+Stage 9e is issued with DNS-01, and certbot writes that choice into
+`/etc/letsencrypt/renewal/analyzingislam.com.conf` **permanently**:
+
+```
+authenticator = dns-cloudflare
+dns_cloudflare_credentials = /home/deploy/secrets/cloudflare.ini
+```
+
+So the apex certificate renews by editing DNS, every 60 days, forever — not by
+HTTP-01. Deleting that file or revoking the token does **not** fail loudly: the
+next renewal fails silently and the first symptom is an expired certificate on
+the live site.
+
+(By contrast `new.analyzingislam.com` uses `authenticator = nginx`, so the staging
+certificate is not affected.)
+
+**Correct order if you want the token gone after cutover** — only once the apex
+actually resolves to the VPS, so HTTP-01 can work:
+
+```bash
+sudo certbot certonly --force-renewal --nginx \
+  -d analyzingislam.com -d www.analyzingislam.com   # switches authenticator to nginx
+sudo grep authenticator /etc/letsencrypt/renewal/analyzingislam.com.conf  # must say nginx
+sudo certbot renew --dry-run                                              # must pass
+# ONLY NOW revoke the token and delete /home/deploy/secrets/cloudflare.ini
+```
+
+Never revoke first. The same applies to *rotating* the token because it was pasted
+into a chat: rotating it means updating that file on the VPS in the same breath, or
+renewal breaks.
 
 ### 15. Two smaller findings
 
