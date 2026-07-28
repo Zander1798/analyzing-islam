@@ -230,8 +230,9 @@ They are pure functions — HTML in, dicts out, no network, no database — so t
 unaffected by the migration and need no rework.
 
 **Next: Task 8 (ingest orchestrator), then 10 (recall fixture), then 9 (video
-transcripts).** See "Suggested order" below. **Task 8 is gated on the chunking
-schema decision** — it writes into whichever shape wins, so decide first.
+transcripts).** See "Suggested order" below. The chunking schema decision that
+gated Task 8 is **made and shipped** — `kb_chunks` child table, chunk-aware
+`match_corpus`, verified on the box. Task 8 is unblocked.
 
 ---
 
@@ -349,9 +350,12 @@ The site is live on this box now. It was not before.
 > parsers… the bulk of the work." They were already merged on 2026-07-27 and their
 > 31 tests pass. Following the old order meant rebuilding finished work. Removed.
 
-0. **Decide the chunking schema first.** It is not optional sequencing — Task 8 writes
-   into whichever shape wins, so building the ingest before deciding means writing it
-   twice. See "What chunking costs, and what it changes in Task 1" above.
+0. ~~Decide the chunking schema~~ — **DONE 2026-07-28.** `kb_chunks` child table +
+   chunk-aware `match_corpus`, applied to the VPS. Verified against 500 docs / 2000
+   chunks: 3/3 plan shapes keep `Index Scan using idx_kb_chunks_embed`, 0 sequential
+   scans, 240 chunks → exactly 60 documents. On a narrow filter the planner correctly
+   switches to an exact scan and still finds every match. **Re-verify after the first
+   real ingest** — 2000 synthetic vectors are not 80,000 real ones.
 1. ~~Tasks 3–7, the parsers~~ — **DONE** (merged 2026-07-27, 31 tests passing).
 2. **Task 8, the ingest orchestrator.** Where trap 1 bites. Build in the retry from
    the start. Run the first full ingest off-peak and watch `docker stats`.
