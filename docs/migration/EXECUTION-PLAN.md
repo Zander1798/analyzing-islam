@@ -813,11 +813,25 @@ baseline across all 17 tracked tables.
    for record ids and the post-write verification. Remaining: **[HEIN]** copy the token
    into `~/secrets/analyzingislam/cloudflare.ini` on the workstation (the file there is
    still the wrong account), then **9b, 9e** and **10** are mechanical.
-2. **Decide on `fix/session-continuity-guard`.** Merging it to `main` deploys to the
-   live site, so it is a human call. It is a no-op on the live site today. Cutting
-   over *without* it means correction #14 happens to real users.
+2. ~~**Decide on `fix/session-continuity-guard`**~~ — **MERGED AND DEPLOYED 2026-07-28**
+   (`8031ec71`). The Pages deploy succeeded and the live site, the repo and the VPS
+   now all serve a byte-identical `auth.js` (sha256 `c2896651…`), so the divergence
+   that an rsync could silently revert is gone.
 
-   > ### ⚠ THE VPS COPY OF `auth.js` IS ONE RSYNC AWAY FROM BEING SILENTLY REVERTED
+   Verified on the live site after deploy: 7/7 pages load clean with no JS errors,
+   anonymous queries to Supabase Cloud still work, and a normal Cloud session is
+   left **byte-identical** by the guard (`expires_at` unchanged), which is what
+   makes it provably a no-op there.
+
+   > One trap for whoever tests this next: planting a **forged** ES256 token to
+   > "check the guard" produces `No suitable key or wrong key type` and a
+   > downstream `undefined.list` on `/saved`. That is Supabase Cloud correctly
+   > rejecting a forgery, not a regression — the guard cannot be at fault because
+   > it demonstrably did not touch the session. Re-test with a clean browser
+   > before believing it.
+
+   > ### ✅ RESOLVED 2026-07-28 — the guard is merged, so this no longer applies.
+   > (Kept for the reasoning.) THE VPS COPY OF `auth.js` WAS ONE RSYNC AWAY FROM BEING SILENTLY REVERTED
    >
    > The guard was deployed to the VPS by hand so 9d could prove it works. It is
    > **not** on `main`. `site/assets/js/auth.js` is therefore the *only* file where
