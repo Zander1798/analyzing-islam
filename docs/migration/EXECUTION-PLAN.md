@@ -409,9 +409,54 @@ plus the `api.analyzingislam.com` proxy to `http://localhost:8000`).
 
 ## Stage 9 — Staging proof
 
-### 9a. Staging DNS (Cloudflare, token or [ZANDER])
+### 9a. Staging DNS — **DONE 2026-07-28, from Zander's Windows PC**
+
 Add `A new → 72.60.17.245` and `A api → 72.60.17.245`, both DNS-only. **Touch
 nothing else.**
+
+**The Cloudflare token blocker is cleared.** Zander minted a new token on the correct
+account; it is verified working. Executed over the Cloudflare REST API — records
+created, zone read back, resolution confirmed on public DNS.
+
+| Item | Value |
+|---|---|
+| Zone ID | `7136f649b2c92b633c6bcf805721116f` |
+| Nameservers | `dell.ns.cloudflare.com`, `zahir.ns.cloudflare.com` — match the recorded pair |
+| Token scope | Zone→DNS→Edit **+ Zone→Zone→Read**, single zone `analyzingislam.com`, no IP filter, no expiry |
+| Token location (Windows PC) | `~/secrets/cf-analyzingislam.txt`, mode 600 |
+| Record `new` | id `803059386b884197f8809daed0b15563`, A → 72.60.17.245, TTL 300, proxied **false** |
+| Record `api` | id `837954585e39adb39985bd2afa228484`, A → 72.60.17.245, TTL 300, proxied **false** |
+
+**Verified after the write — the live site was not touched:**
+
+```
+total records: 7   (was 5, +2)
+A      analyzingislam.com       185.199.108/109/110/111.153   ttl auto   proxied false
+A      api.analyzingislam.com   72.60.17.245                  ttl 300    proxied false
+A      new.analyzingislam.com   72.60.17.245                  ttl 300    proxied false
+CNAME  www.analyzingislam.com   zander1798.github.io          ttl auto   proxied false
+APEX UNCHANGED: True     WWW UNCHANGED: True     MX: still none
+```
+
+Public resolution: `new.` returns 72.60.17.245 on both 1.1.1.1 and 8.8.8.8; `api.`
+returns it on 8.8.8.8 but **1.1.1.1 briefly served NXDOMAIN from its negative cache**
+(the zone SOA default TTL is **1800s**, so allow up to 30 minutes). This is cache
+staleness, not a missing record — the authoritative read-back above shows both.
+**Re-check from the workstation before running 9b**, since certbot's HTTP-01 challenge
+needs the name resolving wherever Let's Encrypt's validators look:
+
+```bash
+dig +short new.analyzingislam.com @1.1.1.1   # expect 72.60.17.245
+dig +short api.analyzingislam.com @1.1.1.1   # expect 72.60.17.245
+```
+
+> **[HEIN] The token still has to land on the workstation** for 9b/9e. Overwrite the
+> wrong-account file at `~/secrets/analyzingislam/cloudflare.ini` (mode 600) with:
+> ```
+> dns_cloudflare_api_token = <the new token>
+> ```
+> Zander has the value; it is deliberately not in this repo. The old file's token had
+> 11 zones, none of them this domain — that is what blocked 9a until now.
 
 ### 9b. Staging certs
 
@@ -719,10 +764,12 @@ baseline across all 17 tracked tables.
 
 ### The shortest list of things a human must still do
 
-1. **Get the Cloudflare DNS-edit API token from Zander** for `analyzingislam.com`.
-   This is the only thing blocking everything else. (The key in
-   `~/secrets/analyzingislam/cloudflare.ini` is a *different* account — 11 zones, none
-   of them this domain.) Then Stages **9a, 9b, 9e** and **10** are mechanical.
+1. ~~**Get the Cloudflare DNS-edit API token from Zander**~~ — **DONE 2026-07-28.**
+   Correct-account token minted, verified active, zone `analyzingislam.com` resolves
+   (id `7136f649b2c92b633c6bcf805721116f`). **Stage 9a is executed** — see that stage
+   for record ids and the post-write verification. Remaining: **[HEIN]** copy the token
+   into `~/secrets/analyzingislam/cloudflare.ini` on the workstation (the file there is
+   still the wrong account), then **9b, 9e** and **10** are mechanical.
 2. **Decide on `fix/session-continuity-guard`.** Merging it to `main` deploys to the
    live site, so it is a human call. It is a no-op on the live site today. Cutting
    over *without* it means correction #14 happens to real users.
@@ -754,9 +801,14 @@ Everything else is done, cronned, and proven.
 
 ## Execution log — what actually happened (2026-07-27)
 
-**Stages 2, 3, 4, 5, 6, 7, 8 and 9c are DONE and verified.** Remaining and **blocked on
-one credential**: 9a/9b/9e (staging DNS + certs) and 10 (cutover) need the **Cloudflare
-DNS-edit API token**. Then 11 and 12.
+**Stages 2, 3, 4, 5, 6, 7, 8 and 9c are DONE and verified.** ~~Remaining and blocked on
+one credential: 9a/9b/9e and 10 need the Cloudflare DNS-edit API token.~~
+
+**Update 2026-07-28 (from Zander's Windows PC):** the token blocker is cleared and
+**Stage 9a is DONE** — `new.` and `api.` both A → 72.60.17.245, DNS-only, apex and
+`www` verified untouched. Full detail and record ids under Stage 9a above. Next:
+**9b** (one certbot command, once `api.` clears 1.1.1.1's 30-minute negative cache),
+then **9e**, then **10**.
 
 - **Stage 7 ✅** SMTP configured against Gmail. Verified in two independent ways: a
   direct `smtplib` STARTTLS login (Gmail accepted the app password), then a **real
