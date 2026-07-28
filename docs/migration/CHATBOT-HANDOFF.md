@@ -84,9 +84,33 @@ magnitudes are not.
 - **`kb_docs` needs a chunk dimension**, and `match_corpus()` must collapse chunks
   back to documents — a document should score as its *best* chunk (`DISTINCT ON` the
   document, ordered by similarity), which is exactly what the bake-off measured.
-  Either add a `kb_chunks` child table or allow multiple rows per `(kind, slug)` with
-  a `chunk_ix`. **This is a real change to Task 1's schema, so raise it against the
-  spec before building on it.**
+
+  > ### ✅ DECIDED 2026-07-28 (Zander): child table `kb_chunks`
+  >
+  > Not extra `kb_docs` rows. `kb_docs` keeps **one row per document**, so
+  > `unique (kind, slug)` still holds, `kb_find_ref()` still returns whole
+  > documents, and title/body/metadata are stored once instead of four times.
+  >
+  > **Written into `supabase/chatbot-kb.sql` — but NOT applied and NOT verified.**
+  > It was authored from Zander's Windows PC, which has no VPS access. Before
+  > Task 8 depends on it, someone with the box must:
+  >
+  > 1. Apply it: `docker exec -i supabase-db psql -U supabase_admin -d postgres < supabase/chatbot-kb.sql`
+  >    (idempotent, seeds nothing — safe to re-run).
+  > 2. **`EXPLAIN` a `match_corpus()` call against a populated `kb_chunks` and
+  >    confirm `idx_kb_chunks_embed` is used.** Task 1 originally proved
+  >    `Index Scan using idx_kb_embed`; the rewrite adds a join and filters
+  >    beside the ANN order-by, which can make the planner fall back to a
+  >    sequential scan. Correct results, bad latency, invisible unless checked.
+  >    If it does: pgvector 0.8+ `set hnsw.iterative_scan = relaxed_order`.
+  > 3. Re-prove the RRF fusion test — a document findable only by keyword and one
+  >    findable only by vector must both come back — since the vector arm of the
+  >    query was rewritten.
+  >
+  > `kb_docs.embed_text` and `kb_docs.embedding` are deliberately left in place.
+  > They go unused once ingestion writes chunks, but dropping a populated column
+  > is destructive and this file is replayed into production by
+  > `stage10a-sync.sh`. Retire them in a separate deliberate migration.
 - `embed_text` stops needing to be a hand-crafted bounded summary. Chunk the body.
 
 ### Also worth knowing

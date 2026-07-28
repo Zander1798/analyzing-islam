@@ -41,6 +41,37 @@ create index if not exists idx_kb_embed on public.kb_docs
 -- service_role, which bypasses RLS. Mirrors the admins table in analytics.sql.
 alter table public.kb_docs enable row level security;
 
+-- ---------- chunks ----------
+-- Decision 2026-07-28 (Zander): store chunks in a CHILD table, not as extra
+-- kb_docs rows. Driven by the bake-off in docs/migration/CHATBOT-HANDOFF.md —
+-- 4x1800-char chunks on gte-small scored R@1 82% / MRR 0.893 against 62% /
+-- 0.751 for one bounded embed_text per document, and beat nomic-on-full-
+-- documents while staying at vector(384) on this box.
+--
+-- Child table so that kb_docs keeps ONE row per document: `unique (kind, slug)`
+-- still holds, kb_find_ref() still returns whole documents, and title/body/
+-- metadata are stored once rather than four times.
+--
+-- kb_docs.embed_text / kb_docs.embedding are deliberately LEFT IN PLACE. They
+-- become unused once ingestion writes chunks, but dropping a populated column
+-- is destructive and this file is replayed into production by
+-- scripts/vps/stage10a-sync.sh. Retire them in a separate, deliberate migration
+-- once chunked retrieval is proven.
+create table if not exists public.kb_chunks (
+  id         bigserial primary key,
+  doc_id     bigint not null references public.kb_docs(id) on delete cascade,
+  chunk_ix   int    not null,
+  embed_text text   not null,
+  embedding  vector(384),
+  unique (doc_id, chunk_ix)
+);
+
+create index if not exists idx_kb_chunks_doc   on public.kb_chunks (doc_id);
+create index if not exists idx_kb_chunks_embed on public.kb_chunks
+  using hnsw (embedding vector_cosine_ops);
+
+alter table public.kb_chunks enable row level security;
+
 -- ---------- hybrid retrieval ----------
 create or replace function public.match_corpus(
   q_text       text,
@@ -75,15 +106,54 @@ as $$
       limit 60
     ) s
   ),
+  -- Vector side searches CHUNKS and collapses them to documents, scoring each
+  -- document as its BEST chunk — exactly what the bake-off measured.
+  --
+  -- Three levels, each load-bearing:
+  --   inner  ANN over kb_chunks, filters applied HERE, over-fetch 240
+  --   middle DISTINCT ON (doc_id) -> the best chunk of each document
+  --   outer  re-rank those documents by distance, take 60
+  --
+  -- The middle level must ORDER BY doc_id first (DISTINCT ON requires it), so
+  -- its output is in doc_id order, NOT similarity order. Without the outer
+  -- re-rank, row_number() would number documents by id and the fusion step
+  -- would silently receive garbage ranks. Do not collapse these two levels.
+  --
+  -- Filters are inside the ANN, not after it. Applying them to an already-
+  -- truncated top-240 could return nothing at all when a narrow filter matches
+  -- only documents outside that window — empty results on a legitimate query.
+  --
+  -- Over-fetches 240 chunks for 60 documents (4 chunks/doc) so a document whose
+  -- chunks all rank well cannot crowd the candidate list below what fusion
+  -- expects.
+  --
+  -- ⚠ NOT YET VERIFIED ON THE BOX. Task 1's original verification proved
+  -- `Index Scan using idx_kb_embed`. This rewrite adds a join and filters
+  -- alongside the ANN order-by, which can make the planner abandon HNSW for a
+  -- sequential scan — correct results, bad latency, and invisible without
+  -- looking. Re-run EXPLAIN against a populated kb_chunks and confirm
+  -- idx_kb_chunks_embed is used. If it is not, pgvector 0.8+ iterative scans
+  -- (`set hnsw.iterative_scan = relaxed_order`) are the intended fix for
+  -- filtered ANN; raising `hnsw.ef_search` is the cruder one.
   vec as (
     select s.id, row_number() over () as rank
     from (
-      select d.id
-      from kb_docs d
-      where d.embedding is not null
-        and (filter_kinds is null or d.kind = any(filter_kinds))
-        and (filter_cats  is null or d.categories && filter_cats)
-      order by d.embedding <=> q_embedding, d.id
+      select best.id, best.dist
+      from (
+        select distinct on (c.doc_id) c.doc_id as id, c.dist
+        from (
+          select c2.doc_id, (c2.embedding <=> q_embedding) as dist
+          from kb_chunks c2
+          join kb_docs d on d.id = c2.doc_id
+          where c2.embedding is not null
+            and (filter_kinds is null or d.kind = any(filter_kinds))
+            and (filter_cats  is null or d.categories && filter_cats)
+          order by c2.embedding <=> q_embedding
+          limit 240
+        ) c
+        order by c.doc_id, c.dist          -- DISTINCT ON needs doc_id first
+      ) best
+      order by best.dist, best.id          -- re-rank by similarity, not doc_id
       limit 60
     ) s
   ),
