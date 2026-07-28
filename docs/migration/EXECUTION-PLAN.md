@@ -635,7 +635,11 @@ without an apikey and makes a bad probe).
 
 This is the deliberate abandonment of the rollback path.
 
-- [ ] Two weeks clean; backups running **and one test-restored**
+- [x] Backups running **and one test-restored** — cleared 2026-07-27 by
+      `scripts/vps/test-restore.sh` (55 tables, 1245 rows, 546 schema objects identical)
+- [ ] Two weeks clean on the VPS
+- [ ] Confirm `fix/session-continuity-guard` is merged, so the rsync below cannot
+      revert the VPS's hand-deployed `auth.js` (see Stage 10's warning)
 - [ ] Retire the Pages deploy **first**: replace `.github/workflows/pages.yml` with an
       rsync-to-VPS deploy (or delete it) so the next step cannot trigger Pages
 - [ ] Commit `config.js` — both lines — to the repo
@@ -713,6 +717,23 @@ baseline across all 17 tracked tables.
 2. **Decide on `fix/session-continuity-guard`.** Merging it to `main` deploys to the
    live site, so it is a human call. It is a no-op on the live site today. Cutting
    over *without* it means correction #14 happens to real users.
+
+   > ### ⚠ THE VPS COPY OF `auth.js` IS ONE RSYNC AWAY FROM BEING SILENTLY REVERTED
+   >
+   > The guard was deployed to the VPS by hand so 9d could prove it works. It is
+   > **not** on `main`. `site/assets/js/auth.js` is therefore the *only* file where
+   > the VPS and the repo differ — confirmed by `rsync --dry-run`.
+   >
+   > Any Stage 8a rsync (`rsync -avz --delete --exclude='assets/js/config.js' site/ …`)
+   > overwrites it with main's unguarded version, and nothing will tell you: the site
+   > keeps working, and the breakage only appears at cutover, only for users holding a
+   > live Cloud token. **Check it after every rsync until the branch is merged:**
+   > ```bash
+   > ssh deploy@72.60.17.245 'grep -c reconcileForeignSession /var/www/analyzingislam/assets/js/auth.js'
+   > # must print 1
+   > ```
+   > Merging the branch is what makes this go away permanently. Until then, treat
+   > `auth.js` like `config.js`: a hand-managed file on the server.
 3. **Rotate the Supabase Cloud database password** after the Stage 10a final sync — it
    was pasted into a chat window.
 4. **At cutover**, run `./scripts/stage10a-final-sync.sh`, then flip DNS (10b). Do not
