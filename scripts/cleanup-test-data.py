@@ -36,18 +36,18 @@ print(sql("""
 delete from public.bookmarks b where not exists (select 1 from auth.users u where u.id=b.user_id);
 delete from public.notes    n where not exists (select 1 from auth.users u where u.id=n.user_id);
 delete from public.pageviews where visitor = 'migtest' or path = '/migtest';
--- The BROWSER harness fires the site's real track.js, so every page it loads
--- writes a genuine pageview. Do NOT filter on the visitor format: track.js
--- falls back to Date.now()+Math.random() when crypto.randomUUID is unavailable,
--- producing a 24-char hex id rather than a uuid, and an earlier version of this
--- sweep missed exactly those rows.
+-- DELIBERATELY NOT sweeping pageviews by time. An earlier version of this
+-- script did, on the belief that the browser harness generated them. It does
+-- not: track.js bails out on `navigator.webdriver`, which Playwright sets, so
+-- automated runs never write a pageview at all (verified). The rows that
+-- prompted that sweep came from somewhere else.
 --
--- The sound rule instead: BEFORE CUTOVER no real traffic reaches the VPS at all
--- (the live site's track.js posts to Supabase Cloud), so any pageview here is
--- test traffic. Sweep by time alone.
--- !! This stops being true the moment DNS is flipped. After cutover, delete
--- !! this statement rather than adapting it.
-delete from public.pageviews where ts > now() - interval '6 hours';"""))
+-- Leaving the time-based sweep in would now be actively destructive: after
+-- Stage 10a the pageviews table is an exact copy of Cloud, including genuine
+-- recent traffic, and `ts > now() - interval '6 hours'` would delete real
+-- analytics data.
+--
+-- Only ever remove rows this harness explicitly tagged."""))
 
 print("=== counts vs baseline ===")
 now = sql(open(f"{SP}/counts.sql").read().replace("\\pset border 2", ""))
