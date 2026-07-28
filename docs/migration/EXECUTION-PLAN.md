@@ -748,7 +748,42 @@ This is the deliberate abandonment of the rollback path.
 
 ---
 
-## STATUS — 2026-07-27, end of the autonomous session
+## ✅ CUTOVER COMPLETE — 2026-07-28 12:23 SAST
+
+**analyzingislam.com now serves from the Hostinger VPS.** Stages 10a, 10b and 10c
+are done. GitHub Pages and Supabase Cloud are both still intact as the rollback
+path — nothing has been decommissioned.
+
+| | |
+|---|---|
+| Stage 10a final sync | 88s total (35s on the VPS). All 53 Cloud tables matched exactly afterwards. |
+| Stage 10b DNS flip | four `185.199.*` apex A records deleted, `A @ → 72.60.17.245` added (DNS-only, TTL 300), `www` CNAME repointed to the apex |
+| Stage 10c live smoke test | **104/104** against `https://analyzingislam.com` — 50/50 API, 54/54 browser |
+| TLS | valid Let's Encrypt cert, zero-second mismatch window (pre-issued at 9e) |
+| Test residue | removed; production DB carries only real data |
+
+**Rollback, if ever needed:** `~/ROLLBACK-analyzingislam-cutover.sh` on the
+workstation. It was generated *from the live zone before the flip*, restores the
+four Pages A records and the original `www` CNAME, and brings the old stack back
+in ~5 minutes on the 300s TTL. It is validated (`bash -n`) but has never been run.
+
+During propagation there was no breakage: resolvers still holding the old `www`
+CNAME sent visitors to GitHub Pages, which 301-redirected to the apex — and the
+apex was already the VPS.
+
+### Immediately outstanding
+
+1. **Rotate the Supabase Cloud database password.** It was pasted into a chat
+   window. The final sync is done, so the ordering constraint has cleared — but
+   update `~/secrets/analyzingislam/pooler.env` in the same breath.
+2. **Do NOT revoke the Cloudflare token** — correction #16. The apex certificate
+   renews via DNS-01 against `/home/deploy/secrets/cloudflare.ini`.
+3. **Two weeks before Stage 12.** Do not decommission Pages or Supabase Cloud
+   until then. The test-restore gate is already cleared.
+
+---
+
+## STATUS — 2026-07-27, end of the autonomous session (superseded by the cutover above)
 
 ### What is proven
 
