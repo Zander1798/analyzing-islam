@@ -192,8 +192,22 @@ unrelated ones (0.238, 0.239), for a query sharing **no keyword** with it.
 
 `kb_docs` is currently empty — the schema is ready, the corpus is not ingested.
 
-**Next: Tasks 3–10.** Parsers (3–7), ingest orchestrator (8), video transcripts (9),
-recall fixture (10).
+**Tasks 3–7 — the parsers — are ALSO already done.** Merged 2026-07-27, before the
+migration. `kb_parsers.py` carries all five (`parse_entries`, `parse_dossier`,
+`parse_quran_page`, `parse_bible_book`, `parse_doctrine`) plus `kb-doctrine/` with
+three seed documents. Verified by running them 2026-07-28:
+
+```
+$ python -m pytest tests/test_kb_parsers.py -q
+31 passed in 5.38s
+```
+
+They are pure functions — HTML in, dicts out, no network, no database — so they are
+unaffected by the migration and need no rework.
+
+**Next: Task 8 (ingest orchestrator), then 10 (recall fixture), then 9 (video
+transcripts).** See "Suggested order" below. **Task 8 is gated on the chunking
+schema decision** — it writes into whichever shape wins, so decide first.
 
 ---
 
@@ -307,14 +321,20 @@ The site is live on this box now. It was not before.
 
 ## Suggested order
 
-1. **Tasks 3–7, the parsers.** Pure functions, HTML in / dicts out, no network, no
-   database — so they unit-test without touching anything live. Safest place to
-   start and the bulk of the work.
+> **Correction 2026-07-28:** this list originally opened with "Tasks 3–7, the
+> parsers… the bulk of the work." They were already merged on 2026-07-27 and their
+> 31 tests pass. Following the old order meant rebuilding finished work. Removed.
+
+0. **Decide the chunking schema first.** It is not optional sequencing — Task 8 writes
+   into whichever shape wins, so building the ingest before deciding means writing it
+   twice. See "What chunking costs, and what it changes in Task 1" above.
+1. ~~Tasks 3–7, the parsers~~ — **DONE** (merged 2026-07-27, 31 tests passing).
 2. **Task 8, the ingest orchestrator.** Where trap 1 bites. Build in the retry from
    the start. Run the first full ingest off-peak and watch `docker stats`.
 3. **Task 10, the recall fixture.** This is the one that tells you whether any of it
    works. Retrieval that returns *something* for every query always looks fine until
-   you assert *which* documents come back.
+   you assert *which* documents come back. Also assert that **citations resolve** —
+   a `char_location` that does not match the source is the alarm that matters most.
 4. **Task 9, video transcripts.** Independent of the rest; do it last or in parallel.
 
 Task 10 is the real gate. Everything before it is plumbing you can verify mechanically;
