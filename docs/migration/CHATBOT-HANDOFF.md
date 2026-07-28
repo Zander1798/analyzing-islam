@@ -105,6 +105,74 @@ and Ollama on the Mac listens only on localhost.)
 
 ---
 
+## "Can we set the temperature so there's no hallucination?"
+
+No — and the second reason matters more than the first.
+
+**You can't set it.** `temperature`, `top_p` and `top_k` are all **rejected on
+Sonnet 5** and return a 400. Same on Opus 5 and the 4.7/4.8 family — the parameter
+is gone from the current model generation. The spec records this at §"Anthropic API
+specifics"; if you find sampling parameters anywhere in the chatbot code, delete
+them rather than tuning them.
+
+**And it would not do what people expect anyway.** Temperature controls *variance*,
+not *truth*. At temperature 0 a model does not become more factual — it becomes more
+deterministic, which means it produces **the same confident error every time**
+instead of a different one. For this site that is arguably worse: a hallucination
+that reproduces reliably reads like a considered position rather than a fluke. Low
+temperature narrows the distribution being sampled from; it does not change what is
+in the distribution.
+
+### What actually provides the guarantee
+
+**The Citations API is extractive, not generative.** With `citations: {enabled: true}`
+on each document block, Claude returns the exact `cited_text` span drawn from the
+source together with its character offsets. It cannot cite a span that is not in the
+document, because the span comes back verbatim with its location.
+
+That is the structural point the spec makes in §"Citations enforce the grounding
+rule": the citation list is *provably the set of documents actually used*, not a
+list the model was asked to produce. A model told to "include your sources" can
+invent a plausible-looking reference. A model returning `cited_text` +
+`char_location` cannot — the offsets either resolve against the source or they do
+not, and the renderer can check.
+
+This is a far stronger guarantee than any decoding parameter could give, and it is
+why D2 is written as *"textual claims cited; reasoning free."*
+
+**Constraint that follows from it:** citations are **incompatible with
+`output_config.format`** — sending both returns a 400. The answering call therefore
+cannot also use structured outputs. Tool use composes with citations fine; only
+structured outputs conflict. Don't design a JSON-shaped answer contract on that call.
+
+### What it deliberately leaves exposed
+
+Citations bind **claims about what a text says**. They do not bind the connective
+reasoning *between* citations — historical framing, argument structure, inference.
+D2 draws that line on purpose, and it is the right line: constraining the reasoning
+too would produce a chatbot that can only quote.
+
+So the residual risk is not "the model invents a hadith." It is "the model cites two
+real passages and draws a shaky inference between them." No sampling parameter would
+have helped with that either — the mitigations are prompt design and the
+doctrine layer (D9).
+
+### The levers that actually exist
+
+| Lever | Why it matters |
+|---|---|
+| **Retrieval quality** | The biggest one — a wrong answer usually starts as a bad retrieval. This is why the chunking result above is worth the schema change. |
+| **`effort`** | `medium` is the spec's default and is a `chat_config` value, so it is tunable at runtime without a redeploy. Raise it if answers read as careless. |
+| **The weak-retrieval path** | The spec's two independent "corpus does not cover this" signals. Getting the model to say *"the site does not address this"* is worth more than any decoding parameter. |
+| **Task 10's fixture** | Verify citations resolve. A citation pointing at a 404, or a span that does not match the source, is the alarm. |
+
+**State plainly to anyone who asks:** no configuration eliminates hallucination. What
+this design does is make the *dangerous* class — a fabricated claim about scripture —
+structurally checkable, and confine the model's freedom to the class where being
+wrong is arguable rather than catastrophic.
+
+---
+
 ## What is already done and verified
 
 **Task 1 — `supabase/chatbot-kb.sql`** (applied to the VPS database)
