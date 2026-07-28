@@ -1,0 +1,192 @@
+# Chatbot Phase 1 — handoff
+
+**For: Zander. Date: 2026-07-28.**
+
+The migration is done — `analyzingislam.com` runs on the VPS at `72.60.17.245`, and
+the thing that was blocking the chatbot is gone. This is what's already built, what
+to do next, and the traps that will cost you an afternoon if nobody tells you.
+
+Plan of record: `docs/superpowers/plans/2026-07-27-chatbot-phase1-kb-retrieval.md`.
+Spec wins where they disagree: `docs/superpowers/specs/2026-07-27-ai-chatbot-design.md`.
+
+---
+
+## The short answer to "do we need embedding on the VPS?"
+
+**Yes — and it is already running there, proven, and comfortably within budget.**
+
+It is not really a choice. Query embeddings and document embeddings *must* come from
+the same model, or the vectors do not live in the same space and retrieval silently
+returns nonsense. The plan therefore puts `gte-small` in one place — a Supabase Edge
+Function — and everything goes through it. There is deliberately no local Python path
+to the model.
+
+The open question was whether the **self-hosted** edge runtime could do it at all;
+`Supabase.ai.Session` is often assumed to be a Supabase-Cloud-only API. It is not.
+Measured on this box (`supabase/edge-runtime:v1.74.0`):
+
+| | |
+|---|---|
+| Throughput | **107 ms/doc, 9.4 docs/sec** (sequential, ~120-word documents) |
+| 1,000 docs | ~1.8 min |
+| 5,000 docs | ~9 min |
+| 20,000 docs | ~36 min |
+| Edge runtime memory | **236 MB** of 7.9 GB |
+| Free memory during a run | ~6 GB, **swap untouched** |
+
+So a full corpus ingest is a coffee break, not an infrastructure project. The
+`EXECUTION-PLAN.md` note that "the chatbot's embedding model will want more RAM
+later" turns out to be unnecessary caution at this scale — 8 GB is fine. Revisit
+only if you move to a larger model.
+
+**Run bulk ingestion off-peak anyway.** The box has 2 vCPU and now serves the live
+site; a sustained ingest will compete with real visitors.
+
+---
+
+## What is already done and verified
+
+**Task 1 — `supabase/chatbot-kb.sql`** (applied to the VPS database)
+`kb_docs`, the hybrid `match_corpus()`, and `kb_find_ref()`. Verified, not just
+applied:
+- RRF genuinely fuses **both** ranking paths — a document findable only by keyword
+  and one findable only by vector both come back for a query combining them.
+- `EXPLAIN` confirms the HNSW index is used (`Index Scan using idx_kb_embed`), not a
+  sequential scan.
+- RLS proven with a real row present, not an empty table: `anon` gets `[]`,
+  `service_role` gets the row.
+
+**Task 2 — `supabase/functions/embed/index.ts`** (deployed to the VPS)
+Wraps `gte-small`. Accepts one string or an array. End-to-end proof: embed → store →
+retrieve ranked the semantically-matching document first (cosine 0.176) against two
+unrelated ones (0.238, 0.239), for a query sharing **no keyword** with it.
+
+`kb_docs` is currently empty — the schema is ready, the corpus is not ingested.
+
+**Next: Tasks 3–10.** Parsers (3–7), ingest orchestrator (8), video transcripts (9),
+recall fixture (10).
+
+---
+
+## Four traps
+
+### 1. The edge runtime kills workers on a CPU soft limit
+
+This will bite the ingest orchestrator (Task 8) and look like a random failure.
+
+Batches of up to 20 succeed on a *fresh* worker. But a worker that has already done
+sustained work gets killed mid-request:
+
+```
+CPU time soft limit reached: isolate: 319c8ef2-...
+user worker failed to respond: request has been cancelled by supervisor
+```
+
+The caller sees an opaque **HTTP 500**. Nothing is wrong with your input — the
+isolate ran out of CPU budget.
+
+Limits live in `~/supabase-selfhost/volumes/functions/main/index.ts`:
+
+```js
+const memoryLimitMb   = 150
+const workerTimeoutMs = 60 * 1000
+```
+
+**Write the ingest loop to expect this**: keep batches modest (≤10), retry a 500 once
+or twice — the next request gets a fresh isolate — and don't parallelise hard. At
+9.4 docs/sec sequential you do not need to. Raising the limits is possible but you
+almost certainly don't need to.
+
+### 2. The embed function is service-role only, on purpose
+
+The runtime's `verify_jwt` only checks that a token is validly **signed**, not which
+role it carries — so the `anon` key, which ships in the public site's `config.js`,
+reached the endpoint and got a 200. On a 2-vCPU box that is a free denial-of-service.
+The function now checks the `role` claim itself: `service_role` → 200, `anon` → 403.
+
+**Never put the service-role key in browser code.** Ingestion is server-side only.
+At query time the chatbot backend embeds the user's question server-side too.
+
+### 3. `gte-small` truncates at 512 tokens — silently
+
+Task 10's fixture asserts `len(embed_text) <= 1800` characters for a reason. Anything
+past the limit is **dropped without error**, so a long document gets embedded on its
+opening paragraph alone and then mysteriously fails to match queries about its own
+content. Keep `embed_text` a deliberately-built summary field, not the whole body.
+`body` can be long; `embed_text` cannot.
+
+### 4. Never replay all of `supabase/*.sql`
+
+`analytics-verify.sql` is a **test script**, not schema. Its cleanup runs
+`delete from public.search_queries where q = 'aisha'` — and the one real row in that
+table was literally `'aisha'`. It has already destroyed data once.
+`community-schema.sql` seeds six demo communities.
+
+`chatbot-kb.sql` is safe to re-run: idempotent, seeds nothing. Keep it that way —
+if you add seed data to a file in `supabase/`, the Stage 10a sync will replay it into
+production.
+
+---
+
+## Working against the VPS
+
+```bash
+ssh deploy@72.60.17.245
+```
+
+| What | Where |
+|---|---|
+| API | `https://api.analyzingislam.com` (public) or `http://localhost:8000` (on the box) |
+| Keys | `~/supabase-selfhost/.env` — `ANON_KEY`, `SERVICE_ROLE_KEY` |
+| SQL | `docker exec -i supabase-db psql -U supabase_admin -d postgres` |
+| Edge functions | `~/supabase-selfhost/volumes/functions/<name>/index.ts` |
+| Reload a function | `cd ~/supabase-selfhost && docker compose restart functions` |
+
+Embedding one string:
+
+```bash
+SK=$(grep '^SERVICE_ROLE_KEY=' ~/supabase-selfhost/.env | cut -d= -f2-)
+curl -s -X POST http://localhost:8000/functions/v1/embed \
+  -H "Authorization: Bearer $SK" -H 'Content-Type: application/json' \
+  -d '{"input":"does the Quran abrogate earlier verses?"}'
+```
+
+**`docker exec` without `-i` silently discards stdin and exits 0.** A heredoc of SQL
+piped into it runs `psql` with no input, prints nothing, and reports success while
+doing nothing. Always `-i`, and always re-query to confirm a write landed.
+
+---
+
+## Things not to break
+
+The site is live on this box now. It was not before.
+
+- **Do not revoke or delete the Cloudflare token.** The site's HTTPS certificate
+  renews via DNS-01 against `/home/deploy/secrets/cloudflare.ini`. Removing it fails
+  **silently** and the first symptom is an expired certificate around 2026-09-26.
+- **Do not decommission GitHub Pages or Supabase Cloud before 2026-08-11.** They are
+  the rollback path. Rollback script: `~/ROLLBACK-analyzingislam-cutover.sh` on
+  Hein's workstation, ~5 minutes.
+- **Never commit `.env`, the service-role key, or any database dump.** This repo is
+  **public** and the dumps contain password hashes, refresh tokens and private
+  messages.
+- Backups run nightly at 03:15 and a restore test runs Sundays at 03:45. If you add
+  tables, they are included automatically — the dump is schema-scoped, not
+  table-scoped.
+
+---
+
+## Suggested order
+
+1. **Tasks 3–7, the parsers.** Pure functions, HTML in / dicts out, no network, no
+   database — so they unit-test without touching anything live. Safest place to
+   start and the bulk of the work.
+2. **Task 8, the ingest orchestrator.** Where trap 1 bites. Build in the retry from
+   the start. Run the first full ingest off-peak and watch `docker stats`.
+3. **Task 10, the recall fixture.** This is the one that tells you whether any of it
+   works. Retrieval that returns *something* for every query always looks fine until
+   you assert *which* documents come back.
+4. **Task 9, video transcripts.** Independent of the rest; do it last or in parallel.
+
+Task 10 is the real gate. Everything before it is plumbing you can verify mechanically;
+only the fixture tells you the thing is actually useful.
