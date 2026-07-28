@@ -458,22 +458,45 @@ dig +short api.analyzingislam.com @1.1.1.1   # expect 72.60.17.245
 > Zander has the value; it is deliberately not in this repo. The old file's token had
 > 11 zones, none of them this domain — that is what blocked 9a until now.
 
-### 9b. Staging certs
-
-**Already installed 2026-07-27** — certbot 2.9.0, `python3-certbot-nginx`,
-`python3-certbot-dns-cloudflare`; `certbot plugins` lists both `nginx` and
-`dns-cloudflare`; `certbot.timer` is enabled and active (so renewal will actually
-happen); no certificates exist yet. So this stage is one command once DNS resolves:
+### 9b. Staging certs — **DONE 2026-07-28**
 
 ```bash
-sudo certbot --nginx -d new.analyzingislam.com -d api.analyzingislam.com
+sudo certbot --nginx -d new.analyzingislam.com -d api.analyzingislam.com \
+  --non-interactive --agree-tos -m ai@velocityfibre.co.za --redirect --no-eff-email
 ```
 
-> Note the VPS currently has **no 443 server block and no 80→443 redirect at all** —
-> the self-signed rig used for 9d testing was removed. `certbot --nginx` writes the
-> staging ones itself; the apex/www block at 9e is hand-written per that stage.
-(nginx needs a `server_name new.analyzingislam.com` block serving the same root —
-add it beside the apex block.)
+| Item | Result |
+|---|---|
+| Certificate | Let's Encrypt (issuer CN=YE1), SAN covers **both** names, expires 2026-10-26 |
+| Validation | full chain verifies from the workstation with **no pinning and no `-k`** (`ssl_verify_result=0`) |
+| Redirect | `http://…/about` → **301** → `https://…/about` on both hosts |
+| **Renewal** | **`certbot renew --dry-run`: "all simulated renewals succeeded"**; `certbot.timer` enabled and active |
+| Apex/www | **untouched** — still port 80 only, zero `ssl_certificate` directives, `/about` returns 200 not 301 |
+
+**Re-ran the whole 9d matrix against the real certificate with validation ON:
+50/50 API and 54/54 browser.** The earlier 104/104 was against a self-signed cert
+with verification disabled; this is the same matrix with nothing switched off.
+
+> ### ⚠ Two things had to be fixed BEFORE certbot would have behaved
+>
+> **1. The three hostnames shared one nginx `server` block.** Running
+> `certbot --nginx -d new.analyzingislam.com` against that would have attached a
+> certificate valid only for `new.` to a block that also answers for
+> `analyzingislam.com` and `www` — entangling this stage with Stage 9e's apex
+> certificate. Split into three blocks first (apex+www / new. / api.), so certbot
+> edits exactly the block it is asked to. `analyzingislam.pre-9b.bak` holds the old
+> version.
+>
+> **2. `api.` proxies `location /` to Kong, so ACME challenges never touch disk** —
+> `http://api.analyzingislam.com/.well-known/acme-challenge/test` returns **401**
+> from Kong, not 404. `certbot --nginx` survives this because it injects a *regex*
+> location block, and regex locations beat prefix locations in nginx's matching
+> order. **`--webroot` would have failed here.** Worth remembering at 9e.
+
+> **Certificate Transparency:** issuing this certificate publishes
+> `new.analyzingislam.com` and `api.analyzingislam.com` to public CT logs
+> permanently. Unavoidable for `api.` (it needs a public certificate anyway) and
+> accepted for `new.`.
 
 ### 9c. Point the server copy of `config.js` at the new stack — both lines
 
