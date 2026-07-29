@@ -323,6 +323,14 @@ curl -s -X POST http://localhost:8000/functions/v1/embed \
 piped into it runs `psql` with no input, prints nothing, and reports success while
 doing nothing. Always `-i`, and always re-query to confirm a write landed.
 
+### Zander's retrieval-only credential
+
+Do not give retrieval evaluators either operator secret above. The scoped
+`kb_reader` login, restricted SSH tunnel, pre-embedded-query workflow, worked
+example, and explicit blast-radius boundary are documented in
+[`KB-READER.md`](KB-READER.md). Its grant migration is
+`supabase/kb-reader-credential.sql`; it deliberately contains no password.
+
 ---
 
 ## Things not to break
