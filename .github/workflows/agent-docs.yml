@@ -1,0 +1,26 @@
+name: agent-docs
+
+# Runs on every pull request, with no `paths:` filter, deliberately.
+#
+# A PR that only adds source files to a directory can push it over the mirror
+# threshold and newly require a sibling AGENTS.md that does not exist yet. That
+# is the case least likely to be caught by eye — and test files count toward the
+# threshold, so a pure test-adding PR can trigger it.
+#
+# A pre-commit hook is not a substitute: it is per-clone, so fresh worktrees,
+# automated agents and other contributors silently lack it.
+
+on: [pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/mirror-agents-md.mjs --check
