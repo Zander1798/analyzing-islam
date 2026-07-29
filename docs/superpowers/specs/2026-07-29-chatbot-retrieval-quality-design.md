@@ -60,7 +60,8 @@ generated test data. Every case has:
 - `q`: the original user wording.
 - `semantic_q`: optional description-only wording used to test likely candidates
   without allowing the supplied wrong reference to dominate ranking.
-- `primary`: one corpus identity expressed as `ref` or `slug`, plus `max_rank`.
+- `primary`: one corpus identity expressed as `ref` or `slug`, plus `max_rank`;
+  required for every mode except a genuine `gap`.
 - `support`: optional expected kinds, categories, references or slugs.
 - `forbid_top`: optional kinds, references or slugs that must not appear within
   a stated rank window.
@@ -75,7 +76,7 @@ alone has learned the user's intent.
 For `unknown_reference`, the test asserts that exact lookup finds nothing and the
 decision is `clarify`; semantic results may be retained as candidates but cannot
 be treated as the requested passage. A genuinely uncovered topic uses `gap`
-instead.
+instead and has no `primary` because no correct corpus identity exists.
 
 ## Coverage
 
