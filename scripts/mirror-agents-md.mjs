@@ -103,6 +103,10 @@ function banner(canonical) {
   ].join("\n");
 }
 
+function normalizeEol(content) {
+  return content.replace(/\r\n/g, "\n");
+}
+
 /**
  * Rewrite only backtick-quoted PATH references, for example a nested canonical
  * path ending in `.claude.md` becomes the sibling path ending in `AGENTS.md`.
@@ -117,7 +121,7 @@ function banner(canonical) {
  * A path has a directory in front of it; a concept does not.
  */
 function render(source, canonical) {
-  const body = readFileSync(source, "utf8").replace(
+  const body = normalizeEol(readFileSync(source, "utf8")).replace(
     /`([^`\s]*\/)\.claude\.md`/g,
     "`$1AGENTS.md`",
   );
@@ -204,7 +208,7 @@ for (const target of emit) {
   if (CHECK) {
     if (!existsSync(target.out)) {
       missing.push(rel);
-    } else if (readFileSync(target.out, "utf8") !== content) {
+    } else if (normalizeEol(readFileSync(target.out, "utf8")) !== content) {
       stale.push(rel);
     }
 
@@ -213,7 +217,10 @@ for (const target of emit) {
 
   // Only touch a file whose content changed, so --dry-run is a truthful
   // preview and the printed count means something.
-  if (existsSync(target.out) && readFileSync(target.out, "utf8") === content) {
+  if (
+    existsSync(target.out) &&
+    normalizeEol(readFileSync(target.out, "utf8")) === content
+  ) {
     continue;
   }
 
