@@ -38,12 +38,13 @@ const MIN_DOC_LINES = 10;
  * Set for THIS repository: the maintained source and documentation trees only.
  *
  * Deliberately excluded, and why:
- *   site/            813 MB of generated HTML — build output, not source
- *   quran-json/, hadith-json/, arguments-data/, video/   data fixtures
+ *   site/            generated HTML — build output, not source
+ *   quran-json/, hadith-json/, arguments-data/           data fixtures
  *   book-design/, mockups/, e2e_screenshots/             artifacts and drafts
+ *   video/public/, video/out/, video/capture/             media/build artifacts
  *
- * The 165 generator scripts live at the repository root, which is not scanned:
- * the root `CLAUDE.md` already covers them and is emitted unconditionally below.
+ * The 165 Python files live at the repository root, which is not scanned: the root
+ * `CLAUDE.md` already covers them and is emitted unconditionally below.
  */
 const SCAN_ROOTS = [
   "scripts",
@@ -51,6 +52,7 @@ const SCAN_ROOTS = [
   "tests",
   "docs",
   "kb-doctrine",
+  "video/src",
 ];
 
 const SOURCE_EXT = /\.(ts|tsx|js|jsx|mjs|cjs|py|go|rb|rs|java|kt|php)$/;
