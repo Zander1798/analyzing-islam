@@ -89,7 +89,9 @@ returns table (
 language sql
 stable
 security definer
-set search_path = public
+-- pg_temp is explicit and last so a caller cannot shadow kb_docs/kb_chunks
+-- with temporary objects inside this superuser-owned SECURITY DEFINER body.
+set search_path = public, pg_temp
 as $$
   with q as (
     select websearch_to_tsquery('english', q_text) as tsq
@@ -204,7 +206,8 @@ returns setof public.kb_docs
 language sql
 stable
 security definer
-set search_path = public
+-- Keep the caller's temporary schema behind the trusted public objects.
+set search_path = public, pg_temp
 as $$
   select *
   from kb_docs
