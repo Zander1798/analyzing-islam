@@ -10,13 +10,26 @@ name: agent-docs
 # A pre-commit hook is not a substitute: it is per-clone, so fresh worktrees,
 # automated agents and other contributors silently lack it.
 
-on: [pull_request]
+# `push` matters as much as `pull_request` here: this repository is worked by
+# direct pushes to main, so a pull_request-only trigger never fires at all. It
+# had zero runs between being added and this change. On a push the check cannot
+# block anything — the commit has already landed — but it turns a silently
+# drifting mirror into a red X and a notification, which is the difference
+# between a gate and a decoration.
+#
+# Blocking needs a ruleset requiring a PR and this check. Deliberately deferred
+# until after Stage 12 rather than adding merge friction mid-migration.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
 
 permissions:
   contents: read
 
 jobs:
-  docs:
+  agent-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
