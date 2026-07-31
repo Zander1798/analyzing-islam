@@ -134,6 +134,19 @@ def test_batches_are_capped_at_batch_size():
     assert seen == [10, 10, 5]
 
 
+def test_default_batches_stay_within_the_live_edge_runtime_limit():
+    """The production 2-vCPU Edge runtime cannot sustain ten-text batches."""
+    seen = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        seen.append(len(json["input"]))
+        return FakeResponse(200, {"embeddings": [[0.0] * 384] * len(json["input"])})
+
+    kc.embed_texts([f"t{i}" for i in range(12)], "u", "k", post=post)
+
+    assert seen == [5, 5, 2]
+
+
 def test_request_uses_the_input_key_the_function_actually_expects():
     captured = {}
 
@@ -163,6 +176,27 @@ def test_a_500_is_retried_and_can_succeed(monkeypatch):
     assert out == [[0.1] * 384]
 
 
+def test_repeated_500_splits_the_batch_and_preserves_vector_order(monkeypatch):
+    """A CPU-heavy batch must recover on smaller fresh isolates, not abort a kind."""
+    monkeypatch.setattr(kc.time, "sleep", lambda *_: None)
+    seen = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        texts = json["input"]
+        seen.append(list(texts))
+        if len(texts) > 5:
+            return FakeResponse(
+                500,
+                text='{"msg":"WorkerRequestCancelled: request has been cancelled by supervisor"}',
+            )
+        return FakeResponse(200, {"embeddings": [[float(t[1:])] * 384 for t in texts]})
+
+    out = kc.embed_texts([f"t{i}" for i in range(10)], "u", "k", batch=10, post=post)
+
+    assert [len(group) for group in seen] == [10, 10, 10, 10, 5, 5]
+    assert [vector[0] for vector in out] == list(map(float, range(10)))
+
+
 def test_a_403_fails_immediately_instead_of_retrying(monkeypatch):
     """Wrong key is a config error. Retrying it four times just delays the report."""
     monkeypatch.setattr(kc.time, "sleep", lambda *_: None)
@@ -186,6 +220,20 @@ def test_persistent_500_eventually_raises(monkeypatch):
 
     with pytest.raises(RuntimeError, match="after 4 attempts"):
         kc.embed_texts(["one"], "u", "k", post=post)
+
+
+def test_persistent_503_does_not_claim_a_one_text_500(monkeypatch):
+    """Exhausted retries must report the failure that actually occurred."""
+    monkeypatch.setattr(kc.time, "sleep", lambda *_: None)
+
+    def post(url, json=None, headers=None, timeout=None):
+        return FakeResponse(503, text="temporarily unavailable")
+
+    with pytest.raises(RuntimeError) as error:
+        kc.embed_texts(["a", "b", "c"], "u", "k", post=post)
+
+    assert "HTTP 503" in str(error.value)
+    assert "one-text batch" not in str(error.value)
 
 
 def test_short_vector_count_is_caught(monkeypatch):
