@@ -225,10 +225,16 @@ def embed_texts(texts: list[str], embed_url: str, service_key: str,
                             embed_group(group[:midpoint])
                             + embed_group(group[midpoint:])
                         )
-                    raise RuntimeError(
-                        f"embed failed after 4 attempts: {exc}\n"
-                        "A repeated 500 on a one-text batch cannot be reduced further."
-                    ) from exc
+                    detail = f"embed failed after 4 attempts: {exc}"
+                    if (
+                        isinstance(exc, _RetryableHttpError)
+                        and exc.status_code == 500
+                    ):
+                        detail += (
+                            "\nA repeated 500 on a one-text batch cannot be "
+                            "reduced further."
+                        )
+                    raise RuntimeError(detail) from exc
                 time.sleep(2 ** attempt)
 
         raise AssertionError("unreachable")
