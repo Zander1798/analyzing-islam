@@ -32,9 +32,11 @@ import requests
 # Batch size for the embed endpoint. The plan said 32; the handoff's trap 1 says
 # keep it modest, because the edge runtime enforces a per-isolate CPU soft limit
 # and the supervisor kills a worker that exceeds it — the caller just sees an
-# opaque 500. At 9.4 docs/sec sequential there is nothing to gain from big
-# batches, so this trades throughput we don't need for failures we don't want.
-EMBED_BATCH = 10
+# opaque 500. The first sustained production ingest proved that batches of 10
+# hit both the soft and hard limits too often on the live 2-vCPU edge runtime.
+# Five was stable under sustained work; the retry path below still splits a
+# repeatedly cancelled batch so one unusually heavy group cannot abort a kind.
+EMBED_BATCH = 5
 
 # gte-small truncates at 512 tokens SILENTLY (handoff trap 3). 1800 chars is
 # ~350 tokens, which is the bound kb_parsers already uses for embed_text. This
@@ -74,6 +76,12 @@ MAX_CHUNKS = 12
 HASH_FIELDS = ("title", "ref", "source", "url", "body")
 
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
+
+
+class _RetryableHttpError(RuntimeError):
+    def __init__(self, status_code: int, detail: str):
+        self.status_code = status_code
+        super().__init__(f"HTTP {status_code}: {detail}")
 
 
 def env(name: str) -> str:
@@ -176,9 +184,7 @@ def embed_texts(texts: list[str], embed_url: str, service_key: str,
         return []
     send = post or requests.post
 
-    out: list[list[float]] = []
-    for i in range(0, len(texts), batch):
-        group = texts[i:i + batch]
+    def embed_group(group: list[str]) -> list[list[float]]:
         for attempt in range(4):
             try:
                 r = send(
@@ -192,7 +198,7 @@ def embed_texts(texts: list[str], embed_url: str, service_key: str,
                     timeout=120,
                 )
                 if r.status_code in RETRYABLE_STATUS:
-                    raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
+                    raise _RetryableHttpError(r.status_code, r.text[:200])
                 if r.status_code >= 400:
                     raise SystemExit(
                         f"embed refused with HTTP {r.status_code}: {r.text[:300]}\n"
@@ -204,19 +210,32 @@ def embed_texts(texts: list[str], embed_url: str, service_key: str,
                     raise RuntimeError(
                         f"asked for {len(group)} embeddings, got {len(vectors)}"
                     )
-                out.extend(vectors)
-                break
+                return vectors
             except SystemExit:
                 raise
             except Exception as exc:
                 if attempt == 3:
+                    if (
+                        isinstance(exc, _RetryableHttpError)
+                        and exc.status_code == 500
+                        and len(group) > 1
+                    ):
+                        midpoint = len(group) // 2
+                        return (
+                            embed_group(group[:midpoint])
+                            + embed_group(group[midpoint:])
+                        )
                     raise RuntimeError(
                         f"embed failed after 4 attempts: {exc}\n"
-                        "A repeated 500 on a batch that used to work is usually the "
-                        "edge runtime's CPU soft limit killing a used worker — try a "
-                        "smaller batch."
+                        "A repeated 500 on a one-text batch cannot be reduced further."
                     ) from exc
                 time.sleep(2 ** attempt)
+
+        raise AssertionError("unreachable")
+
+    out: list[list[float]] = []
+    for i in range(0, len(texts), batch):
+        out.extend(embed_group(texts[i:i + batch]))
     return out
 
 
