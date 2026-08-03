@@ -5,29 +5,33 @@ Status: approved design; implementation plan not yet written
 
 ## 1. Decision summary
 
-Select the production answer model through a blinded, three-model bake-off using
-real Analyzing Islam retrieval results. The candidates are:
+Use Claude Sonnet 5 as the selected launch model, subject to passing the citation,
+quality and refusal gates in this specification. Validate that choice through a
+blinded, three-model bake-off using real Analyzing Islam retrieval results. The
+comparison set is:
 
 - Claude Sonnet 5;
 - GPT-5.6 Terra;
 - Gemini 3.1 Pro.
 
-Claude Sonnet 5 is the provisional launch model because its native document
-citations align closely with the product's grounding and source-preview design.
-It does not become the final model unless it passes the same evaluation as the
-other candidates.
+Claude Sonnet 5 is preferred because its native document citations align closely
+with the product's grounding and source-preview design. GPT-5.6 Terra and Gemini
+3.1 Pro are evaluation baselines, not co-equal production integrations. Replace
+Sonnet only if it fails a hard gate or another candidate demonstrates a material,
+repeatable quality advantage.
 
-Launch with one active model and no automatic routing. Keep the server integration
-provider-neutral so an administrator can switch a pinned model without rebuilding
-the frontend. Reconsider routing only after production volume justifies the added
-complexity.
+Launch with Sonnet 5 as the single active model and no automatic routing. Keep the
+server contract provider-neutral so a future model change does not require a
+frontend rebuild, but implement only the Sonnet production adapter in this phase.
+Reconsider other production adapters and routing only when evaluation or production
+volume justifies the added complexity.
 
 ## 2. Priorities and constraints
 
 The selection is quality-first within a controlled budget. Cost breaks close
 quality ties; it never compensates for unreliable grounding.
 
-The winning model must:
+Sonnet 5 must:
 
 - make no fabricated scriptural or corpus references in the launch audit;
 - ground claims about supplied texts in valid citations;
@@ -101,16 +105,18 @@ critical failure. A model with a critical failure cannot be selected from the
 initial bake-off without remediation followed by a complete rerun of the affected
 evaluation set.
 
-If two models have materially equivalent quality and both pass the hard gate,
-select the less expensive model.
+Sonnet remains selected when the candidates have materially equivalent quality.
+Cost alone does not displace it. Select another candidate only when Sonnet fails a
+hard gate or the alternative shows a material, repeatable quality advantage large
+enough to justify its different citation behavior and integration cost.
 
 ## 4. Provider-neutral model boundary
 
 The `ask` Edge Function owns model access. Browser code never receives provider
 credentials and does not make provider API calls.
 
-Add a small provider adapter boundary. Every adapter accepts the same normalized
-request:
+Define a small provider adapter boundary. The production Sonnet adapter and the
+evaluation-only candidate clients accept the same normalized request:
 
 - system instructions;
 - conversation messages;
@@ -118,7 +124,7 @@ request:
 - reasoning and output limits;
 - stream cancellation signal.
 
-Every adapter emits the same normalized stream:
+The production adapter emits this normalized stream:
 
 - answer-text deltas;
 - citation events containing a document ID and source location;
@@ -126,13 +132,16 @@ Every adapter emits the same normalized stream:
 - terminal completion, refusal or error status;
 - provider token usage and calculated cost.
 
-Claude's adapter translates native citation objects into the normalized citation
-format. OpenAI and Gemini adapters translate their outputs into the same format and
-are subject to the same server-side validator. Provider-specific response objects
-must not leak into stored messages or the browser protocol.
+Claude's production adapter translates native citation objects into the normalized
+citation format. The bake-off may use evaluation-only OpenAI and Gemini clients that
+produce equivalent stored evaluation records; they do not need production retry,
+streaming or deployment integration. Any candidate chosen to replace Sonnet must
+first receive a production adapter and pass the same server-side validation and
+integration tests. Provider-specific response objects must not leak into stored chat
+messages or the browser protocol.
 
-The adapter boundary exists to support evaluation and controlled provider changes.
-It must not grow into a general multi-provider orchestration system in this phase.
+The adapter boundary exists to keep the Sonnet integration replaceable. It must not
+grow into a general multi-provider orchestration system in this phase.
 
 ## 5. Citation validation
 
@@ -154,7 +163,7 @@ or unnecessary private conversation content.
 
 Store production model settings in the protected server-side chat configuration:
 
-- active provider;
+- active provider, initially Anthropic;
 - pinned model identifier;
 - reasoning level;
 - maximum input and output tokens;
@@ -164,9 +173,10 @@ Store production model settings in the protected server-side chat configuration:
 - daily user quota;
 - emergency kill switch.
 
-Changing the active model is an administrator operation and does not require a
-frontend deployment. Configuration must reject an unsupported provider/model pair
-instead of silently falling back.
+Changing the active Sonnet snapshot or reasoning level is an administrator
+operation and does not require a frontend deployment. Activating another provider
+requires its production adapter and tests to be deployed first. Configuration must
+reject an unsupported provider/model pair instead of silently falling back.
 
 ## 7. Cost model and controls
 
@@ -205,8 +215,8 @@ responses according to actual reported usage so the budget ledger does not drift
 
 ## 8. Rollout and growth policy
 
-Start with owner-only access and one active model. Public access remains disabled
-until the owner explicitly approves it.
+Start with owner-only access and Sonnet 5 as the single active model. Public access
+remains disabled until the owner explicitly approves it.
 
 After approximately 100–200 representative owner questions, review:
 
@@ -265,6 +275,7 @@ launch.
 
 ## 11. Superseded model decision
 
-This specification supersedes the earlier design's fixed Sonnet 5 selection and
-$50 monthly ceiling. It does not supersede the earlier product goals, citation UX,
-retrieval architecture, owner-only authorization requirement or public-launch gate.
+This specification confirms the earlier design's Sonnet 5 selection, adds a
+comparative validation gate, and supersedes its $50 monthly ceiling. It does not
+supersede the earlier product goals, citation UX, retrieval architecture, owner-only
+authorization requirement or public-launch gate.
