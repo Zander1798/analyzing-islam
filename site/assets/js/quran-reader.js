@@ -246,21 +246,33 @@
     const defn = root && definitions ? (definitions[root] || null) : null;
 
     if (entry) {
+      // lexicon.json is keyed by ROOT, not by the word that was clicked. Its
+      // `lem`/`pos` are whichever derived form the builder met first in mushaf
+      // order, and its `gloss` is the most frequent translation across every
+      // derived form of the root — so under بِسْمِ ("In the name") the سمو entry
+      // reads "the heavens", because سماء dominates that root's frequency.
+      // Prefer the clicked word's own lemma and part of speech, and label the
+      // root-level figures as root-level so nothing here reads as a
+      // translation of the word above it.
+      const wordLem = lem || entry.lem;
+      const wordPos = meta.pos || entry.pos;
       html += '<div class="panel-section">' +
         '<div class="panel-section-label">Root: ' + escapeHtml(root) + '</div>' +
         '<dl class="panel-grid">' +
-        (entry.lem
+        (wordLem
           ? '<dt>Lemma</dt><dd><span dir="rtl" style="font-family:\'Scheherazade New\',serif;">' +
-            escapeHtml(entry.lem) + '</span></dd>'
+            escapeHtml(wordLem) + '</span></dd>'
           : '') +
         (trans
           ? '<dt>Pronunciation</dt><dd>' + escapeHtml(trans) + '</dd>'
           : '') +
-        (entry.pos
-          ? '<dt>Part of speech</dt><dd>' + escapeHtml(expandPos(entry.pos) || entry.pos) + '</dd>'
+        (wordPos
+          ? '<dt>Part of speech</dt><dd>' + escapeHtml(expandPos(wordPos) || wordPos) + '</dd>'
           : '') +
         (entry.gloss
-          ? '<dt>Common meaning</dt><dd>' + escapeHtml(entry.gloss) + '</dd>'
+          ? '<dt>Most frequent sense of this root</dt><dd>' + escapeHtml(entry.gloss) +
+            '<span class="panel-note"> — across all words from ' + escapeHtml(root) +
+            ', not a translation of this word</span></dd>'
           : '') +
         (defn
           ? '<dt>Definition</dt><dd class="panel-definition">' + escapeHtml(defn) + '</dd>'

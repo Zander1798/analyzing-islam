@@ -91,9 +91,37 @@
     return "added";
   }
 
-  async function list(filters) {
+  // Supabase's PostgREST builder turns every transport failure into a resolved
+  // { data, error } pair and applies no timeout of its own, so a stalled request
+  // — a wedged gotrue auth lock, a dropped connection — leaves the caller
+  // awaiting forever with no way to notice. Bound the wait so a stall surfaces
+  // as an error the UI can show and retry, instead of a permanent spinner.
+  const LIST_TIMEOUT_MS = 15000;
+
+  function withTimeout(work, ms, label) {
+    let timer = null;
+    const bell = new Promise((_, reject) => {
+      timer = setTimeout(function () {
+        reject(new Error(label + " timed out after " + Math.round(ms / 1000) + "s."));
+      }, ms);
+    });
+    return Promise.race([Promise.resolve(work), bell]).finally(function () {
+      if (timer !== null) clearTimeout(timer);
+    });
+  }
+
+  // Pass { throwOnError: true } to tell a failed query apart from "you have no
+  // bookmarks" — returning [] for both made a broken page look empty.
+  //
+  // It is opt-in rather than the default because this file is served without a
+  // Cache-Control header: after a deploy a visitor can hold a cached older page
+  // that calls this alongside a freshly fetched copy of this script. Throwing
+  // unconditionally would leave those pages with an unhandled rejection and a
+  // permanent spinner, so the old contract has to keep working.
+  async function list(filters, opts) {
     if (!uid()) return [];
     filters = filters || {};
+    const throwOnError = !!(opts && opts.throwOnError);
 
     // Bookmarks and notes are independent tables joined only through
     // (user_id, entry_id) — no FK between them, so we fetch bookmarks
@@ -108,9 +136,22 @@
     if (filters.strength) q = q.eq("strength", filters.strength);
     if (filters.category) q = q.contains("categories", [filters.category]);
 
-    const { data, error } = await q;
+    let data, error;
+    try {
+      const res = await withTimeout(q, LIST_TIMEOUT_MS, "Loading your saved entries");
+      data = res.data;
+      error = res.error;
+    } catch (err) {
+      // Timed out. Only the opted-in caller can render this usefully.
+      console.error("[bookmarks] list timed out", err);
+      if (throwOnError) throw err;
+      return [];
+    }
     if (error) {
       console.error("[bookmarks] list failed", error);
+      if (throwOnError) {
+        throw new Error(error.message || "Could not load your saved entries.");
+      }
       return [];
     }
 

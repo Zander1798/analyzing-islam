@@ -60,5 +60,8 @@ video/public/site/
 # Visual brainstorming companion sessions
 .superpowers/
 
+# Isolated agent worktrees
+.worktrees/
+
 # codegraph local index (machine-specific)
 .codegraph/

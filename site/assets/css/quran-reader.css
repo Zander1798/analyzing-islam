@@ -62,6 +62,17 @@
   color: var(--text-muted);
 }
 
+/* Qualifier on root-level figures, so a root's most frequent sense is never
+   read as a translation of the particular word the user clicked. */
+.panel-note {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
 /* Source attribution below lexicon entry */
 .panel-attrib {
   margin-top: 8px;

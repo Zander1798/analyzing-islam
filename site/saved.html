@@ -69,7 +69,7 @@
 <script src="assets/js/auth.js" defer></script>
 <script src="assets/js/auth-ui.js" defer></script>
 <script src="assets/js/track.js" defer></script>
-<script src="assets/js/bookmarks.js" defer></script>
+<script src="assets/js/bookmarks.js?v=2" defer></script>
 <script src="assets/js/goat-skins.js" defer></script>
 <script src="assets/js/goat.js" defer></script>
 <script>
@@ -226,28 +226,59 @@
     `;
   }
 
+  // Every render is tagged. Typing in the search box or repainting the shell
+  // can start a second render while the first is still in flight; without this
+  // guard a slow earlier response could land after a faster later one and show
+  // rows that no longer match the active filters.
+  let renderToken = 0;
+
   async function render() {
+    const token = ++renderToken;
     const results = document.getElementById("sv-results");
+    if (!results) return;
     results.innerHTML = '<div class="auth-message auth-message--info" style="max-width:640px;">Loading…</div>';
 
-    const rows = await window.AI_BOOKMARKS.list({
-      source: state.source,
-      strength: state.strength,
-      category: state.category,
-      search: state.search,
-    });
-
-    document.getElementById("sv-visible").textContent = rows.length;
-
-    if (!rows.length) {
-      results.innerHTML = '<div class="auth-message auth-message--info" style="max-width:640px;">No saved entries match these filters.</div>';
+    let rows;
+    try {
+      rows = await window.AI_BOOKMARKS.list({
+        source: state.source,
+        strength: state.strength,
+        category: state.category,
+        search: state.search,
+      }, { throwOnError: true });
+    } catch (err) {
+      if (token !== renderToken) return;
+      const live = document.getElementById("sv-results");
+      if (!live) return;
+      console.error("[saved] could not load bookmarks", err);
+      const msg = (err && err.message) ? err.message : "Could not load your saved entries.";
+      live.innerHTML =
+        '<div class="auth-message auth-message--error" style="max-width:640px;">' +
+        escapeHtml(msg) +
+        ' <button type="button" id="sv-retry" class="entry-note-toggle" style="margin-left:8px;">Try again</button>' +
+        '</div>';
+      const retry = live.querySelector("#sv-retry");
+      if (retry) retry.addEventListener("click", render);
       return;
     }
 
-    results.innerHTML = rows.map(renderRow).join("");
+    // A newer render has already taken over — drop this result silently.
+    if (token !== renderToken) return;
+    const live = document.getElementById("sv-results");
+    if (!live) return;
+
+    const counter = document.getElementById("sv-visible");
+    if (counter) counter.textContent = rows.length;
+
+    if (!rows.length) {
+      live.innerHTML = '<div class="auth-message auth-message--info" style="max-width:640px;">No saved entries match these filters.</div>';
+      return;
+    }
+
+    live.innerHTML = rows.map(renderRow).join("");
 
     // Wire up remove buttons. Notes have moved to the entry detail page.
-    results.querySelectorAll(".saved-row").forEach((rowEl) => {
+    live.querySelectorAll(".saved-row").forEach((rowEl) => {
       const entryId = rowEl.getAttribute("data-entry-id");
       rowEl.querySelector('[data-action="remove"]').addEventListener("click", async (e) => {
         e.preventDefault();
@@ -259,9 +290,24 @@
     });
   }
 
-  function paint() {
+  function currentUserId() {
     const sess = window.__session;
-    if (!sess || !sess.user) {
+    return sess && sess.user ? sess.user.id : null;
+  }
+
+  // Who the shell was last built for. `false` is a sentinel that can never
+  // equal a user id or null, so the very first paint always runs.
+  let paintedFor = false;
+
+  function paint() {
+    const uid = currentUserId();
+    // supabase-js fires auth-state for TOKEN_REFRESHED and other events that
+    // don't change who is signed in. Rebuilding the shell on those wiped the
+    // user's filters and restarted an in-flight query for no reason.
+    if (uid === paintedFor) return;
+    paintedFor = uid;
+
+    if (!uid) {
       shell.innerHTML =
         '<div class="auth-message auth-message--info" style="max-width:640px;">' +
         'You\'re not signed in. ' +
@@ -272,17 +318,38 @@
     signedInView();
   }
 
-  if (window.__authReady) {
-    window.__authReady.then(paint);
-  } else {
-    paint();
+  // supabase-js dispatches auth changes from inside its own auth lock
+  // (gotrue-js runs _notifyAllSubscribers within _acquireLock). A Supabase
+  // query issued synchronously from this handler is queued behind that lock
+  // via pendingInLock instead of going out immediately. Hop to a fresh task
+  // so the lock has been released before render() asks for a token.
+  function onAuthState() {
+    setTimeout(paint, 0);
   }
-  window.addEventListener("auth-state", paint);
-  window.addEventListener("bookmarks-changed", () => {
-    // Re-render if the user toggled a bookmark from another page.
-    const results = document.getElementById("sv-results");
-    if (results) render();
-  });
+
+  // The deferred scripts above (auth.js, bookmarks.js) have NOT executed at
+  // this point in parsing, so window.__authReady and window.AI_BOOKMARKS are
+  // both still undefined. Waiting for DOMContentLoaded — which fires after
+  // every defer script has run — is what makes the __authReady check mean
+  // anything. Same pattern as shared.html.
+  function start() {
+    if (window.__authReady && typeof window.__authReady.then === "function") {
+      window.__authReady.then(paint);
+    } else {
+      paint();
+    }
+    window.addEventListener("auth-state", onAuthState);
+    window.addEventListener("bookmarks-changed", () => {
+      // Re-render if the user toggled a bookmark from another page.
+      if (document.getElementById("sv-results")) render();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
 })();
 </script>
 <script src="assets/js/snap-to-hash.js" defer></script>

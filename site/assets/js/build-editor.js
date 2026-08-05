@@ -20,7 +20,12 @@
   // content from the curated catalog pages (by source and by category).
   const SOURCES = [
     // Qur'an
-    { slug: "quran",             title: "The Qurʾān (Saheeh International)",             path: "read/quran.html",          group: "Qurʾān" },
+    // read/quran.html is a table-of-contents shell holding zero verses, so an
+    // in-iframe DOM scan of the default source found nothing and reported "No
+    // matches" for verses that exist one navigation away. The prebuilt index
+    // spans all 114 chapter pages and navigates the iframe to the right one.
+    { slug: "quran",             title: "The Qurʾān (Saheeh International)",             path: "read/quran.html",          group: "Qurʾān",
+      indexUrl: "assets/compare-index/quran-reader.json", indexBase: "read/quran/" },
     { slug: "quran-interlinear", title: "Interlinear Qurʾān (Arabic · Roots · Lane's)", path: "read-external/quran.html", group: "Qurʾān",
       indexUrl: "assets/compare-index/quran.json", indexBase: "read-external/quran/" },
 
@@ -302,6 +307,7 @@
           '</div>' +
           '<div class="build-translate-result" id="translate-result" hidden>' +
             '<button type="button" class="build-translate-close" id="translate-close" aria-label="Close translation" title="Close">×</button>' +
+            '<div class="build-translate-source" id="translate-source" hidden></div>' +
             '<div class="build-translate-text" id="translate-text"></div>' +
             '<button type="button" class="build-translate-copy" id="translate-copy" hidden>Copy translation</button>' +
           '</div>' +
@@ -1026,154 +1032,104 @@
   const TRANSLATE_CHUNK_MAX = 450; // leave headroom under MyMemory's 500
   const TRANSLATE_TOTAL_MAX = 10000; // guard against runaway selections
 
-  // ---- Lexicon-first translation layer --------------------------------
-  // Lazily loaded caches. Populated on first translateSmart() call for
-  // the relevant language. Keys are stripped (no diacritics) word forms;
-  // values are the scholarly one-word gloss from TBESH/TBESG/Quran data.
-  const _lexCache = { ar: null, he: null, el: null };
-  const _lexPromise = { ar: null, he: null, el: null };
+  // The old lexicon-first layer (a root-gloss index over the TBESH/TBESG and
+  // Quran root data, used to gloss individual words before machine
+  // translation) was removed together with the word-by-word translator it
+  // served. Word-level glosses live in the interlinear readers, where each
+  // word sits directly above its own gloss.
 
-  // Paths are relative to site/build-editor.html.
-  const _lexPaths = {
-    ar: "read-external/quran/data/lexicon.json",
-    he: "read-external/bible/data/strongs-hebrew.json",
-    el: "read-external/bible/data/strongs-greek.json",
-  };
+  // ---- Canonical lookup ------------------------------------------------
+  // Scripture is not machine-translated: the site already ships the correct
+  // English. Selected Arabic is resolved back to the passage it came from and
+  // that passage's own translation is shown, so the wording always matches the
+  // wording the rest of the site cites.
+  //
+  // A previous version translated word by word — each word glossed from a root
+  // lexicon, the rest sent to MyMemory as one blob, then the English mapped
+  // back onto the source words BY POSITION. Arabic->English is never 1:1, so
+  // every English word past the source word count was dropped (Qur'an 15:1 is
+  // six Arabic words, which is why it returned exactly "These are the verses
+  // of the") and lexicon hits were spliced in mid-sentence as "word [gloss]".
+  // That approach cannot produce a correct translation and has been removed.
 
-  // Build a Map<strippedForm → gloss> from a raw lexicon JSON object.
-  // Bible Strong's dicts: { "H0001": { lemma, gloss?, strongs_def, … }, … }
-  // Quran lexicon:        { "root":  { lem, gloss, pos, count }, … }
-  function _buildIndex(raw, lang) {
-    const idx = new Map();
-    for (const [key, val] of Object.entries(raw || {})) {
-      if (!val || typeof val !== "object") continue;
-
-      if (lang === "ar") {
-        // Quran lexicon structure: { lem, pos, gloss, count }
-        const gloss = (val.gloss || "").trim();
-        if (!gloss) continue;
-        // Index by stripped root key (consonantal form).
-        const strippedRoot = stripMarksForTranslate(key).trim();
-        if (strippedRoot) idx.set(strippedRoot, gloss);
-        // Also index by stripped lemma — significantly improves hit rate
-        // for common words (e.g. root أله → lem اللَّه → stripped الله
-        // matches the standalone token الله in selected text).
-        if (val.lem) {
-          const strippedLem = stripMarksForTranslate(String(val.lem)).trim();
-          if (strippedLem && !idx.has(strippedLem)) idx.set(strippedLem, gloss);
-        }
-      } else {
-        // Bible Strong's: { lemma, translit, gloss?, strongs_def, kjv_def, … }
-        // `gloss` is added by the TBESH/TBESG rebuild (PR #1). Fall back to
-        // extracting the first phrase of strongs_def so this still produces
-        // results before that PR is merged, and keeps working after.
-        let gloss = (val.gloss || "").trim();
-        if (!gloss && val.strongs_def) {
-          gloss = val.strongs_def
-            .replace(/^\{|\}$/g, "")   // strip surrounding braces: "{father}" → "father"
-            .split(";")[0]             // take only text before the first semicolon
-            .split(",")[0]             // and before the first comma
-            .trim();
-        }
-        if (!gloss) continue;
-        // Index by stripped lemma (original-script word with vowels/accents
-        // removed) — matches surface words that happen to be the base form.
-        // First definition wins: multiple Strong's entries can share the same
-        // consonantal lemma (e.g. H0001 אָב and H0003 אֵב both strip to אב).
-        if (val.lemma) {
-          const sl = stripMarksForTranslate(String(val.lemma)).trim();
-          if (sl && !idx.has(sl)) idx.set(sl, gloss);
-        }
-      }
+  // Fold Arabic to a comparable skeleton. Mirrors quran-lookup.js normalise()
+  // closely enough for the containment test used against the open reader pane.
+  function _normArabic(s) {
+    if (window.AI_QURAN_LOOKUP && window.AI_QURAN_LOOKUP.normalise) {
+      return window.AI_QURAN_LOOKUP.normalise(s);
     }
-    return idx;
+    return stripMarksForTranslate(String(s || ""))
+      .replace(/[^ء-ي\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
-  async function _ensureLex(lang) {
-    if (_lexCache[lang]) return _lexCache[lang];
-    if (_lexPromise[lang]) return _lexPromise[lang];
-    const path = _lexPaths[lang];
-    if (!path) { _lexCache[lang] = new Map(); return _lexCache[lang]; }
-    _lexPromise[lang] = fetch(path)
-      .then(function (r) { return r.ok ? r.json() : {}; })
-      .catch(function () { return {}; })
-      .then(function (raw) {
-        _lexCache[lang] = _buildIndex(raw, lang);
-        return _lexCache[lang];
-      });
-    return _lexPromise[lang];
+  // Resolve against whatever reader page is open in the source pane. This is
+  // the only route that can translate hadith: the six collections hold ~34k
+  // hadiths whose Arabic would be a ~39 MB client-side index, but the passage
+  // the user just dragged from is already in the same-origin iframe. The
+  // matching itself lives in quran-lookup.js so it can be tested against real
+  // reader markup without a browser.
+  function lookupInSourceFrame(text) {
+    if (!window.AI_QURAN_LOOKUP || !window.AI_QURAN_LOOKUP.passageFromDocument) {
+      return null;
+    }
+    const frame = document.getElementById("source-frame");
+    const doc = frame ? iframeDoc(frame) : null;
+    if (!doc) return null;
+    const sel = document.getElementById("source-select");
+    const sourceName = sel && SOURCE_BY_SLUG[sel.value]
+      ? SOURCE_BY_SLUG[sel.value].title
+      : "Hadith";
+    return window.AI_QURAN_LOOKUP.passageFromDocument(doc, text, sourceName);
   }
 
-  // Tokenise source text into words (strip punctuation, split on spaces).
-  // Returns array of { orig, stripped } pairs so we can rebuild the order.
-  function _tokenise(text) {
-    // Split on whitespace and common punctuation boundaries.
-    return text.split(/[\s ​‌‍]+/).filter(Boolean).map(function (tok) {
-      // Remove surrounding punctuation (not internal — "it's" stays).
-      const clean = tok.replace(/^[\p{P}\p{S}]+|[\p{P}\p{S}]+$/gu, "");
-      return { orig: tok, stripped: stripMarksForTranslate(clean).trim() };
-    });
-  }
-
-  // Two-layer translation:
-  //   1. Try each word against the local lexicon index (no network).
-  //   2. Batch all unmatched words to MyMemory in chunks.
-  // The result preserves source-word order.
+  // Canonical first, machine translation only as a labelled last resort.
   async function translateSmart(text, lang, onProgress) {
-    const idx = await _ensureLex(lang);
-    const tokens = _tokenise(text);
-    const results = new Array(tokens.length).fill(null);
+    if (lang === "ar") {
+      // The open reader pane gives exact provenance and costs no download.
+      const fromPane = lookupInSourceFrame(text);
+      if (fromPane) return fromPane;
 
-    // Pass 1: local lookup.
-    const unmatchedIdxs = [];
-    const localSet = new Set();
-    for (let i = 0; i < tokens.length; i++) {
-      const { stripped } = tokens[i];
-      if (!stripped) { results[i] = ""; continue; }
-      const hit = idx.get(stripped);
-      if (hit) {
-        results[i] = hit;
-        localSet.add(i);
-      } else {
-        unmatchedIdxs.push(i);
+      // Otherwise fall back to the prebuilt Qur'an index, which resolves
+      // Arabic pasted or typed from anywhere — including a chapter the user
+      // has since navigated away from.
+      if (window.AI_QURAN_LOOKUP) {
+        try {
+          const hit = await window.AI_QURAN_LOOKUP.lookup(text);
+          if (hit) {
+            // Say when the same wording occurs elsewhere, rather than citing
+            // one location as though it were the only one — the opening of
+            // 2:255 is verbatim the whole of 3:2.
+            const alsoAt = (hit.alternates || [])
+              .map(function (refs) {
+                return refs.length === 1
+                  ? refs[0].ref
+                  : refs[0].ref + "–" + refs[refs.length - 1].ref;
+              })
+              .slice(0, 3);
+            return {
+              canonical: true,
+              label: hit.label + " · Saheeh International" +
+                     (hit.exact ? "" : " (full verse)") +
+                     (alsoAt.length ? " — same wording also at " + alsoAt.join(", ") : ""),
+              english: hit.english,
+            };
+          }
+        } catch (err) {
+          console.warn("[build] Qur'an lookup failed:", err && err.message);
+        }
       }
     }
 
-    if (typeof onProgress === "function") onProgress(0, unmatchedIdxs.length || 1);
-
-    // Pass 2: MyMemory for the words the lexicon didn't cover.
-    if (unmatchedIdxs.length) {
-      // Reconstruct the unmatched tokens as text to send to translate().
-      const unmatchedText = unmatchedIdxs.map(function (i) { return tokens[i].orig; }).join(" ");
-      const mmOut = await translate(unmatchedText, lang, function (done, total) {
-        if (typeof onProgress === "function") onProgress(done, total + 1);
-      }).catch(function () { return ""; });
-
-      // The MyMemory response is a translated sentence; map words back by
-      // position (best effort — MT may change word count).
-      const mmWords = (mmOut || "").split(/\s+/).filter(Boolean);
-      for (let j = 0; j < unmatchedIdxs.length; j++) {
-        results[unmatchedIdxs[j]] = mmWords[j] || "";
-      }
-    }
-
-    if (typeof onProgress === "function") onProgress(1, 1);
-
-    // Stitch: for words with a local gloss, show "stripped [gloss]" to
-    // distinguish the scholarly source. MyMemory-translated words appear plain.
-    const parts = [];
-    for (let i = 0; i < tokens.length; i++) {
-      const { orig } = tokens[i];
-      const gloss = results[i];
-      if (localSet.has(i) && gloss) {
-        parts.push(stripMarksForTranslate(orig) + " [" + gloss + "]");
-      } else if (gloss) {
-        parts.push(gloss);
-      } else {
-        parts.push(orig);
-      }
-    }
-    return parts.join(" ").replace(/\s+/g, " ").trim();
+    // Not scripture we hold — machine-translate the passage as a whole and
+    // say plainly that that is what it is.
+    const out = await translate(text, lang, onProgress);
+    return {
+      canonical: false,
+      label: "Machine translation — not a canonical translation",
+      english: out,
+    };
   }
 
   // Split `text` into ≤TRANSLATE_CHUNK_MAX chunks. Prefer breaks at
@@ -1320,9 +1276,11 @@
     const result = document.getElementById("translate-result");
     const text   = document.getElementById("translate-text");
     const copy   = document.getElementById("translate-copy");
+    const source = document.getElementById("translate-source");
     if (result) result.hidden = true;
     if (text)   text.textContent = "";
     if (copy)   copy.hidden = true;
+    if (source) { source.textContent = ""; source.hidden = true; }
   }
 
   // Apply a Quill format op against the editor's current selection.
@@ -1372,8 +1330,13 @@
     const translateRow = menu ? menu.querySelector(".bfm-translate-row") : null;
     const result     = document.getElementById("translate-result");
     const resultTxt  = document.getElementById("translate-text");
+    const sourceTxt  = document.getElementById("translate-source");
     const closeBtn   = document.getElementById("translate-close");
     const copyBtn    = document.getElementById("translate-copy");
+
+    // The most recent translateSmart() result, kept so Copy can tell canonical
+    // scripture from machine output rather than re-reading the rendered text.
+    let lastResult = null;
 
     // Force-hide on mount. The format/translate menu must never appear
     // by default — only after the user right-clicks (or taps on mobile)
@@ -1563,18 +1526,26 @@
       result.hidden = false;
       resultTxt.textContent = "Translating…";
       copyBtn.hidden = true;
+      if (sourceTxt) { sourceTxt.textContent = ""; sourceTxt.hidden = true; }
       try {
-        // translateSmart: lexicon-first lookup (TBESH/TBESG/Quran data),
-        // then MyMemory for any words not found locally. Progress is
-        // surfaced per-chunk so the user sees activity on long passages.
+        // translateSmart resolves scripture to its canonical translation and
+        // only machine-translates what the site doesn't hold. The result
+        // carries where it came from so the two can never be confused.
         const out = await translateSmart(text, lang, function (done, total) {
           if (total > 1) {
             resultTxt.textContent = "Translating " + done + " / " + total + "…";
           }
         });
-        resultTxt.textContent = out || "(no translation returned)";
-        copyBtn.hidden = !out;
+        lastResult = out;
+        resultTxt.textContent = (out && out.english) || "(no translation returned)";
+        if (sourceTxt && out && out.label) {
+          sourceTxt.textContent = out.label;
+          sourceTxt.classList.toggle("is-machine", !out.canonical);
+          sourceTxt.hidden = false;
+        }
+        copyBtn.hidden = !(out && out.english);
       } catch (err) {
+        lastResult = null;
         // Prefer the API's own error message when we have one — the
         // most common case is "selection too long" from our own guard.
         const msg = (err && err.message) ? err.message : "Translation failed. Try again later.";
@@ -1592,8 +1563,14 @@
     // Copy grabs the translated text and also closes the bubble on success.
     copyBtn.addEventListener("click", async function (e) {
       e.stopPropagation();
-      const txt = (resultTxt.textContent || "").trim();
-      if (!txt) { hideTranslateResult(); return; }
+      const body = (resultTxt.textContent || "").trim();
+      if (!body) { hideTranslateResult(); return; }
+      // Canonical scripture is copied with its reference so a build can be
+      // cited. Machine output is copied with a marker it cannot lose, so it
+      // can never be pasted into a build and later read as Saheeh International.
+      const txt = (lastResult && lastResult.canonical)
+        ? body + " (" + lastResult.label + ")"
+        : (lastResult ? "[machine translation] " + body : body);
       let ok = false;
       try {
         await navigator.clipboard.writeText(txt);
