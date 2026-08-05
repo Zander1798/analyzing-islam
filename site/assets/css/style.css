@@ -2484,6 +2484,27 @@ blockquote {
   color: var(--text);
 }
 
+/* Where the translation came from. Canonical scripture reads as a citation;
+   machine output is marked so it can never be mistaken for one. */
+.build-translate-source {
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.build-translate-source.is-machine {
+  color: var(--accent);
+  text-transform: none;
+  letter-spacing: 0;
+  font-style: italic;
+}
+
+.build-translate-source[hidden] { display: none; }
+
 .build-translate-text {
   margin: 0 0 10px;
   word-wrap: break-word;
