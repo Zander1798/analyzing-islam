@@ -69,7 +69,7 @@
 <script src="assets/js/auth.js" defer></script>
 <script src="assets/js/auth-ui.js" defer></script>
 <script src="assets/js/track.js" defer></script>
-<script src="assets/js/bookmarks.js" defer></script>
+<script src="assets/js/bookmarks.js?v=2" defer></script>
 <script src="assets/js/goat-skins.js" defer></script>
 <script src="assets/js/goat.js" defer></script>
 <script>
@@ -245,7 +245,7 @@
         strength: state.strength,
         category: state.category,
         search: state.search,
-      });
+      }, { throwOnError: true });
     } catch (err) {
       if (token !== renderToken) return;
       const live = document.getElementById("sv-results");
