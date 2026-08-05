@@ -91,6 +91,27 @@
     return "added";
   }
 
+  // Supabase's PostgREST builder turns every transport failure into a resolved
+  // { data, error } pair and applies no timeout of its own, so a stalled request
+  // — a wedged gotrue auth lock, a dropped connection — leaves the caller
+  // awaiting forever with no way to notice. Bound the wait so a stall surfaces
+  // as an error the UI can show and retry, instead of a permanent spinner.
+  const LIST_TIMEOUT_MS = 15000;
+
+  function withTimeout(work, ms, label) {
+    let timer = null;
+    const bell = new Promise((_, reject) => {
+      timer = setTimeout(function () {
+        reject(new Error(label + " timed out after " + Math.round(ms / 1000) + "s."));
+      }, ms);
+    });
+    return Promise.race([Promise.resolve(work), bell]).finally(function () {
+      if (timer !== null) clearTimeout(timer);
+    });
+  }
+
+  // Throws on failure. Callers must distinguish "the query failed" from "you
+  // have no bookmarks" — returning [] for both made a broken page look empty.
   async function list(filters) {
     if (!uid()) return [];
     filters = filters || {};
@@ -108,10 +129,12 @@
     if (filters.strength) q = q.eq("strength", filters.strength);
     if (filters.category) q = q.contains("categories", [filters.category]);
 
-    const { data, error } = await q;
+    const { data, error } = await withTimeout(
+      q, LIST_TIMEOUT_MS, "Loading your saved entries"
+    );
     if (error) {
       console.error("[bookmarks] list failed", error);
-      return [];
+      throw new Error(error.message || "Could not load your saved entries.");
     }
 
     let rows = data || [];
