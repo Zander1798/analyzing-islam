@@ -1067,56 +1067,21 @@
   // Resolve against whatever reader page is open in the source pane. This is
   // the only route that can translate hadith: the six collections hold ~34k
   // hadiths whose Arabic would be a ~39 MB client-side index, but the passage
-  // the user just dragged from is already in the same-origin iframe.
+  // the user just dragged from is already in the same-origin iframe. The
+  // matching itself lives in quran-lookup.js so it can be tested against real
+  // reader markup without a browser.
   function lookupInSourceFrame(text) {
-    const needle = _normArabic(text);
-    if (needle.length < 8) return null;
+    if (!window.AI_QURAN_LOOKUP || !window.AI_QURAN_LOOKUP.passageFromDocument) {
+      return null;
+    }
     const frame = document.getElementById("source-frame");
     const doc = frame ? iframeDoc(frame) : null;
     if (!doc) return null;
-
-    const nodes = doc.querySelectorAll(".verse-arabic, .hadith-arabic");
-    for (let i = 0; i < nodes.length; i++) {
-      const hay = _normArabic(nodes[i].textContent);
-      if (!hay || hay.indexOf(needle) < 0) continue;
-
-      if (nodes[i].classList.contains("verse-arabic")) {
-        const li = nodes[i].closest("li[id]");
-        const en = li ? li.querySelector(".verse-text") : null;
-        if (!en) continue;
-        const m = /^s(\d+)v(\d+)$/.exec(li.id || "");
-        return {
-          canonical: true,
-          label: (m ? "Qur'an " + m[1] + ":" + m[2] : "Qur'an") + " · Saheeh International",
-          english: en.textContent.trim(),
-        };
-      }
-
-      // Hadith: the English is the article's <p> children other than the
-      // Arabic itself, preceded by the narrator line when there is one.
-      const art = nodes[i].closest("article.hadith");
-      if (!art) continue;
-      const parts = [];
-      const narrator = art.querySelector(".hadith-narrator");
-      if (narrator) parts.push(narrator.textContent.trim());
-      art.querySelectorAll(".hadith-body p").forEach(function (p) {
-        if (p.classList.contains("hadith-arabic")) return;
-        const t = p.textContent.trim();
-        if (t) parts.push(t);
-      });
-      if (!parts.length) continue;
-      const refEl = art.querySelector(".hadith-ref");
-      const sourceSel = document.getElementById("source-select");
-      const sourceName = sourceSel && SOURCE_BY_SLUG[sourceSel.value]
-        ? SOURCE_BY_SLUG[sourceSel.value].title
-        : "Hadith";
-      return {
-        canonical: true,
-        label: sourceName + (refEl ? " · " + refEl.textContent.trim() : ""),
-        english: parts.join(" "),
-      };
-    }
-    return null;
+    const sel = document.getElementById("source-select");
+    const sourceName = sel && SOURCE_BY_SLUG[sel.value]
+      ? SOURCE_BY_SLUG[sel.value].title
+      : "Hadith";
+    return window.AI_QURAN_LOOKUP.passageFromDocument(doc, text, sourceName);
   }
 
   // Canonical first, machine translation only as a labelled last resort.
@@ -1133,10 +1098,21 @@
         try {
           const hit = await window.AI_QURAN_LOOKUP.lookup(text);
           if (hit) {
+            // Say when the same wording occurs elsewhere, rather than citing
+            // one location as though it were the only one — the opening of
+            // 2:255 is verbatim the whole of 3:2.
+            const alsoAt = (hit.alternates || [])
+              .map(function (refs) {
+                return refs.length === 1
+                  ? refs[0].ref
+                  : refs[0].ref + "–" + refs[refs.length - 1].ref;
+              })
+              .slice(0, 3);
             return {
               canonical: true,
               label: hit.label + " · Saheeh International" +
-                     (hit.exact ? "" : " (full verse)"),
+                     (hit.exact ? "" : " (full verse)") +
+                     (alsoAt.length ? " — same wording also at " + alsoAt.join(", ") : ""),
               english: hit.english,
             };
           }

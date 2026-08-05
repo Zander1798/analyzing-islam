@@ -151,3 +151,126 @@ test("reader pages expose the ids and class englishFor() depends on", async () =
     assert.ok(m[1].trim().length > 0, `empty translation for ${surah}:${ayah}`);
   }
 });
+
+// --- passageFromDocument: the reader-pane path ------------------------
+//
+// This is the only route that can translate hadith, and it runs against a live
+// iframe Document. Node has no DOM and the repo has no root package.json to
+// hang jsdom on, so we parse the REAL reader pages into the small node shape
+// the function actually uses. The markup under test is the shipped markup.
+
+function parseReaderDoc(html) {
+  const node = (tag, cls, text, id) => ({
+    tag, id: id || "", _cls: cls || [], textContent: text,
+    classList: { contains: (c) => (cls || []).includes(c) },
+    children: [],
+    parent: null,
+    querySelector(sel) { return this.querySelectorAll(sel)[0] || null; },
+    querySelectorAll(sel) {
+      const want = sel.split(",").map((s) => s.trim());
+      const hit = (n) => want.some((w) =>
+        (w.startsWith(".") && n._cls.includes(w.slice(1))) ||
+        (w === "p" && n.tag === "p") ||
+        (w === ".hadith-body p" && n.tag === "p"));
+      const out = [];
+      const walk = (n) => n.children.forEach((c) => { if (hit(c)) out.push(c); walk(c); });
+      walk(this);
+      return out;
+    },
+    closest(sel) {
+      let n = this;
+      while (n) {
+        if (sel === "li[id]" && n.tag === "li" && n.id) return n;
+        if (sel === "article.hadith" && n.tag === "article" && n._cls.includes("hadith")) return n;
+        n = n.parent;
+      }
+      return null;
+    },
+  });
+  const strip = (s) => s.replace(/<[^>]+>/g, "")
+    .replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#39;/g, "'");
+  const root = node("root");
+  const add = (parent, child) => { child.parent = parent; parent.children.push(child); };
+
+  // Qur'an verses: <li id="sNvM">…<span class="verse-text">…<span class="verse-arabic">
+  for (const m of html.matchAll(
+    /<li id="(s\d+v\d+)"[^>]*>.*?<span class="verse-text">(.*?)<\/span><span class="verse-arabic"[^>]*>(.*?)<\/span>/gs
+  )) {
+    const li = node("li", [], "", m[1]);
+    add(li, node("span", ["verse-text"], strip(m[2])));
+    add(li, node("span", ["verse-arabic"], strip(m[3])));
+    add(root, li);
+  }
+  // Hadith: <article class="hadith" id="hN"> … </article>
+  for (const m of html.matchAll(/<article class="hadith" id="([^"]+)">(.*?)<\/article>/gs)) {
+    const art = node("article", ["hadith"], "", m[1]);
+    const refM = m[2].match(/<span class="hadith-ref">(.*?)<\/span>/s);
+    if (refM) add(art, node("span", ["hadith-ref"], strip(refM[1])));
+    const narM = m[2].match(/<div class="hadith-narrator">(.*?)<\/div>/s);
+    if (narM) add(art, node("div", ["hadith-narrator"], strip(narM[1])));
+    for (const p of m[2].matchAll(/<p( class="hadith-arabic"[^>]*)?>(.*?)<\/p>/gs)) {
+      add(art, node("p", p[1] ? ["hadith-arabic"] : [], strip(p[2])));
+    }
+    add(root, art);
+  }
+  root.querySelectorAll = function (sel) {
+    const want = sel.split(",").map((s) => s.trim().replace(/^\./, ""));
+    const out = [];
+    const walk = (n) => n.children.forEach((c) => {
+      if (want.some((w) => c._cls.includes(w))) out.push(c);
+      walk(c);
+    });
+    walk(root);
+    return out;
+  };
+  return root;
+}
+
+test("reader pane resolves a Qur'an verse to its canonical English", async () => {
+  const doc = parseReaderDoc(
+    await readFile(path.join(ROOT, "site", "read", "quran", "15.html"), "utf8")
+  );
+  const hit = Q.passageFromDocument(
+    doc, "وَقَالُواْ يَـٰٓأَيُّهَا ٱلَّذِي نُزِّلَ عَلَيۡهِ ٱلذِّكۡرُ إِنَّكَ لَمَجۡنُونٞ", "The Qurʾān"
+  );
+  assert.ok(hit, "verse not found in the reader document");
+  assert.equal(hit.canonical, true);
+  assert.equal(hit.label, "Qur'an 15:6 · Saheeh International");
+  assert.match(hit.english, /^And they say, "O you upon whom the message/);
+});
+
+test("reader pane resolves a hadith to its English, narrator first", async () => {
+  const doc = parseReaderDoc(
+    await readFile(path.join(ROOT, "site", "read", "bukhari", "1.html"), "utf8")
+  );
+  const hit = Q.passageFromDocument(
+    doc,
+    "حَدَّثَنَا الْحُمَيْدِيُّ عَبْدُ اللَّهِ بْنُ الزُّبَيْرِ ، قَالَ : حَدَّثَنَا سُفْيَانُ",
+    "Ṣaḥīḥ al-Bukhārī"
+  );
+  assert.ok(hit, "hadith not found in the reader document");
+  assert.equal(hit.canonical, true);
+  assert.match(hit.label, /^Ṣaḥīḥ al-Bukhārī · Hadith 1/);
+  assert.match(hit.english, /^Narrated 'Umar bin Al-Khattab/);
+  // The Arabic must never leak into the English side.
+  assert.ok(!/[\u0621-\u064A]/.test(hit.english), "Arabic leaked into the English");
+});
+
+test("reader pane returns null for text that is not on the page", async () => {
+  const doc = parseReaderDoc(
+    await readFile(path.join(ROOT, "site", "read", "quran", "15.html"), "utf8")
+  );
+  assert.equal(Q.passageFromDocument(doc, "هذا اختبار للترجمة الآلية", "The Qurʾān"), null);
+  assert.equal(Q.passageFromDocument(doc, "short", "The Qurʾān"), null);
+});
+
+test("a fragment that is verbatim another whole verse reports both", async () => {
+  // The opening of 2:255 is word-for-word the whole of 3:2. Citing only one
+  // location would name a different verse than the one selected.
+  const hit = await Q.resolveRefs("ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلۡحَىُّ ٱلۡقَيُّومُ");
+  assert.ok(hit);
+  const everywhere = [hit.refs, ...hit.alternates].map((r) => r.map((x) => x.ref).join("+"));
+  assert.ok(everywhere.includes("3:2"), `expected 3:2 among ${everywhere}`);
+  assert.ok(everywhere.includes("2:255"), `expected 2:255 among ${everywhere}`);
+});

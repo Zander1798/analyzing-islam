@@ -221,16 +221,26 @@
       var alignedHits = hits.filter(function (p) {
         return idx.startSet.has(p) && idx.endSet.has(p + needle.length);
       });
-      var use = alignedHits.length ? alignedHits : hits;
-      return {
-        spans: distinctByText(spansFor(
-          use, needle.length,
-          function (p) { return p; },
-          function (p, len) { return p + len - 1; },
-          alignedHits.length > 0
-        )),
-        exact: alignedHits.length > 0
-      };
+      var others = hits.filter(function (p) { return alignedHits.indexOf(p) < 0; });
+      var here = function (p) { return p; };
+      var there = function (p, len) { return p + len - 1; };
+
+      // Whole-verse matches win, but the other places this wording occurs are
+      // still reported. Suppressing them silently cited one location as if it
+      // were the only one: the opening of 2:255 is verbatim the whole of 3:2,
+      // so selecting it used to be labelled "3:2" with no hint of 2:255.
+      var primary = alignedHits.length ? alignedHits : others;
+      var secondary = alignedHits.length ? others : [];
+      var spans = distinctByText(spansFor(primary, needle.length, here, there, true));
+      if (secondary.length) {
+        var extra = distinctByText(spansFor(secondary, needle.length, here, there, false));
+        var seen = {};
+        spans.forEach(function (s) { seen[s[0] + "-" + s[1]] = true; });
+        extra.forEach(function (s) {
+          if (!seen[s[0] + "-" + s[1]]) spans.push(s);
+        });
+      }
+      return { spans: spans, exact: alignedHits.length > 0 };
     }
 
     // Tier 2 — orthography- and spacing-insensitive fallback.
@@ -303,6 +313,58 @@
     return "Qur'an " + a.ref + " – " + b.ref;
   }
 
+  // ---- Passage lookup in an already-loaded reader document ------------
+  // Resolves a selection against whatever reader page is open, which is the
+  // only route that can translate hadith: the six collections' Arabic would be
+  // a ~39 MB client-side index, but the passage the user just dragged from is
+  // already in the same-origin iframe. Takes a Document so it can be tested
+  // against real reader markup without a browser.
+  function passageFromDocument(doc, text, sourceName) {
+    var needle = normalise(text);
+    if (!doc || needle.length < 8) return null;
+
+    var nodes = doc.querySelectorAll(".verse-arabic, .hadith-arabic");
+    for (var i = 0; i < nodes.length; i++) {
+      var hay = normalise(nodes[i].textContent);
+      if (!hay || hay.indexOf(needle) < 0) continue;
+
+      if (nodes[i].classList.contains("verse-arabic")) {
+        var li = nodes[i].closest("li[id]");
+        var en = li ? li.querySelector(".verse-text") : null;
+        if (!en) continue;
+        var m = /^s(\d+)v(\d+)$/.exec((li && li.id) || "");
+        return {
+          canonical: true,
+          label: (m ? "Qur'an " + m[1] + ":" + m[2] : "Qur'an") + " · Saheeh International",
+          english: en.textContent.trim()
+        };
+      }
+
+      // Hadith: the English is the article's <p> children other than the
+      // Arabic itself, preceded by the narrator line when there is one.
+      var art = nodes[i].closest("article.hadith");
+      if (!art) continue;
+      var parts = [];
+      var narrator = art.querySelector(".hadith-narrator");
+      if (narrator) parts.push(narrator.textContent.trim());
+      var ps = art.querySelectorAll(".hadith-body p");
+      for (var p = 0; p < ps.length; p++) {
+        if (ps[p].classList.contains("hadith-arabic")) continue;
+        var t = ps[p].textContent.trim();
+        if (t) parts.push(t);
+      }
+      if (!parts.length) continue;
+      var refEl = art.querySelector(".hadith-ref");
+      return {
+        canonical: true,
+        label: (sourceName || "Hadith") +
+               (refEl ? " · " + refEl.textContent.trim() : ""),
+        english: parts.join(" ")
+      };
+    }
+    return null;
+  }
+
   // Resolve Arabic to verse references without fetching any English. Split out
   // from lookup() so the matching logic can be tested without a DOM.
   async function resolveRefs(text) {
@@ -338,6 +400,7 @@
   window.AI_QURAN_LOOKUP = {
     lookup: lookup,
     resolveRefs: resolveRefs,
+    passageFromDocument: passageFromDocument,
     normalise: normalise,
     looseOf: looseOf
   };
