@@ -737,8 +737,13 @@ This is the deliberate abandonment of the rollback path.
 > across four resolvers, and the Pages apex certificate is in `bad_authz`. The
 > ordering rule below (retire Pages *before* committing `config.js`) existed to
 > keep that path healthy and no longer protects anything, so the repo-side items
-> were done first. Remaining steps and their access requirements:
-> **`docs/migration/STAGE-12-EXECUTOR-CHECKLIST.md`**.
+> were done first.
+>
+> **Closed on the repo/GitHub side the same day.** Hein set the three secrets,
+> enabled `deploy-vps.yml` and removed `pages.yml` (`4f3c5676`, first deploy
+> green); Zander disabled GitHub Pages as owner (`gh api -X DELETE …/pages` →
+> subsequent GET 404). Two VPS/dashboard follow-ups remain below.
+> Detail: **`docs/migration/STAGE-12-EXECUTOR-CHECKLIST.md`**.
 
 - [x] Backups running **and one test-restored** — cleared 2026-07-27 by
       `scripts/vps/test-restore.sh` (55 tables, 1245 rows, 546 schema objects identical)
@@ -747,15 +752,17 @@ This is the deliberate abandonment of the rollback path.
 - [x] Confirm `fix/session-continuity-guard` is merged, so the rsync below cannot
       revert the VPS's hand-deployed `auth.js` (see Stage 10's warning) — verified
       `b4ea2768` is an ancestor of `origin/main`
-- [ ] Retire the Pages deploy: replace `.github/workflows/pages.yml` with the
-      rsync-to-VPS deploy (or delete it). **Blocked on the three repository
-      secrets, which do not exist yet** — `gh secret list` is empty. Retiring
-      Pages first would leave every `site/**` push deploying nowhere, silently.
+- [x] Retire the Pages deploy — `4f3c5676` (Hein, 2026-08-27): secrets
+      `VPS_SSH_KEY`/`VPS_HOST`/`VPS_USER` set first, then `deploy-vps.yml` moved
+      into `.github/workflows/` and `pages.yml` removed, in that order
 - [x] Commit `config.js` — both lines — to the repo (verified byte-identical to
       the live server copy first)
 - [x] Remove `--exclude='assets/js/config.js'` from the rsync/deploy script
-- [x] Remove `site/CNAME` — [ ] disable GitHub Pages
-- [ ] First post-Stage-12 deploy: re-check `config.js` on the live site
+- [x] Remove `site/CNAME` — [x] disable GitHub Pages (Zander as owner, 2026-08-27;
+      Hein's account is `admin: false` and got 404 from the endpoint)
+- [x] First post-Stage-12 deploy: `4f3c5676` ran green and its verify step
+      passed; independently re-checked — every previously stale file hashes
+      identical to `origin/main`, live `config.js` has zero Cloud references
 - [ ] Final absolute-URL sweep (runbook Stage 12 SQL) — must be 0. Now partly
       retrospective: any row still naming the Cloud host is *already* a broken
       image, so fix hits rather than only counting them.

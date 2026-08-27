@@ -93,7 +93,7 @@ api…/auth/v1/.well-known/jwks.json   200
 
 Order matters. Step 2 gates steps 3 and 4.
 
-- [ ] **2. Add the three repository secrets.** `gh secret list` currently
+- [x] **2. Add the three repository secrets.** *(done — Hein, 2026-08-27 11:17Z)* `gh secret list` currently
       returns **empty** — none of them exist:
 
       VPS_SSH_KEY   private key for deploy@VPS   (on the authorized workstation)
@@ -107,7 +107,7 @@ Order matters. Step 2 gates steps 3 and 4.
       > pipeline is simply dead and silent. That is the failure shape this
       > migration's traps keep taking.
 
-- [ ] **3. Enable the replacement workflow.**
+- [x] **3. Enable the replacement workflow.** *(done — `4f3c5676`)*
 
       ```bash
       gh auth refresh -s workflow      # the current token has only gist, read:org, repo
@@ -116,15 +116,15 @@ Order matters. Step 2 gates steps 3 and 4.
 
       Without the `workflow` scope the push is rejected outright.
 
-- [ ] **4. `git rm .github/workflows/pages.yml`.**
+- [x] **4. `git rm .github/workflows/pages.yml`.** *(done — `4f3c5676`)*
 
-- [ ] **6b. Disable GitHub Pages.** Repo settings, or:
+- [x] **6b. Disable GitHub Pages.** *(done — Zander as owner; GET now 404)* Repo settings, or:
 
       ```bash
       gh api -X DELETE repos/Zander1798/analyzing-islam/pages
       ```
 
-- [ ] **7. First post-Stage-12 deploy — re-check `config.js` on the live site.**
+- [x] **7. First post-Stage-12 deploy — re-check `config.js` on the live site.** *(done — `4f3c5676` green, independently re-verified)*
       The workflow's "Verify the deploy actually landed" step asserts both
       `/about` 200 and `config.js` naming the self-hosted API while *not*
       naming `cndmksrilytnpgstvmxb`. This is the last chance for trap 3 to bite.

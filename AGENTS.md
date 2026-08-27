@@ -27,8 +27,8 @@ site framework, but the repository also contains a Deno Supabase Edge Function a
 under `video/`.
 
 - `site/` — the generated website tree: **746 MB** and 989 pre-rendered HTML files
-  in this checkout. GitHub Pages uploads this tree as-is; the staged VPS rsync
-  deliberately excludes `site/assets/js/config.js`.
+  in this checkout. `deploy-vps.yml` rsyncs this tree as-is (with `--delete`)
+  to the live VPS on every push to `main` that touches it.
 - The repository root contains 165 `*.py` files. They are a mix of builders,
   migration/fix scripts, audits, backup tooling and chatbot ingest code; the count
   does **not** mean all 165 are site generators or safe to run.
@@ -172,7 +172,7 @@ fails the same way the thing you are rolling back from failed.
 
 **That divergence was closed in the Stage 12 repo-side commit.** The repo copy now
 matches the live server, and the `--exclude='assets/js/config.js'` is gone from
-`.github/workflows-staged/deploy-vps.yml`. **Do not re-add the exclude** — repo and
+`.github/workflows/deploy-vps.yml`. **Do not re-add the exclude** — repo and
 server agree, so it would only stop future `config.js` changes from ever deploying.
 
 The trigger was correction #17: the Cloud host stopped resolving (NXDOMAIN across
@@ -208,18 +208,18 @@ are warnings and do not change its exit status. A clean result therefore require
 both zero rewrites and deliberate review of any `Unmapped archive.org identifiers`
 section; the 2026-07-29 audit printed seven unmapped identifiers.
 
-### Pushing to `main` touching `site/**` deploys to GitHub Pages
+### Pushing to `main` touching `site/**` deploys to the LIVE site
 
-Verified in `.github/workflows/pages.yml`: `on: push: branches: [main], paths:
-["site/**", ".github/workflows/pages.yml"]`.
+Verified in `.github/workflows/deploy-vps.yml`: `on: push: branches: [main],
+paths: ["site/**", ".github/workflows/deploy-vps.yml"]`, plus `workflow_dispatch`.
+It rsyncs `site/` with `--delete` to `/var/www/analyzingislam/` on the VPS and
+then asserts that the live `config.js` names the self-hosted API. **A merge to
+`main` that touches `site/**` is a production deploy.** There is no staging
+step in between; review generated-tree diffs before merging, not after.
 
-Since cutover the live site is served from the VPS, so a Pages deploy no longer
-changes what visitors see. Pages is no longer a working rollback target either —
-its apex certificate is in `bad_authz` (correction #17) — but the workflow stays
-active until `deploy-vps.yml` is enabled, because retiring it first would leave
-`site/**` pushes deploying nowhere, silently. Nothing in the active workflows
-deploys to the live VPS; until the Stage 12 executor steps are done, live-site
-updates are manual. `site/CNAME` has been removed.
+GitHub Pages was disabled on 2026-08-27 (Stage 12). `pages.yml` is gone and
+`site/CNAME` is gone. There is no Pages rollback any more — rollback is the
+VPS backup/restore path in Stage 11.
 
 ---
 
@@ -229,23 +229,22 @@ updates are manual. `site/CNAME` has been removed.
 self-hosted Supabase stack behind `api.analyzingislam.com`. Verified:
 `curl https://analyzingislam.com/` → `200 via 72.60.17.245`.
 
-- `.github/workflows/pages.yml` — the **active** workflow, still deploying to
-  GitHub Pages. Not a working rollback path any more; kept only until the
-  replacement is enabled.
-- `.github/workflows-staged/deploy-vps.yml` — the rsync-to-VPS replacement,
-  **not yet enabled**. Blocked on three repository secrets (`VPS_SSH_KEY`,
-  `VPS_HOST`, `VPS_USER`) that do not exist yet — `gh secret list` is empty.
+- `.github/workflows/deploy-vps.yml` — the **active** deploy: rsync to the VPS on
+  every push to `main` touching `site/**`, using the `VPS_SSH_KEY` / `VPS_HOST` /
+  `VPS_USER` repository secrets (set 2026-08-27). First run green on `4f3c5676`.
+- `.github/workflows/agent-docs.yml` — the AGENTS.md mirror check.
 - `scripts/vps/backup.sh`, `scripts/vps/test-restore.sh`,
   `scripts/vps/stage10a-sync.sh`, `scripts/stage10a-final-sync.sh` — operational
   scripts that run on or against the VPS.
 
-**Stage 12 is in progress.** The repo-side half is done; the remaining steps need
-VPS SSH and GitHub-admin access that the primary Windows checkout does not have —
-`deploy@72.60.17.245` refuses every key here. Follow
-`docs/migration/STAGE-12-EXECUTOR-CHECKLIST.md` **in order**; the ordering exists
-to avoid a silently dead deploy pipeline. Supabase Cloud is already NXDOMAIN;
-establish whether it was paused or deleted before assuming its data is
-recoverable, and keep the Stage 1 backup permanently.
+**Stage 12 is complete on the repo and GitHub side** (2026-08-27): Pages
+disabled, `pages.yml` and `site/CNAME` removed, `config.js` divergence closed,
+automated deploys live. Two follow-ups remain on the VPS/dashboard side and are
+tracked in `docs/migration/STAGE-12-EXECUTOR-CHECKLIST.md`: the `profiles`
+absolute-URL sweep, and establishing whether the Supabase Cloud project was
+paused or deleted (it is NXDOMAIN — correction #17). Keep the Stage 1 backup
+permanently either way. The primary Windows checkout still has no SSH key the
+VPS accepts; those steps run from Hein's workstation.
 
 While Certbot's apex-certificate renewal still uses the DNS-01 credentials in the
 VPS deploy user's private Cloudflare file, do not revoke or delete the Cloudflare
