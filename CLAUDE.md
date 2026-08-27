@@ -157,16 +157,24 @@ replay. That compensation is specific to this script. Any new replay path must
 exclude test SQL and explicitly handle seeds; if the stage-10 loop is reused, it
 will execute every other top-level `supabase/*.sql` file.
 
-### `site/assets/js/config.js` points at Supabase Cloud on purpose
+### `site/assets/js/config.js` — the Cloud divergence is closed (2026-08-27)
 
-Verified: the repo copy reads `url: "https://cndmksrilytnpgstvmxb.supabase.co"`,
-while the live site serves `https://api.analyzingislam.com`.
+For most of the migration the repo copy deliberately read
+`url: "https://cndmksrilytnpgstvmxb.supabase.co"` while the live site served
+`https://api.analyzingislam.com`. GitHub Pages deploys from this repo and Pages
+was the rollback target; a repo pointing at the VPS gives you a rollback that
+fails the same way the thing you are rolling back from failed.
 
-**This divergence is intentional and must not be "fixed" before Stage 12.** GitHub
-Pages deploys from this repo and Pages is the rollback target; a repo pointing at
-the VPS gives you a rollback that fails the same way the thing you are rolling back
-from failed. The deploy rsync carries `--exclude='assets/js/config.js'` for this
-reason.
+**That divergence was closed in the Stage 12 repo-side commit.** The repo copy now
+matches the live server, and the `--exclude='assets/js/config.js'` is gone from
+`.github/workflows-staged/deploy-vps.yml`. **Do not re-add the exclude** — repo and
+server agree, so it would only stop future `config.js` changes from ever deploying.
+
+The trigger was correction #17: the Cloud host stopped resolving (NXDOMAIN across
+four resolvers), so the repo copy was pointing browsers at a host that no longer
+exists. The anon key in this file is a public, RLS-gated browser key
+(`{"role":"anon"}`) that the live site already serves — it is not one of the
+secrets listed above.
 
 ### Re-running the reader builders needs the backups deleted first
 
@@ -201,9 +209,12 @@ Verified in `.github/workflows/pages.yml`: `on: push: branches: [main], paths:
 ["site/**", ".github/workflows/pages.yml"]`.
 
 Since cutover the live site is served from the VPS, so a Pages deploy no longer
-changes what visitors see — but Pages remains the **rollback target** until
-decommissioning, so keep it deployable. Nothing in the active workflows deploys to
-the live VPS; until Stage 12, live-site updates are manual.
+changes what visitors see. Pages is no longer a working rollback target either —
+its apex certificate is in `bad_authz` (correction #17) — but the workflow stays
+active until `deploy-vps.yml` is enabled, because retiring it first would leave
+`site/**` pushes deploying nowhere, silently. Nothing in the active workflows
+deploys to the live VPS; until the Stage 12 executor steps are done, live-site
+updates are manual. `site/CNAME` has been removed.
 
 ---
 
@@ -214,17 +225,22 @@ self-hosted Supabase stack behind `api.analyzingislam.com`. Verified:
 `curl https://analyzingislam.com/` → `200 via 72.60.17.245`.
 
 - `.github/workflows/pages.yml` — the **active** workflow, still deploying to
-  GitHub Pages (the rollback path).
+  GitHub Pages. Not a working rollback path any more; kept only until the
+  replacement is enabled.
 - `.github/workflows-staged/deploy-vps.yml` — the rsync-to-VPS replacement,
-  deliberately **not enabled**. Staged, not live.
+  **not yet enabled**. Blocked on three repository secrets (`VPS_SSH_KEY`,
+  `VPS_HOST`, `VPS_USER`) that do not exist yet — `gh secret list` is empty.
 - `scripts/vps/backup.sh`, `scripts/vps/test-restore.sh`,
   `scripts/vps/stage10a-sync.sh`, `scripts/stage10a-final-sync.sh` — operational
   scripts that run on or against the VPS.
 
-**GitHub Pages and Supabase Cloud are the rollback path and must not be
-decommissioned before 2026-08-11.** That date is a minimum, not automatic approval:
-run the Stage 12 prerequisites in `docs/migration/EXECUTION-PLAN.md` and verify the
-current rollback procedure and DNS TTL before decommissioning.
+**Stage 12 is in progress.** The repo-side half is done; the remaining steps need
+VPS SSH and GitHub-admin access that the primary Windows checkout does not have —
+`deploy@72.60.17.245` refuses every key here. Follow
+`docs/migration/STAGE-12-EXECUTOR-CHECKLIST.md` **in order**; the ordering exists
+to avoid a silently dead deploy pipeline. Supabase Cloud is already NXDOMAIN;
+establish whether it was paused or deleted before assuming its data is
+recoverable, and keep the Stage 1 backup permanently.
 
 While Certbot's apex-certificate renewal still uses the DNS-01 credentials in the
 VPS deploy user's private Cloudflare file, do not revoke or delete the Cloudflare

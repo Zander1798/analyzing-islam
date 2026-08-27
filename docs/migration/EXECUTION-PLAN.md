@@ -732,19 +732,35 @@ without an apikey and makes a bad probe).
 
 This is the deliberate abandonment of the rollback path.
 
+> **Opened 2026-08-27 — read correction #17 first.** Neither half of the rollback
+> path still worked by the time this stage was started: Supabase Cloud is NXDOMAIN
+> across four resolvers, and the Pages apex certificate is in `bad_authz`. The
+> ordering rule below (retire Pages *before* committing `config.js`) existed to
+> keep that path healthy and no longer protects anything, so the repo-side items
+> were done first. Remaining steps and their access requirements:
+> **`docs/migration/STAGE-12-EXECUTOR-CHECKLIST.md`**.
+
 - [x] Backups running **and one test-restored** — cleared 2026-07-27 by
       `scripts/vps/test-restore.sh` (55 tables, 1245 rows, 546 schema objects identical)
-- [ ] Two weeks clean on the VPS
-- [ ] Confirm `fix/session-continuity-guard` is merged, so the rsync below cannot
-      revert the VPS's hand-deployed `auth.js` (see Stage 10's warning)
-- [ ] Retire the Pages deploy **first**: replace `.github/workflows/pages.yml` with an
-      rsync-to-VPS deploy (or delete it) so the next step cannot trigger Pages
-- [ ] Commit `config.js` — both lines — to the repo
-- [ ] Remove `--exclude='assets/js/config.js'` from the rsync/deploy script
-- [ ] Remove `site/CNAME`, disable GitHub Pages
+- [~] Two weeks clean on the VPS — 30 days elapsed and all live endpoints healthy
+      from outside; container/uptime history still to be confirmed **on the box**
+- [x] Confirm `fix/session-continuity-guard` is merged, so the rsync below cannot
+      revert the VPS's hand-deployed `auth.js` (see Stage 10's warning) — verified
+      `b4ea2768` is an ancestor of `origin/main`
+- [ ] Retire the Pages deploy: replace `.github/workflows/pages.yml` with the
+      rsync-to-VPS deploy (or delete it). **Blocked on the three repository
+      secrets, which do not exist yet** — `gh secret list` is empty. Retiring
+      Pages first would leave every `site/**` push deploying nowhere, silently.
+- [x] Commit `config.js` — both lines — to the repo (verified byte-identical to
+      the live server copy first)
+- [x] Remove `--exclude='assets/js/config.js'` from the rsync/deploy script
+- [x] Remove `site/CNAME` — [ ] disable GitHub Pages
 - [ ] First post-Stage-12 deploy: re-check `config.js` on the live site
-- [ ] Final absolute-URL sweep (runbook Stage 12 SQL) — must be 0
-- [ ] Only now pause the Supabase Cloud project. Keep Zander's Stage 1 backup forever.
+- [ ] Final absolute-URL sweep (runbook Stage 12 SQL) — must be 0. Now partly
+      retrospective: any row still naming the Cloud host is *already* a broken
+      image, so fix hits rather than only counting them.
+- [ ] Supabase Cloud: establish whether it is paused or already deleted, and record
+      which. Keep Zander's Stage 1 backup forever either way.
 
 ---
 
@@ -1206,3 +1222,45 @@ renewal breaks.
   `/assets/icons/favicon.ico`, `-32.png`, `apple-touch-icon.png` and
   `site.webmanifest` are all tracked in git and all return 404 from GitHub Pages
   today. The migration silently fixes this; it is not a regression to chase.
+
+### 17. The rollback path expired on its own before Stage 12 was executed
+
+Found 2026-08-27, checking the Stage 12 gates from the primary Windows checkout.
+Stage 12 is written as *the deliberate abandonment of the rollback path*. By the
+time it was opened, neither half of that path still worked.
+
+**Supabase Cloud does not resolve at all** — four independent lookups agree:
+
+```
+cndmksrilytnpgstvmxb.supabase.co
+  local resolver → NXDOMAIN      8.8.8.8 → NXDOMAIN
+  1.1.1.1        → NXDOMAIN      DoH     → {"Status":3}
+supabase.co      → 76.76.21.21   (control — resolves normally)
+```
+
+A *paused* project normally still resolves; NXDOMAIN is what a *deleted* one
+looks like. Nothing in this plan, either untracked handoff, or any commit since
+the cutover records pausing or deleting it. Whether the data is recoverable
+cannot be determined from outside — check the dashboard, and confirm the Stage 1
+backup still exists, because if the project was deleted that backup is the only
+remaining copy of the pre-migration state.
+
+**GitHub Pages TLS for the apex is broken** — `gh api repos/…/pages` reports
+`"state": "bad_authz"`, *"The ACME authorization is in a bad state."* Expected
+once the apex A records moved to the VPS on 2026-07-28: Let's Encrypt can no
+longer validate for Pages. A DNS rollback would land on a host unable to serve
+valid HTTPS until a fresh certificate issued.
+
+**Consequence for the ordering rule.** The runbook insists Pages is retired
+*before* `config.js` is committed, so that committing the new config cannot
+trigger a Pages deploy that breaks the rollback target. That rule's purpose is
+now void — the repo copy was pointing browsers at a host that does not exist,
+which made the Pages build the broken thing rather than the safe one. The
+repo-side half was therefore done first, on branch `stage12/repo-side`, and the
+irreversible steps left for an operator with VPS and GitHub-admin access. See
+`docs/migration/STAGE-12-EXECUTOR-CHECKLIST.md`.
+
+**Lesson.** A rollback path is a live system and decays like one. Two weeks of
+"do not decommission" is a floor on *when* you may act, not a guarantee the
+thing is still there when you arrive. Probe it on a schedule, or discover at the
+worst moment that you have been protecting something that stopped existing.

@@ -2,24 +2,32 @@
 # STAGE 12 REPLACEMENT DEPLOY — DELIBERATELY NOT ENABLED.
 #
 # This file lives in .github/workflows-staged/, NOT .github/workflows/, so
-# GitHub never reads it. That is intentional: GitHub Pages is still serving
-# analyzingislam.com and is the rollback target, and `pages.yml` must keep
-# working until the VPS has been live and clean for two weeks.
+# GitHub never reads it. It stays parked until step 2 below is done.
 #
-# TO ENABLE, AT STAGE 12 AND NOT BEFORE (EXECUTION-PLAN.md Stage 12 order
-# matters — retiring Pages comes FIRST so the config.js commit cannot
-# accidentally deploy to the old site):
+# analyzingislam.com has served from the VPS since the 2026-07-28 cutover;
+# `pages.yml` is still the active workflow but no longer feeds the live site.
 #
-#   1. Two weeks live on the VPS, backups running AND one test-restored
-#      (scripts/vps/test-restore.sh — this gate is already cleared).
-#   2. Add repository secrets:  VPS_SSH_KEY (private key for deploy@VPS),
-#      VPS_HOST (72.60.17.245), VPS_USER (deploy).
-#   3. git mv .github/workflows-staged/deploy-vps.yml .github/workflows/
-#   4. git rm .github/workflows/pages.yml
-#   5. Commit site/assets/js/config.js pointing at the self-hosted API, and
-#      DELETE the --exclude line below in the same commit.
-#   6. Remove site/CNAME and disable GitHub Pages in repo settings.
-#   7. Re-check config.js on the live site after the first deploy.
+# Steps 1, 5 and 6a of the enable procedure are DONE — see the Stage 12
+# repo-side commit and docs/migration/STAGE-12-EXECUTOR-CHECKLIST.md.
+# What is left needs VPS and GitHub-admin access this file's author did not
+# have. In this order:
+#
+#   1. [done] Two weeks live on the VPS, backups running AND one
+#      test-restored (scripts/vps/test-restore.sh).
+#   2. [TODO] Add repository secrets:  VPS_SSH_KEY (private key for
+#      deploy@VPS), VPS_HOST (72.60.17.245), VPS_USER (deploy).
+#      DO NOT do steps 3-4 before this. Retiring pages.yml while these are
+#      missing leaves every site/** push deploying nowhere, silently — the
+#      static site keeps serving, so nothing looks broken.
+#   3. [TODO] git mv .github/workflows-staged/deploy-vps.yml .github/workflows/
+#      (needs a token with the `workflow` scope: gh auth refresh -s workflow)
+#   4. [TODO] git rm .github/workflows/pages.yml
+#   5. [done] site/assets/js/config.js committed pointing at the self-hosted
+#      API, and the --exclude line below deleted in the same commit.
+#   6. [6a done / 6b TODO] site/CNAME removed; still to disable GitHub Pages
+#      in repo settings.
+#   7. [TODO] Re-check config.js on the live site after the first deploy.
+#      The "Verify the deploy actually landed" step below does this.
 # ===========================================================================
 name: Deploy site to VPS
 
@@ -49,13 +57,14 @@ jobs:
           ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Rsync site to the VPS
-        # --exclude='assets/js/config.js' is TRAP-3 PROTECTION and must stay
-        # until step 5 above is done in the same commit that commits config.js.
-        # The repo copy still points at Supabase Cloud so GitHub Pages keeps
-        # working as the rollback target; shipping it would break the VPS.
+        # The --exclude='assets/js/config.js' that used to sit here was TRAP-3
+        # protection: the repo copy pointed at Supabase Cloud to keep the Pages
+        # rollback target working, so shipping it would have broken the VPS.
+        # Removed at Stage 12 together with the commit that made the repo copy
+        # match the server. Do not re-add it — repo and server now agree, and
+        # the exclude would only stop future config.js changes from deploying.
         run: |
           rsync -az --delete \
-            --exclude='assets/js/config.js' \
             -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
             site/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/analyzingislam/"
 

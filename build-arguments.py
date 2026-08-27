@@ -275,14 +275,14 @@ def head_block(title: str, description: str, prefix: str, og_url_path: str) -> s
 <meta property="og:title" content="{escape(title, quote=True)}">
 <meta property="og:description" content="{escape(description, quote=True)}">
 <meta property="og:url" content="https://analyzingislam.com/{og_url_path}">
-<meta property="og:image" content="https://analyzingislam.com/assets/og-image.png">
+<meta property="og:image" content="https://analyzingislam.com/assets/og-image-v2.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Analyzing Islam">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{escape(title, quote=True)}">
 <meta name="twitter:description" content="{escape(description, quote=True)}">
-<meta name="twitter:image" content="https://analyzingislam.com/assets/og-image.png">
+<meta name="twitter:image" content="https://analyzingislam.com/assets/og-image-v2.jpg">
 <title>{escape(title)}</title>
 <link rel="stylesheet" href="{prefix}assets/css/style.css">
 <link rel="stylesheet" href="{prefix}assets/css/arguments.css">
