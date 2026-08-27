@@ -2,10 +2,17 @@
 """Inject Open Graph + Twitter Card meta tags into the site's top-level
 HTML pages so WhatsApp / Twitter / Facebook / LinkedIn / Slack / Discord
 render a proper preview card (editorial dark-theme header we generated
-in site/assets/og-image.png) instead of a naked text snippet.
+in site/assets/og-image-v2.jpg) instead of a naked text snippet.
 
-Idempotent — skips files that already have `og:image` tags."""
+Idempotent — skips files that already have `og:image` tags.
+
+`--repoint` is the other half: it rewrites the og:image / twitter:image
+URL (and the image alt text) on every page that already carries the
+tags. Run it after bumping VERSION in build-og-image.py, because
+WhatsApp, Facebook, Slack and X cache preview images by URL — a new
+card published under the old name reaches almost nobody."""
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent / "site"
@@ -26,7 +33,7 @@ TARGET_PAGES = [
 OVERRIDES = {
     "index.html": (
         "Analyzing Islam",
-        "A systematic analysis of textual, moral, historical, and logical problems in the Quran and the canonical Sunni hadith collections. 1,500 curated entries across 30 categories.",
+        "A systematic analysis of textual, moral, historical, and logical problems in the Quran and the canonical Sunni hadith collections. 1,524 curated entries across 31 categories.",
         "/",
     ),
     "build.html": (
@@ -41,7 +48,7 @@ OVERRIDES = {
     ),
     "catalog.html": (
         "Catalog — Analyzing Islam",
-        "Filterable catalog of 1,500 entries across 30 categories — abrogation, scripture integrity, prophetic character, cosmology, hudud, warfare, child marriage, slavery, apostasy, antisemitism, and more.",
+        "Filterable catalog of 1,524 entries across 31 categories — abrogation, scripture integrity, prophetic character, cosmology, hudud, warfare, child marriage, slavery, apostasy, antisemitism, and more.",
         "/catalog.html",
     ),
     "read.html": (
@@ -51,12 +58,12 @@ OVERRIDES = {
     ),
     "stats.html": (
         "Stats — Analyzing Islam",
-        "A statistical deep-dive into what the 1,500-entry catalog reveals about the moral structure of the Quran and hadith, category by category.",
+        "A statistical deep-dive into what the 1,524-entry catalog reveals about the moral structure of the Quran and hadith, category by category.",
         "/stats.html",
     ),
     "about.html": (
         "About — Analyzing Islam",
-        "How the catalog is built, what sources are cited, and the method behind the 1,500-entry systematic review.",
+        "How the catalog is built, what sources are cited, and the method behind the 1,524-entry systematic review.",
         "/about.html",
     ),
     "faq.html": (
@@ -78,8 +85,11 @@ DESC_INSERT_RE = re.compile(
     re.IGNORECASE,
 )
 
-IMAGE_URL   = SITE_BASE + "/assets/og-image.png"
-SQUARE_URL  = SITE_BASE + "/assets/og-image-square.png"
+# Versioned filenames — see build-og-image.py. Scrapers cache preview
+# images by URL, so a new card only reaches people under a new name.
+IMAGE_URL   = SITE_BASE + "/assets/og-image-v2.jpg"
+SQUARE_URL  = SITE_BASE + "/assets/og-image-v2-square.jpg"
+IMAGE_ALT   = "Analyzing Islam — 1,524 entries across 31 categories"
 
 
 def escape_attr(s):
@@ -106,7 +116,7 @@ def build_tags(title, description, url):
         f'<meta property="og:image" content="{IMAGE_URL}">\n'
         f'<meta property="og:image:width" content="1200">\n'
         f'<meta property="og:image:height" content="630">\n'
-        f'<meta property="og:image:alt" content="Analyzing Islam — 1,500 entries across 30 categories">\n'
+        f'<meta property="og:image:alt" content="{IMAGE_ALT}">\n'
         "<!-- Twitter / X card -->\n"
         f'<meta name="twitter:card" content="summary_large_image">\n'
         f'<meta name="twitter:title" content="{t}">\n'
@@ -122,6 +132,40 @@ def extract_fallback(text, filename):
     desc  = desc_m.group(1).strip() if desc_m else "A systematic analysis of the Quran and the canonical Sunni hadith collections."
     return title, desc, "/" + filename
 
+
+IMG_SRC_RE = re.compile(
+    r'(<meta\s+(?:property="og:image"|name="twitter:image")\s+content=")'
+    r'[^"]*?/assets/og-image[^"]*?(")',
+    re.IGNORECASE,
+)
+ALT_RE = re.compile(
+    r'(<meta\s+property="og:image:alt"\s+content=")'
+    r'Analyzing Islam — [\d,]+ entries across \d+ categories(")',
+    re.IGNORECASE,
+)
+
+
+def repoint():
+    """Point every already-tagged page at the current card."""
+    touched = 0
+    for path in sorted(ROOT.rglob("*.html")):
+        text = path.read_text(encoding="utf-8")
+        if "og:image" not in text:
+            continue
+        new = IMG_SRC_RE.sub(rf"\g<1>{IMAGE_URL}\g<2>", text)
+        # Only pages whose alt already states a count get the new count;
+        # page-specific alt text is left alone.
+        new = ALT_RE.sub(rf"\g<1>{IMAGE_ALT}\g<2>", new)
+        if new != text:
+            path.write_text(new, encoding="utf-8")
+            touched += 1
+    print(f"Repointed {touched} page(s) at {IMAGE_URL}")
+    return touched
+
+
+if "--repoint" in sys.argv:
+    repoint()
+    raise SystemExit(0)
 
 changed = 0
 skipped = 0
