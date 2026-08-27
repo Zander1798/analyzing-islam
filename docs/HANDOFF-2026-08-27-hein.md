@@ -41,8 +41,14 @@ The two controls matching means the comparison is sound, not a hashing artifact.
 | `1059d876` | Saved entries | Stalled bookmarks query times out at 15 s and shows *Try again* instead of a permanent spinner |
 | `5490f087` | Saved entries | `list()` backward-compatible + cache-busted script URL, so a cached old `saved.html` with a fresh `bookmarks.js` cannot break mid-deploy |
 | `3aa68a3b` | Build editor | Arabic scripture resolves to the site's own Saheeh International text instead of a word-by-word machine translation (fixes "These are the verses of the") |
-| `37c6d0b5` | Build editor | Hadith lookup path tested; ambiguous citations reported rather than silently picked |
+| `37c6d0b5` | Build editor | Qur'an source pane no longer reports "No matches" for a verse one page away (`quran-lookup.js` + `quran-ar-index.json`); hadith lookup path tested; ambiguous citations reported rather than silently picked |
 | `a879096a` | Interlinear | Morphology/meaning realigned to the correct word in 8:6 and 37:130; concordance repaired |
+
+These five are the whole of merge `3f10a5d8` (2026-08-05), which fixed the four
+user-reported problems from that session — saved entries stuck on "Loading…",
+the Build editor's broken Arabic translation, the source pane's false "No
+matches", and the interlinear misalignment. I checked every branch, worktree
+and the stash: nothing from that work exists anywhere except on `main`.
 
 **No database migration is needed for any of these.** The only `supabase/*.sql`
 files changed since cutover are `chatbot-kb.sql` and `kb-reader-credential.sql`,
