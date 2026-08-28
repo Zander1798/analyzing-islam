@@ -168,6 +168,45 @@
     }
   }
 
+  // ---- background videos: never show iOS's play glyph ----
+  // The <video> tags already carry autoplay/muted/loop/playsinline, but iOS
+  // Safari still refuses to autoplay under Low Power Mode, Low Data Mode
+  // (cellular) or Settings > Safari > Auto-Play = off, and then paints a
+  // large play button over the paused first frame. So: (1) kick play()
+  // explicitly, (2) retry on the first user gesture, which unlocks playback
+  // in every one of those modes, and (3) if it still refuses, hide the video
+  // so the glyph is never drawn — the gradient/vignette layers stay put.
+  var bgVideos = Array.prototype.slice.call(document.querySelectorAll(".hero video, .featbg video"));
+  if (bgVideos.length) {
+    bgVideos.forEach(function (v) { v.muted = true; v.defaultMuted = true; });
+    var tryPlay = function () {
+      bgVideos.forEach(function (v) {
+        if (!v.paused && !v.ended) return;
+        var p = v.play();
+        if (p && p.catch) p.catch(function () { v.classList.add("bg-video-blocked"); });
+      });
+    };
+    var onGesture = function () {
+      tryPlay();
+      bgVideos.forEach(function (v) {
+        v.addEventListener("playing", function () { v.classList.remove("bg-video-blocked"); }, { once: true });
+      });
+    };
+    tryPlay();
+    // Mark as blocked if nothing has started within a moment, so the glyph
+    // is hidden even in modes where play() never settles.
+    setTimeout(function () {
+      bgVideos.forEach(function (v) { if (v.paused) v.classList.add("bg-video-blocked"); });
+    }, 1500);
+    ["touchstart", "pointerdown", "scroll", "keydown"].forEach(function (ev) {
+      window.addEventListener(ev, onGesture, { once: true, passive: true });
+    });
+    bgVideos.forEach(function (v) {
+      v.addEventListener("playing", function () { v.classList.remove("bg-video-blocked"); });
+    });
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) tryPlay(); });
+  }
+
   } catch (e) {
     // Failsafe: if anything above throws, reveal all content so nothing is
     // ever left invisible (animation is lost, content is not).
